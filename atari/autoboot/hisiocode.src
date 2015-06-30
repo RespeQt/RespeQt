@@ -1,0 +1,53 @@
+;  highsiocode.src - highspeed SIO routine, base file
+;
+;  Copyright (c) 2003-2009 by Matthias Reichl <hias@horus.com>
+;
+;  This program is free software; you can redistribute it and/or modify
+;  it under the terms of the GNU General Public License as published by
+;  the Free Software Foundation; either version 2 of the License, or
+;  (at your option) any later version.
+;
+;  This program is distributed in the hope that it will be useful,
+;  but WITHOUT ANY WARRANTY; without even the implied warranty of
+;  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+;  GNU General Public License for more details.
+;
+;  You should have received a copy of the GNU General Public License
+;  along with this program; if not, write to the Free Software
+;  Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+;
+
+; NOTE: the code in hisiocode-receive.src (actually the part
+; starting from "?GETLP" up to the last "BNE ?GETLP") should
+; not cross a page boundary, otherwise there's an increased
+; chance for overruns at 126kbit/sec!
+;
+; You may arrange the code parts in different order, but be sure
+; that "-check" and "-break" should be close to "-receive", the
+; code in "-receive" branches to the ?ERR* labels in "-check" and
+; in "-break".
+
+.if .def HISIO_MYPICODOS
+; optimized layout for MyPicoDos, starting at $092a
+	.include "hisiocode-main.src"
+	.include "hisiocode-vbi.src"
+	.include "hisiocode-check.src"
+	.include "hisiocode-break.src"
+	.include "hisiocode-receive.src"
+	.include "hisiocode-cleanup.src"
+	.include "hisiocode-send.src"
+	.include "hisiocode-diag.src"
+.else
+; standard layout, works for:
+; - highspeed SIO patch
+; - relocatable code starting at $xx00
+	.include "hisiocode-main.src"
+	.include "hisiocode-check.src"
+	.include "hisiocode-break.src"
+	.include "hisiocode-receive.src"
+	.include "hisiocode-cleanup.src"
+	.include "hisiocode-send.src"
+	.include "hisiocode-vbi.src"
+	.include "hisiocode-diag.src"
+.endif
+

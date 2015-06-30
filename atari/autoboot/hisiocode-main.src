@@ -1,0 +1,322 @@
+;  highsiocode-main.src - highspeed SIO routine, main code
+;
+;  Copyright (c) 2003-2009 by Matthias Reichl <hias@horus.com>
+;
+;  This program is free software; you can redistribute it and/or modify
+;  it under the terms of the GNU General Public License as published by
+;  the Free Software Foundation; either version 2 of the License, or
+;  (at your option) any later version.
+;
+;  This program is distributed in the hope that it will be useful,
+;  but WITHOUT ANY WARRANTY; without even the implied warranty of
+;  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+;  GNU General Public License for more details.
+;
+;  You should have received a copy of the GNU General Public License
+;  along with this program; if not, write to the Free Software
+;  Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+
+DOHISIO	
+
+.if .def DIAGSIO
+
+.if .def DIAGTIM
+; record current timestamp
+        LDA #0
+        STA $D40E
+        LDA RTCLOK
+        STA ?TSTAMP
+        LDA RTCLOK+1
+        STA ?TSTAMP+1
+        LDA RTCLOK+2
+        STA ?TSTAMP+2
+        LDA $D40B
+        STA ?TSTAMP+3
+	LDA #$40
+	STA $D40E
+.endif
+
+	LDA #$01
+.else
+.if .def DIAGNORET
+	LDA #$01
+.else
+	LDA #$02
+.endif
+.endif
+	LDX #DEFCRETRY
+
+; internal entry point for highspeed SIO detection:
+; load A with 1, only 1 retry and no speed fallback
+; X must be set to number of command frame retries
+
+DOHIDET	STA DRETRY
+	STX CRETRY
+
+	SEI
+	LDA #$01
+	STA CRITIC
+	CLC
+	LDA DDEVIC
+	ADC DUNIT
+	ADC #$FF
+	STA CDEVIC
+
+.if .def FASTVBI
+?ABSF01	JSR ?CLRTIM1
+; save old immediate VBI handler
+	LDA VVBLKI
+	PHA
+	LDA VVBLKI+1
+	PHA
+; install fast immediate VBI handler
+.if .def RELOCTABLE
+?ABSF02	LDY ?VBIADR
+?ABSF03	LDX ?VBIADR+1
+.else
+	LDY #<VBICODE
+	LDX #>VBICODE
+.endif
+?ABSF04	JSR ?WTVBI
+	STY VVBLKI
+	STX VVBLKI+1
+
+.if .not .def FASTVBI_NOCLOCK
+; save mid RTCLOK byte for later adjustment of high byte
+	LDA RTCLOK+1
+	PHA
+.endif
+
+.endif
+
+	TSX 
+	STX STACKP
+?ABS50	LDA SIOSPEED
+	STA MYSPEED
+
+?DRETLP
+
+.if .def DIAGSIO
+	LDA #0
+	STA ?DIAGER
+.endif
+
+	LDA DAUX1
+	STA CAUX1
+	LDA DAUX2
+	STA CAUX2
+
+	LDA DCOMND
+	STA CCOMND
+
+	LDX MYSPEED
+
+.if .not .def USONLY
+	BPL ?NOTUR
+
+	LDA CAUX2
+	ORA #$80
+	STA CAUX2
+	BNE ?CRETLP
+
+?NOTUR	CPX #HAPFLG	; happy warp speed?
+	BEQ ?WARP
+	CPX #XFFLG	; XF551?
+	BEQ ?XFCMD
+.endif
+	CPX #$0A	; check for happy 1050 speed
+	BNE ?CRETLP
+
+; the happy 1050 doesn't like the $48 happy command in highspeed...
+	CMP #$48
+
+.if .def USONLY
+	BNE ?CRETLP
+	LDA #STDSPD
+	STA MYSPEED
+.else
+	BEQ ?DOSLOW
+	BNE ?CRETLP
+
+?XFCMD	ORA #$80
+	STA CCOMND
+	CMP #$A1
+	BEQ ?DOSLOW
+	CMP #$A2
+	BNE ?CRETLP
+?DOSLOW	LDA #STDSPD
+	STA MYSPEED
+	BNE ?CRETLP
+
+?WARP	CMP #$50
+	BEQ ?WARP1
+	CMP #$52
+	BEQ ?WARP1
+	CMP #$57
+	BNE ?DOSLOW
+?WARP1	ORA #$20
+	STA CCOMND
+.endif
+
+?CRETLP	
+
+.if .def DIAGSIO
+; phase 00 : send command frame and wait for ACK
+	LDA #0
+	STA ?DIAGST
+	STA ?DIAGBT
+.endif
+
+	LDA MYSPEED
+.if .not .def USONLY
+	CMP #$40
+	BCC ?DOSIO2
+	LDA #STDSPD
+.endif
+?DOSIO2	STA AUDF3
+	LDA #$34	; set command line
+	STA PBCTL
+	LDA #$00
+	STA STATUS
+	STA BFENHI
+	STA AUDF4
+	LDA #$3A	; < CDEVIC
+	STA BUFRLO
+	LDA #$02	; > CDEVIC
+	STA BUFRHI
+	ASL 
+	STA BFENLO
+
+; setup pokey
+	LDA #$28
+	STA AUDCTL
+	LDX #$A0
+	LDA SOUNDR
+	BEQ ?NOSND
+	LDX #$A8
+?NOSND	STX AUDC4
+
+; transmit command frame
+?ABS51	JSR ?SENDBLK
+
+.if .not .def USONLY
+	BIT MYSPEED
+	BPL ?NOTUR1	; 1050 Turbo?
+	LDA #TURSPD	; yes, set highspeed before receiving ACK/NAK
+	STA AUDF3
+?NOTUR1	
+.endif
+
+?ABS52	JSR ?CHKST	; read command frame ACK/NAK
+?ABS53	JSR ?CLRTIM1	; got ACK, clear timer
+
+.if .def DIAGSIO
+; phase 01 : send data frame (only if write operation)
+	INC ?DIAGST
+.endif
+
+.if .not .def USONLY
+	BIT MYSPEED
+	BVC ?NOXF	; XF551 / Happy Warp?
+
+	LDA #XFSPD	; yes, set highspeed before DATA
+	STA AUDF3
+?NOXF
+.endif
+	LDA #1
+	STA CRETRY	; no more command-frame retries
+	LDA DBUFLO
+	STA BUFRLO
+	LDA DBUFHI
+	STA BUFRHI
+	LDA DBYTLO
+	STA BFENLO
+	LDA DBYTHI
+	STA BFENHI
+	LDA DSTATS
+	BPL ?NOSEND
+
+?ABS54	JSR ?SENDBLK	; transmit data frame
+
+.if .def DIAGSIO
+; phase 02 (write) : receive data frame ACK
+	INC ?DIAGST
+.endif
+
+?ABS55	JSR ?CHKST	; receive data frame ACK/NAK
+
+?NOSEND	
+
+.if .def DIAGSIO
+; phase 02 (read) / 03 (write) : receive command complete
+	INC ?DIAGST
+.endif
+
+?ABS56	JSR ?WAITCPL	; set command timeout and wait for command complete
+	BIT DSTATS
+	BVC ?SIOEND
+
+.if .def DIAGSIO
+; phase 03 (read) / 04 (write) : read data frame (only if read operation)
+	INC ?DIAGST
+.endif
+
+?ABS57	JSR ?GETBLK	; receive data block
+
+?SIOEND
+?ABS58	JSR ?CLEANUP	; reset timers and pokey
+	LDY STATUS	; was the command successful?
+	BEQ ?ENDCMD	; yes, we are done
+
+	DEC CRETRY	; retry sending command frame?
+	BEQ ?CHKDR	; no, already tried 13 times
+?ABS59	JMP ?CRETLP	; yes, we have some more retries
+?CHKDR	
+
+	DEC DRETRY	; any more command retries?
+	BEQ ?ENDCMD	; no, we are finished
+	CPY #ERRDEV
+	BEQ ?GODR	; don't fallback speed on command errors
+	LDA #STDSPD	; try it with standard speed this time
+	STA MYSPEED
+?GODR	LDA #DEFCRETRY
+	STA CRETRY
+?ABS60	JMP ?DRETLP	; yes, try it again
+?ENDCMD	
+
+.if .def FASTVBI
+.if .not .def FASTVBI_NOCLOCK
+	PLA
+	STA CHKSUM	; save old RTCLOK mid byte
+.endif
+	PLA
+	TAX
+	PLA
+	TAY
+?ABSF05	JSR ?WTVBI
+	STY VVBLKI
+	STX VVBLKI+1
+
+.if .not .def FASTVBI_NOCLOCK
+; now check for mid-counter wrap-around:
+; if new value is smaller than old value, a wrap around occurred
+	LDA RTCLOK+1
+	CMP CHKSUM
+	BCS ?NOWRAP	; larger or equal, no wrap around
+	INC RTCLOK	; smaller, increment hi-counter
+?NOWRAP
+.endif
+.endif
+
+	LDA #0
+	STA CRITIC
+	LDA POKMSK
+	STA IRQEN
+
+	LDY STATUS
+	BNE ?ERRCMD
+
+	INY
+?ERRCMD	STY DSTATS
+	CLI 
+	RTS 

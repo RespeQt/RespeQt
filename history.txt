@@ -1,0 +1,294 @@
+version 1.0.0 Preview-7 (Nov 29, 2014) (Ray Ataergin)
+     * Changed Image Explorer so that it sorts files ignoring file name cases, this makes it compatible with Windows Explorer and
+       provides a more consistent look between the two.
+     * Fixed an error causing files read by SpartaDOS X from a Folder Image, with a size greater than 73875 bytes (72KB), to enter
+       an endless read loop. Large files with no size limit can now be read/copied. 
+     * In the original implementation of Folder Images, Image Explorer Window used 999 sectors as the allowed maximum for a file
+       (a la Atari DOS 2.5), so the maximum file size for a file was displayed as 124875 bytes. This caused the dragging and dropping of
+       those larger files to fail because dropped file had a wrong size. This fix lifts the maximum 999 sectors limit and allows the file
+       to be up to 65535 sectors thus bringing the maximum file size that can be manipulated with Image Explorer to 8,191,875 bytes (8MB).
+       This also fixes issues with SDX Copy command progress display which now correctly displays the percentage completed.
+
+version 1.0.0 Preview-6 (May 23, 2014) (Ray Ataergin)
+    * Windows registry entries for AspeQt are now stored under "atari8warez.com" registry tree,
+      the program will automatically migrate settings on the next run.
+      Existing AspeQt session files storing session settings are not affected by this change
+    + Code needed to compile AspeQt under Mac OS X is added (David Voswinkel - optixx)
+        (see compile.rtf file included with the source archive)
+    * Folder images are now emulated in DOS 2.5 disk format rather than DOS 2.0
+      This gives more unique sector numbers to work with before they are re-used in a circular fashion.
+    * Fixed the "Not a binary file" error loading certain executable files.
+    * Text conversion is now OS platform aware (Win, Linux, OS X)
+    * Explorer Window Stay-on-top feature is now user selectable and persistent across sessions
+
+
+version 1.0.0 Preview-5 (Feb 23, 2014)(Ray Ataergin)
+    * Fixed a bug in Image Explorer where text translations were done when it wasn't required, which
+      caused binary files to become corrupted in some cases.
+    * Fixed a problem with data size checking in Text conversion mode. The check ignored the fact that
+      opening a file in text conversion mode will convert carriage return/line feed characters and rejected the file displaying
+      an "Unknown error" because number of bytes read from the file did not match the expected data size, changed the message text
+      to display a more meaningful explanation.
+
+version 1.0.0 Preview-4 (Feb 20, 2014) (Ray Ataergin)
+    + Added code to make explorer window to stay on top of all other windows.
+    + Added a reload button to the "Boot Atari Executable" dialog. The button re-loads the selected executable file before the
+      Atari is re-booted. Useful for Atari developers who use this dialog for continuous testing. The button allows automatic
+      refresh of AspeQt buffers by reloading the file without having to close the dialog when the executable has changed between Atari reboots.
+    - Simplified the "Boot Atari Executable" dialog by removing the "Keep this dialog open" check box. The dialog will now remain open until it
+      is exclusively closed by the Cancel and Close buttons. This update also fixes the issue of opening multiple instances of the said dialog.
+
+version 1.0.0 Preview-3 (Feb 11, 2014) (Ray Ataergin)
+    * GUI changes for more screen space savings as follows:
+        - Smaller buttons
+        - Shorter drive designators
+        - Log area is shrunk to single line height, double-click on the line to open a full view
+          log window, if the main window is resized, the log area can be expanded by clicking and dragging the single line.
+    + Added larger font support to the disk slot descriptions. New font size can be made permanent in the User Interface Options.
+    * Shade mode is now optional through a setting in the User Interface Options.
+
+
+version 1.0.0 Preview-2 (Feb 07, 2014)
+    + Added a single slot view called Mini/Shade Mode, in this mode only one disk slot is shown and minimal screen
+      real estate is used. This is for users who run AspeQt mainly from a single folder or ATR. Can be activated/toggled
+      through the new Window menu item or with CTRL+SHIFT+M keysequence.
+      The window can be tacked away in a corner of the screen in a semi transparent mode called Shade Mode.
+      When the cursor is moved over the window it becomes fully opaque for easier viewing and returns back to
+      semi transparent mode once the mouse cursor leaves. All menu features are still available in this mode. (Ray Ataergin)
+    + AspeQt log can now be displayed on a seperate window independent from the main window. A filter option
+      is added to filter log items by disk id. A menu item is also added to invoke log view window
+      in mini mode as the regular log area is not shown to save screen space. In full view mode the same window
+      can also be invoked by double-clicking on the log area. (Ray Ataergin)
+    + Re-organized menu item shortcut keys (Ray Ataergin)
+
+version 1.0.0 Preview-1 (Jan 25, 2014)
+    * Changed/fixed various UI elements (Ray Ataergin)
+    + Added an option to Start/Stop Printer Emulation (Ray Ataergin)
+        Turning the emulation OFF will allow the user to use an Atari connected printer instead of a PC printer.
+        This switch affects the currently running session of AspeQt only and is not permanent between sessions.
+    + Added an option to hide/show drives 9-15. (Ray Ataergin)
+        This switch is either permanent or temporary depending on user preference, and can be:
+        - temporary for the currently running session or,
+        - globally permanent (for all sessions of AspeQt running on the same computer) or,
+        - permenant for select sessions of AspeQt (when AspeQt is run from a session file)
+    - Removed the half-baked ATX file support code in favour of using VAPI.DLL, as the author who started the work on ATX support
+      is no longer interested in developing it further. VAPI.DLL support will be added before V1.0 final release (Ray Ataergin)
+
+version 0.8.8 (Mar 10, 2013)
+    + Added an option (Options/Emulation menu) to selectively enable/disable filtering of underscore character from file names in Folder Images (Ray Ataergin)
+    * Fixed a problem where "Unmount All" menu item was only unmounting the first 8 images. (Marcin Sochacki)
+    * Updated Polish language translations (Marcin Sochacki - TheMontezuma)
+    + Added Spanish translation (Abel Carrasco - AsCrNet)
+
+version 0.8.7 (Jan 28, 2013)
+    * Updated Turkish translations (Ray Ataergin)
+    * Updated the AspeQt documentation (Ray Ataergin)
+    + Added Folder Image boot support for MyDos, MyPicoDos and SpartaDos.
+      AspeQt now offers an option to switch between those 4 different DOSes
+      automatically. The user no longer needs to supply the required DOS files
+      or the file containing the boot sectors ($boot.bin) as AspeQt includes
+      them and switches from one DOS to another through the UI. The context menu
+      (right clicking on a mounted folder image on D1:) will present a window with
+      DOS selections. By choosing a DOS and clicking Apply on that window
+      will switch DOSes and the next reboot of the Atari will boot selected DOS
+      from the Folder Image. For details of the switching mechanism, the limitations
+      of, and more, please see AspeQt documentation. (Ray Ataergin)
+    * Changed the color and boldness of the Folder Image names to visually
+      differentiate them from other file images. (Ray Ataergin)
+
+version 0.8.6 (Jan 15, 2013)
+    * Updated the English language manual. (Ray Ataergin)
+    + Minor re-grouping of drive slot buttons. (Ray Ataergin)
+    + Added directory print capability to image explorer window (Ray Ataergin)
+    + Added boot capability from a Folder Image. Simply copy the DOS.SYS and DUP.SYS files from
+      a DOS diskette to a PC Folder, mount the PC folder to drive slot#:1 as a Folder Image
+      and boot your Atari. Currently only Atari DOS has a built-in support. MyDos will be
+      supported on the next release. (Ray Ataergin)
+        (For the time being if you need MyDOS support instead of Atari DOS, just replace the
+        DOS.SYS and DUP.SYS files in the PC Folder with the corresponding ones from a MyDOS
+        disk, you also need to supply a boot image file ($boot.bin) which contains the boot
+        sectors (1-3) from a MyDOS disk (384 bytes) and replace the existing $boot.bin file
+        in the application's directory (PC folder where AspeQt is installed). (Ray Ataergin)
+    - Dropped ApeTime support from AspeQt. AspeCL is now the only supported Time/Date client (Ray Ataergin)
+      + Remote Control software for AspeQt (see AspeQt documentation for more info) (Ray Ataergin)
+    + Implemented auto-commit remote toggle capability to AspeCL, it was previously documented
+      as "in development feature" (Ray Ataergin)
+    + Implemented remote image file creating/mounting capability to AspeCL, it was previously documented
+      as "in development feature" (Ray Ataergin)
+    + Implemented remote image file mounting capability to AspeCL, it was previously documented
+      as "in development feature" (Ray Ataergin)
+    * Tested and fixed AspeCL client SpartaDos X date/time handling (this was not previously tested as I did not have
+      SDX back then) (Ray Ataergin)
+    * Updated AspeCL client code to accomodate SDX drives 9-15 (Ray Ataergin)
+    * Updated AspeCL server code in AspeQt to accomodate SDX drives 9-15 (Ray Ataergin)
+
+version 0.8.5
+    * Updated the AspeQt English language user manual (Ray Ataergin)
+    + New tooltips are added to display extend info on mounted image properties.
+    + Increased the supported drive numbers from 8 to 15 for SDX compatibility (Ray Ataergin)
+    * Fixed SDX incompatibility of Folder Images (Ray Ataergin - Many thanks to Drac0/Phearon
+      for their contributions in solving the SDX cache problem)
+    + Added browsing capability for Folder Images. This release only allows read-only support with
+      drag & drop file copying from the Folder Image. Multiple Folder Images can be mounted (Ray Ataergin)
+    * Fixed a bug where AspeQt opened the "application folder" instead of the "Last Image Folder"
+      if the user wanted to mount a diskimage on a disk that already had an image mounted. (Ray Ataergin)
+    + Added German translation (Florian Dingler)
+
+version 0.8.4
+    + Added Slovak translation (Victor Cech).
+    * Fixed a path separator issue with Linux/Mac OS (Ray Ataergin)
+
+version 0.8.3
+    + Added option to keep the Boot Executable dialog open for succesive reboots of the same file (Ray Ataergin)
+    * Updated Turkish language translation (Ray Ataergin)
+    + Added a non-verbose version of AspeCl called AspeClQ (Q for quiet). AspeClQ does away with all help, status and error messages
+      reducing the exe file size considerably. This is the version to use if memory is scarse or in a batch file without disturbing
+      the current screen content. (Ray Ataergin)
+    * Added new command line switches to AspeCl and the code to support it in AspeQt (Ray Ataergin)
+        More than one switch can be specified on the command line and switches must be separated by at least one blank space.
+
+
+        DA[ds]   => Toggle auto-save OFF (s=0) or ON (s=1), on a given disk image (d). Toggling auto-save switch to ON will commit all
+                    pending changes to the affected disk image. Can be used to make sure all changes are committed before unmounting a
+                    disk image remotely. If the toggle is set ON on a newly created and mounted disk image, operator intervention will
+                    be required from the server (AspeQt) side to assign a file name to the image file before it's saved to PC hard disk.
+                    (Currently in development)
+
+        DS[dd]   =>  Swap disks, where dd are the drive numbers to be swapped (i.e DS15 will swap disks 1 and 5).
+                     Implemented in version 0.8.3
+
+        DU[d/*]  =>  Unmount disk(s). Will either unmount a single disk [d], or all disks [*]
+                     Unmount will not unmount disks that have changes until the changes are commited.
+                     Disks set to "auto-commit" in AspeQt will be unmounted immediately as the changes to these images are commited automatically.
+                     Implemented in version 0.8.3
+
+        DM[fname.[ext]]  => Mount an existing disk image,
+                            Will mount a supported disk image file from the last disk image directory used by AspeQt.
+                            The new image will be mounted to the first available disk slot (Currently in development)
+
+        DN[fname.{ext].[1/2/3/4/5]] => Create and mount a new disk image. Will create a new disk image, assign a name to it, and mount it.
+                                       The disk image will be created in the last image directory used by AspeQt (Currently in development)
+
+                                         1 - Standard Single Density
+                                         2 - Standard Enhanced density
+                                         3 - Standard Double Density
+                                         4 - Double sided, double density
+                                         5 - Double density Harddisk
+
+                   Example: DNmyhd.atr.5, will create a double density harddisk .atr image with the name myhd
+
+        An example of invoking AspeCl with multiple command line switches:
+
+        ASPECL TF DS18 DMbasicxe.atr  => Will set the date/time and turn TD line OFF, will swap disks 1-8, will mount basicxe.atr to
+        the first available disk slot, returning back the slot number to Atari. SEE ASPEQT USER MANUAL FOR COMPLETE ASPECL documentation.
+
+    * Fixed a problem with AspeQt dropping from READY state when 1st opened. The bug was introduced by session enhancement in v8.0.2 (Ray Ataergin)
+    + Added a 250ms delay to allow for COM port successfuly closing before it's re-opened when a session file is loaded.
+      Without the delay AspeQt sometimes fails to re-connect to the COM port with a "Access Denied" error. (Ray Ataergin)
+
+version 0.8.2
+    + Added multi-session capability. This allows the AspeQt user to invoke multiple
+      instances of AspeQt and use a different configurations for each session.
+      Session files were already partly implemented in AspeQt to save/restore mounted disk image groups.
+      This modification takes it further by adding other configuration settings unique to the session.
+      AspeQt normally saves all it's settings to Windows Registry, and restores them from there
+      when it's first launched. With this mod, AspeQt will first examine it's command line to see
+      if a session file was specified, and if it was, then AspeQt will load it's session specific
+      configuration parameters from the given session file. If no session file name was found, then
+      AspeQt will load all of it's settings from Windows Registry as usual.
+      See AspeQt documentation for session specific settings. (Ray Ataergin)
+    * Updated some icons for consistency accross main window menu items (Ray Ataergin)
+    * Fixed a problem with missing icon in About Dialog (Ray Ataergin)
+    * Fixed a problem with Text Printer Window menu item icon not displaying properly (Ray Ataergin)
+    * Fixed a problem with "last session directory" registry entry (Ray Ataergin)
+    * Changed code to make sure all path separators are cross platform compatible (forward slash) in registry
+      and session files (Ray Ataergin)
+
+version 0.8.1
+    + Added preliminary .ATX image support (does not seem to be fully functional) (Krzysztof Pyrkosz)
+    * Updated Polish translation (Krzysztof Pyrkosz)
+    * Updated Turkish translation (Ray Ataergin)
+    + Added Russian translation (Nikita Zimin)
+    * Updated high speed exe loader (Matthias Reichl)
+    + Added auto-commit (auto-save) function for disk images.
+      Changes made to disk images can now be saved automatically without user intervention (Ray Ataergin)
+
+version 0.8
+    + This version introduces the AspeQt client module AspeCl. AspeCl runs on the Atari computer and serves as a client
+      to AspeQt. In this release only Date/Time functionality is implemented, in future releases more
+      functionality will be added. (Ray Ataergin)
+
+            AspeCl is fully compatible with SpartaDos and SDX, and support the following command line switches:
+
+                    TS  => Set Date/Time on Atari
+                    TO  => Set Date/Time on Atari and turn TD Line ON
+                    TF  => Set Date/Time on Atari and turn TD Line OFF
+
+                         usage:  AspeCl TS|TO|TF
+
+      With the introduction of AspeCl the use of Apetime is now deprecated. AspeQt still supports Apetime as is
+      with no further development to adapt to future releases of Apetime (Ray Ataergin)
+    + MainWindow SIZE is now saved and restored (Ray Ataergin)
+    + Added a "Strip Line Numbers" option when saving text printer output to a PC file.
+      This will help ease the conversion of Atari based source programs printed through AspeQT for editing/compiling on a PC based IDE/Compiler (Ray Ataergin)
+    * Reorganized About Dialog content (Ray Ataergin)
+    + MainWindow POSITION is now saved and restored (Ray Ataergin)
+    + Created and added an application icon, modified main window to use the new icon (Ray Ataergin).
+    * Fixed a keyboard shortcut conflict with Windows on text printer output window and reassigned keyboard shortcuts (Ray Ataergin)
+
+version 0.7
+    + Disk slots now show the filename without the path.
+        The directory path can be seen as a tooltip to filename, and the full path+filename can be seen as a
+        statusTip on the status bar. This makes it much easier to read the mounted file/folder names. (Ray Ataergin)
+    * Decrease the latency on Win32 systems  (Matthias Reichl).
+    * Remove the retry limit when waiting for a command frame  (Matthias Reichl).
+    + Modified Atari text output to display Ascii/Atascii split screen window (Ray Ataergin)
+    + Added ATASCII font support for Atari text output (Ray Ataergin)
+    * Fixed problems with Pokey divisors 0 and 1 on PAL 800XL. Set the baudrates to values actually
+      supported by the FTDI chip to avoid possible rounding errors - resulting in too high speeds - (Matthias Reichl)
+    * Fixed small backslash-escape issue in the project file (Matthias Reichl)
+    * A (cosmetic) fix for the image size calculation in the "create image" dialog (Matthias Reichl)
+    + Added support for ATRs with 8192 byte sectors (Matthias Reichl)
+    + Added Turkish translation (Ray Ataergin)
+    + Added option to send the Atari text output to a PC printer (Ray Ataergin)
+    + Added option to display documentation (Ray Ataergin)
+    + Relaxed the .atr integrity check rules to allow some .atr files that are larger than the
+      header value to load (Ray Ataergin)
+
+version 0.6
+    + Added language selector and language selection based on system locale
+    + Added polish translation by Krzysztof Pyrkosz
+    * Many small fixes and improvements
+
+version 0.5.1
+    + Cassette image support
+    * Some cosmetic fixes in the log display
+
+version 0.5
+    + Higher speeds than x3 (57600) can be achieved if the serial port adaptor supports them
+    + New EXE booter with optional high speed SIO routines
+    + Drag drop support for files with EXE, COM and XEX extensions
+    + Preliminary printer emulation
+    + Text conversion for image explorer is now working properly under Windows
+    + Old temporary files resulting from crashes are now removed when AspeQt starts
+    * Fixed some race conditions that could cause problems with multiple cores/CPUs
+
+version 0.4
+    * Fixed an image explorer bug that caused crashes
+    + Added read-only SpartaDos support for image explorer
+
+version 0.3
+    + Image explorer for AtariDos / MyDos files
+    + Support for 512 bytes/sector ATR images
+    * Disk images are now opened using a temporary file
+    - Compressed and raw disk image support is temporarily removed
+    * Slightly improved folder images
+    * Many GUI changes
+    * Broken disk images are now rejected
+
+version 0.2
+    + Support for AtariSIO
+    * Windows serial I/O backend is entirely rewritten
+
+version 0.1
+    + First public release

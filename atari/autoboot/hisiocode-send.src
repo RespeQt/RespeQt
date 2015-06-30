@@ -1,0 +1,75 @@
+;  highsiocode-send.src - highspeed SIO routine, send byte/block
+;
+;  Copyright (c) 2003-2009 by Matthias Reichl <hias@horus.com>
+;
+;  This program is free software; you can redistribute it and/or modify
+;  it under the terms of the GNU General Public License as published by
+;  the Free Software Foundation; either version 2 of the License, or
+;  (at your option) any later version.
+;
+;  This program is distributed in the hope that it will be useful,
+;  but WITHOUT ANY WARRANTY; without even the implied warranty of
+;  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+;  GNU General Public License for more details.
+;
+;  You should have received a copy of the GNU General Public License
+;  along with this program; if not, write to the Free Software
+;  Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+
+; send a byte. Note. we don't check for the break key
+; here since it confuses several drives (eg. speedy 1050)
+
+?SENDBYT	TAX
+	LDA #IMSEND
+?WPUT	BIT IRQST
+	BNE ?WPUT
+	LDA #RMSEND
+	STA IRQEN
+	LDA #MSKSEND
+	STA IRQEN
+	TXA 
+	STA SEROUT
+
+?ADDSUM	CLC 
+	ADC CHKSUM
+	ADC #$00
+	STA CHKSUM
+	RTS 
+
+?SENDBLK	LDY #$00	; short delay before sending data
+?WT1	INY 
+	BNE ?WT1
+	LDA #SKSEND	; set pokey to transmit data mode
+	STA SKCTL
+	STA SKREST
+	LDA #MSKSEND
+	STA IRQEN
+	LDA (BUFRLO),Y	; start transmission by sending first byte
+	STA CHKSUM
+	STA SEROUT
+	INY
+	BNE ?SND2	; always
+	
+?SND1	LDA (BUFRLO),Y
+?ABS61	JSR ?SENDBYT	; normal send, wait for pokey clear
+	INY 
+	BNE ?SND2
+	INC BUFRHI
+	DEC BFENHI
+
+; wait a litte after sending a full page, needed by some
+; drives when sending more than 256 bytes
+
+	LDX #$E0
+?WT2	INX 
+	BNE ?WT2
+?SND2	CPY BFENLO
+	BNE ?SND1
+	LDA BFENHI
+	BNE ?SND1
+	LDA CHKSUM
+?ABS62	JSR ?SENDBYT
+	LDA #IMSCPL
+?WTSND	BIT IRQST	; wait until transmit complete
+	BNE ?WTSND
+	RTS

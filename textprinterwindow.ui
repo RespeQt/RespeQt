@@ -1,0 +1,364 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>TextPrinterWindow</class>
+ <widget class="QMainWindow" name="TextPrinterWindow">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>666</width>
+    <height>437</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>AspeQt - Printer text output</string>
+  </property>
+  <property name="windowIcon">
+   <iconset resource="icons.qrc">
+    <normaloff>:/icons/silk-icons/icons/printer.png</normaloff>:/icons/silk-icons/icons/printer.png</iconset>
+  </property>
+  <widget class="QWidget" name="centralwidget">
+   <property name="sizePolicy">
+    <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+     <horstretch>0</horstretch>
+     <verstretch>0</verstretch>
+    </sizepolicy>
+   </property>
+   <layout class="QGridLayout" name="gridLayout">
+    <item row="0" column="0">
+     <widget class="QPlainTextEdit" name="printerTextEdit">
+      <property name="sizePolicy">
+       <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+        <horstretch>0</horstretch>
+        <verstretch>0</verstretch>
+       </sizepolicy>
+      </property>
+      <property name="font">
+       <font>
+        <family>MS Shell Dlg 2</family>
+        <weight>75</weight>
+        <bold>true</bold>
+       </font>
+      </property>
+      <property name="mouseTracking">
+       <bool>false</bool>
+      </property>
+      <property name="toolTip">
+       <string>Atari Output (Atascii)</string>
+      </property>
+      <property name="statusTip">
+       <string>Atari Output (Atascii)</string>
+      </property>
+      <property name="lineWrapMode">
+       <enum>QPlainTextEdit::WidgetWidth</enum>
+      </property>
+      <property name="readOnly">
+       <bool>true</bool>
+      </property>
+      <property name="plainText">
+       <string/>
+      </property>
+     </widget>
+    </item>
+    <item row="0" column="1">
+     <widget class="QPlainTextEdit" name="printerTextEditASCII">
+      <property name="enabled">
+       <bool>true</bool>
+      </property>
+      <property name="toolTip">
+       <string>Atari Output (Ascii)</string>
+      </property>
+      <property name="statusTip">
+       <string>Atari Output (Ascii)</string>
+      </property>
+      <property name="readOnly">
+       <bool>true</bool>
+      </property>
+     </widget>
+    </item>
+    <item row="1" column="0">
+     <widget class="QLabel" name="atasciiFontName">
+      <property name="sizePolicy">
+       <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+        <horstretch>0</horstretch>
+        <verstretch>0</verstretch>
+       </sizepolicy>
+      </property>
+      <property name="maximumSize">
+       <size>
+        <width>16777215</width>
+        <height>16777215</height>
+       </size>
+      </property>
+      <property name="text">
+       <string/>
+      </property>
+     </widget>
+    </item>
+    <item row="1" column="1">
+     <widget class="QFontComboBox" name="asciiFontName">
+      <property name="font">
+       <font>
+        <family>MS Shell Dlg 2</family>
+        <pointsize>8</pointsize>
+       </font>
+      </property>
+      <property name="currentFont">
+       <font>
+        <family>Arial</family>
+       </font>
+      </property>
+     </widget>
+    </item>
+   </layout>
+  </widget>
+  <widget class="QStatusBar" name="statusbar"/>
+  <widget class="QToolBar" name="toolBar">
+   <property name="sizePolicy">
+    <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+     <horstretch>0</horstretch>
+     <verstretch>0</verstretch>
+    </sizepolicy>
+   </property>
+   <property name="windowTitle">
+    <string>toolBar</string>
+   </property>
+   <property name="movable">
+    <bool>false</bool>
+   </property>
+   <property name="iconSize">
+    <size>
+     <width>16</width>
+     <height>16</height>
+    </size>
+   </property>
+   <property name="floatable">
+    <bool>false</bool>
+   </property>
+   <attribute name="toolBarArea">
+    <enum>TopToolBarArea</enum>
+   </attribute>
+   <attribute name="toolBarBreak">
+    <bool>false</bool>
+   </attribute>
+   <addaction name="actionSave"/>
+   <addaction name="actionPrint"/>
+   <addaction name="actionAtasciiFont"/>
+   <addaction name="actionFont_Size"/>
+   <addaction name="actionHideShow_Atascii"/>
+   <addaction name="actionHideShow_Ascii"/>
+   <addaction name="actionStrip_Line_Numbers"/>
+   <addaction name="actionWord_wrap"/>
+   <addaction name="actionClear"/>
+  </widget>
+  <action name="actionSave">
+   <property name="icon">
+    <iconset resource="icons.qrc">
+     <normaloff>:/icons/silk-icons/icons/disk.png</normaloff>:/icons/silk-icons/icons/disk.png</iconset>
+   </property>
+   <property name="text">
+    <string>Save to a file...</string>
+   </property>
+   <property name="toolTip">
+    <string>Save contents to a file (Ctrl+S)</string>
+   </property>
+   <property name="statusTip">
+    <string>Save contents to a file</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+S</string>
+   </property>
+  </action>
+  <action name="actionClear">
+   <property name="icon">
+    <iconset resource="icons.qrc">
+     <normaloff>:/icons/silk-icons/icons/page_white.png</normaloff>:/icons/silk-icons/icons/page_white.png</iconset>
+   </property>
+   <property name="text">
+    <string>Clear</string>
+   </property>
+   <property name="toolTip">
+    <string>Clear contents (Ctrl+C)</string>
+   </property>
+   <property name="statusTip">
+    <string>Clear contents</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+C</string>
+   </property>
+  </action>
+  <action name="actionWord_wrap">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="checked">
+    <bool>false</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="icons.qrc">
+     <normaloff>:/icons/silk-icons/icons/text_align_left.png</normaloff>:/icons/silk-icons/icons/text_align_left.png</iconset>
+   </property>
+   <property name="text">
+    <string>Word wrap</string>
+   </property>
+   <property name="toolTip">
+    <string>Toggle word wrapping (Ctrl+W)</string>
+   </property>
+   <property name="statusTip">
+    <string>Toggle word wrapping</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+W</string>
+   </property>
+  </action>
+  <action name="actionPrint">
+   <property name="icon">
+    <iconset resource="icons.qrc">
+     <normaloff>:/icons/silk-icons/icons/printer.png</normaloff>:/icons/silk-icons/icons/printer.png</iconset>
+   </property>
+   <property name="text">
+    <string>Print</string>
+   </property>
+   <property name="toolTip">
+    <string>Send contents to printer (Ctrl+P)</string>
+   </property>
+   <property name="statusTip">
+    <string>Send contents to printer</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+P</string>
+   </property>
+  </action>
+  <action name="actionAtasciiFont">
+   <property name="icon">
+    <iconset resource="icons.qrc">
+     <normaloff>:/icons/silk-icons/icons/font_go.png</normaloff>
+     <normalon>:/icons/silk-icons/icons/font_go.png</normalon>:/icons/silk-icons/icons/font_go.png</iconset>
+   </property>
+   <property name="text">
+    <string>Atascii Font</string>
+   </property>
+   <property name="toolTip">
+    <string>Toggle ATASCII fonts (Alt+F)</string>
+   </property>
+   <property name="statusTip">
+    <string>Toggle ATASCII fonts</string>
+   </property>
+   <property name="shortcut">
+    <string>Alt+F</string>
+   </property>
+   <property name="visible">
+    <bool>true</bool>
+   </property>
+   <property name="iconVisibleInMenu">
+    <bool>true</bool>
+   </property>
+  </action>
+  <action name="actionFont_Size">
+   <property name="icon">
+    <iconset resource="icons.qrc">
+     <normaloff>:/icons/oxygen-icons/16x16/actions/format_font_size_more.png</normaloff>
+     <normalon>:/icons/oxygen-icons/16x16/actions/format_font_size_more.png</normalon>:/icons/oxygen-icons/16x16/actions/format_font_size_more.png</iconset>
+   </property>
+   <property name="text">
+    <string>Font Size</string>
+   </property>
+   <property name="toolTip">
+    <string>Toggle Font Size (6, 9, 12 pt) (Alt+Shift+F)</string>
+   </property>
+   <property name="statusTip">
+    <string>Toggle Font Size (6, 9, 12 pt)</string>
+   </property>
+   <property name="shortcut">
+    <string>Alt+Shift+F</string>
+   </property>
+   <property name="visible">
+    <bool>true</bool>
+   </property>
+  </action>
+  <action name="actionHideShow_Ascii">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="checked">
+    <bool>false</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="icons.qrc">
+     <normaloff>:/icons/oxygen-icons/16x16/actions/view_right_close.png</normaloff>
+     <normalon>:/icons/oxygen-icons/16x16/actions/view_right_close.png</normalon>:/icons/oxygen-icons/16x16/actions/view_right_close.png</iconset>
+   </property>
+   <property name="text">
+    <string>Hide/Show Ascii</string>
+   </property>
+   <property name="toolTip">
+    <string>Hide/Show Ascii Printer Output (Alt+Shift+H)</string>
+   </property>
+   <property name="statusTip">
+    <string>Hide/Show Ascii Printer Output</string>
+   </property>
+   <property name="shortcut">
+    <string>Alt+Shift+H</string>
+   </property>
+   <property name="visible">
+    <bool>true</bool>
+   </property>
+  </action>
+  <action name="actionHideShow_Atascii">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="checked">
+    <bool>false</bool>
+   </property>
+   <property name="enabled">
+    <bool>true</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="icons.qrc">
+     <normaloff>:/icons/oxygen-icons/16x16/actions/view_left_close.png</normaloff>
+     <normalon>:/icons/oxygen-icons/16x16/actions/view_left_close.png</normalon>:/icons/oxygen-icons/16x16/actions/view_left_close.png</iconset>
+   </property>
+   <property name="text">
+    <string>HideShow_Atascii</string>
+   </property>
+   <property name="toolTip">
+    <string> Hide/Show Atascii Printer Output (Alt+H)</string>
+   </property>
+   <property name="statusTip">
+    <string>Hide/Show Atascii Printer Output</string>
+   </property>
+   <property name="shortcut">
+    <string>Alt+H</string>
+   </property>
+   <property name="visible">
+    <bool>true</bool>
+   </property>
+  </action>
+  <action name="actionStrip_Line_Numbers">
+   <property name="enabled">
+    <bool>true</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="icons.qrc">
+     <normaloff>:/icons/silk-icons/icons/cut_red.png</normaloff>:/icons/silk-icons/icons/cut_red.png</iconset>
+   </property>
+   <property name="text">
+    <string>Strip Line Numbers</string>
+   </property>
+   <property name="toolTip">
+    <string>Strip Line numbers from the text output (Ctrl-S)</string>
+   </property>
+   <property name="statusTip">
+    <string>Strip Line numbers from the text output</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+S</string>
+   </property>
+  </action>
+ </widget>
+ <resources>
+  <include location="icons.qrc"/>
+ </resources>
+ <connections/>
+</ui>

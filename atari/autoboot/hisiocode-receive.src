@@ -1,0 +1,77 @@
+;  highsiocode-receive.src - highspeed SIO routine, receive byte/block code
+;
+;  Copyright (c) 2003-2010 by Matthias Reichl <hias@horus.com>
+;
+;  This program is free software; you can redistribute it and/or modify
+;  it under the terms of the GNU General Public License as published by
+;  the Free Software Foundation; either version 2 of the License, or
+;  (at your option) any later version.
+;
+;  This program is distributed in the hope that it will be useful,
+;  but WITHOUT ANY WARRANTY; without even the implied warranty of
+;  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+;  GNU General Public License for more details.
+;
+;  You should have received a copy of the GNU General Public License
+;  along with this program; if not, write to the Free Software
+;  Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+
+
+; NOTE: the code starting from "?GETLP" up to the last "BNE ?GETLP"
+; should not cross a page boundary, otherwise there's an increased
+; chance for overruns at 126kbit/sec!
+
+; note: pokey is already set to receive mode (in rdquit),
+; so we don't need to do the setup again
+
+?GETBLK	LDY #$00
+	STY CHKSUM
+
+?GETLP	CLC		; C=0 means receive block, C=1 receive single byte
+?GETBYT LDA #IMRECV
+?GETBY2	BIT IRQST
+	BPL ?ERRBRK	; break key pressed?
+	BNE ?GETBY2
+	LDX SERIN
+	LDA #RMRECV	; reset data-receive IRQ bit
+	STA IRQEN
+	LDA #MSKRECV	; enable data-receive IRQ
+	;LDA $A0
+	STA IRQEN
+	LDA #$20
+	BIT SKSTAT
+?ERRFR1	BPL ?ERRFRM	; framing error
+?ERROV1	BEQ ?ERROVR	; data input overrun
+	TXA
+	BCS ?DORTS
+	STA (BUFRLO),Y
+
+.if .not .def NOCKSUM
+	CLC
+	ADC CHKSUM
+	ADC #$00
+	STA CHKSUM
+.endif
+
+	INY 
+	BNE ?GET1
+	INC BUFRHI
+	DEC BFENHI
+?GET1	CPY BFENLO
+	BNE ?GETLP
+	LDA BFENHI
+	BNE ?GETLP
+	SEC
+?ABS63	JSR ?GETBYT
+
+.if .def DIAGSIO
+	STA ?DIAGBT
+.endif
+
+.if .not .def NOCKSUM
+	CMP CHKSUM
+	BEQ ?DORTS
+	LDA #ERRCHK
+?ABS64	JMP ?ERR
+.endif
+?DORTS	RTS

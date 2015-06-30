@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>AboutDialog</class>
+ <widget class="QDialog" name="AboutDialog">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>640</width>
+    <height>480</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>About AspeQt</string>
+  </property>
+  <property name="locale">
+   <locale language="English" country="UnitedStates"/>
+  </property>
+  <layout class="QGridLayout" name="gridLayout">
+   <item row="0" column="0">
+    <widget class="QLabel" name="aspeqtLabel">
+     <property name="font">
+      <font>
+       <weight>75</weight>
+       <bold>true</bold>
+      </font>
+     </property>
+     <property name="locale">
+      <locale language="English" country="UnitedStates"/>
+     </property>
+     <property name="text">
+      <string>AspeQt: Atari Serial Peripheral Emulator for Qt</string>
+     </property>
+     <property name="alignment">
+      <set>Qt::AlignCenter</set>
+     </property>
+    </widget>
+   </item>
+   <item row="5" column="0">
+    <widget class="QDialogButtonBox" name="buttonBox">
+     <property name="locale">
+      <locale language="English" country="UnitedStates"/>
+     </property>
+     <property name="orientation">
+      <enum>Qt::Horizontal</enum>
+     </property>
+     <property name="standardButtons">
+      <set>QDialogButtonBox::Close</set>
+     </property>
+    </widget>
+   </item>
+   <item row="2" column="0">
+    <widget class="QTextBrowser" name="textBrowser">
+     <property name="html">
+      <string>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
+&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;title&gt;AspeQt&lt;/title&gt;&lt;style type=&quot;text/css&quot;&gt;
+p, li { white-space: pre-wrap; }
+&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'MS Shell Dlg 2'; font-size:8.25pt; font-weight:400; font-style:normal;&quot;&gt;
+&lt;p style=&quot; margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:8pt;&quot;&gt; &lt;/span&gt;&lt;img src=&quot;:/icons/main-icon/AspeQt.ico&quot; /&gt;&lt;span style=&quot; font-size:8pt; font-weight:600; color:#4c920e;&quot;&gt;  &lt;/span&gt;&lt;span style=&quot; font-family:'Arial,Helvetica,sans-serif'; font-size:10pt; font-weight:600; font-style:italic; color:#4c920e;&quot;&gt;AspeQt, Atari Serial Peripheral Emulator for Qt&lt;/span&gt;&lt;span style=&quot; font-size:10pt; font-weight:600; font-style:italic; color:#4c920e;&quot;&gt;&lt;br /&gt;&lt;/span&gt;&lt;span style=&quot; font-size:10pt;&quot;&gt;&lt;br /&gt;&lt;/span&gt;&lt;span style=&quot; font-family:'Arial,Helvetica,sans-serif'; font-size:10pt; font-weight:600;&quot;&gt;Summary&lt;/span&gt;&lt;span style=&quot; font-family:'Arial,Helvetica,sans-serif'; font-size:10pt;&quot;&gt;&lt;br /&gt;AspeQt emulates Atari SIO peripherals when connected to an Atari 8-bit computer with an SIO2PC cable.&lt;br /&gt;In that respect it's similar to programs like APE and Atari810. The main difference is that it's free (unlike APE) and it's cross-platform (unlike Atari810 and APE).&lt;br /&gt;&lt;br /&gt;&lt;/span&gt;&lt;span style=&quot; font-family:'Arial,Helvetica,sans-serif'; font-size:10pt; font-weight:600;&quot;&gt;Some features&lt;/span&gt;&lt;span style=&quot; font-family:'Arial,Helvetica,sans-serif'; font-size:10pt;&quot;&gt;&lt;br /&gt;* Qt based GUI with drag and drop support.&lt;br /&gt;* Cross-platform&lt;/span&gt;&lt;span style=&quot; font-family:'Arial,Helvetica,sans-serif'; font-size:10pt; font-style:italic;&quot;&gt; (currently Windows and x86-Linux)&lt;/span&gt;&lt;span style=&quot; font-family:'Arial,Helvetica,sans-serif'; font-size:10pt;&quot;&gt;&lt;br /&gt;* 15 disk drive emulation &lt;/span&gt;&lt;span style=&quot; font-family:'Arial,Helvetica,sans-serif'; font-size:10pt; font-style:italic;&quot;&gt;(drives 9-15 are only supported by SpartaDOS X)&lt;/span&gt;&lt;span style=&quot; font-family:'Arial,Helvetica,sans-serif'; font-size:10pt;&quot;&gt;&lt;br /&gt;* Text-only printer emulation with saving and printing of the output&lt;br /&gt;* Cassette image playback&lt;br /&gt;* Folders can be mounted as simulated Dos20s disks. &lt;/span&gt;&lt;span style=&quot; font-family:'Arial,Helvetica,sans-serif'; font-size:10pt; font-style:italic;&quot;&gt;(read-only, now with SDX compatibility, and bootable)&lt;/span&gt;&lt;span style=&quot; font-family:'Arial,Helvetica,sans-serif'; font-size:10pt;&quot;&gt;&lt;br /&gt;* Atari executables can be booted directly, optionally with high speed.&lt;br /&gt;* Contents of image files can be viewed / changed&lt;br /&gt;* AspeQt Client module ASPECL.COM. Runs on the Atari and is used to get/set Date/Time on the Atari plus a variety of other remote tasks.&lt;br /&gt;* Upto 6xSIO speed and more if the serial port adaptor supports it &lt;/span&gt;&lt;span style=&quot; font-family:'Arial,Helvetica,sans-serif'; font-size:10pt; font-style:italic;&quot;&gt;(FTDI chip based cables are recommanded).&lt;/span&gt;&lt;span style=&quot; font-family:'Arial,Helvetica,sans-serif'; font-size:10pt;&quot;&gt;&lt;br /&gt;* Localization support (Currently for English, German, Polish, Russian, Slovak, Spanish and Turkish)&lt;br /&gt;* Multi-session support&lt;br /&gt;&lt;br /&gt;&lt;/span&gt;&lt;span style=&quot; font-family:'Arial,Helvetica,sans-serif'; font-size:10pt; font-weight:600;&quot;&gt;License&lt;/span&gt;&lt;span style=&quot; font-family:'Arial,Helvetica,sans-serif'; font-size:10pt;&quot;&gt;&lt;br /&gt;Original code up to version 0.6.0 &lt;/span&gt;&lt;span style=&quot; font-family:'Arial,Helvetica,sans-serif'; font-size:10pt; font-style:italic;&quot;&gt;Copyright 2009 by Fatih Aygün. &lt;/span&gt;&lt;span style=&quot; font-family:'Arial,Helvetica,sans-serif'; font-size:10pt;&quot;&gt;&lt;br /&gt;Updates since v0.6.0 &lt;/span&gt;&lt;span style=&quot; font-family:'Arial,Helvetica,sans-serif'; font-size:10pt; font-style:italic;&quot;&gt;Copyright 2012 by Ray Ataergin&lt;/span&gt;&lt;span style=&quot; font-size:10pt;&quot;&gt; &lt;/span&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:'Arial,Helvetica,sans-serif'; font-size:10pt;&quot;&gt;You can freely copy, use, modify and distribute AspeQt under the GPL 2.0 license. Please see license.txt for details.&lt;/span&gt;&lt;span style=&quot; font-size:10pt;&quot;&gt; &lt;/span&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:'Arial,Helvetica,sans-serif'; font-size:10pt;&quot;&gt;Qt libraries: &lt;/span&gt;&lt;span style=&quot; font-family:'Arial,Helvetica,sans-serif'; font-size:10pt; font-style:italic;&quot;&gt;Copyright 2009 Nokia Corporation&lt;/span&gt;&lt;span style=&quot; font-family:'Arial,Helvetica,sans-serif'; font-size:10pt;&quot;&gt; and/or its subsidiary(-ies). Used in this package under LGPL 2.0 license.&lt;br /&gt;&lt;br /&gt;Silk Icons: &lt;/span&gt;&lt;span style=&quot; font-family:'Arial,Helvetica,sans-serif'; font-size:10pt; font-style:italic;&quot;&gt;Copyright &lt;/span&gt;&lt;a href=&quot;www.famfamfam.com&quot;&gt;&lt;span style=&quot; font-family:'Arial,Helvetica,sans-serif'; font-size:10pt; font-style:italic; text-decoration: underline; color:#0000ff;&quot;&gt;Mark James&lt;/span&gt;&lt;/a&gt;&lt;span style=&quot; font-family:'Arial,Helvetica,sans-serif'; font-size:10pt; font-style:italic;&quot;&gt;.&lt;/span&gt;&lt;span style=&quot; font-family:'Arial,Helvetica,sans-serif'; font-size:10pt;&quot;&gt; Used in this package under Creative Commons Attribution 3.0 license.&lt;br /&gt;&lt;br /&gt;Additional Icons by &lt;/span&gt;&lt;a href=&quot;http://www.oxygen-icons.org/&quot;&gt;&lt;span style=&quot; font-family:'Arial,Helvetica,sans-serif'; font-size:10pt; font-style:italic; text-decoration: underline; color:#0000ff;&quot;&gt;Oxygen Team&lt;/span&gt;&lt;/a&gt;&lt;span style=&quot; font-family:'Arial,Helvetica,sans-serif'; font-size:10pt;&quot;&gt;. Used in this package under Creative Commons Attribution-ShareAlike 3.0 license.&lt;br /&gt;&lt;br /&gt;AtariSIO Linux kernel module and high speed code used in the EXE loader &lt;/span&gt;&lt;span style=&quot; font-family:'Arial,Helvetica,sans-serif'; font-size:10pt; font-style:italic;&quot;&gt;Copyright &lt;/span&gt;&lt;a href=&quot;http://www.horus.com/~hias/atari/&quot;&gt;&lt;span style=&quot; font-family:'Arial,Helvetica,sans-serif'; font-size:10pt; font-style:italic; text-decoration: underline; color:#0000ff;&quot;&gt;Matthias Reichl.&lt;/span&gt;&lt;/a&gt;&lt;span style=&quot; font-family:'Arial,Helvetica,sans-serif'; font-size:10pt;&quot;&gt; Used in this package under GPL 2.0 license.&lt;br /&gt;&lt;br /&gt;Atascii Fonts by &lt;/span&gt;&lt;a href=&quot;http://members.bitstream.net/~marksim/atarimac&quot;&gt;&lt;span style=&quot; font-family:'Arial,Helvetica,sans-serif'; font-size:10pt; font-style:italic; text-decoration: underline; color:#0000ff;&quot;&gt;Mark Simonson&lt;/span&gt;&lt;/a&gt;&lt;span style=&quot; font-family:'Arial,Helvetica,sans-serif'; font-size:10pt;&quot;&gt;. Used in this package under Freeware License.&lt;/span&gt;&lt;span style=&quot; font-size:10pt;&quot;&gt;&lt;br /&gt;&lt;br /&gt;&lt;/span&gt;&lt;span style=&quot; font-family:'Arial,Helvetica,sans-serif'; font-size:10pt; font-weight:600; font-style:italic;&quot;&gt;DOS files distributed with AspeQt&lt;/span&gt;&lt;span style=&quot; font-family:'Arial,Helvetica,sans-serif'; font-size:10pt; font-style:italic;&quot;&gt; are copyright of their respective owners, Atari8Warez and AspeQt distributes those files with the understanding that they are either abandonware or public domain, and are widely available for download through the internet. If you are the copyright holder of one or more of these files, and believe that distribution of these files constitutes a breach of your rights please contact &lt;/span&gt;&lt;a href=&quot;mailto:ray@atari8warez.com&quot;&gt;&lt;span style=&quot; font-family:'Arial,Helvetica,sans-serif'; font-size:10pt; font-style:italic; text-decoration: underline; color:#0000ff;&quot;&gt;Atari8Warez&lt;/span&gt;&lt;/a&gt;&lt;span style=&quot; font-family:'Arial,Helvetica,sans-serif'; font-size:10pt; font-style:italic;&quot;&gt;. We respect the rights of copyright holders and won't distribute copyrighted work without the rights holder's consent. &lt;/span&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:'Arial,Helvetica,sans-serif'; font-size:10pt; font-weight:600;&quot;&gt;Contact&lt;/span&gt;&lt;span style=&quot; font-family:'Arial,Helvetica,sans-serif'; font-size:10pt;&quot;&gt;&lt;br /&gt;Ray Ataergin, &lt;/span&gt;&lt;a href=&quot;mailto:ray@atari8warez.com&quot;&gt;&lt;span style=&quot; font-family:'Arial,Helvetica,sans-serif'; font-size:10pt; text-decoration: underline; color:#0000ff;&quot;&gt;email&lt;/span&gt;&lt;/a&gt;&lt;span style=&quot; font-family:'Arial,Helvetica,sans-serif'; font-size:10pt;&quot;&gt;, &lt;/span&gt;&lt;span style=&quot; font-family:'Arial,Helvetica,sans-serif'; font-size:10pt; font-style:italic;&quot;&gt;Please include the word &amp;quot;aspeqt&amp;quot; in the subject field.&lt;/span&gt;&lt;span style=&quot; font-family:'Arial,Helvetica,sans-serif'; font-size:10pt;&quot;&gt;&lt;br /&gt;&lt;br /&gt;Fatih Aygun, &lt;/span&gt;&lt;a href=&quot;mailto:cyco130@yahoo.com&quot;&gt;&lt;span style=&quot; font-family:'Arial,Helvetica,sans-serif'; font-size:10pt; text-decoration: underline; color:#0000ff;&quot;&gt;email&lt;/span&gt;&lt;/a&gt;&lt;span style=&quot; font-family:'Arial,Helvetica,sans-serif'; font-size:10pt;&quot;&gt;, &lt;/span&gt;&lt;span style=&quot; font-family:'Arial,Helvetica,sans-serif'; font-size:10pt; font-style:italic;&quot;&gt;Please include the word &amp;quot;aspeqt&amp;quot; in the subject field.&lt;/span&gt;&lt;span style=&quot; font-family:'Arial,Helvetica,sans-serif'; font-size:10pt;&quot;&gt;&lt;br /&gt;&lt;br /&gt;For SIO2PC/10502PC hardware purchase/support visit &lt;/span&gt;&lt;a href=&quot;http://www.atari8warez.com&quot;&gt;&lt;span style=&quot; font-family:'Arial,Helvetica,sans-serif'; font-size:10pt; text-decoration: underline; color:#0000ff;&quot;&gt;Atari8Warez&lt;/span&gt;&lt;/a&gt;&lt;span style=&quot; font-family:'Arial,Helvetica,sans-serif'; font-size:10pt;&quot;&gt;&lt;br /&gt;&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+     </property>
+     <property name="source">
+      <url>
+       <string>qrc:/documentation/about.html</string>
+      </url>
+     </property>
+    </widget>
+   </item>
+   <item row="1" column="0">
+    <widget class="QLabel" name="versionLabel">
+     <property name="font">
+      <font>
+       <weight>75</weight>
+       <bold>true</bold>
+      </font>
+     </property>
+     <property name="text">
+      <string/>
+     </property>
+     <property name="alignment">
+      <set>Qt::AlignCenter</set>
+     </property>
+    </widget>
+   </item>
+  </layout>
+ </widget>
+ <resources/>
+ <connections>
+  <connection>
+   <sender>buttonBox</sender>
+   <signal>rejected()</signal>
+   <receiver>AboutDialog</receiver>
+   <slot>reject()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>316</x>
+     <y>260</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>286</x>
+     <y>274</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>buttonBox</sender>
+   <signal>accepted()</signal>
+   <receiver>AboutDialog</receiver>
+   <slot>accept()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>248</x>
+     <y>254</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>157</x>
+     <y>274</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
+</ui>

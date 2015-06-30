@@ -1,0 +1,782 @@
+﻿<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+<meta content="text/html; charset=utf-8" http-equiv="Content-Type" />
+<title>AspeQt User Manual</title>
+<style type="text/css">
+.auto-style1 {
+	font-family: Arial, Helvetica, sans-serif;
+	font-size: medium;
+}
+.auto-style2 {
+	text-align: center;
+	font-family: Arial, Helvetica, sans-serif;
+	font-size: x-large;
+	color: #F30B0B;
+}
+.auto-style4 {
+	font-family: Arial, Helvetica, sans-serif;
+	font-size: medium;
+	color: #F30B0B;
+}
+.auto-style5 {
+	text-align: center;
+	font-family: Arial, Helvetica, sans-serif;
+	font-size: medium;
+}
+.auto-style6 {
+	font-family: Arial, Helvetica, sans-serif;
+}
+.auto-style7 {
+	font-family: Arial, Helvetica, sans-serif;
+	color: #F30B0B;
+}
+.auto-style8 {
+	font-family: Arial, Helvetica, sans-serif;
+	font-size: large;
+	color: #0B0E77;
+}
+.auto-style9 {
+	font-family: Arial, Helvetica, sans-serif;
+	color: #000000;
+}
+.auto-style10 {
+	color: #000000;
+}
+.auto-style11 {
+	font-size: medium;
+}
+.auto-style12 {
+	color: #5B5B5B;
+}
+.auto-style13 {
+	color: #0000FF;
+}
+</style>
+</head>
+
+<body>
+
+<p class="auto-style2"><strong>AspeQt User Manual<br />
+&nbsp;version 1.0.0 preview-7</strong></p>
+<p class="auto-style8"><strong>Introduction</strong></p>
+<p><span class="auto-style1">AspeQt is a cross-platform, free and open source 
+Atari 8-bit serial peripheral emulator. The name is an acronym for Atari serial 
+peripheral emulator for Qt, Qt being the cross-platform application development 
+framework used by AspeQt.</span><br class="auto-style1" />
+<br class="auto-style1" />
+<span class="auto-style1">You can download AspeQt from the
+<a href="http://sourceforge.net/projects/aspeqt/">SourceForge project page</a>.
+</span><br class="auto-style1" />
+<br class="auto-style1" />
+<span class="auto-style1">AspeQt emulates various Atari 8-bit peripherals like 
+disk drives and printers via a SIO2PC cable. If you are familiar with software 
+like SIO2PC, APE, Atari810, AtariSlO etc., you probably won’t have any problems 
+getting used to AspeQt.</span><br class="auto-style1" />
+<br class="auto-style1" />
+<span class="auto-style1">Even though AspeQt is not fully mature yet, it is easy 
+to use and, despite its shortcomings, has many features that you may find 
+useful, the highlights being:</span><br class="auto-style1" />
+</p>
+<ul>
+	<li><span class="auto-style1">Cross-platform GUI with drag and drop support</span></li>
+	<li class="auto-style1">15 emulated disk drives with support for 512 
+	bytes per sector disk images</li>
+	<li><span class="auto-style1">High speed operation up to 6 times faster than 
+	the normal speed <em>(With compatible OS / DOS)</em></span></li>
+	<li><span class="auto-style1">Ability to use PC folders as emulated disks</span></li>
+	<li><span class="auto-style1">Disk image explorer for viewing and modifying 
+	disk image contents</span></li>
+	<li><span class="auto-style1">Ability to run Atari executables directly without 
+	using disc images and Doses</span></li>
+	<li><span class="auto-style1">Printer emulation with preview and ATASCII 
+	support</span></li>
+	<li><span class="auto-style1">Cassette image playback with custom baud rate</span></li>
+	<li class="auto-style1">Ability to save and restore AspeQt sessions with its 
+	UI settings.</li>
+	<li class="auto-style1">Normal and mini UI modes</li>
+</ul>
+<p class="auto-style8"><strong>System Requirements</strong></p>
+<p><span class="auto-style1">AspeQt currently runs under Windows, Linux and Mac OS X. 
+Other Unix-like operating systems shouldn’t require too 
+much effort. The absolute minimums aren’t easy to tell but a modern Linux 
+distribution with Qt 5.2.1 libraries or a Windows XP (or newer) is recommended.</span><br class="auto-style1" />
+<br class="auto-style1" />
+<span class="auto-style1">Although AspeQt is reported to run on a Pentium 233 
+MMX, a modem processor and a decent amount of RAM is strongly recommended for 
+smooth operation. It runs fine on 64-bit CPUs.</span><br class="auto-style1" />
+<br class="auto-style1" />
+<span class="auto-style1">In order to do anything useful with AspeQt, you will 
+need an Atari 8-bit computer and a SIO2PC cable. SIO2PC cable is an interface 
+that connects the Atari’s serial bus to the PC’s serial port. Since many newer 
+PCs lack a real serial port, you may need a UART card, or a high quality Serial-to-USB adapter
+<em>(FTDI chip based devices were tested successfully, others 
+may not work as intended)</em> or a SIO2PC USB interface <em>(instead of serial)</em>, If you 
+opt for the later however, please note that the “AtariMax SIO2PC Universal 
+Interface USB Edition” is not officially supported as it uses proprietary USB device 
+drivers. </span></p>
+<p><span class="auto-style1">You can get a RS232 or Serial-to-USB based SIO2PC cable from
+<a href="http://www.atari8warez.com">Atari8Warez</a></span><br class="auto-style1" />
+<br class="auto-style1" />
+<span class="auto-style1">You don’t need any real Atari disk drives or printers 
+to use AspeQt.</span></p>
+<p class="auto-style8"><strong>Installation</strong></p>
+<p><span class="auto-style1"><strong>On Windows</strong>, AspeQt comes with all 
+the required DLLs in a ZIP file. Just unzip the archive to a folder and run 
+aspeqt.exe. You may manually create shortcuts on your desktop, start menu and 
+quick launch bar if you want. Future releases may include an installer but it 
+doesn’t exist yet.</span><br class="auto-style1" />
+<br class="auto-style1" />
+<span class="auto-style1"><strong>On Linux</strong>, AspeQt comes as a zipped source. You will need Qt 
+5.2.1 libraries and build tools to compile. After 
+installing them, please follow the instructions in compile.txt that comes in the 
+zip file. Pre-built packages of earlier/current versions for popular 
+Linux distributions may be obtained from
+<a href="http://www.abbuc.de/~atarixle/download/index.htm">www.atariaxle.de</a></span></p>
+<p><span class="auto-style1">If you want to use the AtariSlO backend, which is 
+highly recommended if you have a real RS-232 serial port, you will need the 
+AtariSlO package. Please follow the documentation that comes with that package 
+to compile and install it.</span></p>
+<p class="auto-style8"><strong>Configuration</strong></p>
+<p><span class="auto-style1">In order to be able to use AspeQt, you need to 
+configure it to suit your hardware. When it’s running for the first time, a 
+dialog will pop up asking you if you wish to open the configuration dialog. 
+Click “Yes” to open the Options dialog. You can also access this dialog from the 
+Tools/Options menu item.</span><br class="auto-style1" />
+<br class="auto-style1" />
+<span class="auto-style1">On Linux, you have to choose a serial I/O backend 
+first. If you have installed the AtanSlO package and you have a RS-232 port, the 
+recommended way is to use the AtariSlO backend. If you have a USB adapter or you 
+don’t want to use AtariSIO for any other reason, choose the standard serial port 
+backend. This is also the only available backend on Windows.</span><br class="auto-style1" />
+<br class="auto-style1" />
+<span class="auto-style4"><strong>Configuring the standard serial port backend</strong></span><br class="auto-style1" />
+<span class="auto-style1">First, enter a port name. On Windows, it should be 
+something like COM1, COM2 etc. Check the device manager to see which one of them 
+is installed. On Linux, it should be /dev/ttyS0, /dev/ttyS1 etc. for RS-232 
+ports or /dev/ttyUSB0, /dev/ttyUSB1 etc. for USB adapters.</span><br class="auto-style1" />
+<br class="auto-style1" />
+<span class="auto-style1">Next, you will have to select a handshaking method. 
+The handshaking method tells AspeQt which one of the RS-232 pins is connected to 
+Atari’s command line. There are 3 supported methods: RI, DSR, CTS and NONE. Check your 
+SIO2PC interface’s documentation to learn which one of them is used for your 
+cable. Note that NONE <em>(no handshaking) </em>is highly experimental and not 
+recommanded for day-to-day use, in this mode AspeQt will ignore Atari's command 
+line (SIO7) and will monitor the COM port's RXD (Atari SIO5) line instead. No 
+handshaking mode was included to experiment with wireless (bluetooth) serial 
+interfaces.</span><br class="auto-style1" />
+<br class="auto-style1" />
+<span class="auto-style1">The “High speed mode baud rate” combo box selects the 
+transfer speed to be used for the high speed mode. Some OS /DOS for the Atari 
+supports higher transfer speeds than the standard 19200 bits per second. Not all 
+DOS /OS are capable of using 3x speed and some treat 2x as a special case for 
+XF551 drives, so you may need some experimentation to find the best setting. 1x 
+option is provided for unreliable connections, like when using a cheap USB 
+adapter or when running AspeQt under virtualization software and/or on a slow 
+CPU computer.</span><br class="auto-style1" />
+<br class="auto-style1" />
+<span class="auto-style1">If your serial port supports arbitrary bit rates, you 
+may check the “Use non-standard” speeds check box and select a POKEY divisor to 
+be used in high speed mode, the lower the divisor, the higher the speed. Usually 
+real COM ports and some VCP<em> (Virtual COM Ports)</em> don't support arbitrary 
+baud rates, FTDI chip based serial-to-USB cables do support arbitrary baud 
+rates, and are thus the recommanded type of cable for use with AspeQt.</span><br class="auto-style1" />
+<br class="auto-style1" />
+<span class="auto-style1">The exact formula for the nominal speed is:</span><br class="auto-style1" />
+<br class="auto-style1" />
+<span class="auto-style1">baudRate = clock/ (2*(divisor+7))</span><br class="auto-style1" />
+<br class="auto-style1" />
+<span class="auto-style1">Where dock is ~1,773,447 for PAL, and ~1,789,772 for 
+NTSC, however, it’s not always possible to reach nominal speeds. So, 1x is 
+divisor 40, 2x is divisor 16 and 3x is divisor 8. Divisor 0 is ~l26kbits/second 
+and that means approximately 6x.</span><br class="auto-style1" />
+<br class="auto-style1" />
+<span class="auto-style1">Please note that very few OS/DOS will be able to 
+function with such high speeds. Currently the only tested software that can 
+reach divisor 0 with AspeQt is the 
+<a href="http://www.horus.com/~hias/atari/#hipatch">hisio OS patch</a>.&nbsp; As a final warning, some Atari 
+8-bit computers have capacitors connected to their SIO lines that can interfere 
+with high speed transfers. In short, speeds beyond 3x are not guaranteed to work 
+in every case.</span><br class="auto-style1" />
+<br class="auto-style1" />
+<span class="auto-style4"><strong>Configuring AtariSIO backend</strong></span><br class="auto-style1" />
+<br class="auto-style1" />
+<span class="auto-style1"><em>Note: AtariSIO is available under Linux only!</em></span><br class="auto-style1" />
+<br class="auto-style1" />
+<span class="auto-style1">After installing and running the AtariSIO module and 
+making sure that you have the required permissions, you just need to enter a 
+device name which should be /dev/atarisio0 under normal circumstances and select 
+a handshaking method as described above for the standard serial port backend. 
+Please refer to AtariSIO documentation on how to build and install AtariSIO.</span><br class="auto-style1" />
+</p>
+<p class="auto-style8"><strong>Usage</strong></p>
+<p><span class="auto-style1">After making sure that you installed and configured 
+AspeQt correctly, you can start using it with your Atari. If you used similar 
+software before, it should be fairly straight forward.</span><br class="auto-style1" />
+<br class="auto-style1" />
+<span class="auto-style4"><strong>Disk images</strong></span><br class="auto-style1" />
+<span class="auto-style1">Instead of using real disks, AspeQt uses disk images. 
+These are regular files that contain an image of an Atari disk. There are 
+several formats, the most common being the .atr format, currently AspeQt only 
+supports .atr, .xfd,&nbsp; atx <em>(still in development),</em> and .pro&nbsp; formats. Future releases 
+may provide support 
+for .scp, .dcm, .di and gzipped (.atz. atr.gz, .xfz and .xfd.gz) formats.</span><br class="auto-style1" />
+<br class="auto-style1" />
+<span class="auto-style1">AspeQt emulates 15 disk drives. You have one 
+slot for each of them, labeled D1 through&nbsp; DO <em>(letter O)</em>. D9 
+through DO are only supported by SpartaDOS X and compatible DOS <em>(see SDX 
+manual for details on supported disk drive identifiers)</em>. You can make 
+AspeQt to show only the first slot, the first 8 slots, or all 15 slots using 
+options in DISK and WINDOW menu items. <br />
+<br />
++ To hide/show drives D9 through DO, use menu item Disk/Hide drives D9-DO <em>
+(CTRL+H),<br />
+</em><br />
++ To toggle AspeQt mini mode use menu item Window/Toggle Mini Mode <em>(CTRL+M),
+</em>in mini mode AspeQt shows only the first drive slot,<em><br />
+<br />
++ </em>To toggle shade mode in mini mode use menu item Window<em>/</em>Toggle 
+shade mode <em>(CTRL+S), </em>in shade mode AspeQt shows a semi-transparent 
+window<em> </em>which does not completely block the view of underlying UI 
+objects<em>,<br />
+<br />
+</em>Note that all drives are actually available for use with your Atari in all 
+AspeQt display modes whether they are visible or not.<br />
+<em><br />
+</em>You can mount a disk image to an empty drive slot by:</span></p>
+<ul>
+	<li><span class="auto-style1">Dragging and dropping a file to the desired 
+	slot</span></li>
+	<li><span class="auto-style1">Using the “Disk/Mount disk image” menu item 
+	<em>(the first available slot will be used)</em></span></li>
+	<li><span class="auto-style1">Using the “Mount disk image” tool button 
+	available in each slot</span></li>
+	<li><span class="auto-style1">Right dicking on a slot and selecting the 
+	“Mount disk image” menu item</span></li>
+	<li><span class="auto-style1">Selecting a recently used disk image from the 
+	“Disk” menu</span></li>
+	<li><span class="auto-style1">By pressing Alt + 1 through Alt + O <em>
+	(letter O)</em></span></li>
+	<li class="auto-style1">Using AspeCL remote module on the Atari computer <em>
+	(See AspeCL section of the this user manual for more details)</em></li>
+</ul>
+<p><span class="auto-style1">You can see the result of your operation in the log 
+display which is below the disk slots, if the operation is completed 
+successfully, your Atari should be able to see the mounted disk image just like 
+a real disk in a real drive.</span><br class="auto-style1" />
+<br class="auto-style1" /><span class="auto-style1">You can use the tool buttons and context menu items to 
+perform other operations like saving the disk image, enabling write protection 
+for the image, reverting the image to its last saved state, ejecting 
+(unmounting) the image, creating a new image and so on. You can also swap images 
+using drag and drop.</span><br class="auto-style1" /><br class="auto-style1" />
+<span class="auto-style4"><strong>Folder Images</strong></span><br class="auto-style1" />
+<span class="auto-style1">Folder images provide a similar function to the 
+features variously named as “PC mirror’, “Simulated disk”, “Share point” etc. by 
+other peripheral emulators. This is basically a simulated Atari DOS2.5 disk. Instead of 
+a disk image, you can mount a folder in your PC that contains some Atari files 
+and Atari will see it as a disk with the same files in it.</span><br class="auto-style1" />
+<br class="auto-style1" /><span class="auto-style1">Currently, the mounted folder will be seen as a 
+standard DOS 2.5 disk and it’s <em>sequantial access (Basic NOTE/POINT commands 
+will not work as expected) and read-only </em>. Although Folder Images are 
+simulated and behave like Atari DOS 2.5, there are some differences. The most 
+important difference is that each file can be as large as 8MB in size and file 
+sizes are shown as number of bytes as opposed to number of sectors (unlike Atari 
+DOS). Maximum number of files in the directory is 64 and subdirectories are not 
+supported. Folder Images are also compatible with MyDOS, all versions of Spartados and SpartaDOS X. There may be  
+issues with others. </span></p>
+<p class="auto-style1">Folder images are also bootable as of version 0.8.5, 
+but since the folder image is a simulation of a standard DOS 2.5 disk, you can 
+only boot into a DOS that is compatible with AtariDOS disk structure. There 
+are two exceptions to this, first one is SpartaDOS, AspeQt will allow you to 
+boot into a 3.2f version of SpartaDOS but there are some limitations. AspeQt will 
+also allow you to boot into the standard version of MyPicoDOS 4.05. See the following 
+section for for details and limitations:</p>
+<p class="auto-style6"><strong>Folder boot details and limitations:</strong></p>
+<p style="height: 153px"><span class="auto-style6">To boot your Atari with a Folder Image, 
+first mount a PC folder to disk slot 1 (D1:). Once mounted, right-click on the 
+Folder name and select <span class="auto-style13"><em>Folder Boot Options</em></span> 
+from the menu, select the DOS you would like the boot and click
+<span class="auto-style13"><em>Apply</em></span>. make sure AspeQt is ready to receive commands from your 
+Atari and finally turn your Atari ON, selected DOS will be booted. You must 
+select a DOS boot option if you mounted a Folder Image for the first time and 
+you want to boot your Atari from that folder whenever the folder is mounted. You 
+normally only select the DOS option once for each Folder Image. The Folder will 
+remain bootable with the same DOS between AspeQt sessions. <strong><br />
+Warning:
+</strong><em>AspeQt will copy the necessary DOS files into the mounted PC Folder 
+to make it bootable. Do not keep any other DOS files (like dos.sys, dup.sys 
+etc..) on that folder as they will be erased/replaced</em>.</span></p>
+<p style="height: 157px" class="auto-style6">Note that you don't need to supply any DOS files, AspeQt 
+distribution supplies the files 
+necessary to boot your computer. These DOS files are copyright of their 
+respective owners, Atari8Warez and AspeQt distributes those files with the 
+understanding that they are either freeware, abandonware or public domain and are widely 
+available for download through the internet. If you are the copyright holder of 
+one or more of these files, and believe that distribution of these files 
+constitutes a breach of your rights please contact
+<a href="mailto:ray@atari8warez.com">Atari8Warez</a>. We respect 
+the rights of copyright holders and won't distribute copyrighted work without 
+the rights holder's consent. <em> <br />
+<br />
+</em>The following DOSes can be booted from a Folder Image:</p>
+<ul>
+	<li>
+	<p class="auto-style6" style="height: 89px"><strong>Atari DOS 2.5</strong> 
+	AspeQt Folder images are fully compatible with this DOS, you can boot the 
+	DOS and load drivers and binary files<em> (autorun.sys)</em> during the boot 
+	process. AspeQt supplies the dos files <em>(dos.sys, dup.sys) </em>and the 
+	ramdisk driver <em>(ramdisk.com). </em>You can add your own <em>autorun.sys</em> 
+	file by copying the file into the folder <strong><em>$bootata</em></strong> 
+	which is located in AspeQt application<em> </em>directory. You can also use 
+	DOS 2.0 instead of 2.5 by simply replacing the <em>dos.sys</em> and <em>
+	dup.sys </em>in $bootata folder with the ones from a DOS 2.0 disk.</p>
+	</li>
+	<li>
+	<p class="auto-style6" style="height: 43px"><strong>MyDOS 4.5</strong>&nbsp; 
+	This DOS is disk structure compatible with AtariDOS, so everything that's 
+	said for AtariDOS 2.5 above is also valid for MyDOS. Boot files folder for 
+	MyDOS is <strong><em>$bootmyd</em></strong></p>
+	</li>
+	<li>
+	<p class="auto-style6" style="height: 270px"><strong>MyPicoDOS 4.05 </strong>
+	This game DOS is provided to support Folder Images which hold Atari games. 
+	You can quickly boot and start your games conveniently from a PC Folder.
+	<span class="auto-style10">Only standard version of MyPicoDOS is provided 
+	and supported</span>. When selecting MyPicoDos as your boot DOS there is an 
+	extra option on the menu to <span class="auto-style13"><em>disable high 
+	speed SIO</em></span> code built into this DOS. If checked, this option will 
+	instruct MyPicoDOS to run in normal speed. This may be necessary under 
+	certain configurations. One example is if you are using an Ultimate 1MB 
+	board or a PBI device like IDE Plus 2 on your Atari with high-speed OS enabled. MyPicoDOS used in high-speed 
+	mode will conflict with the high-speed OS on the Atari, so checking this 
+	option and booting and running MyPicoDOS in normal speed will solve this 
+	problem.<br />
+	<br />
+	AspeQt will also automatically generate a <em>piconame.txt</em> file during 
+	the Folder Image boot process. So if you have game files with long file 
+	names they will be displayed with their full names when MyPicoDOS menu 
+	appears. <em>piconame.txt </em>file&nbsp; will only be created/updated when 
+	you boot, so if you add more game files to your PC folder during your 
+	MyPicoDOS session they will not show with long names until you reboot.<br />
+	<br />
+	Boot files folder for MyPicoDOS is<em> </em><strong><em>$bootpic</em></strong>. 
+	it is not recommanded to modify this folder, unlike AtariDOS and MyDOS there 
+	are no customizations you can make for MyPicoDOS.</p>
+	</li>
+	<li>
+	<p class="auto-style6" style="height: 57px"><strong>SpartaDOS 3.2f </strong>
+	SpartaDOS is not compatible with AtariDOS. Its disk/file structure and boot 
+	scheme is completely different. So this DOS is only partly <em>(and I would 
+	say rather crudely)</em> supported. You will be able to boot SpartaDOS 
+	version 3.2f from a Folder Image with the following limitations:</p>
+	<ul>
+		<li>
+		<p class="auto-style6" style="height: 96px">To boot SpartaDOS from an 
+		AtariDOS structured Folder Image is an impossible task. So AspeQt uses 
+		some <em>(not so elegant) </em>tricks to coherce SpartaDOS into booting 
+		from an AtariDOS compatible Folder Image by<em> </em>giving it the 
+		impression that it's booting from a SpartaDOS formatted disk<em>.</em> 
+		Once the boot is completed AspeQt forces SpartaDOS to re-detect the 
+		Folder Image as an AtariDOS formatted disk so that it can display and 
+		manipulate the files within the folder. The mechanics of this scheme 
+		necessarly limits the boot proccess in the following ways:</p>
+		<ul>
+			<li>
+			<p class="auto-style6" style="height: 19px">You can not load drivers 
+			or run an <em>autorun.bat</em> file during the boot process</p>
+			</li>
+			<li>
+			<p class="auto-style6" style="height: 58px">Once booted from, a 
+			Folder Image won't be bootable again until you right-click on the 
+			Folder Image name, select <span class="auto-style13"><em>Folder Boot 
+			Options</em></span>, select SpartaDOS 3.2f f and click
+			<span class="auto-style13"><em>Apply</em></span>. This will reset 
+			the Folder Image boot files and will make the folder bootable once 
+			again.</p>
+			</li>
+			<li>
+			<p class="auto-style6" style="height: 28px">You can not 
+			modify/delete files in the boot files folder <em><strong>$bootspa</strong></em></p>
+			</li>
+		</ul>
+		</li>
+		<li>
+		<p class="auto-style6" style="height: 28px">The restrictions and 
+		limitations may be lifted in the upcoming versions of AspeQt.</p>
+		</li>
+	</ul>
+	</li>
+</ul>
+<p><span class="auto-style4"><strong>Running Atari executables</strong></span><br class="auto-style1" />
+<span class="auto-style1">Most Atari programs floating around on the internet come as 
+Atari DOS executables. These files may have .exe, .com, .xex or any other 
+extension. Instead of messing with disk image software and DOS, you may directly 
+run these files in your Atari using AspeQt.</span><br class="auto-style1" />
+<br class="auto-style1" /><span class="auto-style1">You can either drag and drop a file with .exe, com or 
+.xex extension into any slot or you can use the menu item “File/Boot Atari 
+executable” to access this feature. A dialog with the necessary instructions 
+will pop up and the file will be loaded and run. You can leave the dialog open 
+to boot from the same executable more than once. A reload button is provided 
+which will reload the executable into memory. This button is intended for atari 
+software developers who may be developing on the PC and testing their software 
+after making changes to it. Reload button will ensure the most recent executable 
+is loaded from the PC, and as such is mainly a convenience feature for such 
+developers.</span><br class="auto-style1" />
+<br class="auto-style1" /><span class="auto-style1">The executable booter has an optional high speed code 
+which will allow you to load programs a lot faster. You can enable/disable it 
+with the “Tools/Options/Emulation/Use high speed executable loader” check box. 
+The high speed code is not able to cope with higher speeds than divisor 3 so 
+check your configuration before attempting to load a file in this way.</span><br class="auto-style1" />
+<br class="auto-style1" /><span class="auto-style1">Please note that this feature is not compatible with 
+every executable and, in practice, it’s not even possible to implement such a 
+loader. High speed loader has even more issues. So there will always be some 
+programs that you won’t be able to run with the executable booter but hopefully 
+the number of the compatibility problems will decrease with future versions of 
+AspeQt.<br />
+<br />
+</span><br class="auto-style1" /><br class="auto-style1" />
+<span class="auto-style4"><strong>Image explorer</strong></span><br class="auto-style1" />
+<br class="auto-style1" /><span class="auto-style1"><em>Warning: This feature is 
+constantly under development and may change with each release, so use it with 
+caution.</em></span><em><br class="auto-style1" />
+</em>
+<br class="auto-style1" /><span class="auto-style1">As mentioned above, AspeQt uses disk images instead of 
+real disks. These images may contain Atari files and it’s not always easy to 
+extract them from an image or to add a file into an image. By clicking the 
+‘Image properties’ tool button or by using the context menu, you can explore the 
+files in a mounted disk image.</span><br class="auto-style1" />
+<br class="auto-style1" /><span class="auto-style1">There are various file systems (ways of putting files 
+in a disk) used by Atari. AspeQt supports the most common one, the Atari Dos 
+file system (including the most used variants, like Dos 2.5 and MyDos) fully, 
+including MyDos style subdirectories. It also has read-only support for 
+SpartaDos file system. Other file systems (like Dos 3.0) are not supported at 
+the moment.</span><br class="auto-style1" /><br class="auto-style1" />
+<span class="auto-style1">By using the tool bar buttons in the image explorer, 
+you can drag and drop, extract, add, delete Atari files with optional text 
+conversion. You can also drag and drop files between different images and rename 
+files by pressing F2 after selecting the name or extension of a file. You can 
+print a directory of files by clicking on the printer button.</span><br class="auto-style1" />
+<br class="auto-style1" /><span class="auto-style4"><strong>Cassette images</strong></span><br class="auto-style1" />
+<span class="auto-style1">AspeQt can playback cassette images in .cas format. 
+These are PC files that contain data extracted from an Atari cassette. You can 
+either drag and drop a file with .cas extension into any slot or you can use the 
+menu item “File/Playback cassette image” to access this feature. A dialog with 
+the necessary instructions will pop up and the file will be played back.</span><br class="auto-style1" />
+<br class="auto-style1" /><span class="auto-style1">The cassette emulator can be configured to ignore the 
+baud rate that is embedded in the image file in favor of a custom one. This may 
+speed up the load times but can cause compatibility problems. You can 
+enable/disable it with the “Tools/Options/Emulation/Use custom baud rate for 
+cassette emulation” check box. When enabled, you can use the spin box below to 
+set the custom baud rate. The available values range from 425 through 875 bps. 
+These values are the lowest and highest speeds that the Atari OS can process. 
+The normal speed is 600 bps.</span><br class="auto-style1" />
+<br class="auto-style1" /><span class="auto-style1">The cassette emulation does not support rewinding or 
+seeking in the images. This may change in the future versions.</span><br class="auto-style1" />
+<br class="auto-style1" /><span class="auto-style4"><strong>Printer output</strong></span><br class="auto-style1" />
+<span class="auto-style1">AspeQt emulates a generic text-only Atari printer. It 
+only emulates the first printer device, that is “P1:” You can view, save or 
+print the emulated printer output using the “File/View printer text output”. 
+Support for ASCII and ATASCII is provided.</span><br class="auto-style1" />
+<br class="auto-style1" /><span class="auto-style4"><strong>Running multiple instances 
+of AspeQt (Sessions)</strong></span><br class="auto-style1" />
+<span class="auto-style1">AspeQt allows you to save and load your disk sessions, that 
+is, the order and names of the mounted images and their settings. You can access 
+this feature from the “File/Open session” and “File/Save session” menu items. 
+</span>
+<span class="auto-style6">As of version 0.8.2 AspeQt fully implements multi session capability</span><strong><span class="auto-style1">. </span>
+</strong>
+<span class="auto-style1">This means you can now launch multiple instances of AspeQt using different 
+session files and have different configurations for each session.
+This makes possible serving more than one Atari computer from one PC so long as 
+you have more than one COM port and SIO2PC cable available. Simply create 
+different sessions with different settings and save them to a permanent session 
+file (a file with .aspeqt file extension).<br />
+If you plan on serving more than one Atari computer simultaneously, make sure 
+that the PC is fast enough to handle similtaneous SIO requests as Atari SIO is 
+very time critical and can fail if the requests are not serviced in a timely 
+fashion. Experiment with the multi-session capability and&nbsp; verify that it 
+can be run reliably before you put it on serious use.<br />
+<br />
+The following parameters can be configured for individual sessions <em>(stored 
+in each session file)</em></span></p>
+<ul>
+	<li class="auto-style1">Backend </li>
+	<li class="auto-style1">Atari SIO driver name</li>
+	<li class="auto-style1">Atari SIO handshaking method</li>
+	<li class="auto-style1">Serial port name</li>
+	<li class="auto-style1">Serial port handshaking method</li>
+	<li class="auto-style1">Serial port speed</li>
+	<li class="auto-style1">Serial port Pokey divisor</li>
+	<li class="auto-style1">Use of High speed exe loader</li>
+	<li class="auto-style1">Custom cassette baud rate</li>
+	<li class="auto-style1">Main window screen geometry</li>
+	<li class="auto-style1">Printer window screen geometry</li>
+	<li class="auto-style1">Preferred Language <em>(if you need to run different 
+	language sessions)</em></li>
+	<li class="auto-style1">Mounted disk image file list</li>
+	<li class="auto-style1">Other session related parameters<em> (like 
+	showing/hiding certain windows etc...)</em></li>
+</ul>
+<p class="auto-style1">The following configuration parameters are global and 
+apply to all sessions <em>(stored in Windows registry)</em></p>
+<ul>
+	<li class="auto-style1">First Time flag <em>(indicates it's the first time 
+	ever AspeQt was launched on that computer)</em></li>
+	<li class="auto-style1">Last Disk image directory</li>
+	<li class="auto-style1">Last Folder image directory</li>
+	<li class="auto-style1">Last Cassette image directory</li>
+	<li class="auto-style1">Last Executable file directory</li>
+	<li class="auto-style1">Last Extract directory</li>
+	<li class="auto-style1">Last Saved Printer file directory</li>
+	<li class="auto-style1">Last Session file directory</li>
+	<li class="auto-style1">Minimize to tray option</li>
+	<li class="auto-style1">Recently mounted disk image file list</li>
+</ul>
+<p class="auto-style6">The following configuration parameters apply when AspeQt 
+is launched without a session file <em>(stored in Windows registry)</em></p>
+<ul>
+	<li class="auto-style1" style="height: 37px">Mounted disk image file list</li>
+</ul>
+<p class="auto-style1" style="height: 130px">To launch a session, create a shortcut 
+<em>(Windows)</em> or a 
+link <em>(Unix/Linux)</em> in a folder with the session file name as a command line argument:<br />
+<br />
+An example of a shortcut for Windows would be:<br />
+<br />
+"C:\Program Files\AspeQt\aspeqt.exe"&nbsp; C:\Program 
+Files\AspeQt\session.aspeqt</p>
+<p class="auto-style4"><strong>AspeQt client software for the Atari</strong><em><strong> (AspeCl)</strong></em></p>
+<p><span class="auto-style1">AspeQt also implements a client server device 
+<em>($46)</em> which communicates with the client module AspeCl that runs on the Atari computer.
+&nbsp;AspeCl is a general purpose client module and incorporates the following 
+functionalities:</span></p>
+<ul>
+	<li><span class="auto-style6">Downloading the Date/Time from the PC and 
+	setting it on the Atari computer <em>(SpartaDos v2.5 and up only)</em></span></li>
+	<li class="auto-style6">Turning the Date/Time line ON or OFF on the Atari 
+	computer <span class="auto-style6"><em>(SpartaDos v2.5 and up only)</em></span></li>
+	<li class="auto-style6">Remotely Swapping AspeQt mounted disk images.</li>
+	<li class="auto-style6">Remotely Unmounting AspeQt mounted disk images. A 
+	single image or ALL images at once.</li>
+	<li class="auto-style6">Remotely Mounting an existing disk image. Image must 
+	reside in the "Last Folder Image Directory" of AspeQt</li>
+	<li class="auto-style6" style="height: 41px">Remotely creating and mounting 
+	a new disk image in AspeQt in Single, Enhanced, DD, DSDD and Harddisk 
+	formats. The new disk image will reside in the "Last Folder Image Directory"</li>
+	<li class="auto-style6" style="height: 27px">Remotely toggling auto-save 
+	feature of a mounted disk image</li>
+	<li class="auto-style6" style="height: 308px">AspeCl keeps you updated with 
+	a plenty of on-screen status/info/error messages, when and If this verbosity 
+	is a concern <em>(i.e. the screen must be left undisturbed)</em>, you can 
+	run it with I/O redirection, sending the screen output to the NULL device
+	<em>(or to another actual device like a printer or a disk file)</em>, 
+	effectively eliminating screen interaction but still being able to keep a 
+	log of AspeCl activities.. <br />
+	<br />
+	For example:<br />
+	<br />
+	ASPECL&nbsp; DMGAMES01.ATR&nbsp; &gt;&gt;NULL <br />
+	<br />
+	will mount the image file GAMES01.ATR to the first available disk slot 
+	without any info/error messages displayed on the screen. The disk slot 
+	number used for mounting the image file will not be displayed back either.<br />
+	<br />
+	Similarly:<br />
+	<br />
+	ASPECL DMGAMES01.ATR&nbsp;&nbsp; &gt;&gt;PRN:<br />
+	<br />
+	will mount the image file GAMES01.ATR to the first available disk slot and 
+	will log all info/error messages to the printer.</li>
+</ul>
+<p class="auto-style6">AspeCl Usage<em> (command line switches, at least one 
+must be specified)</em></p>
+<p class="auto-style6">Aspecl&nbsp; TS | TO | TF | DA | DS | DU | DM | DN</p>
+<p class="auto-style6" style="height: 92px">TS<span style=" color:#c0c0c0;">&nbsp;
+</span>=&gt;<span style=" color:#c0c0c0;"> </span>Set<span style=" color:#c0c0c0;">
+</span>Date/Time<span style=" color:#c0c0c0;"> </span>on<span style=" color:#c0c0c0;">
+</span>Atari<br />
+<br />
+TO<span style=" color:#c0c0c0;">&nbsp; </span>=&gt;<span style=" color:#c0c0c0;">
+</span>Set<span style=" color:#c0c0c0;"> </span>Date/Time<span style=" color:#c0c0c0;">
+</span>on<span style=" color:#c0c0c0;"> </span>Atari<span style=" color:#c0c0c0;">
+</span>and<span style=" color:#c0c0c0;"> </span>turn<span style=" color:#c0c0c0;">
+</span>TD<span style=" color:#c0c0c0;"> </span>Line<span style=" color:#c0c0c0;">
+</span>ON<br />
+<br />
+TF<span style=" color:#c0c0c0;">&nbsp; </span>=&gt;<span style=" color:#c0c0c0;">
+</span>Set<span style=" color:#c0c0c0;"> </span>Date/Time<span style=" color:#c0c0c0;">
+</span>on<span style=" color:#c0c0c0;"> </span>Atari<span style=" color:#c0c0c0;">
+</span>and<span style=" color:#c0c0c0;"> </span>turn<span style=" color:#c0c0c0;">
+</span>TD<span style=" color:#c0c0c0;"> </span>Line<span style=" color:#c0c0c0;">
+</span>OFF</p>
+<p class="auto-style6" style="height: 833px">DA[d/*]&nbsp;&nbsp; =&gt; Toggle Auto-Commit 
+ON or OFF on a given disk&nbsp; <em>(d) 
+(where d is 1 to 9 and J to O, following SDX naming conventions) or on all (*) 
+disks</em>. 
+Toggling auto-commit switch to ON will commit all pending changes to the affected 
+disk image and all future changes will be comitted automatically. If the toggle is set ON on a newly created and mounted 
+disk image <em>(mounted locally by AspeQt),</em> operator intervention will be 
+required from the <em>AspeQt</em> 
+side to assign a permanent file name to the image file before it's saved to PC 
+hard disk. <br />
+<br />
+DS[dd]<span style=" color:#c0c0c0;">&nbsp;&nbsp;
+</span>=&gt;<span style=" color:#c0c0c0;">&nbsp; </span>Swap<span style=" color:#c0c0c0;">
+</span>disks,<span style=" color:#c0c0c0;"> </span>where<span style=" color:#c0c0c0;">
+</span>dd<span style=" color:#c0c0c0;"> </span>represents<span style=" color:#c0c0c0;">
+</span>the<span style=" color:#c0c0c0;"> </span>drive<span style=" color:#c0c0c0;">
+</span>numbers<span style=" color:#c0c0c0;"> </span>to<span style=" color:#c0c0c0;">
+</span>be<span style=" color:#c0c0c0;"> </span>swapped<span style=" color:#c0c0c0;">
+</span><em>(i.e</em><span style=" color:#c0c0c0;"><em> </em></span><em>DS1J</em><span style=" color:#c0c0c0;"><em>
+</em></span><em>will</em><span style=" color:#c0c0c0;"><em> </em></span><em>swap</em><span style=" color:#c0c0c0;"><em>
+</em></span><em>disks</em><span style=" color:#c0c0c0;"><em> </em></span><em>1</em><span style=" color:#c0c0c0;"><em>
+</em></span><em>and</em><span style=" color:#c0c0c0;"><em> </em></span><em>10)<br />
+<br />
+</em>DU[d/*]<span style=" color:#c0c0c0;">&nbsp;&nbsp; </span>=&gt;<span style=" color:#c0c0c0;">&nbsp;
+</span>Unmount<span style=" color:#c0c0c0;"> </span>disk(s).<span style=" color:#c0c0c0;">
+</span>Will<span style=" color:#c0c0c0;"> </span>either<span style=" color:#c0c0c0;">
+</span>unmount<span style=" color:#c0c0c0;"> </span>a<span style=" color:#c0c0c0;">
+</span>single<span style=" color:#c0c0c0;"> </span>disk<span style=" color:#c0c0c0;">
+</span>[d],<span style=" color:#c0c0c0;"> </span>or<span style=" color:#c0c0c0;">
+</span>all<span style=" color:#c0c0c0;"> </span>disks<span style=" color:#c0c0c0;">
+</span>[*]. Unmount<span style=" color:#c0c0c0;"> </span>will<span style=" color:#c0c0c0;">
+</span>not<span style=" color:#c0c0c0;"> </span>unmount<span style=" color:#c0c0c0;">
+</span>disks<span style=" color:#c0c0c0;"> </span>that<span style=" color:#c0c0c0;">
+</span>have<span style=" color:#c0c0c0;"> </span>changes<span style=" color:#c0c0c0;">
+</span>until<span style=" color:#c0c0c0;"> </span>the<span style=" color:#c0c0c0;">
+</span>changes<span style=" color:#c0c0c0;"> </span>are<span style=" color:#c0c0c0;">
+</span>commited. Disks<span style=" color:#c0c0c0;"> </span>set<span style=" color:#c0c0c0;">
+</span>to<span style=" color:#c0c0c0;"> </span>"auto-commit"<span style=" color:#c0c0c0;">
+</span>in<span style=" color:#c0c0c0;"> </span>AspeQt<span style=" color:#c0c0c0;">
+</span>will<span style=" color:#c0c0c0;"> </span>be<span style=" color:#c0c0c0;">
+</span>unmounted immediately as<span style=" color:#c0c0c0;"> </span>the<span style=" color:#c0c0c0;">
+</span>changes<span style=" color:#c0c0c0;"> </span>to<span style=" color:#c0c0c0;">
+</span>these<span style=" color:#c0c0c0;"> </span>images<span style=" color:#c0c0c0;">
+</span>are<span style=" color:#c0c0c0;"> </span>commited<span style=" color:#c0c0c0;">
+</span>automatically as they occur. So if there are pending changes for a disk 
+when you want to unmount it remotely, first issue a DA remote command to the 
+same disk to toggle auto-commit. Once auto-commit is toggled ON any pending 
+changes will be commited to disk. You can then issue the DU command to unmount 
+that disk remotely.<br />
+<br />
+DM[fname.ext]<span style=" color:#c0c0c0;">&nbsp; </span>=&gt;<span style=" color:#c0c0c0;">
+</span>Mount<span style=" color:#c0c0c0;"> </span>an<span style=" color:#c0c0c0;">
+</span>existing<span style=" color:#c0c0c0;"> </span>disk<span style=" color:#c0c0c0;">
+</span>image command will<span style=" color:#c0c0c0;"> </span>mount<span style=" color:#c0c0c0;">
+</span>a<span style=" color:#c0c0c0;"> </span>supported<span style=" color:#c0c0c0;">
+</span>disk<span style=" color:#c0c0c0;"> </span>image<span style=" color:#c0c0c0;">
+</span>file <em>(.atr, .atx, etc) </em>into the<span style=" color:#c0c0c0;"> </span>first<span style=" color:#c0c0c0;">
+</span>available<span style=" color:#c0c0c0;"> </span>disk<span style=" color:#c0c0c0;">
+</span>slot. Command will return the used disk slot number to the Atari. It is 
+important to note that&nbsp; AspeQt needs to know where the disk image file 
+resides on PC. AspeQt will look for the disk image file in the
+<span class="auto-style10"> "Last Folder Image Directory"</span>. A Folder Image 
+is a window into one of the PC directories where your Atari files may reside. 
+This Folder Image does not need to be currently mounted to AspeQt but must have 
+been mounted at least once before so that AspeQt knows the name of this
+<span class="auto-style10"> directory. If a Folder Image has never been mounted, 
+AspeQt will display an error message indicating that it does not know where to 
+find the remotely requested disk image file.</span><br />
+<br />
+DN[fname.ext].[1/2/3/4/5/6]<span style=" color:#c0c0c0;"> </span>=&gt;<span style=" color:#c0c0c0;">
+</span>Create<span style=" color:#c0c0c0;"> </span>and<span style=" color:#c0c0c0;">
+</span>mount<span style=" color:#c0c0c0;"> </span>a<span style=" color:#c0c0c0;">
+</span>new<span style=" color:#c0c0c0;"> </span>disk<span style=" color:#c0c0c0;">
+</span>image. Will<span style=" color:#c0c0c0;"> </span>create<span style=" color:#c0c0c0;">
+</span>a<span style=" color:#c0c0c0;"> </span>new<span style=" color:#c0c0c0;">
+</span>disk<span style=" color:#c0c0c0;"> </span>image with the given<span style=" color:#c0c0c0;">
+</span>name,<span style=" color:#c0c0c0;"> </span>and<span style=" color:#c0c0c0;">
+</span>mount<span style=" color:#c0c0c0;"> </span>it. The<span style=" color:#c0c0c0;">
+</span>disk<span style=" color:#c0c0c0;"> </span>image<span style=" color:#c0c0c0;">
+</span>will<span style=" color:#c0c0c0;"> </span>be<span style=" color:#c0c0c0;">
+</span>created<span style=" color:#c0c0c0;"> </span>in<span style=" color:#c0c0c0;">
+</span>the<span class="auto-style10"> "Last Folder Image Directory"</span><span style=" color:#c0c0c0;">
+</span>used<span style=" color:#c0c0c0;"> </span>by<span style=" color:#c0c0c0;">
+</span>AspeQt and be mounted on the first available disk slot. Command will 
+return the used slot number to the Atari.&nbsp; It is important to note that&nbsp; 
+AspeQt needs to know where the disk image file will reside on PC. AspeQt will 
+save the disk image file in the <span class="auto-style10"> "Last Folder Image 
+Directory"</span>. A Folder Image is a window into one of the PC directories 
+where your Atari files may reside. This Folder Image does not need to be 
+currently mounted to AspeQt but must have been mounted at least once before so 
+that AspeQt knows the name of this <span class="auto-style10"> directory. If a 
+Folder Image has never been mounted, AspeQt will display an error message 
+indicating that it does not know where to save the remotely created disk image 
+file.</span><br />
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<span class="auto-style11"><strong>&nbsp;<span class="auto-style12">The Disk 
+Image can be created in the following capacities:</span></strong></span><br />
+<span style=" color:#c0c0c0;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+</span>1<span style=" color:#c0c0c0;"> </span>-<span style=" color:#c0c0c0;">
+</span>Standard<span style=" color:#c0c0c0;"> </span>Single<span style=" color:#c0c0c0;">
+</span>Density <em>(90KB)</em><br />
+<span style=" color:#c0c0c0;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+</span>2<span style=" color:#c0c0c0;"> </span>-<span style=" color:#c0c0c0;">
+</span>Standard<span style=" color:#c0c0c0;"> </span>Enhanced<span style=" color:#c0c0c0;">
+</span>density <em>(130KB)</em><br />
+<span style=" color:#c0c0c0;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+</span>3<span style=" color:#c0c0c0;"> </span>-<span style=" color:#c0c0c0;">
+</span>Standard<span style=" color:#c0c0c0;"> </span>Double<span style=" color:#c0c0c0;">
+</span>Density<em> (180KB)</em><br />
+<span style=" color:#c0c0c0;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+</span>4<span style=" color:#c0c0c0;"> </span>-<span style=" color:#c0c0c0;">
+</span>Double<span style=" color:#c0c0c0;"> </span>sided,<span style=" color:#c0c0c0;">
+</span>double<span style=" color:#c0c0c0;"> </span>density <em>(360KB)</em><br />
+<span style=" color:#c0c0c0;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+</span>5<span style=" color:#c0c0c0;"> </span>-<span style=" color:#c0c0c0;">
+</span>Double<span style=" color:#c0c0c0;"> </span>density<span style=" color:#c0c0c0;">
+</span>Harddisk<em> (256 bytes/sec, 65535 sectors, 16MB)</em><br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+6 - Quad density Harddisk <em>(512 bytes/sec, 65535 sectors, 32MB)<br />
+</em>
+<br />
+Example: ASPECL DNmyhd.atr.6&nbsp; =&gt; will<span style=" color:#c0c0c0;"> </span>
+create and mount a<span style=" color:#c0c0c0;"> </span>
+<span class="auto-style10"> quad</span><span style=" color:#c0c0c0;"> </span>density<span style=" color:#c0c0c0;"> </span>harddisk<span style=" color:#c0c0c0;">
+</span>.atr<span style=" color:#c0c0c0;"> </span>image<span style=" color:#c0c0c0;">
+</span>with<span style=" color:#c0c0c0;"> </span>the<span style=" color:#c0c0c0;">
+</span>name<span style=" color:#c0c0c0;"> </span>myhd<br />
+<br />
+<br />
+And here's an example of<span style=" color:#c0c0c0;"> </span>invoking<span style=" color:#c0c0c0;">
+</span>AspeCl<span style=" color:#c0c0c0;"> </span>with<span style=" color:#c0c0c0;">
+</span>multiple<span style=" color:#c0c0c0;"> </span>command<span style=" color:#c0c0c0;">
+</span>line<span style=" color:#c0c0c0;"> </span>switches:<br />
+<br />
+ASPECL<span style=" color:#c0c0c0;"> </span>TF<span style=" color:#c0c0c0;">
+</span>DS18<span style=" color:#c0c0c0;"> </span>DMBASICXE.ATR<span style=" color:#c0c0c0;">&nbsp;
+</span>=&gt;<span style=" color:#c0c0c0;"> </span>will<span style=" color:#c0c0c0;">
+</span>set<span style=" color:#c0c0c0;"> </span>the<span style=" color:#c0c0c0;">
+</span>date/time<span style=" color:#c0c0c0;"> </span>and<span style=" color:#c0c0c0;">
+</span>turn<span style=" color:#c0c0c0;"> </span>TD<span style=" color:#c0c0c0;">
+</span>line<span style=" color:#c0c0c0;"> </span>OFF,<span style=" color:#c0c0c0;">
+</span>will<span style=" color:#c0c0c0;"> </span>swap<span style=" color:#c0c0c0;">
+</span>disks<span style=" color:#c0c0c0;"> </span>1-8,<span style=" color:#c0c0c0;">
+</span>and<span style=" color:#c0c0c0;"> </span>will<span style=" color:#c0c0c0;">
+</span>mount<span style=" color:#c0c0c0;"> </span>basicxe.atr disk image to the 
+first available disk slot, returning back the slot number to Atari.</p>
+<p class="auto-style7" style="height: 20px"><strong>AspeCl compatibility</strong></p>
+<p class="auto-style9" style="height: 126px">AspeCl is currently a command line 
+based client which is fully compatible with and runs only under SpartaDos <em>
+(v2.5 and up)</em> and SpartaDos X versions. A seperate menu driven client for 
+menu based DOS <em>(like AtariDOS and MyDos versions)</em> will be available in 
+the future. Some of the functionality in AspeCl also depend on the underlying 
+DOSes capabilities. For example setting the Date/Time from the PC is a DOS 
+dependent feature as it requires specific Date/Time drivers from the DOS. Other 
+functionality like mounting/unmounting/swapping disk or folder images are DOS 
+independent and therefore are available under different DOSes.</p>
+<p class="auto-style7"><strong>Apetime</strong></p>
+<p><span class="auto-style1">AspeQt as of v0.8.5&nbsp; no longer supports 
+ApeTime <em>(Date/Time downloader utility)</em> from the AtariMax APE package. 
+The support code has been removed from the source. Please use AspeCl for Date/Time download and other remote functionality.</span><br class="auto-style1" />
+</p>
+<p class="auto-style5">Original AspeQt code up to version 0.6 Copyright <em>(2010),</em> Fatih Aygün</p>
+<p class="auto-style5">Updates since version 0.6 Copyright<em> (2012)</em>, Ray Ataergin <em>(www.atari8warez.com)</em></p>
+<p class="auto-style5"><a href="index.html">Back to Main Page</a></p>
+<p class="auto-style5">&nbsp;</p>
+
+</body>
+
+</html>

@@ -1,0 +1,204 @@
+; Atari executable booter by Fatih Aygun
+; ATasm version and new highspeed SIO code by Matthias Reichl
+
+.include "hisio.inc"
+
+.if .def AUTOBOOT_HISPEED
+sio_handler = DOHISIO
+.else
+sio_handler = $E459
+.endif
+
+BOOTER_COMMAND_GET_CHUNK_INFO = $ff
+BOOTER_COMMAND_GET_CHUNK = $fe
+BOOTER_COMMAND_NOTIFY_RUN = $fd
+
+BOOT_START = $0700
+; -------------------------------------------------------------------------
+; definitions from atari.inc
+CASINI	= $02		;CASSETTE INIT LOCATION
+BOOTQ	= $09		;SUCCESSFUL BOOT FLAG
+DOSVEC	= $0A		;DISK SOFTWARE START VECTOR
+COLDST	= $0244		;COLDSTART FLAG (1=IN MIDDLE OF COLDSTART>
+RUNAD	= $02E0		;##map## 2-byte binary file run address
+INITAD	= $02E2		;##map## 2-byte binary file initialization address
+DUNUSE	= $0307		;UNUSED BYTE
+
+COLBK	= $D01A		;background color/luminance
+
+DMACTL	= $D400		;DMA control
+NMIEN	= $D40E		;NMI enable
+
+
+COLDSV	= $E477		;vector to coldstart
+
+NODAT	= $00		;##rev2## SIO immediate operation
+GETDAT	= $40		;##rev2## SIO read data frame
+
+; -------------------------------------------------------------------------
+
+sectors = [[BOOT_END - BOOT_START+127]/128]
+
+; Disk boot header
+
+	* = BOOT_START
+
+nop_sub
+	rts				; Unused byte, reuse it as a nop subroutine
+	.byte	<sectors		; Number of sectors to load
+	.word	BOOT_START		; Load address
+	.word	go_cold			; Initialization address, cold start on reset
+
+;	address		.word 0
+;	size		.word 0
+
+begin
+.if .def AUTOBOOT_HISPEED
+	jsr highspeed_init
+.endif
+	; Fake a succesfull boot
+	ldx	#0
+	stx	COLDST
+	inx
+	stx	BOOTQ
+	lda	#<COLDSV
+	sta	CASINI
+	sta	DOSVEC
+	lda	#>COLDSV
+	sta	CASINI + 1
+	sta	DOSVEC + 1
+
+	; Initialize RUNAD
+	lda	#<nop_sub
+	sta	RUNAD
+	lda	#>nop_sub
+	sta	RUNAD + 1
+
+main_loop
+	; Initialize INITAD
+	lda	#<nop_sub
+	sta	INITAD
+	lda	#>nop_sub
+	sta	INITAD + 1
+
+	; Get chunk info
+	lda	#$31
+	sta	DDEVIC
+	lda	#1
+	sta	DUNIT
+	lda	#BOOTER_COMMAND_GET_CHUNK_INFO
+	sta	DCOMND
+	lda	#6
+	sta	DBYTLO
+	lda	#0
+	sta	DBYTHI
+	lda	#<DBUFLO
+	sta	DBUFLO
+	lda	#>DBUFLO
+	sta	DBUFHI
+	lda	#GETDAT
+	sta	DSTATS
+	lda	chunk
+	sta	DAUX1
+	lda	chunk + 1
+	sta	DAUX2
+	jsr	sio_handler
+	bmi	error
+
+	; Load a chunk
+	lda	#BOOTER_COMMAND_GET_CHUNK
+	sta	DCOMND
+	lda	#GETDAT
+	sta	DSTATS
+	jsr	sio_handler
+	bmi	error
+	lda	DUNUSE
+	pha
+
+	; Run the initialization code
+	jsr	go_initad
+
+	; Increase the chunk sequence number
+	inc	chunk
+	bne	noc1
+	inc	chunk + 1
+
+	; DUNUSE = 0 means done
+noc1	pla
+	bne	main_loop
+
+	; Tell that we are about to JMP to RUNAD
+	lda	#BOOTER_COMMAND_NOTIFY_RUN
+	sta	DCOMND
+	lda	#NODAT
+	sta	DSTATS
+	lda	RUNAD
+	sta	DAUX1
+	lda	RUNAD + 1
+	sta	DAUX2
+	jsr	sio_handler
+	; Don't check the error code, we're done anyway
+
+	; Run the program
+	jsr	go_runad
+
+go_cold
+	jmp	COLDSV
+
+go_initad
+	jmp	(INITAD)
+
+go_runad
+	jmp	(RUNAD)
+
+error
+	sei
+	ldx	#0
+	stx	DMACTL
+	stx	NMIEN
+	dex
+	stx	COLDST
+errlp	lda	VCOUNT
+	sta	COLBK
+	jmp	errlp
+
+chunk	.word	0
+
+.if .def AUTOBOOT_HISPEED
+
+	FASTVBI=1
+	USONLY=1
+
+	.include "hisiocode-main.src"
+	.include "hisiocode-check.src"
+	.include "hisiocode-break.src"
+	.include "hisiocode-receive.src"
+	.include "hisiocode-cleanup.src"
+	.include "hisiocode-send.src"
+	.include "hisiocode-vbi.src"
+
+SIOSPEED	.byte 40	; default: standard SIO speed
+
+HIBUF	.byte 0
+
+CMD3F	.byte $31, 1
+	.byte $3F,$40
+	.word HIBUF,1,1,$20
+CMD3FL	= * - CMD3F
+
+highspeed_init
+	ldx #CMD3FL-1
+cop3f	lda CMD3F,x
+	sta DDEVIC,x
+	dex
+	bpl cop3f
+	jsr $e459
+	bmi nohispd
+	lda HIBUF
+	sta SIOSPEED
+nohispd	rts
+	
+.endif
+
+
+BOOT_END	= *

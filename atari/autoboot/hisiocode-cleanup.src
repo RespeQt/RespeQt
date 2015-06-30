@@ -1,0 +1,78 @@
+;  highsiocode-cleanup.src - highspeed SIO routine, cleanup at end of code
+;
+;  Copyright (c) 2003-2010 by Matthias Reichl <hias@horus.com>
+;
+;  This program is free software; you can redistribute it and/or modify
+;  it under the terms of the GNU General Public License as published by
+;  the Free Software Foundation; either version 2 of the License, or
+;  (at your option) any later version.
+;
+;  This program is distributed in the hope that it will be useful,
+;  but WITHOUT ANY WARRANTY; without even the implied warranty of
+;  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+;  GNU General Public License for more details.
+;
+;  You should have received a copy of the GNU General Public License
+;  along with this program; if not, write to the Free Software
+;  Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+
+
+; cleanup, in case of error or end of transmission
+
+?CLEANUP LDA #$A0	; reset pokey
+	STA AUDC4
+	LDA #$3C	; clear command line
+	STA PBCTL
+
+.if .def FASTVBI
+?CLRTIM1	LDA #$FF
+	STA MYTIM1+1
+	RTS
+
+; set timeout: X=HI, Y=LO
+?SMYTOUT
+?ABSF06	JSR ?WTVBI
+	STY MYTIM1
+	STX MYTIM1+1
+	RTS
+
+; similar to SETVBV: waste 22 cpu cycles after STA WSYNC
+; so that the VBI code can be executed
+?WTVBI	STA WSYNC
+	BIT STACKP	; 4 cycles
+	BIT STACKP	; 4 cycles
+	BIT STACKP	; 4 cycles
+	BIT STACKP	; 4 cycles
+	RTS		; 6 cycles
+
+.else
+
+; clear timer1
+?CLRTIM1	LDY #$00
+
+; set timer1 with Y cycles
+?STIMOUT	LDX #$00
+
+; set timer1 X*256 + Y cycles
+?STIMOU2	LDA #1
+	JSR SETVBV
+.if .def RELOCTABLE
+?ABS65	LDA ?ERRTOA
+	STA CDTMA1
+?ABS66	LDA ?ERRTOA+1
+	STA CDTMA1+1
+.else
+	LDA #<?ERRTO
+	STA CDTMA1
+	LDA #>?ERRTO
+	STA CDTMA1+1
+.endif
+	RTS
+.endif
+
+.if .not .def FASTVBI
+.if .def RELOCTABLE
+?ERRTOA
+?ABS67	.WORD ?ERRTO
+.endif
+.endif

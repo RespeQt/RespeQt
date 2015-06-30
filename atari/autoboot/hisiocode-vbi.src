@@ -1,0 +1,69 @@
+;  highsiocode-vbi.src - highspeed SIO routine, optional fast VBI code
+;
+;  Copyright (c) 2003-2010 by Matthias Reichl <hias@horus.com>
+;
+;  This program is free software; you can redistribute it and/or modify
+;  it under the terms of the GNU General Public License as published by
+;  the Free Software Foundation; either version 2 of the License, or
+;  (at your option) any later version.
+;
+;  This program is distributed in the hope that it will be useful,
+;  but WITHOUT ANY WARRANTY; without even the implied warranty of
+;  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+;  GNU General Public License for more details.
+;
+;  You should have received a copy of the GNU General Public License
+;  along with this program; if not, write to the Free Software
+;  Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+
+
+.if .def FASTVBI
+
+VBICODE 
+.if .not .def FASTVBI_NOCLOCK
+	INC RTCLOK+2
+	BNE ?NOC1
+	INC RTCLOK+1
+
+; note: RTCLOK is handeled in hisiocode-main by checking RTCLOK+1 wrap-around
+; this saves 7 cycles in worst case
+;	BNE ?NOC1
+;	INC 18
+
+?NOC1
+.endif
+
+; fast implementation of system timer 1:
+; - jumps to ?ERRTO if it reaches 0
+; - no check if timer has already expired (just set MYTIM1+1 to $FF
+;   and it will run long enough before starting the timeout code)
+; - MYTIM1+1 has to be set to HIVAL+1, since timer starts at $0000 (not $FFFF).
+
+	DEC MYTIM1
+	BNE ?NOTOUT
+	DEC MYTIM1+1
+
+	BEQ ?RUNTIM	; timer reached 0, start timeout code
+
+?NOTOUT	
+; note: to save 6 additional cycles we don't use "JMP XITVBV" here
+; but implement the OS code directly. This code is identical in all
+; OS versions I know of.
+
+	PLA
+	TAY
+	PLA
+	TAX
+	PLA
+	RTI
+
+; jump to timeout code
+?RUNTIM
+?ABSF07	JMP ?ERRTO
+
+.if .def RELOCTABLE
+?VBIADR
+?ABSF08 .WORD VBICODE
+.endif
+
+.endif

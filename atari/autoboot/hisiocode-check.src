@@ -1,0 +1,116 @@
+;  highsiocode-check.src - highspeed SIO routine, status checks
+;
+;  Copyright (c) 2003-2009 by Matthias Reichl <hias@horus.com>
+;
+;  This program is free software; you can redistribute it and/or modify
+;  it under the terms of the GNU General Public License as published by
+;  the Free Software Foundation; either version 2 of the License, or
+;  (at your option) any later version.
+;
+;  This program is distributed in the hope that it will be useful,
+;  but WITHOUT ANY WARRANTY; without even the implied warranty of
+;  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+;  GNU General Public License for more details.
+;
+;  You should have received a copy of the GNU General Public License
+;  along with this program; if not, write to the Free Software
+;  Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+
+?CHKST	
+.if .def FASTVBI
+	LDY #2
+	LDX #1
+?ABS68	JSR ?SMYTOUT
+.else
+	LDY #$02
+?ABS68	JSR ?STIMOUT
+.endif
+	LDA #MSKRECV
+	STA IRQEN
+?ABS69	JSR ?RDACK
+	BNE ?ERRNAK	; catch ERROR and handle it like NAK
+?RDOK	RTS
+
+; set command timeout and wait for command complete
+
+?WAITCPL
+.if .def FIXTOUT
+	LDX #>FIXTOUT
+	LDY #<FIXTOUT
+.else
+	LDA DTIMLO
+	ROR 
+	ROR 
+	TAY 
+	AND #$3F
+	TAX 
+	TYA 
+	ROR 
+	AND #$C0
+	TAY
+.endif
+.if .def FASTVBI
+	INX	; hi value must be incremented
+?ABS70	JSR ?SMYTOUT
+.else
+?ABS70	JSR ?STIMOU2
+.endif
+
+; receive ACK/NAK, COMPLETE/ERROR
+
+?RDACK	LDA #SKRECV	; set pokey to receive async mode
+	STA SKCTL
+	STA SKREST
+	LDA #$3C	; clear command line
+	STA PBCTL
+	SEC
+?ABS71	JSR ?GETBYT
+
+.if .def DIAGSIO
+	STA ?DIAGBT
+.endif
+
+	CMP #'A		; ACK
+	BEQ ?RDOK
+?NOACK	CMP #'C		; COMPLETE
+	BEQ ?RDOK
+	CMP #'E		; command ERROR
+	BEQ ?RDERR
+
+?ERRNAK LDA #ERRNAK	; NAK or any other error -> set code $8B
+
+	.BYTE $2C	; BIT xxx (skip next 2 bytes)
+?ERRFRM	LDA #ERRFRM	; framing error
+
+	.BYTE $2C	; BIT xxx (skip next 2 bytes)
+?ERROVR	LDA #ERROVR	; data input overrun
+
+	.BYTE $2C	; BIT xxx (skip next 2 bytes)
+?ERRTO	LDA #ERRTO	; timeout error
+
+; general error routine, code in A
+
+?ERR	STA STATUS
+
+.if .def DIAGSIO
+	STX ?DIAGX	; X register contains last received character
+	LDX ?DIAGER
+	STA ?DIAGE,X	; store status/error
+	LDA ?DIAGX
+	STA ?DIAGB2,X	; store last received character
+	TYA
+	STA ?DIAGC,X	; current byte count
+	LDA ?DIAGST
+	STA ?DIAGS,X	; phase/stage
+	LDA ?DIAGBT
+	STA ?DIAGB,X	; last received ack/nack byte
+	INC ?DIAGER
+.endif
+
+	LDX STACKP
+	TXS
+?ABS72	JMP ?SIOEND	; we got an error, cleanup and try to restart
+
+?RDERR	LDA #ERRDEV	; command error
+	STA STATUS
+	RTS
