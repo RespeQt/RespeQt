@@ -1,6 +1,6 @@
 #include "sioworker.h"
 
-#include "aspeqtsettings.h"
+#include "respeqtsettings.h"
 #include <QFile>
 #include <QDateTime>
 #include <QtDebug>
@@ -67,7 +67,7 @@ bool SioWorker::wait(unsigned long time)
 
 void SioWorker::start(Priority p)
 {
-    switch (aspeqtSettings->backend()) {
+    switch (respeqtSettings->backend()) {
         case 0:
             mPort = new StandardSerialPortBackend(0);
             break;
@@ -307,8 +307,8 @@ bool CassetteWorker::loadCasImage(const QString &fileName)
 
         /* Verify the header */
         if (magic == 0x64756162) {          // "baud"
-            if (aspeqtSettings->useCustomCasBaud()) {
-                lastBaud = aspeqtSettings->customCasBaud();
+            if (respeqtSettings->useCustomCasBaud()) {
+                lastBaud = respeqtSettings->customCasBaud();
             } else {
                 lastBaud = aux;
             }
@@ -405,7 +405,7 @@ void CassetteWorker::run()
 
 void CassetteWorker::start(Priority p)
 {
-    switch (aspeqtSettings->backend()) {
+    switch (respeqtSettings->backend()) {
         case 0:
             mPort = new StandardSerialPortBackend(0);
             break;

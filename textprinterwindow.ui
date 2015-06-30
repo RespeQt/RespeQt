@@ -11,7 +11,7 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>AspeQt - Printer text output</string>
+   <string>RespeQt - Printer text output</string>
   </property>
   <property name="windowIcon">
    <iconset resource="icons.qrc">

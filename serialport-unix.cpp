@@ -1,8 +1,7 @@
 #include "serialport.h"
 #include "sioworker.h"
 #include "headers/atarisio.h"
-#include "aspeqtsettings.h"
-
+#include "respeqtsettings.h"
 #include <QTime>
 #include <QtDebug>
 
@@ -67,7 +66,7 @@ bool StandardSerialPortBackend::open()
         close();
     }
 
-    QString name = aspeqtSettings->serialPortName();
+    QString name = respeqtSettings->serialPortName();
 
     mHandle = ::open(name.toLocal8Bit().constData(), O_RDWR | O_NOCTTY | O_NDELAY);
 
@@ -88,7 +87,7 @@ bool StandardSerialPortBackend::open()
         return false;
     }
 
-    mMethod = aspeqtSettings->serialPortHandshakingMethod();
+    mMethod = respeqtSettings->serialPortHandshakingMethod();
     mCanceled = false;
 
     if (!setNormalSpeed()) {
@@ -112,7 +111,7 @@ bool StandardSerialPortBackend::open()
     }
     /* Notify the user that emulation is started */
     qWarning() << "!i" << tr("Emulation started through standard serial port backend on '%1' with %2 handshaking.")
-                  .arg(aspeqtSettings->serialPortName())
+                  .arg(respeqtSettings->serialPortName())
                   .arg(m);
 
     return true;
@@ -140,11 +139,11 @@ void StandardSerialPortBackend::cancel()
 
 int StandardSerialPortBackend::speedByte()
 {
-    if (aspeqtSettings->serialPortUsePokeyDivisors()) {
-        return aspeqtSettings->serialPortPokeyDivisor();
+    if (respeqtSettings->serialPortUsePokeyDivisors()) {
+        return respeqtSettings->serialPortPokeyDivisor();
     } else {
         int speed = 0x08;
-        switch (aspeqtSettings->serialPortMaximumSpeed()) {
+        switch (respeqtSettings->serialPortMaximumSpeed()) {
         case 0:
             speed = 0x28;
             break;
@@ -168,11 +167,11 @@ bool StandardSerialPortBackend::setNormalSpeed()
 bool StandardSerialPortBackend::setHighSpeed()
 {
     mHighSpeed = true;
-    if (aspeqtSettings->serialPortUsePokeyDivisors()) {
-        return setSpeed(divisorToBaud(aspeqtSettings->serialPortPokeyDivisor()));
+    if (respeqtSettings->serialPortUsePokeyDivisors()) {
+        return setSpeed(divisorToBaud(respeqtSettings->serialPortPokeyDivisor()));
     } else {
         int speed = 57600;
-        switch (aspeqtSettings->serialPortMaximumSpeed()) {
+        switch (respeqtSettings->serialPortMaximumSpeed()) {
         case 0:
             speed = 19200;
             break;
@@ -583,7 +582,7 @@ bool AtariSioBackend::open()
         close();
     }
 
-    QString name = aspeqtSettings->atariSioDriverName();
+    QString name = respeqtSettings->atariSioDriverName();
 
     mHandle = ::open(name.toLocal8Bit().constData(), O_RDWR);
 
@@ -613,7 +612,7 @@ bool AtariSioBackend::open()
 
     int mode;
 
-    mMethod = aspeqtSettings->atariSioHandshakingMethod();
+    mMethod = respeqtSettings->atariSioHandshakingMethod();
 
     switch (mMethod) {
     case 0:
@@ -662,7 +661,7 @@ bool AtariSioBackend::open()
 
     /* Notify the user that emulation is started */
     qWarning() << "!i" << tr("Emulation started through AtariSIO backend on '%1' with %2 handshaking.")
-                  .arg(aspeqtSettings->atariSioDriverName())
+                  .arg(respeqtSettings->atariSioDriverName())
                   .arg(m);
 
     return true;

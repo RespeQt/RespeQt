@@ -21,7 +21,7 @@
   </property>
   <property name="windowIcon">
    <iconset resource="icons.qrc">
-    <normaloff>:/icons/main-icon/AspeQt.ico</normaloff>:/icons/main-icon/AspeQt.ico</iconset>
+    <normaloff>:/icons/main-icon/RespeQt.ico</normaloff>:/icons/main-icon/RespeQt.ico</iconset>
   </property>
   <property name="styleSheet">
    <string notr="true"/>
@@ -5533,6 +5533,9 @@
      <height>21</height>
     </rect>
    </property>
+   <property name="nativeMenuBar">
+    <bool>false</bool>
+   </property>
    <widget class="QMenu" name="menu_Disk">
     <property name="title">
      <string>&amp;Disk</string>
@@ -8214,7 +8217,7 @@
     <string>&amp;Quit</string>
    </property>
    <property name="statusTip">
-    <string>Quit AspeQt</string>
+    <string>Quit RespeQt</string>
    </property>
    <property name="shortcut">
     <string>Alt+Q</string>
@@ -8226,7 +8229,7 @@
      <normaloff>:/icons/oxygen-icons/16x16/actions/help_about.png</normaloff>:/icons/oxygen-icons/16x16/actions/help_about.png</iconset>
    </property>
    <property name="text">
-    <string>&amp;About AspeQt</string>
+    <string>&amp;About RespeQt</string>
    </property>
    <property name="shortcut">
     <string>Ctrl+A</string>

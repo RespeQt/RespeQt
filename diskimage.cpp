@@ -2,7 +2,7 @@
 #include "zlib.h"
 
 #include <QFileInfo>
-#include "aspeqtsettings.h"
+#include "respeqtsettings.h"
 #include <QDir>
 #include "atarifilesystem.h"
 #include "diskeditdialog.h"
@@ -291,7 +291,7 @@ bool SimpleDiskImage::openAtr(const QString &fileName)
     quint64 size = (sizeLo + sizeHi * 65536) * 16;
 
     // Try to create the temporary file
-    file.setFileTemplate(QDir::temp().absoluteFilePath("aspeqt-temp-XXXXXX"));
+    file.setFileTemplate(QDir::temp().absoluteFilePath("respeqt-temp-XXXXXX"));
     if (!file.open()) {
         qCritical() << "!e" << tr("Cannot open '%1': %2")
                       .arg(fileName)
@@ -450,7 +450,7 @@ bool SimpleDiskImage::openXfd(const QString &fileName)
         return false;
     }
 
-    file.setFileTemplate(QDir::temp().absoluteFilePath("aspeqt-temp-XXXXXX"));
+    file.setFileTemplate(QDir::temp().absoluteFilePath("respeqt-temp-XXXXXX"));
     if (!file.open()) {
         qCritical() << "!e" << tr("Cannot open '%1': %2")
                       .arg(fileName)
@@ -784,7 +784,7 @@ bool SimpleDiskImage::open(const QString &fileName, FileTypes::FileType type)
 
 bool SimpleDiskImage::create(int untitledName)
 {
-    file.setFileTemplate(QDir::temp().absoluteFilePath("aspeqt-temp-XXXXXX"));
+    file.setFileTemplate(QDir::temp().absoluteFilePath("respeqt-temp-XXXXXX"));
     if (!file.open()) {
         qCritical() << "!e" << tr("Cannot create new image: Cannot create temporary file '%2': %3.")
                       .arg(file.fileName())

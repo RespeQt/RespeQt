@@ -10,7 +10,7 @@
 #include <QPrinter>
 #include <QDebug>
 
-#include "aspeqtsettings.h"
+#include "respeqtsettings.h"
 #include "miscutils.h"
 
 /* MyModel */
@@ -416,7 +416,7 @@ QMimeData* MyModel::mimeData(const QModelIndexList &indexes) const
     }
 
     QTemporaryFile temp;
-    temp.setFileTemplate(QDir::temp().absoluteFilePath("aspeqt-dir-XXXXXX"));
+    temp.setFileTemplate(QDir::temp().absoluteFilePath("respeqt-dir-XXXXXX"));
     temp.open();
     QString tempPath = temp.fileName() + "v";
     temp.close();
@@ -466,7 +466,7 @@ DiskEditDialog::DiskEditDialog(QWidget *parent) :
     connect(m_ui->aView->selectionModel(), SIGNAL(selectionChanged(QItemSelection,QItemSelection)), SLOT(selectionChanged(QItemSelection,QItemSelection)));
     connect(m_ui->onTopBox, SIGNAL(stateChanged(int)), SLOT(onTopChanged()));
     m_ui->aView->viewport()->setAcceptDrops(true);
-    if(aspeqtSettings->explorerOnTop()) {
+    if(respeqtSettings->explorerOnTop()) {
             m_ui->onTopBox->setChecked(true);
             setWindowFlags(Qt::WindowStaysOnTopHint);
     }
@@ -546,7 +546,7 @@ void DiskEditDialog::fileSystemChanged(int index)
         m_ui->actionTextConversion->setEnabled(true);
     }
 
-    setWindowTitle(tr("AspeQt - Exploring %1").arg(model->currentPath()));
+    setWindowTitle(tr("RespeQt - Exploring %1").arg(model->currentPath()));
     m_ui->actionToParent->setEnabled(false);
 }
 
@@ -572,7 +572,7 @@ void DiskEditDialog::on_aView_doubleClicked(QModelIndex index)
         m_ui->aView->resizeColumnToContents(3);
         m_ui->aView->resizeColumnToContents(4);
         m_ui->aView->resizeColumnToContents(5);
-        setWindowTitle(tr("AspeQt - Exploring %1").arg(model->currentPath()));
+        setWindowTitle(tr("RespeQt - Exploring %1").arg(model->currentPath()));
         m_ui->actionToParent->setEnabled(true);
     }
 }
@@ -586,7 +586,7 @@ void DiskEditDialog::on_actionToParent_triggered()
     m_ui->aView->resizeColumnToContents(3);
     m_ui->aView->resizeColumnToContents(4);
     m_ui->aView->resizeColumnToContents(5);
-    setWindowTitle(tr("AspeQt - Exploring %1").arg(model->currentPath()));
+    setWindowTitle(tr("RespeQt - Exploring %1").arg(model->currentPath()));
     m_ui->actionToParent->setEnabled(!model->isRoot());
 }
 
@@ -597,13 +597,13 @@ void DiskEditDialog::on_actionExtractFiles_triggered()
         return;
     }
 
-    QString target = QFileDialog::getExistingDirectory(this, tr("Extract files"), aspeqtSettings->lastExtractDir());
+    QString target = QFileDialog::getExistingDirectory(this, tr("Extract files"), respeqtSettings->lastExtractDir());
 
     if (target.isEmpty()) {
         return;
     }
 
-    aspeqtSettings->setLastExtractDir(target);
+    respeqtSettings->setLastExtractDir(target);
 
     QList <AtariDirEntry> selectedEntries;
     foreach (QModelIndex i, indexes) {
@@ -639,7 +639,7 @@ void DiskEditDialog::on_actionDeleteSelectedFiles_triggered()
 
 void DiskEditDialog::on_actionAddFiles_triggered()
 {
-    QStringList files = QFileDialog::getOpenFileNames(this, tr("Add files"), aspeqtSettings->lastExtractDir());
+    QStringList files = QFileDialog::getOpenFileNames(this, tr("Add files"), respeqtSettings->lastExtractDir());
     if (files.empty()) {
         return;
     }
@@ -677,10 +677,10 @@ void DiskEditDialog::onTopChanged()
     if(m_ui->onTopBox->isChecked())
     {
        setWindowFlags(Qt::WindowStaysOnTopHint);
-       aspeqtSettings->setExplorerOnTop(true);
+       respeqtSettings->setExplorerOnTop(true);
     } else {
        setWindowFlags(Qt::WindowStaysOnBottomHint);
-       aspeqtSettings->setExplorerOnTop(false);
+       respeqtSettings->setExplorerOnTop(false);
     }
     show();
 }

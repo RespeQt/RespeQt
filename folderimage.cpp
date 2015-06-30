@@ -1,5 +1,5 @@
 #include "folderimage.h"
-#include "aspeqtsettings.h"
+#include "respeqtsettings.h"
 
 #include <QFileInfoList>
 #include <QtDebug>
@@ -13,7 +13,7 @@
 // This allows for dynamic calculation of the Atari file number within the code.
 // Sector numbers (5, 6, 32-134) are reserved for SpartaDos boot process.
 
-extern QString g_aspeQtAppPath;
+extern QString g_respeQtAppPath;
 extern bool g_disablePicoHiSpeed;
 
 FolderImage::~FolderImage()
@@ -65,7 +65,7 @@ void FolderImage::buildDirectory()
             info = infos.at(j);
             longName = info.completeBaseName();
             name = longName.toUpper();
-            if(aspeqtSettings->filterUnderscore()) {
+            if(respeqtSettings->filterUnderscore()) {
                 name.remove(QRegExp("[^A-Z0-9]"));
             } else {
                 name.remove(QRegExp("[^A-Z0-9_]"));
@@ -76,7 +76,7 @@ void FolderImage::buildDirectory()
             }
             longName += "." + info.suffix();
             ext = info.suffix().toUpper();
-            if(aspeqtSettings->filterUnderscore()) {
+            if(respeqtSettings->filterUnderscore()) {
                 ext.remove(QRegExp("[^A-Z0-9]"));
             } else {
                 ext.remove(QRegExp("[^A-Z0-9_]"));

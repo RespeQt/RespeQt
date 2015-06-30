@@ -3,7 +3,6 @@
         <file>history.txt</file>
         <file>license.txt</file>
         <file>about.html</file>
-        <file>AspeQt User Manual-English.html</file>
-        <file>AspeQt User Manual-German.html</file>
+        <file>RespeQt User Manual-English.html</file>
     </qresource>
 </RCC>

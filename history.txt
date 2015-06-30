@@ -1,3 +1,17 @@
+Forked to RespeQt - June 29, 2015 - release 80
+	* added workaround for a bug on some linux releases related to the QT
+	appmenu stuff which would cause the menu bar to not appear.
+	* changed some code in mainwindow.cpp:130 so that RespeQt doesn't
+	conflict with AspeQT. Also imports settings from AspeQt, if RespeQt
+	doesn't already have it's own settings.
+	* de-Rayed AspeQt source for forking to RespeQt. That is, changed
+	(hopefully) all references to Ray Ataergin to Joseph Zatarski where
+	it makes sense, and changed all references from AspeQt to RespeQt. If
+	you find somewhere I have faild to do one of these things, let me know.
+	You will get a mention somewhere, probably on the about page.
+	- probably broke translations somewhat, but maybe not
+	- german manual from AspeQt needs a rewrite for RespeQt	
+
 version 1.0.0 Preview-7 (Nov 29, 2014) (Ray Ataergin)
      * Changed Image Explorer so that it sorts files ignoring file name cases, this makes it compatible with Windows Explorer and
        provides a more consistent look between the two.

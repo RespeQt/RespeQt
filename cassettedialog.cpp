@@ -21,7 +21,7 @@ CassetteDialog::CassetteDialog(QWidget *parent, const QString &fileName)
     mRemainingTime = mTotalDuration;
     int minutes = mRemainingTime / 60000;
     int seconds = (mRemainingTime - minutes * 60000)/1000;
-    ui->label->setText(tr("AspeQt is ready to playback the cassette image file '%1'.\n\n"
+    ui->label->setText(tr("RespeQt is ready to playback the cassette image file '%1'.\n\n"
                           "The estimated playback duration is: %2:%3\n\n"
                           "Do whatever is necessary in your Atari to load this cassette "
                           "image like rebooting while holding Option and Start buttons "

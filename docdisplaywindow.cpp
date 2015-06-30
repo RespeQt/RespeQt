@@ -1,7 +1,7 @@
 // 
 #include "docdisplaywindow.h"
 #include "ui_docdisplaywindow.h"
-#include "aspeqtsettings.h"
+#include "respeqtsettings.h"
 
 #include <QFileDialog>
 #include <QPrintDialog>

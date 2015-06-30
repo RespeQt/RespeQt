@@ -73,7 +73,7 @@ private:
     QLabel *speedLabel, *onOffLabel, *prtOnOffLabel, *netLabel, *clearMessagesLabel;  //
     TextPrinterWindow *textPrinterWindow;
     DocDisplayWindow *docDisplayWindow;    //
-    QTranslator aspeqt_translator, aspeqt_qt_translator;
+    QTranslator respeqt_translator, respeqt_qt_translator;
     QSystemTrayIcon trayIcon;
     Qt::WindowFlags oldWindowFlags;
     Qt::WindowStates oldWindowStates;

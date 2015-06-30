@@ -1,9 +1,9 @@
-#ifndef ASPEQTSETTINGS_H
-#define ASPEQTSETTINGS_H
+#ifndef RESPEQTSETTINGS_H
+#define RESPEQTSETTINGS_H
 
 #include <QSettings>
 
-class AspeqtSettings
+class RespeqtSettings
 {
 public:
     class ImageSettings {
@@ -12,8 +12,8 @@ public:
         bool isWriteProtected;
     };
 
-    AspeqtSettings();
-    ~AspeqtSettings();
+    RespeqtSettings();
+    ~RespeqtSettings();
 
     bool isFirstTime();
 
@@ -223,6 +223,6 @@ private:
     bool mEnableShade;
 };
 
-extern AspeqtSettings *aspeqtSettings;
+extern RespeqtSettings *respeqtSettings;
 
-#endif // ASPEQTSETTINGS_H
+#endif // RESPEQTSETTINGS_H

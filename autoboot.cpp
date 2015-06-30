@@ -1,5 +1,5 @@
 #include "autoboot.h"
-#include "aspeqtsettings.h"
+#include "respeqtsettings.h"
 
 #include <QtDebug>
 

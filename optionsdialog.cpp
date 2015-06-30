@@ -1,6 +1,6 @@
 #include "optionsdialog.h"
 #include "ui_optionsdialog.h"
-#include "aspeqtsettings.h"
+#include "respeqtsettings.h"
 
 #include <QTranslator>
 #include <QDir>
@@ -28,24 +28,24 @@ OptionsDialog::OptionsDialog(QWidget *parent) :
     connect(this, SIGNAL(accepted()), this, SLOT(OptionsDialog_accepted()));
 
     /* Retrieve application settings */
-    m_ui->serialPortDeviceNameEdit->setText(aspeqtSettings->serialPortName());
-    m_ui->serialPortHandshakeCombo->setCurrentIndex(aspeqtSettings->serialPortHandshakingMethod());
-    m_ui->serialPortBaudCombo->setCurrentIndex(aspeqtSettings->serialPortMaximumSpeed());
-    m_ui->serialPortUseDivisorsBox->setChecked(aspeqtSettings->serialPortUsePokeyDivisors());
-    m_ui->serialPortDivisorEdit->setValue(aspeqtSettings->serialPortPokeyDivisor());
-    m_ui->atariSioDriverNameEdit->setText(aspeqtSettings->atariSioDriverName());
-    m_ui->atariSioHandshakingMethodCombo->setCurrentIndex(aspeqtSettings->atariSioHandshakingMethod());
-    m_ui->emulationHighSpeedExeLoaderBox->setChecked(aspeqtSettings->useHighSpeedExeLoader());
-    m_ui->emulationUseCustomCasBaudBox->setChecked(aspeqtSettings->useCustomCasBaud());
-    m_ui->emulationCustomCasBaudSpin->setValue(aspeqtSettings->customCasBaud());
-    m_ui->minimizeToTrayBox->setChecked(aspeqtSettings->minimizeToTray());    
-    m_ui->saveWinPosBox->setChecked(aspeqtSettings->saveWindowsPos());
-    m_ui->saveDiskVisBox->setChecked(aspeqtSettings->saveDiskVis());
-    m_ui->filterUscore->setChecked(aspeqtSettings->filterUnderscore());
-    m_ui->useLargerFont->setChecked(aspeqtSettings->useLargeFont());
-    m_ui->enableShade->setChecked(aspeqtSettings->enableShade());
+    m_ui->serialPortDeviceNameEdit->setText(respeqtSettings->serialPortName());
+    m_ui->serialPortHandshakeCombo->setCurrentIndex(respeqtSettings->serialPortHandshakingMethod());
+    m_ui->serialPortBaudCombo->setCurrentIndex(respeqtSettings->serialPortMaximumSpeed());
+    m_ui->serialPortUseDivisorsBox->setChecked(respeqtSettings->serialPortUsePokeyDivisors());
+    m_ui->serialPortDivisorEdit->setValue(respeqtSettings->serialPortPokeyDivisor());
+    m_ui->atariSioDriverNameEdit->setText(respeqtSettings->atariSioDriverName());
+    m_ui->atariSioHandshakingMethodCombo->setCurrentIndex(respeqtSettings->atariSioHandshakingMethod());
+    m_ui->emulationHighSpeedExeLoaderBox->setChecked(respeqtSettings->useHighSpeedExeLoader());
+    m_ui->emulationUseCustomCasBaudBox->setChecked(respeqtSettings->useCustomCasBaud());
+    m_ui->emulationCustomCasBaudSpin->setValue(respeqtSettings->customCasBaud());
+    m_ui->minimizeToTrayBox->setChecked(respeqtSettings->minimizeToTray());
+    m_ui->saveWinPosBox->setChecked(respeqtSettings->saveWindowsPos());
+    m_ui->saveDiskVisBox->setChecked(respeqtSettings->saveDiskVis());
+    m_ui->filterUscore->setChecked(respeqtSettings->filterUnderscore());
+    m_ui->useLargerFont->setChecked(respeqtSettings->useLargeFont());
+    m_ui->enableShade->setChecked(respeqtSettings->enableShade());
 
-    switch (aspeqtSettings->backend()) {
+    switch (respeqtSettings->backend()) {
         case 0:
             itemStandard->setCheckState(0, Qt::Checked);
             itemAtariSio->setCheckState(0, Qt::Unchecked);
@@ -64,19 +64,19 @@ OptionsDialog::OptionsDialog(QWidget *parent) :
     QTranslator local_translator;
     m_ui->i18nLanguageCombo->clear();
     m_ui->i18nLanguageCombo->addItem(tr("Automatic"), "auto");
-    if (aspeqtSettings->i18nLanguage().compare("auto") == 0)
+    if (respeqtSettings->i18nLanguage().compare("auto") == 0)
       m_ui->i18nLanguageCombo->setCurrentIndex(0);
     m_ui->i18nLanguageCombo->addItem(QT_TR_NOOP("English"), "en");
-    if (aspeqtSettings->i18nLanguage().compare("en") == 0)
+    if (respeqtSettings->i18nLanguage().compare("en") == 0)
       m_ui->i18nLanguageCombo->setCurrentIndex(1);
     QDir dir(":/translations/i18n/");
     QStringList filters;
-    filters << "aspeqt_*.qm";
+    filters << "respeqt_*.qm";
     dir.setNameFilters(filters);
     for (int i = 0; i < dir.entryList().size(); ++i) {
         local_translator.load(":/translations/i18n/" + dir.entryList()[i]);
     m_ui->i18nLanguageCombo->addItem(local_translator.translate("OptionsDialog", "English"), dir.entryList()[i].mid(7).replace(".qm", ""));
-	if (dir.entryList()[i].mid(7).replace(".qm", "").compare(aspeqtSettings->i18nLanguage()) == 0) {
+    if (dir.entryList()[i].mid(7).replace(".qm", "").compare(respeqtSettings->i18nLanguage()) == 0) {
         m_ui->i18nLanguageCombo->setCurrentIndex(i+2);
 	}
     }
@@ -101,31 +101,31 @@ void OptionsDialog::changeEvent(QEvent *e)
 
 void OptionsDialog::OptionsDialog_accepted()
 {
-    aspeqtSettings->setSerialPortName(m_ui->serialPortDeviceNameEdit->text());
-    aspeqtSettings->setSerialPortHandshakingMethod(m_ui->serialPortHandshakeCombo->currentIndex());
-    aspeqtSettings->setSerialPortMaximumSpeed(m_ui->serialPortBaudCombo->currentIndex());
-    aspeqtSettings->setSerialPortUsePokeyDivisors(m_ui->serialPortUseDivisorsBox->isChecked());
-    aspeqtSettings->setSerialPortPokeyDivisor(m_ui->serialPortDivisorEdit->value());
-    aspeqtSettings->setAtariSioDriverName(m_ui->atariSioDriverNameEdit->text());
-    aspeqtSettings->setAtariSioHandshakingMethod(m_ui->atariSioHandshakingMethodCombo->currentIndex());
-    aspeqtSettings->setUseHighSpeedExeLoader(m_ui->emulationHighSpeedExeLoaderBox->isChecked());
-    aspeqtSettings->setUseCustomCasBaud(m_ui->emulationUseCustomCasBaudBox->isChecked());
-    aspeqtSettings->setCustomCasBaud(m_ui->emulationCustomCasBaudSpin->value());
-    aspeqtSettings->setMinimizeToTray(m_ui->minimizeToTrayBox->isChecked());
-    aspeqtSettings->setsaveWindowsPos(m_ui->saveWinPosBox->isChecked());
-    aspeqtSettings->setsaveDiskVis(m_ui->saveDiskVisBox->isChecked());
-    aspeqtSettings->setfilterUnderscore(m_ui->filterUscore->isChecked());
-    aspeqtSettings->setUseLargeFont(m_ui->useLargerFont->isChecked());
-    aspeqtSettings->setEnableShade(m_ui->enableShade->isChecked());
+    respeqtSettings->setSerialPortName(m_ui->serialPortDeviceNameEdit->text());
+    respeqtSettings->setSerialPortHandshakingMethod(m_ui->serialPortHandshakeCombo->currentIndex());
+    respeqtSettings->setSerialPortMaximumSpeed(m_ui->serialPortBaudCombo->currentIndex());
+    respeqtSettings->setSerialPortUsePokeyDivisors(m_ui->serialPortUseDivisorsBox->isChecked());
+    respeqtSettings->setSerialPortPokeyDivisor(m_ui->serialPortDivisorEdit->value());
+    respeqtSettings->setAtariSioDriverName(m_ui->atariSioDriverNameEdit->text());
+    respeqtSettings->setAtariSioHandshakingMethod(m_ui->atariSioHandshakingMethodCombo->currentIndex());
+    respeqtSettings->setUseHighSpeedExeLoader(m_ui->emulationHighSpeedExeLoaderBox->isChecked());
+    respeqtSettings->setUseCustomCasBaud(m_ui->emulationUseCustomCasBaudBox->isChecked());
+    respeqtSettings->setCustomCasBaud(m_ui->emulationCustomCasBaudSpin->value());
+    respeqtSettings->setMinimizeToTray(m_ui->minimizeToTrayBox->isChecked());
+    respeqtSettings->setsaveWindowsPos(m_ui->saveWinPosBox->isChecked());
+    respeqtSettings->setsaveDiskVis(m_ui->saveDiskVisBox->isChecked());
+    respeqtSettings->setfilterUnderscore(m_ui->filterUscore->isChecked());
+    respeqtSettings->setUseLargeFont(m_ui->useLargerFont->isChecked());
+    respeqtSettings->setEnableShade(m_ui->enableShade->isChecked());
 
     int backend = 0;
     if (itemAtariSio->checkState(0) == Qt::Checked) {
         backend = 1;
     }
 
-    aspeqtSettings->setBackend(backend);
+    respeqtSettings->setBackend(backend);
 
-    aspeqtSettings->setI18nLanguage(m_ui->i18nLanguageCombo->itemData(m_ui->i18nLanguageCombo->currentIndex()).toString());
+    respeqtSettings->setI18nLanguage(m_ui->i18nLanguageCombo->itemData(m_ui->i18nLanguageCombo->currentIndex()).toString());
 }
 
 void OptionsDialog::on_treeWidget_currentItemChanged(QTreeWidgetItem* current, QTreeWidgetItem* /*previous*/)

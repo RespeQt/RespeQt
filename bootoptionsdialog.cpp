@@ -5,7 +5,7 @@
 #include <QTranslator>
 #include <QDir>
 
-extern QString g_aspeQtAppPath;
+extern QString g_respeQtAppPath;
 extern bool g_disablePicoHiSpeed;
 
 QString selectedDOS, bootDir;
@@ -50,7 +50,7 @@ void BootOptionsDialog::onClick(QAbstractButton* button)
         if(m_ui->smartDOS->isChecked()) selectedDOS = "$bootsma";
         if(m_ui->spartaDOS->isChecked()) selectedDOS = "$bootspa";
         if(m_ui->myPicoDOS->isChecked()) selectedDOS = "$bootpic";
-        bootDir = g_aspeQtAppPath + "/" + selectedDOS;
+        bootDir = g_respeQtAppPath + "/" + selectedDOS;
         emit giveFolderPath(0);
     }
     return;
@@ -77,7 +77,7 @@ void BootOptionsDialog::folderPath(QString fPath)
     foreach(fileName, allFiles) {
         file.remove(fPath + "/" + fileName);
     }
-    dir.setPath(g_aspeQtAppPath + "/" + selectedDOS);
+    dir.setPath(g_respeQtAppPath + "/" + selectedDOS);
     allFiles =  dir.entryList(QDir::NoDotAndDotDot | QDir::Files);
     foreach(fileName, allFiles) {
         file.copy(dir.path() + "/" + fileName, fPath + "/" + fileName);

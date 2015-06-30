@@ -1,6 +1,6 @@
 #include "textprinterwindow.h"
 #include "ui_textprinterwindow.h"
-#include "aspeqtsettings.h"
+#include "respeqtsettings.h"
 
 #include <QFileDialog>
 #include <QPrintDialog>
@@ -62,11 +62,11 @@ void TextPrinterWindow::changeEvent(QEvent *e)
 void TextPrinterWindow::closeEvent(QCloseEvent *e)
 {
     // Save Current TexPrinterWindow Position and size // 
-    if (aspeqtSettings->saveWindowsPos()) {
-        aspeqtSettings->setLastPrtHorizontalPos(TextPrinterWindow::geometry().x());
-        aspeqtSettings->setLastPrtVerticalPos(TextPrinterWindow::geometry().y());
-        aspeqtSettings->setLastPrtWidth(TextPrinterWindow::geometry().width());
-        aspeqtSettings->setLastPrtHeight(TextPrinterWindow::geometry().height());
+    if (respeqtSettings->saveWindowsPos()) {
+        respeqtSettings->setLastPrtHorizontalPos(TextPrinterWindow::geometry().x());
+        respeqtSettings->setLastPrtVerticalPos(TextPrinterWindow::geometry().y());
+        respeqtSettings->setLastPrtWidth(TextPrinterWindow::geometry().width());
+        respeqtSettings->setLastPrtHeight(TextPrinterWindow::geometry().height());
     }
     emit closed();
     e->accept();
@@ -217,12 +217,12 @@ void TextPrinterWindow::on_actionPrint_triggered()
 
 void TextPrinterWindow::on_actionSave_triggered()
 {
-    QString fileName = QFileDialog::getSaveFileName(this, tr("Save printer text output"), aspeqtSettings->lastPrinterTextDir(),
+    QString fileName = QFileDialog::getSaveFileName(this, tr("Save printer text output"), respeqtSettings->lastPrinterTextDir(),
                                                     tr("Text files (*.txt);;All files (*)"), 0);
     if (fileName.isEmpty()) {
         return;
     }
-    aspeqtSettings->setLastPrinterTextDir(QFileInfo(fileName).absolutePath());
+    respeqtSettings->setLastPrinterTextDir(QFileInfo(fileName).absolutePath());
     QFile file(fileName);
     file.open(QFile::WriteOnly | QFile::Truncate | QFile::Text);
     file.write(ui->printerTextEdit->toPlainText().toLatin1());

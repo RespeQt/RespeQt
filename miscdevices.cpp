@@ -3,7 +3,7 @@
 #endif
 
 #include "miscdevices.h"
-#include "aspeqtsettings.h"
+#include "respeqtsettings.h"
 #include "mainwindow.h"
 
 
@@ -146,7 +146,7 @@ void AspeCl::handleCommand(quint8 command, quint16 aux)
             if (swapDisk2 > 9) swapDisk2 -= 16;
             if (swapDisk1 >= 0 and swapDisk1 < 15 and swapDisk2 >=0 and swapDisk2 < 15 and swapDisk1 != swapDisk2) {
                 sio->swapDevices(swapDisk1 + 0x31, swapDisk2 + 0x31);
-                aspeqtSettings->swapImages(swapDisk1, swapDisk2);
+                respeqtSettings->swapImages(swapDisk1, swapDisk2);
                 qDebug() << "!n" << tr("[%1] Swapped disk %2 with disk %3.")
                                 .arg(deviceName())
                                 .arg(swapDisk2 + 1)
@@ -186,7 +186,7 @@ void AspeCl::handleCommand(quint8 command, quint16 aux)
                           SimpleDiskImage *img = qobject_cast <SimpleDiskImage*> (sio->getDevice(i + 0x31));
                           sio->uninstallDevice(i + 0x31);
                           delete img;
-                          aspeqtSettings->unmountImage(i);
+                          respeqtSettings->unmountImage(i);
                           qDebug() << "!n" << tr("[%1] Unmounted disk %2")
                                         .arg(deviceName())
                                         .arg(i + 1);
@@ -210,7 +210,7 @@ void AspeCl::handleCommand(quint8 command, quint16 aux)
                   } else {
                       sio->uninstallDevice(unmountDisk - 1 + 0x31);
                       delete img;
-                      aspeqtSettings->unmountImage(unmountDisk - 1);
+                      respeqtSettings->unmountImage(unmountDisk - 1);
                       qDebug() << "!n" << tr("[%1] Remotely unmounted disk %2")
                                   .arg(deviceName())
                                   .arg(unmountDisk);
@@ -235,8 +235,8 @@ void AspeCl::handleCommand(quint8 command, quint16 aux)
           }
           // If no Folder Image has ever been mounted abort the command as we won't
           // know which folder to use to remotely create/mount an image file.
-          if(aspeqtSettings->lastFolderImageDir() == "") {
-              qCritical() << "!e" << tr("[%1] AspeQt can't determine the folder where the image file must be created/mounted!")
+          if(respeqtSettings->lastFolderImageDir() == "") {
+              qCritical() << "!e" << tr("[%1] RespeQt can't determine the folder where the image file must be created/mounted!")
                             .arg(deviceName());
               qCritical() << "!e" << tr("[%1] Mount a Folder Image at least once before issuing a remote mount command.")
                             .arg(deviceName());
@@ -278,7 +278,7 @@ void AspeCl::handleCommand(quint8 command, quint16 aux)
                       return;
                   }
                   imageFileName = imageFileName.left(i);
-                  QFile file(aspeqtSettings->lastFolderImageDir() + "/" + imageFileName);
+                  QFile file(respeqtSettings->lastFolderImageDir() + "/" + imageFileName);
                   if (!file.open(QIODevice::WriteOnly)) {
                       qCritical() << "!e" << tr("[%1] Can not create PC File: %2")
                                      .arg(deviceName())
