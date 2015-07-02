@@ -1,8 +1,8 @@
-AspeQt, Atari Serial Peripheral Emulator for Qt
+RespeQt, Atari Serial Peripheral Emulator for Qt
 
 Summary
 =======
-AspeQt emulates Atari SIO peripherals when connected to an Atari 8-bit computer with an SIO2PC cable.
+RespeQt emulates Atari SIO peripherals when connected to an Atari 8-bit computer with an SIO2PC cable.
 In that respect it's similar to programs like APE and Atari810. The main difference is that it's free
 (unlike APE) and it's cross-platform (unlike Atari810 and APE).
 
@@ -23,8 +23,10 @@ Some features
 
 License (see license.txt file for more details)
 ===============================================
-Original code up to version 0.6.0 Copyright 2009 by Fatih Aygün. 
-Updates since v0.6.0 Copyright 2012 by Ray Ataergin.
+RespeQt fork Copyright 2015 by Joseph Zatarski
+RespeQt is based on AspeQt 1.0.0-preview7
+Original AspeQt code up to version 0.6.0 Copyright 2009 by Fatih Aygün. 
+Updates to AspeQt since v0.6.0 to 1.0.0-preview7 Copyright 2012 by Ray Ataergin.
 
 You can freely copy, use, modify and distribute it under the GPL 2.0
 license. Please see license.txt for details.
