@@ -195,29 +195,31 @@ QString SioWorker::deviceName(int device)
         case 0x36:
         case 0x37:
         case 0x38:
-	case 0x39: // Sparta DOS supports up to 15 disk drives
-	case 0x3a:
-	case 0x3b:
-	case 0x3c:
-	case 0x3d:
-	case 0x3e:
-	case 0x3f:
+        case 0x39: // Sparta DOS supports up to 15 disk drives
+        case 0x3a:
+        case 0x3b:
+        case 0x3c:
+        case 0x3d:
+        case 0x3e:
+        case 0x3f:
             result = tr("Disk %1").arg(device & 0x0F);
             break;
         case 0x40:
-	case 0x41:
-	case 0x42:
-	case 0x43:
+        case 0x41:
+        case 0x42:
+        case 0x43:
             result = tr("Printer %1").arg((device & 0x0F) + 1);
             break;
-        //
+        case 0x45:
+            result = tr("APE time downloader");
+            break;
         case 0x46:
             result = tr("AspeQt Client");
             break;
-	case 0x50:
-	case 0x51:
-	case 0x52:
-	case 0x53:
+        case 0x50:
+        case 0x51:
+        case 0x52:
+        case 0x53:
 	    result = tr("RS232 %1").arg((device & 0x0F) +1);
 	    break;
         default:

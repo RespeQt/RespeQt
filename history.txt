@@ -1,4 +1,10 @@
-Forked to RespeQt - June 29, 2015 - release 80
+release 1
+        * added ApeTime support back in
+        * updated 2 references to AspeQt, 1 reference to Ray Ataergin, and 1
+        reference to Ray's website in readme.txt. Thanks to Kyle22 for pointing
+        this out.
+
+Forked to RespeQt - June 29, 2015 - release 0
 	* added workaround for a bug on some linux releases related to the QT
 	appmenu stuff which would cause the menu bar to not appear.
 	* changed some code in mainwindow.cpp:130 so that RespeQt doesn't

@@ -105,6 +105,40 @@ void Printer::handleCommand(quint8 command, quint16 aux)
     }
 }
 
+//ApeTime device
+
+void ApeTime::handleCommand(quint8 command, quint16 aux)
+{
+    QByteArray data(5, 0);
+    QDateTime dateTime = QDateTime::currentDateTime();
+
+    if (command == 0x93) {
+        if (!sio->port()->writeCommandAck()) {
+            return;
+        }
+
+        data[0] = dateTime.date().day();
+        data[1] = dateTime.date().month();
+        data[2] = dateTime.date().year() % 100;
+        data[3] = dateTime.time().hour();
+        data[4] = dateTime.time().minute();
+        data[5] = dateTime.time().second();
+
+        sio->port()->writeComplete();
+        sio->port()->writeDataFrame(data);
+
+        qDebug() << "!n" << tr("[%1] Read date/time (%2).")
+                       .arg(deviceName())
+                       .arg(dateTime.toString(Qt::SystemLocaleShortDate));
+    } else {
+        sio->port()->writeCommandNak();
+        qWarning() << "!w" << tr("[%1] command: $%2, aux: $%3 NAKed.")
+                       .arg(deviceName())
+                       .arg(command, 2, 16, QChar('0'))
+                       .arg(aux, 4, 16, QChar('0'));
+    }
+}
+
 // AspeQt Client ()
 
 void AspeCl::handleCommand(quint8 command, quint16 aux)
