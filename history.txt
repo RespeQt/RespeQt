@@ -1,3 +1,13 @@
+release 2
+        * merged OSX fixes from DrVenkman (LameLefty on github). These fixes
+        improve CPU usage and serial performance on OSX. Thanks to DrVenkman
+        for implementing and testing them, and also thanks to Hias for pointing
+        out where and what the changes should be.
+        * fixed some weird boolean casting stuff on line 80 and 85 of
+        serialport-unix.cpp, thanks to DrVenkman for pointing it out.
+        * fixed a missing '&' in serialport-unix.cpp around line 85, thanks
+        to Hias for pointing it out and suggesting the fix.
+
 release 1
         * added ApeTime support back in
         * updated 2 references to AspeQt, 1 reference to Ray Ataergin, and 1
