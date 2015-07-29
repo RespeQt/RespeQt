@@ -1,3 +1,11 @@
+/*
+ * atarifilesystem.h
+ *
+ * This file is copyrighted by either Fatih Aygun, Ray Ataergin, or both.
+ * However, the years for these copyrights are unfortunately unknown. If you
+ * know the specific year(s) please let the current maintainer know.
+ */
+
 #ifndef ATARIFILESYSTEM_H
 #define ATARIFILESYSTEM_H
 
