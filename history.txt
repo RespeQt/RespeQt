@@ -20,6 +20,7 @@ release 2
         * cleaned up source tree a bit
         * added temporary fix for incorrect Operation Complete and Operation
         Error timing (fixes #2)
+        * added copyrights to most source files
 
 release 1
         * added ApeTime support back in
