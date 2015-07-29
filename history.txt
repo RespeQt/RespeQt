@@ -7,7 +7,7 @@ release 2
         serialport-unix.cpp, thanks to DrVenkman for pointing it out.
         * fixed a missing '&' in serialport-unix.cpp around line 85, thanks
         to Hias for pointing it out and suggesting the fix.
-        * fixed Help -> About RespeQt and help -> User Manual, thanks to Kyle22
+        * fixed Help -> About RespeQt and Help -> User Manual, thanks to Kyle22
         for pointing out that they were outdated. They should automatically
         mirror changes in about.html and the user manual as well.
         * updated documentation to match the current state of things. (thanks
@@ -18,6 +18,8 @@ release 2
         are fixed (like handling of multiple languages in the user manual
         dialog)
         * cleaned up source tree a bit
+        * added temporary fix for incorrect Operation Complete and Operation
+        Error timing (fixes #2)
 
 release 1
         * added ApeTime support back in

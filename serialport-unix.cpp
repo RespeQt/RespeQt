@@ -459,13 +459,13 @@ bool StandardSerialPortBackend::writeDataNak()
 
 bool StandardSerialPortBackend::writeComplete()
 {
-    SioWorker::usleep(300);
+    SioWorker::usleep(800);
     return writeRawFrame(QByteArray(1, 67));
 }
 
 bool StandardSerialPortBackend::writeError()
 {
-    SioWorker::usleep(300);
+    SioWorker::usleep(800);
     return writeRawFrame(QByteArray(1, 69));
 }
 
