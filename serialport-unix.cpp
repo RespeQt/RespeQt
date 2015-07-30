@@ -1,3 +1,14 @@
+/*
+ * serialport-unix.cpp
+ *
+ * Copyright 2015 DrVenkman
+ * Copyright 2015 Joseph Zatarski
+ *
+ * This file is copyrighted by either Fatih Aygun, Ray Ataergin, or both.
+ * However, the years for these copyrights are unfortunately unknown. If you
+ * know the specific year(s) please let the current maintainer know.
+ */
+
 #include "serialport.h"
 #include "sioworker.h"
 #include "headers/atarisio.h"
@@ -77,12 +88,12 @@ bool StandardSerialPortBackend::open()
     }
 
     int status;
-    if (!ioctl(mHandle, TIOCMGET, &status) < 0) {
+    if (ioctl(mHandle, TIOCMGET, &status) < 0) {
         qCritical() << "!e" << tr("Cannot clear DTR and RTS lines in serial port '%1': %2").arg(name, lastErrorMessage());
         return false;
     }
     status = status & ~(TIOCM_DTR & TIOCM_RTS);
-    if (!ioctl(mHandle, TIOCMSET, status)) {
+    if (ioctl(mHandle, TIOCMSET, &status) < 0) {
         qCritical() << "!e" << tr("Cannot clear DTR and RTS lines in serial port '%1': %2").arg(name, lastErrorMessage());
         return false;
     }
@@ -342,7 +353,13 @@ QByteArray StandardSerialPortBackend::readCommandFrame()
                 return data;
             }
             if (status & mask) {
-                QThread::yieldCurrentThread();
+                #ifdef Q_OS_UNIX
+                    QThread::yieldCurrentThread();   // Venkman 07132015 OS definition blocks added
+                #endif
+
+                #ifdef Q_OS_MAC
+                    QThread::usleep(500);
+                #endif
             }
         } while ((status & mask) && !mCanceled);
         /* Now wait for it to go on again */
@@ -352,7 +369,13 @@ QByteArray StandardSerialPortBackend::readCommandFrame()
                 return data;
             }
             if (!(status & mask)) {
-                QThread::yieldCurrentThread();
+                #ifdef Q_OS_UNIX
+                    QThread::yieldCurrentThread();   // Venkman 07132015 OS definition blocks added
+                #endif
+
+                #ifdef Q_OS_MAC
+                   QThread::usleep(500);
+                #endif
             }
         } while (!(status & mask) && !mCanceled);
 
@@ -447,13 +470,13 @@ bool StandardSerialPortBackend::writeDataNak()
 
 bool StandardSerialPortBackend::writeComplete()
 {
-    SioWorker::usleep(300);
+    SioWorker::usleep(800);
     return writeRawFrame(QByteArray(1, 67));
 }
 
 bool StandardSerialPortBackend::writeError()
 {
-    SioWorker::usleep(300);
+    SioWorker::usleep(800);
     return writeRawFrame(QByteArray(1, 69));
 }
 
@@ -524,12 +547,6 @@ bool StandardSerialPortBackend::writeRawFrame(const QByteArray &data)
     int timeOut = data.count() * 120000 / mSpeed + 10;
     int elapsed;
 
-    if (tcdrain(mHandle) != 0) {
-        qCritical() << "!e" << tr("Cannot flush serial port write buffer: %1")
-                       .arg(lastErrorMessage());
-        return false;
-    }
-
     do {
         result = ::write(mHandle, data.constData() + total, rest);
         if (result < 0 && errno != EAGAIN) {
@@ -547,6 +564,12 @@ bool StandardSerialPortBackend::writeRawFrame(const QByteArray &data)
 
     if (total != (uint)data.count()) {
         qCritical() << "!e" << tr("Serial port write timeout. (%1 of %2 written)").arg(total).arg(data.count());
+        return false;
+    }
+
+    if (tcdrain(mHandle) != 0) {
+        qCritical() << "!e" << tr("Cannot flush serial port write buffer: %1")
+                       .arg(lastErrorMessage());
         return false;
     }
 

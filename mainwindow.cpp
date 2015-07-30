@@ -1,3 +1,13 @@
+/*
+ * mainwindow.cpp
+ *
+ * Copyright 2015 Joseph Zatarski
+ *
+ * This file is copyrighted by either Fatih Aygun, Ray Ataergin, or both.
+ * However, the years for these copyrights are unfortunately unknown. If you
+ * know the specific year(s) please let the current maintainer know.
+ */
+
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 
@@ -625,9 +635,8 @@ bool MainWindow::eventFilter(QObject *obj, QEvent *event)
 {
     if (event->type() == QEvent::MouseButtonDblClick) {
         on_actionLogWindow_triggered();
-        return false;
     }
-    return true;
+    return false;
 }
 void MainWindow::on_actionLogWindow_triggered()
 {

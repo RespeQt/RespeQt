@@ -1,3 +1,28 @@
+release 2
+        * merged OSX fixes from DrVenkman (LameLefty on github). These fixes
+        improve CPU usage and serial performance on OSX. Thanks to DrVenkman
+        for implementing and testing them, and also thanks to Hias for pointing
+        out where and what the changes should be.
+        * fixed some weird boolean casting stuff on line 80 and 85 of
+        serialport-unix.cpp, thanks to DrVenkman for pointing it out.
+        * fixed a missing '&' in serialport-unix.cpp around line 85, thanks
+        to Hias for pointing it out and suggesting the fix.
+        * fixed Help -> About RespeQt and Help -> User Manual, thanks to Kyle22
+        for pointing out that they were outdated. They should automatically
+        mirror changes in about.html and the user manual as well.
+        * updated documentation to match the current state of things. (thanks
+        to Kyle22 again, for pointing out that I had forgotten to do this when
+        I released r1).
+        - translations are *probably* totally broken at this point, until new
+        ones are created specifically for RespeQt, and a couple other things
+        are fixed (like handling of multiple languages in the user manual
+        dialog)
+        * cleaned up source tree a bit
+        * added temporary fix for incorrect Operation Complete and Operation
+        Error timing (fixes #2)
+        * added copyrights to most source files
+        * fixed log text box not resizing on window resize (#3)
+
 release 1
         * added ApeTime support back in
         * updated 2 references to AspeQt, 1 reference to Ray Ataergin, and 1

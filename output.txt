@@ -1,4 +1,0 @@
-g++ -c -pipe -O2 -D_REENTRANT -Wall -W -fPIE -DVERSION=\"1.00.Preview_7\" -DQT_NO_DEBUG -DQT_PRINTSUPPORT_LIB -DQT_WIDGETS_LIB -DQT_NETWORK_LIB -DQT_GUI_LIB -DQT_CORE_LIB -I/usr/lib/i386-linux-gnu/qt5/mkspecs/linux-g++ -I. -isystem /usr/include/i386-linux-gnu/qt5/QtZlib -isystem /usr/include/i386-linux-gnu/qt5 -isystem /usr/include/i386-linux-gnu/qt5/QtPrintSupport -isystem /usr/include/i386-linux-gnu/qt5/QtWidgets -isystem /usr/include/i386-linux-gnu/qt5/QtNetwork -isystem /usr/include/i386-linux-gnu/qt5/QtGui -isystem /usr/include/i386-linux-gnu/qt5/QtCore -I. -I. -o mainwindow.o mainwindow.cpp
-make: *** wait: No child processes.  Stop.
-make: *** Waiting for unfinished jobs....
-make: *** wait: No child processes.  Stop.
