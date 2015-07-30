@@ -635,9 +635,8 @@ bool MainWindow::eventFilter(QObject *obj, QEvent *event)
 {
     if (event->type() == QEvent::MouseButtonDblClick) {
         on_actionLogWindow_triggered();
-        return false;
     }
-    return true;
+    return false;
 }
 void MainWindow::on_actionLogWindow_triggered()
 {

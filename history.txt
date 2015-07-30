@@ -21,6 +21,7 @@ release 2
         * added temporary fix for incorrect Operation Complete and Operation
         Error timing (fixes #2)
         * added copyrights to most source files
+        * fixed log text box not resizing on window resize (#3)
 
 release 1
         * added ApeTime support back in
