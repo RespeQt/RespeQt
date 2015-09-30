@@ -1,112 +1,61 @@
-﻿<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml">
-
-<head>
+﻿<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
 <meta content="en-us" http-equiv="Content-Language" />
 <meta content="text/html; charset=utf-8" http-equiv="Content-Type" />
 <title>RespeQt</title>
 <style type="text/css">
-.auto-style1 {
-	color: #4C920E;
-}
-.auto-style6 {
-	font-family: Arial, Helvetica, sans-serif;
-}
-.auto-style7 {
-	font-family: Arial, Helvetica, sans-serif;
-	font-size: large;
-}
+body { font-family: Arial, Helvetica, sans-serif; }
+h1   { color: #4C920E; font-size: large; }
 </style>
-</head>
-
 <body>
 
-<p style="height: 484px">&nbsp;<strong><span class="auto-style1"><img alt="RespeQt" height="72" src="main-icon/RespeQt.png" width="66" />&nbsp;
-<span class="auto-style7"><em>RespeQt, Atari Serial Peripheral Emulator for Qt</em></span></span><em><br class="auto-style1" />
-</em>
-</strong><br />
-<span class="auto-style6">
-<strong>Summary</strong></span><br class="auto-style6" />
-<span class="auto-style6">RespeQt emulates Atari SIO peripherals when connected to an Atari 8-bit computer
-with an SIO2PC cable.</span><br class="auto-style6" />
-<span class="auto-style6">In that respect it's similar to programs like APE, Atari810, and AspeQt. The main
-difference is that it's free (unlike APE and AspeQt) and it's cross-platform (unlike
-Atari810 and APE).</span><br class="auto-style6" />
-<br class="auto-style6" />
-<span class="auto-style6">
-<strong>Some features</strong></span><br class="auto-style6" />
-<span class="auto-style6">* Qt based GUI with drag and drop support.</span><br class="auto-style6" />
-<span class="auto-style6">* Cross-platform<em> (Windows, Linux, OSX)</em></span><br class="auto-style6" />
-<span class="auto-style6">* 15 disk drive emulation <em>(drives 9-15 are only supported by SpartaDOS X)</em></span><br class="auto-style6" />
-<span class="auto-style6">* Text-only printer emulation with saving and printing of the output</span><br class="auto-style6" />
-<span class="auto-style6">* Cassette image playback</span><br class="auto-style6" />
-<span class="auto-style6">* Folders can be mounted as simulated Dos20s disks. <em>(read-only, now with SDX 
-compatibility, and bootable)</em></span><br class="auto-style6" />
-<span class="auto-style6">* Atari executables can be booted directly, optionally with high speed.</span><br class="auto-style6" />
-<span class="auto-style6">* Contents of image files can be viewed / changed</span><br class="auto-style6" />
-<span class="auto-style6">* AspeQt Client module ASPECL.COM. Runs on the Atari and is used to get/set 
-Date/Time on the Atari plus a variety of other remote tasks.</span><br class="auto-style6" />
-<span class="auto-style6">* ApeTime client support.</span><br class="auto-style6" />
-<span class="auto-style6">* Up to 6xSIO speed and more if the serial port adaptor supports it <em>(FTDI
-chip based cables are recommanded).</em></span><br class="auto-style6" />
-<span class="auto-style6">* Localization support (Currently for English, German, 
-Polish, Russian, Slovak, Spanish and Turkish). ***this may be broken***</span><br class="auto-style6" />
-<span class="auto-style6">* Multi-session support</span><br class="auto-style6" />
-<br class="auto-style6" />
-<span class="auto-style6">
-<strong>License</strong></span><br class="auto-style6" />
-<span class="auto-style6">RespeQt fork <em>Copyright 2015 by Joseph Zatarski</em> and <em>Copyright 2015 by DrVenkman</em>
-</span><br class="auto-style6" />
-<span class="auto-style6">RespeQt is based on AspeQt 1.0.0-preview7</em>
-</span><br class="auto-style6" />
-<span class="auto-style6">Original AspeQt code up to version 0.6.0 <em>Copyright 2009 by Fatih Aygün.</em>
-</span><br class="auto-style6" />
-<span class="auto-style6">Updates to AspeQt since v0.6.0 to 1.0.0-preview7 <em>Copyright 2012 by Ray Ataergin</em></span></p>
-<p style="height: 47px"><span class="auto-style6">You can freely copy, use, modify and distribute 
-RespeQt under the GPL 2.0 license.
-Please see license.txt for details.</span></p>
-<p style="height: 304px"><span class="auto-style6">Qt libraries: <em>Copyright 2009 Nokia Corporation</em> and/or its 
-subsidiary(-ies). Used in this package under LGPL 2.0 license.</span><br class="auto-style6" />
-<br class="auto-style6" />
-<span class="auto-style6">Silk Icons: </span> <em><span class="auto-style6">Copyright <a href="www.famfamfam.com">Mark James</a>.</span></em><span class="auto-style6"> Used 
-in this package under Creative Commons Attribution 3.0 license.</span><br class="auto-style6" />
-<br class="auto-style6" />
-<span class="auto-style6">Additional Icons by <em><a href="http://www.oxygen-icons.org/">Oxygen Team</a></em>. 
-Used in this package under Creative Commons Attribution-ShareAlike 3.0 license.</span><br class="auto-style6" />
-<br class="auto-style6" />
-<span class="auto-style6">AtariSIO Linux kernel module and high speed code used in the EXE loader 
-</span> <em>
-<span class="auto-style6">Copyright <a href="http://www.horus.com/~hias/atari/">Matthias Reichl.</a></span></em><span class="auto-style6"> 
-Used in this package under GPL 2.0 license.</span><br class="auto-style6" />
-<br class="auto-style6" />
-<span class="auto-style6">Atascii Fonts by <em><a href="http://members.bitstream.net/~marksim/atarimac">
-Mark Simonson</a></em>. Used in this package under Freeware License.</span><br class="auto-style6" />
-<br class="auto-style6" />
-<span class="auto-style6">RespeQt icon by <em>djmat56.</em> Used with permission.<br />
-<br />
-<span class="auto-style6"><em><strong>DOS files distributed with RespeQt</strong>
-are copyright of their respective owners, Joseph Zatarski and RespeQt distributes
-those files with the understanding that they are either abandonware or public 
-domain, and are widely available for download through the internet. If you are 
-the copyright holder of one or more of these files, and believe that 
-distribution of these files constitutes a breach of your rights please contact
-</em><a href="mailto:jzaar2@illinois.edu"><em>Joseph Zatarski</em></a><em>. We 
-respect the rights of copyright holders and won't distribute copyrighted work 
-without the rights holder's consent. </em></span><br />
-<br />
-<span class="auto-style6"><strong>Special Thanks</strong></span><br class="auto-style6" />
-<span class="auto-style6">Kyle22 for finding 2 instances of AspeQt, 1 reference to Ray Ataergin,
-1 reference to Ray's website which needed to be changed, for finding that the about and user
-documentation dialogs were out of date (way out of date), and for pointing out that I forgot
-to update the documentation for r1.</span></p><br />
-<br />
-<p><span class="auto-style6"><strong>Contact</strong></span><br class="auto-style6" />
-<span class="auto-style6">Joseph Zatarski, <a href="mailto:jzatar2@illinois.edu">email</a>, 
-<em>Please include the 
-word "Respeqt" in the subject field.</em><br />
-</span>
-</p>
+	<h1><img src="/icons/main-icon/RespeQt.png" align="middle"/>&nbsp;RespeQt, Atari Serial Peripheral Emulator for Qt</h1>
+	
+	<p align="justify"><b>Summary</b><br />RespeQt emulates Atari SIO peripherals when connected to an Atari 8-bit computer with an SIO2PC cable. 
+	In that respect t's similar to programs like APE, Atari810, and AspeQt. The main difference is that it's free (unlike 
+	APE and AspeQt) and it's cross-platform (unlike Atari810 and APE).</p>
+	
+	<b>Some features</b>
+	
+	<ul type="square">
+		<li>Qt based GUI with drag and drop support.</li>
+		<li>Cross-platform <em>(Windows, Linux, OSX)</em></li>
+		<li>15 disk drive emulation <em>(drives 9-15 are only supported by SpartaDOS X)</em></li>
+		<li>Text-only printer emulation with saving and printing of the output</li>
+		<li>Cassette image playback</li>
+		<li>Folders can be mounted as simulated Dos20s disks. <em>(read-only, now with SDX compatibility, and bootable)</em></li>
+		<li>Atari executables can be booted directly, optionally with high speed.</li>
+		<li>Contents of image files can be viewed / changed</li>
+		<li>AspeQt Client module ASPECL.COM. Runs on the Atari and is used to get/set Date/Time on the Atari plus a variety of other remote tasks.</li>
+		<li>ApeTime client support.</li>
+		<li>Up to 6xSIO speed and more if the serial port adaptor supports it <em>(FTDI chip based cables are recommanded).</em></li>
+		<li>Localization support (Currently for English, German, Polish, Russian, Slovak, Spanish and Turkish). ***this may be broken***</li>
+		<li>Multi-session support</li>
+	</ul>
+	
+	<p align="justify"><b>License</b><br>
+	RespeQt fork <em>Copyright 2015 by Joseph Zatarski</em> and <em>Copyright 2015 by DrVenkman</em><br />
+	RespeQt is based on AspeQt 1.0.0-preview7<br />
+	Original AspeQt code up to version 0.6.0 <em>Copyright 2009 by Fatih Aygün.</em><br />
+	Updates to AspeQt since v0.6.0 to 1.0.0-preview7 <em>Copyright 2012 by Ray Ataergin</em><br />
+	You can freely copy, use, modify and distribute RespeQt under the GPL 2.0 license. Please see license.txt for details.<br />
+	Qt libraries: <em>Copyright 2009 Nokia Corporation</em> and/or its subsidiary(-ies). Used in this package under LGPL 2.0 license.<br />
+	Silk Icons: <em>Copyright <a href="www.famfamfam.com">Mark James</a>.</em>Used in this package under Creative Commons Attribution 3.0 license.<br />
+	Additional Icons by <em><a href="http://www.oxygen-icons.org/">Oxygen Team</a></em>.<br /> 
+	Used in this package under Creative Commons Attribution-ShareAlike 3.0 license.<br />
+	AtariSIO Linux kernel module and high speed code used in the EXE loader Copyright <a href="http://www.horus.com/~hias/atari/">Matthias Reichl.</a><br />
+	Used in this package under GPL 2.0 license.<br />
+	Atascii Fonts by <em><a href="http://members.bitstream.net/~marksim/atarimac">Mark Simonson</a></em>. Used in this package under Freeware License.<br />
+	RespeQt icon by <em>djmat56.</em> Used with permission.<br />
+	Support for the spanish language by AsCrNet.
+	</p>
+	
+	<p align="justify"><b>DOS files distributed with RespeQt</b> are copyright of their respective owners, Joseph Zatarski and RespeQt distributes those files with the understanding that they are either abandonware or public domain, and are widely available for download through the internet. If you are the copyright holder of one or more of these files, and believe that distribution of these files constitutes a breach of your rights please contact <a href="mailto:jzaar2@illinois.edu">Joseph Zatarski</a>. We respect the rights of copyright holders and won't distribute copyrighted work without the rights holder's consent.</p>
+	
+	<p align="justify"><b>Special Thanks</b><br/>
+	Kyle22 for finding 2 instances of AspeQt, 1 reference to Ray Ataergin, 1 reference to Ray's website which needed to be changed, for finding that the about and user documentation dialogs were out of date (way out of date), and for pointing out that I forgot to update the documentation for r1.</p>
+	
+	<p><b>Contact</b><br />Joseph Zatarski, <a href="mailto:jzatar2@illinois.edu">email</a>,<em>Please include the word "Respeqt" in the subject field.</em></p>
 
 </body>
-
 </html>
