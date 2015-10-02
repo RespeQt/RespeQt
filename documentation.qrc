@@ -5,4 +5,7 @@
         <file>about.html</file>
         <file>RespeQt User Manual-English.html</file>
     </qresource>
+    <qresource prefix="/documentation" lang="es">
+	<file>about_spanish.html</file>
+    </qresource>
 </RCC>
