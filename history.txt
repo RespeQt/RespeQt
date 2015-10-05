@@ -1,6 +1,7 @@
 release 3 (WIP)
 	* Spanish language update, thanks to ascrnet
 	* reorganization of messy HTML in about.html, thanks to ascrnet
+	* Spanish version is included in the about.html, thanks to ascrnet
 
 release 2
         * merged OSX fixes from DrVenkman (LameLefty on github). These fixes
