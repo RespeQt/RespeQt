@@ -85,8 +85,8 @@ OptionsDialog::OptionsDialog(QWidget *parent) :
     dir.setNameFilters(filters);
     for (int i = 0; i < dir.entryList().size(); ++i) {
         local_translator.load(":/translations/i18n/" + dir.entryList()[i]);
-    m_ui->i18nLanguageCombo->addItem(local_translator.translate("OptionsDialog", "English"), dir.entryList()[i].mid(7).replace(".qm", ""));
-    if (dir.entryList()[i].mid(7).replace(".qm", "").compare(respeqtSettings->i18nLanguage()) == 0) {
+    m_ui->i18nLanguageCombo->addItem(local_translator.translate("OptionsDialog", "English"), dir.entryList()[i].replace("respeqt_", "").replace(".qm", ""));
+    if (dir.entryList()[i].replace("respeqt_", "").replace(".qm", "").compare(respeqtSettings->i18nLanguage()) == 0) {
         m_ui->i18nLanguageCombo->setCurrentIndex(i+2);
 	}
     }
