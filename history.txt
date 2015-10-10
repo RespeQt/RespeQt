@@ -3,6 +3,7 @@ release 3 (WIP)
 	* reorganization of messy HTML in about.html, thanks to ascrnet
 	* Spanish version is included in the about.html, thanks to ascrnet
 	* fixed broken language option in about dialog (#14)
+	* reorganization of messy HTML in RespeQt User Manual-English.html, thanks to ascrnet
 
 release 2
         * merged OSX fixes from DrVenkman (LameLefty on github). These fixes
