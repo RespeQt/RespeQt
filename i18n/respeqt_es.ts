@@ -21,7 +21,7 @@
     <message>
         <location filename="../aboutdialog.cpp" line="22"/>
         <source>version %1</source>
-        <translation>version %1</translation>
+        <translation>versión %1</translation>
     </message>
 </context>
 <context>
@@ -57,7 +57,7 @@
     <message>
         <location filename="../miscdevices.cpp" line="234"/>
         <source>[%1] Unmounted disk %2</source>
-        <translation>[%1] Disco sin montar %2</translation>
+        <translation>[%1] Desmontar disco %2</translation>
     </message>
     <message>
         <location filename="../miscdevices.cpp" line="238"/>
@@ -77,7 +77,7 @@
     <message>
         <location filename="../miscdevices.cpp" line="258"/>
         <source>[%1] Remotely unmounted disk %2</source>
-        <translation>[%1] Disco remota sin montar %2</translation>
+        <translation>[%1] Disco remoto sin montar %2</translation>
     </message>
     <message>
         <location filename="../miscdevices.cpp" line="266"/>
@@ -87,7 +87,7 @@
     <message>
         <location filename="../miscdevices.cpp" line="283"/>
         <source>[%1] RespeQt can&apos;t determine the folder where the image file must be created/mounted!</source>
-        <translation>[%1] RespeQt no puede determinar la carpeta en que debe existir el archivo de imagen creado/ montado!</translation>
+        <translation>[%1] RespeQt no puede determinar la carpeta en que debe existir el archivo de imagen creado o montado!</translation>
     </message>
     <message>
         <location filename="../miscdevices.cpp" line="285"/>
@@ -125,7 +125,7 @@
     <message>
         <location filename="../atarifilesystem.cpp" line="261"/>
         <source>Atari file system error</source>
-        <translation>Error en archivo de sistema ATARI</translation>
+        <translation>Error del sistema de archivos de Atari</translation>
     </message>
     <message>
         <location filename="../atarifilesystem.cpp" line="261"/>
@@ -154,7 +154,7 @@
     <message>
         <location filename="../serialport-unix.cpp" line="661"/>
         <source>Cannot set AtariSio to autobaud mode: %1</source>
-        <translation>No se puede establecer conexión con AtariSio para autobaudios %1</translation>
+        <translation>No se puede establecer conexión con AtariSio para modo autobaudio %1</translation>
     </message>
     <message>
         <location filename="../serialport-unix.cpp" line="668"/>
@@ -169,7 +169,7 @@
     <message>
         <location filename="../serialport-unix.cpp" line="702"/>
         <source>Cannot close serial port: %1</source>
-        <translation>No se puede cerrar el puerto serie: %1</translation>
+        <translation>No se puede cerrar el puerto serial: %1</translation>
     </message>
     <message>
         <location filename="../serialport-unix.cpp" line="713"/>
@@ -179,7 +179,7 @@
     <message>
         <location filename="../serialport-unix.cpp" line="720"/>
         <source>Cannot set AtariSio speed to %1: %2</source>
-        <translation>No se puede establecer la velocidad a AtariSio %1: %2</translation>
+        <translation>No se puede establecer la velocidad de AtariSio %1: %2</translation>
     </message>
     <message>
         <location filename="../serialport-unix.cpp" line="723"/>
@@ -191,7 +191,7 @@
         <location filename="../serialport-unix.cpp" line="724"/>
         <location filename="../serialport-unix.cpp" line="770"/>
         <source>Serial port speed set to %1.</source>
-        <translation>Velocidad del puerto serie configurado para %1.</translation>
+        <translation>Velocidad del puerto serial configurado para %1.</translation>
     </message>
     <message>
         <location filename="../serialport-unix.cpp" line="776"/>
@@ -206,7 +206,7 @@
     <message>
         <location filename="../serialport-unix.cpp" line="812"/>
         <source>Cannot write data frame: %1</source>
-        <translation>No se puede escribir tramas de datos: %1</translation>
+        <translation>No se puede escribir trama de datos: %1</translation>
     </message>
     <message>
         <location filename="../serialport-unix.cpp" line="823"/>
@@ -231,22 +231,22 @@
     <message>
         <location filename="../serialport-unix.cpp" line="860"/>
         <source>Cannot write COMPLETE byte: %1</source>
-        <translation>No se puede escribir byte COMPLETO: %1</translation>
+        <translation>No se puede escribir, byte COMPLETO: %1</translation>
     </message>
     <message>
         <location filename="../serialport-unix.cpp" line="869"/>
         <source>Cannot write ERROR byte: %1</source>
-        <translation>No se puede escribir byte ERROR: %1</translation>
+        <translation>No se puede escribir, byte ERROR : %1</translation>
     </message>
     <message>
         <location filename="../serialport-unix.cpp" line="883"/>
         <source>Cannot write raw frame: %1</source>
-        <translation>No se puede escribir sin caja: %1</translation>
+        <translation>No se puede escribir a marco bruto: %1</translation>
     </message>
     <message>
         <location filename="../serialport-unix.cpp" line="894"/>
         <source>Block too long.</source>
-        <translation>Bloquear demasiado largo.</translation>
+        <translation>Bloque demasiado largo.</translation>
     </message>
     <message>
         <location filename="../serialport-unix.cpp" line="897"/>
@@ -256,7 +256,7 @@
     <message>
         <location filename="../serialport-unix.cpp" line="900"/>
         <source>Command timeout.</source>
-        <translation>Comando de tiempo de espera.</translation>
+        <translation>Tiempo de espera de comando.</translation>
     </message>
     <message>
         <location filename="../serialport-unix.cpp" line="903"/>
@@ -266,7 +266,7 @@
     <message>
         <location filename="../serialport-unix.cpp" line="906"/>
         <source>Device error.</source>
-        <translation>Error en Dispositivo.</translation>
+        <translation>Error en dispositivo.</translation>
     </message>
     <message>
         <location filename="../serialport-unix.cpp" line="909"/>
@@ -289,7 +289,7 @@
     <message>
         <location filename="../autoboot.cpp" line="27"/>
         <source>[%1] command: $%2, aux: $%3 NAKed.</source>
-        <translation>[%1] comando: $%2, aux: $%3 NAK.</translation>
+        <translation>[%1] comando: $%2, aux: $%3 NAKed.</translation>
     </message>
     <message>
         <location filename="../autoboot.cpp" line="47"/>
@@ -299,7 +299,7 @@
     <message>
         <location filename="../autoboot.cpp" line="68"/>
         <source>[%1] Read sector %2 (%3 bytes).</source>
-        <translation>[%1] Leyendo sector %2 (%3 Bytes).</translation>
+        <translation>[%1] Leyendo sector %2 (%3 bytes).</translation>
     </message>
     <message>
         <location filename="../autoboot.cpp" line="74"/>
@@ -324,7 +324,7 @@
     <message>
         <location filename="../autoboot.cpp" line="144"/>
         <source>[%1] Get chunk info %2 (%3 bytes at %4).</source>
-        <translation>[%1] Obtén información del trozo %2 (%3 bytes at %4).</translation>
+        <translation>[%1] Obtén información del trozo %2 (%3 bytes en %4).</translation>
     </message>
     <message>
         <location filename="../autoboot.cpp" line="165"/>
@@ -399,21 +399,21 @@ si se ha cambiado desde el último reinicio del ordenador Atari
 Don&apos;t forget to remove any cartridges and disable BASIC by holding down the Atari Option button if necessary.</source>
         <translation>Por favor, reinicie el Atari.
 
-No se olvide de retirar los cartuchos y desactivar BASIC, mantenga pulsada la tecla OPTION del Atari si es necesario.</translation>
+No se olvide de retirar los cartuchos y desactivar el BASIC, mantenga pulsada la tecla OPTION del Atari si es necesario.</translation>
     </message>
     <message>
         <location filename="../autobootdialog.cpp" line="56"/>
         <source>Atari is loading the booter.</source>
-        <translation>Atari se carga el gestor de arranque.</translation>
+        <translation>Atari está cargando el gestor de arranque.</translation>
     </message>
     <message>
         <location filename="../autobootdialog.cpp" line="61"/>
         <source>Atari is loading the program.
 
 For some programs you may have to close this dialog manually when the program starts.</source>
-        <translation>Atari se carga el programa.
+        <translation>Atari está cargando el programa.
 
-Para algunos programas es posible que tenga que cerrar este cuadro de diálogo manualmente cuando se inicia el programa.</translation>
+En algunos programas es posible que tenga que cerrar este diálogo manualmente cuando se inicia el programa.</translation>
     </message>
 </context>
 <context>
@@ -436,27 +436,27 @@ Para algunos programas es posible que tenga que cerrar este cuadro de diálogo m
     <message>
         <location filename="../bootoptionsdialog.ui" line="91"/>
         <source>AtariDOS 2.x</source>
-        <translation>AtariDOS 2.x</translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="../bootoptionsdialog.ui" line="110"/>
         <source>MyDOS 4.x</source>
-        <translation>MyDOS 4.x</translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="../bootoptionsdialog.ui" line="120"/>
         <source>DosXL 2.x</source>
-        <translation>DosXL 2.x</translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="../bootoptionsdialog.ui" line="130"/>
         <source>SmartDOS 6.1D</source>
-        <translation>SmartDOS 6.1D</translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="../bootoptionsdialog.ui" line="146"/>
         <source>SpartaDOS 3.2F</source>
-        <translation>SpartaDOS 3.2F</translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="../bootoptionsdialog.ui" line="162"/>
@@ -466,7 +466,7 @@ Para algunos programas es posible que tenga que cerrar este cuadro de diálogo m
     <message>
         <location filename="../bootoptionsdialog.ui" line="191"/>
         <source>Disable high speed SIO</source>
-        <translation>Desactivar alta velocidad SIO</translation>
+        <translation>Desactivar alta velocidad del SIO</translation>
     </message>
     <message>
         <location filename="../bootoptionsdialog.ui" line="218"/>
@@ -493,7 +493,7 @@ Para algunos programas es posible que tenga que cerrar este cuadro de diálogo m
 When you hear the beep sound, push the OK button below and press a key on your Atari at about the same time.</source>
         <translation>Haga lo que sea necesario en su Atari para cargar esta imagen como reiniciar casete mientras se mantiene la opción y botones de arranque o la introducción de &quot;CLOAD&quot; en el símbolo del sistema BASIC.
 
-Cuando oiga el pitido, pulse el botón OK y presione una tecla en el Atari o menos al mismo tiempo.</translation>
+Cuando oiga el pitido, pulse el botón OK y presione una tecla en el Atari al mismo tiempo.</translation>
     </message>
     <message>
         <location filename="../cassettedialog.cpp" line="34"/>
@@ -518,7 +518,7 @@ Cuando oiga el pitido, pulse el botón OK y presione una tecla en el Atari al mi
 Estimated time left: %1:%2</source>
         <translation>Reproducción de imagen cassette..
 
-Tiempo restante estimado: %1 %2</translation>
+Tiempo restante estimado: %1:%2</translation>
     </message>
 </context>
 <context>
@@ -554,7 +554,7 @@ Tiempo restante estimado: %1 %2</translation>
     <message>
         <location filename="../sioworker.cpp" line="385"/>
         <source>[Cassette] Playing record %1 of %2 (%3 ms of gap + %4 bytes of data)</source>
-        <translation>[Casete] Reproducción de registro %1 of %2 (%3 ms of gap + %4 bytes of data)</translation>
+        <translation>[Casete] Reproducción de registro %1 de %2 (%3 ms de gap + %4 bytes de datos)</translation>
     </message>
 </context>
 <context>
@@ -607,7 +607,7 @@ Tiempo restante estimado: %1 %2</translation>
     <message>
         <location filename="../createimagedialog.ui" line="132"/>
         <source>Single (128 bytes per sector)</source>
-        <translation>Single (128 bytes por sector)</translation>
+        <translation>Normal (128 bytes por sector)</translation>
     </message>
     <message>
         <location filename="../createimagedialog.ui" line="137"/>
@@ -718,7 +718,7 @@ Tiempo restante estimado: %1 %2</translation>
     <message>
         <location filename="../diskeditdialog.ui" line="240"/>
         <source>Print Directory Listing</source>
-        <translation>ImprimirLista de directorio</translation>
+        <translation>Imprimir lista de directorio</translation>
     </message>
     <message>
         <location filename="../diskeditdialog.cpp" line="462"/>
@@ -728,27 +728,27 @@ Tiempo restante estimado: %1 %2</translation>
     <message>
         <location filename="../diskeditdialog.cpp" line="463"/>
         <source>Atari Dos 1.0</source>
-        <translation>Atari Dos 1.0</translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="../diskeditdialog.cpp" line="464"/>
         <source>Atari Dos 2.0</source>
-        <translation>Atari Dos 2.0</translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="../diskeditdialog.cpp" line="465"/>
         <source>Atari Dos 2.5</source>
-        <translation>Atari Dos 2.5</translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="../diskeditdialog.cpp" line="466"/>
         <source>MyDos</source>
-        <translation>MyDos</translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="../diskeditdialog.cpp" line="467"/>
         <source>SpartaDos</source>
-        <translation>SpartaDos</translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="../diskeditdialog.cpp" line="559"/>
@@ -789,22 +789,22 @@ Tiempo restante estimado: %1 %2</translation>
     <message>
         <location filename="../diskimage.cpp" line="218"/>
         <source>SD Diskette</source>
-        <translation>SD Diskette</translation>
+        <translation>Diskette SD</translation>
     </message>
     <message>
         <location filename="../diskimage.cpp" line="220"/>
         <source>ED Diskette</source>
-        <translation>SD Diskette</translation>
+        <translation>Diskette ED</translation>
     </message>
     <message>
         <location filename="../diskimage.cpp" line="222"/>
         <source>DD Diskette</source>
-        <translation>SD Diskette</translation>
+        <translation>Diskette DD</translation>
     </message>
     <message>
         <location filename="../diskimage.cpp" line="224"/>
         <source>QD Diskette</source>
-        <translation>SD Diskette</translation>
+        <translation>Diskette QD</translation>
     </message>
     <message>
         <location filename="../diskimage.cpp" line="227"/>
@@ -865,13 +865,13 @@ Tiempo restante estimado: %1 %2</translation>
     <message>
         <location filename="../diskimagepro.cpp" line="67"/>
         <source>Too many sectors in the image (%1).</source>
-        <translation>Demasiado muchos sectores de la imagen (%1).</translation>
+        <translation>Demasiado sectores de la imagen (%1).</translation>
     </message>
     <message>
         <location filename="../diskimagepro.cpp" line="89"/>
         <location filename="../diskimagepro.cpp" line="103"/>
         <source>[%1] Cannot seek to sector %2: %3</source>
-        <translation>[%1] No se puede tratar de sector %2: %3</translation>
+        <translation>[%1] No puede buscar el sector %2: %3</translation>
     </message>
     <message>
         <location filename="../diskimagepro.cpp" line="92"/>
@@ -881,7 +881,7 @@ Tiempo restante estimado: %1 %2</translation>
     <message>
         <location filename="../diskimagepro.cpp" line="125"/>
         <source>Duplicate sector: %1 dupnum: %2</source>
-        <translation>Duplicado sector: %1 dupnum: %2</translation>
+        <translation>Sector duplicado: %1 dupnum: %2</translation>
     </message>
     <message>
         <location filename="../diskimagepro.cpp" line="133"/>
@@ -909,7 +909,7 @@ Tiempo restante estimado: %1 %2</translation>
     <message>
         <location filename="../docdisplaywindow.ui" line="35"/>
         <source>qrc:/documentation/RespeQt User Manual-English.html</source>
-        <translation>qrc:/documentation/RespeQt User Manual-English.html</translation>
+        <translation>qrc:/documentation/RespeQt User Manual-Spanish.html</translation>
     </message>
     <message>
         <location filename="../docdisplaywindow.ui" line="48"/>
@@ -1077,7 +1077,7 @@ Tiempo restante estimado: %1 %2</translation>
         <location filename="../atarifilesystem.cpp" line="823"/>
         <location filename="../atarifilesystem.cpp" line="915"/>
         <source>Bitmap write failed.</source>
-        <translation>Escritura de mapa de bits a fallado.</translation>
+        <translation>No se puede eliminar.</translation>
     </message>
 </context>
 <context>
@@ -1188,7 +1188,7 @@ Tiempo restante estimado: %1 %2</translation>
     <message>
         <location filename="../folderimage.cpp" line="139"/>
         <source>Cannot mirror %1 of %2 files in &apos;%3&apos;: Atari directory is full.</source>
-        <translation>No se puede reflejar%1 de%2 archivos en &apos;%3&apos;: Directorio está lleno.</translation>
+        <translation>No se puede reflejar %1 de %2 archivos en &apos;%3&apos;: Directorio está lleno.</translation>
     </message>
     <message>
         <location filename="../folderimage.h" line="49"/>
@@ -1224,7 +1224,7 @@ Tiempo restante estimado: %1 %2</translation>
     <message>
         <location filename="../logdisplaydialog.ui" line="58"/>
         <source>ALL</source>
-        <translation>todo</translation>
+        <translation>todos</translation>
     </message>
     <message>
         <location filename="../logdisplaydialog.ui" line="63"/>
@@ -1510,7 +1510,7 @@ Tiempo restante estimado: %1 %2</translation>
         <location filename="../mainwindow.ui" line="6141"/>
         <location filename="../mainwindow.ui" line="6159"/>
         <source>Mount folder image...</source>
-        <translation>Montar carpeta como imagen ...</translation>
+        <translation>Montar carpeta como imagen...</translation>
     </message>
     <message>
         <location filename="../mainwindow.ui" line="5910"/>
@@ -1901,7 +1901,7 @@ Tiempo restante estimado: %1 %2</translation>
         <location filename="../mainwindow.ui" line="6783"/>
         <location filename="../mainwindow.ui" line="6786"/>
         <source>Open options dialog</source>
-        <translation> Abrir opciones de diálogo</translation>
+        <translation>Abrir opciones de diálogo</translation>
     </message>
     <message>
         <location filename="../mainwindow.ui" line="6805"/>
@@ -1915,7 +1915,7 @@ Tiempo restante estimado: %1 %2</translation>
         <location filename="../mainwindow.cpp" line="868"/>
         <location filename="../mainwindow.cpp" line="869"/>
         <source>Start SIO peripheral emulation</source>
-        <translation>Comience emulación SIO periférico</translation>
+        <translation>Comience emulación periférico SIO</translation>
     </message>
     <message>
         <location filename="../mainwindow.ui" line="7317"/>
@@ -2319,13 +2319,13 @@ Tiempo restante estimado: %1 %2</translation>
     <message>
         <location filename="../mainwindow.ui" line="7344"/>
         <source>&amp;Boot Atari executable...</source>
-        <translation>&amp;Inicie ejecutable Atari ...</translation>
+        <translation>&amp;Inicia ejecutable Atari...</translation>
     </message>
     <message>
         <location filename="../mainwindow.ui" line="7347"/>
         <location filename="../mainwindow.ui" line="7350"/>
         <source>Boot an Atari executable</source>
-        <translation>Inicie un ejecutable Atari</translation>
+        <translation>Inicia un ejecutable Atari</translation>
     </message>
     <message>
         <location filename="../mainwindow.ui" line="7353"/>
@@ -2839,14 +2839,14 @@ Tiempo restante estimado: %1 %2</translation>
     <message>
         <location filename="../mainwindow.cpp" line="194"/>
         <source>Requested session file not found in the given directory path or the path is incorrect. RespeQt will continue with default session configuration.</source>
-        <translation>Archivo de la petición de sesin no se encuentra en la ruta del directorio o la ruta dada es incorrecta. RespeQt continuará con la configuración predeterminada de la sesión.</translation>
+        <translation>Archivo de la petición de sesión no se encuentra en la ruta del directorio o la ruta dada es incorrecta. RespeQt continuará con la configuración predeterminada de la sesión.</translation>
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="204"/>
         <source>Requested session file not found in the application&apos;s current directory path
  (No path was specified). RespeQt will continue with default session configuration.</source>
-        <translation>Archivo de la petición de sesión no se encuentra en la ruta de la aplicación del directorio actual
-  (No hay ruta se ha especificado). RespeQt continuará con la configuración predeterminada de la sesión.</translation>
+        <translation>Archivo de la sesión no se encuentra en la ruta de la aplicación del directorio actual
+  (No hay ninguna ruta especificada). RespeQt continuará con la configuración predeterminada de la sesión.</translation>
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="215"/>
@@ -2857,7 +2857,7 @@ Tiempo restante estimado: %1 %2</translation>
         <location filename="../mainwindow.cpp" line="217"/>
         <location filename="../mainwindow.cpp" line="2075"/>
         <source> -- Session: </source>
-        <translation>-- Sesión: </translation>
+        <translation> -- Sesión: </translation>
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="230"/>
@@ -2937,7 +2937,7 @@ Do you want to open the options dialog?</source>
         <location filename="../mainwindow.cpp" line="858"/>
         <location filename="../mainwindow.cpp" line="859"/>
         <source>Stop SIO peripheral emulation</source>
-        <translation>Parar la emulación periférico SIO</translation>
+        <translation>Parar la emulación del periférico SIO</translation>
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="876"/>
@@ -2956,7 +2956,7 @@ Do you want to open the options dialog?</source>
         <location filename="../mainwindow.cpp" line="1709"/>
         <location filename="../mainwindow.cpp" line="1752"/>
         <source>Save failed</source>
-        <translation>Guardar fracasado</translation>
+        <translation>Error al guardar</translation>
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="942"/>
@@ -2964,18 +2964,18 @@ Do you want to open the options dialog?</source>
         <location filename="../mainwindow.cpp" line="1709"/>
         <location filename="../mainwindow.cpp" line="1752"/>
         <source>&apos;%1&apos; cannot be saved, do you want to save the image with another name?</source>
-        <translation>&apos;%1&apos; no puede ser salvado, ¿quieres guardar la imagen con otro nombre?</translation>
+        <translation>&apos;%1&apos; no puede ser guardado, ¿quieres guardar la imagen con otro nombre?</translation>
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="1189"/>
         <source>Unmounted disk %1</source>
-        <translation>Disco sin montar %1</translation>
+        <translation>Disco %1 desmontado</translation>
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="1345"/>
         <location filename="../mainwindow.cpp" line="2045"/>
         <source>[%1] Mounted &apos;%2&apos; as &apos;%3&apos;.</source>
-        <translation>[%1] &apos;%2&apos; montado como &apos;%3&apos;.</translation>
+        <translation>[%1] Montado &apos;%2&apos; como &apos;%3&apos;.</translation>
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="1364"/>
@@ -3253,7 +3253,7 @@ Do you want to open the options dialog?</source>
     <message>
         <location filename="../optionsdialog.ui" line="51"/>
         <source>1</source>
-        <translation>1</translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="../optionsdialog.ui" line="56"/>
@@ -3263,7 +3263,7 @@ Do you want to open the options dialog?</source>
     <message>
         <location filename="../optionsdialog.ui" line="63"/>
         <source>Standard serial port</source>
-        <translation>Puerto serie estándar</translation>
+        <translation>Puerto serial estándar</translation>
     </message>
     <message>
         <location filename="../optionsdialog.ui" line="71"/>
@@ -3312,19 +3312,19 @@ Do you want to open the options dialog?</source>
         <location filename="../optionsdialog.ui" line="183"/>
         <location filename="../optionsdialog.ui" line="362"/>
         <source>RI</source>
-        <translation>RI</translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="../optionsdialog.ui" line="188"/>
         <location filename="../optionsdialog.ui" line="367"/>
         <source>DSR</source>
-        <translation>DSR</translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="../optionsdialog.ui" line="193"/>
         <location filename="../optionsdialog.ui" line="372"/>
         <source>CTS</source>
-        <translation>CTS</translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="../optionsdialog.ui" line="198"/>
@@ -3339,22 +3339,22 @@ Do you want to open the options dialog?</source>
     <message>
         <location filename="../optionsdialog.ui" line="223"/>
         <source>19200 (1x)</source>
-        <translation>19200 (1x)</translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="../optionsdialog.ui" line="228"/>
         <source>38400 (2x)</source>
-        <translation>38400 (2x</translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="../optionsdialog.ui" line="233"/>
         <source>57600 (3x)</source>
-        <translation>57600 (3x)</translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="../optionsdialog.ui" line="241"/>
         <source>Use non-standard speeds</source>
-        <translation>El uso no estándar velocidades</translation>
+        <translation>Utilice velocidades no estándar</translation>
     </message>
     <message>
         <location filename="../optionsdialog.ui" line="257"/>
@@ -3414,7 +3414,7 @@ Do you want to open the options dialog?</source>
     <message>
         <location filename="../optionsdialog.ui" line="637"/>
         <source>Minimize to system tray</source>
-        <translation>Minimizar a la bandeja del sistema</translation>
+        <translation>Minimizar a la barra de tareas del sistema</translation>
     </message>
     <message>
         <location filename="../optionsdialog.ui" line="644"/>
@@ -3665,7 +3665,7 @@ Do you want to open the options dialog?</source>
     <message>
         <location filename="../diskimage.cpp" line="809"/>
         <source>Untitled image %1</source>
-        <translation>imagen sin título %1</translation>
+        <translation>Imagen sin nombre %1</translation>
     </message>
     <message>
         <location filename="../diskimage.cpp" line="842"/>
@@ -3781,7 +3781,7 @@ Do you want to open the options dialog?</source>
         <location filename="../diskimage.cpp" line="1067"/>
         <location filename="../diskimage.cpp" line="1081"/>
         <source>[%1] Cannot seek to sector %2: %3</source>
-        <translation>[%1] No se puede tratar de sector %2: %3</translation>
+        <translation>[%1] No puede buscar el sector %2: %3</translation>
     </message>
     <message>
         <location filename="../diskimage.cpp" line="1070"/>
@@ -3791,7 +3791,7 @@ Do you want to open the options dialog?</source>
     <message>
         <location filename="../diskimage.cpp" line="1097"/>
         <source>[%1] Cannot read from sector %2: %3.</source>
-        <translation>[%1 No se puede leer del sector %2: %3.</translation>
+        <translation>[%1] No se puede leer del sector %2: %3.</translation>
     </message>
     <message>
         <location filename="../diskimage.cpp" line="1116"/>
@@ -3814,7 +3814,7 @@ Do you want to open the options dialog?</source>
     <message>
         <location filename="../sioworker.cpp" line="133"/>
         <source>[%1] command: $%2, aux: $%3 ignored.</source>
-        <translation>[%1%] comando: $%2, aux: $%3 ignorado.</translation>
+        <translation>[%1] comando: $%2, aux: $%3 ignorado.</translation>
     </message>
     <message>
         <location filename="../sioworker.cpp" line="198"/>
@@ -3849,7 +3849,7 @@ Do you want to open the options dialog?</source>
     <message>
         <location filename="../sioworker.cpp" line="236"/>
         <source>Device $%1</source>
-        <translation>Unidad %1</translation>
+        <translation>Unidad $%1</translation>
     </message>
 </context>
 <context>
@@ -3877,18 +3877,18 @@ Do you want to open the options dialog?</source>
         <location filename="../serialport-unix.cpp" line="85"/>
         <location filename="../serialport-win32.cpp" line="69"/>
         <source>Cannot open serial port &apos;%1&apos;: %2</source>
-        <translation>No se puede abrir  puerto serial %1:%2</translation>
+        <translation>No se puede abrir puerto serial &apos;%1&apos;: %2</translation>
     </message>
     <message>
         <location filename="../serialport-unix.cpp" line="92"/>
         <location filename="../serialport-unix.cpp" line="97"/>
         <source>Cannot clear DTR and RTS lines in serial port &apos;%1&apos;: %2</source>
-        <translation>No se puede borrar DTR y RTS líneas en el puerto serial &apos;%1&apos;:%2</translation>
+        <translation>No se puede borrar DTR y RTS líneas en el puerto serial &apos;%1&apos;: %2</translation>
     </message>
     <message>
         <location filename="../serialport-unix.cpp" line="124"/>
         <source>Emulation started through standard serial port backend on &apos;%1&apos; with %2 handshaking.</source>
-        <translation>Emulación inicia a través de back-end estándar de puerto serie de &apos;%1&apos; con %2 handshaking.</translation>
+        <translation>Emulación inicia a través de back-end estándar de puerto serial de &apos;%1&apos; con %2 handshaking.</translation>
     </message>
     <message>
         <location filename="../serialport-unix.cpp" line="140"/>
@@ -3902,12 +3902,12 @@ Do you want to open the options dialog?</source>
         <location filename="../serialport-unix.cpp" line="309"/>
         <location filename="../serialport-win32.cpp" line="232"/>
         <source>Cannot set serial port speed to %1: %2</source>
-        <translation>No se puede establecer la velocidad del puerto serial para %1:%2</translation>
+        <translation>No se puede establecer la velocidad del puerto serial para %1: %2</translation>
     </message>
     <message>
         <location filename="../serialport-unix.cpp" line="239"/>
         <source>Closest possible speed is %2.</source>
-        <translation>Más cercano velocidad posible es %2.</translation>
+        <translation>La velocidad posible más cercana es %2.</translation>
     </message>
     <message>
         <location filename="../serialport-unix.cpp" line="258"/>
@@ -3931,7 +3931,7 @@ Do you want to open the options dialog?</source>
     <message>
         <location filename="../serialport-unix.cpp" line="301"/>
         <source>Failed to set serial port speed to %1</source>
-        <translation>Error al ajustar la velocidad del puerto serie %1</translation>
+        <translation>Error al ajustar la velocidad del puerto serial %1</translation>
     </message>
     <message>
         <location filename="../serialport-unix.cpp" line="352"/>
@@ -3964,17 +3964,17 @@ Do you want to open the options dialog?</source>
         <location filename="../serialport-unix.cpp" line="531"/>
         <location filename="../serialport-win32.cpp" line="487"/>
         <source>Serial port read timeout.</source>
-        <translation>Puerto serial tiempo de espera para lectura.</translation>
+        <translation>Puerto serial Lee tiempo de espera.</translation>
     </message>
     <message>
         <location filename="../serialport-unix.cpp" line="566"/>
         <source>Serial port write timeout. (%1 of %2 written)</source>
-        <translation>Tiempo de espera de escritura puerto serie. (%1 de %2 escrito)</translation>
+        <translation>Tiempo de espera de escritura puerto serial. (%1 de %2 escrito)</translation>
     </message>
     <message>
         <location filename="../serialport-unix.cpp" line="571"/>
         <source>Cannot flush serial port write buffer: %1</source>
-        <translation>No se puede vaciar búfer de escritura del puerto serial %1</translation>
+        <translation>No se puede vaciar búfer de escritura del puerto serial: %1</translation>
     </message>
     <message>
         <location filename="../serialport-win32.cpp" line="523"/>
@@ -3984,17 +3984,17 @@ Do you want to open the options dialog?</source>
     <message>
         <location filename="../serialport-win32.cpp" line="73"/>
         <source>Cannot clear RTS line in serial port &apos;%1&apos;: %2</source>
-        <translation>No se puede borrar la línea RTS en el puerto serial &apos;%1&apos;:%2</translation>
+        <translation>No se puede borrar la línea RTS en el puerto serial &apos;%1&apos;: %2</translation>
     </message>
     <message>
         <location filename="../serialport-win32.cpp" line="77"/>
         <source>Cannot clear DTR line in serial port &apos;%1&apos;: %2</source>
-        <translation>No se puede borrar la línea DTR en el puerto serial &apos;%1&apos;:%2</translation>
+        <translation>No se puede borrar la línea DTR en el puerto serial &apos;%1&apos;: %2</translation>
     </message>
     <message>
         <location filename="../serialport-win32.cpp" line="107"/>
         <source>Emulation started through standard serial port backend on &apos;%1&apos; with %2 handshaking</source>
-        <translation>Emulación de iniciado a través de puerto serie estándar backend en &apos;%1&apos; con handshaking de %2</translation>
+        <translation>Emulación de iniciado a través de puerto serial estándar backend en &apos;%1&apos; con handshaking de %2</translation>
     </message>
     <message>
         <location filename="../serialport-win32.cpp" line="247"/>
@@ -4004,23 +4004,23 @@ Do you want to open the options dialog?</source>
     <message>
         <location filename="../serialport-win32.cpp" line="284"/>
         <source>Cannot set serial port event mask: %1</source>
-        <translation>No se puede establecer la máscara de evento puerto serial:%1</translation>
+        <translation>No se puede establecer la máscara de evento puerto serial: %1</translation>
     </message>
     <message>
         <location filename="../serialport-win32.cpp" line="309"/>
         <location filename="../serialport-win32.cpp" line="315"/>
         <source>Cannot wait for serial port event: %1</source>
-        <translation>No puedo esperar para el evento del puerto serial:%1</translation>
+        <translation>No puedo esperar para el evento del puerto serial: %1</translation>
     </message>
     <message>
         <location filename="../serialport-win32.cpp" line="465"/>
         <source>Cannot create event: %1</source>
-        <translation>No se puede crear el evento:%1</translation>
+        <translation>No se puede crear el evento: %1</translation>
     </message>
     <message>
         <location filename="../serialport-win32.cpp" line="505"/>
         <source>Cannot clear serial port write buffer: %1</source>
-        <translation>No se puede borrar el búfer de escritura puerto serial:%1</translation>
+        <translation>No se puede borrar el búfer de escritura del puerto serial: %1</translation>
     </message>
     <message>
         <location filename="../serialport-win32.cpp" line="512"/>
@@ -4072,7 +4072,7 @@ Do you want to open the options dialog?</source>
         <location filename="../textprinterwindow.ui" line="169"/>
         <location filename="../textprinterwindow.ui" line="356"/>
         <source>Ctrl+S</source>
-        <translation>Ctrl+S</translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="../textprinterwindow.ui" line="178"/>
@@ -4092,7 +4092,7 @@ Do you want to open the options dialog?</source>
     <message>
         <location filename="../textprinterwindow.ui" line="187"/>
         <source>Ctrl+C</source>
-        <translation>Ctrl+C</translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="../textprinterwindow.ui" line="202"/>
@@ -4112,7 +4112,7 @@ Do you want to open the options dialog?</source>
     <message>
         <location filename="../textprinterwindow.ui" line="211"/>
         <source>Ctrl+W</source>
-        <translation>Ctrl+W</translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="../textprinterwindow.ui" line="220"/>
@@ -4122,7 +4122,7 @@ Do you want to open the options dialog?</source>
     <message>
         <location filename="../textprinterwindow.ui" line="223"/>
         <source>Send contents to printer (Ctrl+P)</source>
-        <translation>Enviar contenido a la impresorar (Ctrl+P)</translation>
+        <translation>Enviar contenido a la impresora (Ctrl+P)</translation>
     </message>
     <message>
         <location filename="../textprinterwindow.ui" line="226"/>
@@ -4132,7 +4132,7 @@ Do you want to open the options dialog?</source>
     <message>
         <location filename="../textprinterwindow.ui" line="229"/>
         <source>Ctrl+P</source>
-        <translation>Ctrl+P</translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="../textprinterwindow.ui" line="239"/>
@@ -4152,7 +4152,7 @@ Do you want to open the options dialog?</source>
     <message>
         <location filename="../textprinterwindow.ui" line="248"/>
         <source>Alt+F</source>
-        <translation>Alt+F</translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="../textprinterwindow.ui" line="264"/>
@@ -4172,7 +4172,7 @@ Do you want to open the options dialog?</source>
     <message>
         <location filename="../textprinterwindow.ui" line="273"/>
         <source>Alt+Shift+F</source>
-        <translation>Alt+Shift+F</translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="../textprinterwindow.ui" line="292"/>
@@ -4192,7 +4192,7 @@ Do you want to open the options dialog?</source>
     <message>
         <location filename="../textprinterwindow.ui" line="301"/>
         <source>Alt+Shift+H</source>
-        <translation>Alt+Shift+H</translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="../textprinterwindow.ui" line="323"/>
@@ -4212,7 +4212,7 @@ Do you want to open the options dialog?</source>
     <message>
         <location filename="../textprinterwindow.ui" line="332"/>
         <source>Alt+H</source>
-        <translation>Alt+H</translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="../textprinterwindow.ui" line="347"/>
