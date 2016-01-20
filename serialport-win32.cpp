@@ -54,7 +54,8 @@ bool StandardSerialPortBackend::open()
     }
 //    qDebug() << "!d" << tr("DBG -- Serial Port Open...");
 
-    QString name = respeqtSettings->serialPortName();
+    QString name("\\\\.\\");
+    name.append(respeqtSettings->serialPortName());
 
     mHandle = (CreateFile(
         (WCHAR*)name.utf16(),
