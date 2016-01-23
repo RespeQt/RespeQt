@@ -1128,7 +1128,7 @@ void SimpleDiskImage::getStatus(QByteArray &status)
                 (m_newGeometry.bytesPerSector() == 256) * 32 |
                 (m_newGeometry.bytesPerSector() == 128 && m_newGeometry.sectorsPerTrack() == 26) * 128;
     status[1] = 0xFF;
-    status[2] = 3;
+    status[2] = 0xE0; // Timeout for format ($E0) - Time the drive will need to format a disk (1050 returns 0xe0, XF551 0xfe)
     status[3] = 0;
 }
 
