@@ -67,15 +67,15 @@ bool StandardSerialPortBackend::open()
         0
     ));
     if (mHandle == INVALID_HANDLE_VALUE) {
-        qCritical() << "!e" << tr("Cannot open serial port '%1': %2").arg(name, lastErrorMessage());
+        qCritical() << "!e" << tr("Cannot open serial port '%1': %2").arg(respeqtSettings->serialPortName(), lastErrorMessage());
         return false;
     }
     if (!EscapeCommFunction(mHandle, CLRRTS)) {
-        qCritical() << "!e" << tr("Cannot clear RTS line in serial port '%1': %2").arg(name, lastErrorMessage());
+        qCritical() << "!e" << tr("Cannot clear RTS line in serial port '%1': %2").arg(respeqtSettings->serialPortName(), lastErrorMessage());
         return false;
     }
     if (!EscapeCommFunction(mHandle, CLRDTR)) {
-        qCritical() << "!e" << tr("Cannot clear DTR line in serial port '%1': %2").arg(name, lastErrorMessage());
+        qCritical() << "!e" << tr("Cannot clear DTR line in serial port '%1': %2").arg(respeqtSettings->serialPortName(), lastErrorMessage());
         return false;
     }
 
