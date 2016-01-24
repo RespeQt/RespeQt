@@ -34,6 +34,7 @@ RespeqtSettings::RespeqtSettings()
     /* Standard serial port backend */
     mSerialPortName = mSettings->value("SerialPortName", StandardSerialPortBackend::defaultPortName()).toString();
     mSerialPortHandshakingMethod = mSettings->value("HandshakingMethod", 0).toInt();
+    mSerialPortWriteDelay = mSettings->value("WriteDelay", 1).toInt();
     mSerialPortMaximumSpeed = mSettings->value("MaximumSerialPortSpeed", 2).toInt();
     mSerialPortUsePokeyDivisors = mSettings->value("SerialPortUsePokeyDivisors", false).toBool();
     mSerialPortPokeyDivisor = mSettings->value("SerialPortPokeyDivisor", 6).toInt();
@@ -113,6 +114,7 @@ void RespeqtSettings::saveSessionToFile(const QString &fileName)
         s.setValue("AtariSioHandshakingMethod", mAtariSioHandshakingMethod);
         s.setValue("SerialPortName", mSerialPortName);
         s.setValue("HandshakingMethod", mSerialPortHandshakingMethod);
+        s.setValue("WriteDelay", mSerialPortWriteDelay);
         s.setValue("MaximumSerialPortSpeed", mSerialPortMaximumSpeed);
         s.setValue("SerialPortUsePokeyDivisors", mSerialPortUsePokeyDivisors);
         s.setValue("SerialPortPokeyDivisor", mSerialPortPokeyDivisor);
@@ -161,6 +163,7 @@ void RespeqtSettings::saveSessionToFile(const QString &fileName)
         mAtariSioHandshakingMethod = s.value("AtariSioHandshakingMethod", 0).toInt();
         mSerialPortName = s.value("SerialPortName", StandardSerialPortBackend::defaultPortName()).toString();
         mSerialPortHandshakingMethod = s.value("HandshakingMethod", 0).toInt();
+        mSerialPortWriteDelay = s.value("WriteDelay", 1).toInt();
         mSerialPortMaximumSpeed = s.value("MaximumSerialPortSpeed", 2).toInt();
         mSerialPortUsePokeyDivisors = s.value("SerialPortUsePokeyDivisors", false).toBool();
         mSerialPortPokeyDivisor = s.value("SerialPortPokeyDivisor", 6).toInt();
@@ -282,6 +285,17 @@ void RespeqtSettings::setSerialPortHandshakingMethod(int method)
 { 
     mSerialPortHandshakingMethod = method;
     if(mSessionFileName == "") mSettings->setValue("HandshakingMethod", mSerialPortHandshakingMethod);
+}
+
+int RespeqtSettings::serialPortWriteDelay()
+{
+    return mSerialPortWriteDelay;
+}
+
+void RespeqtSettings::setSerialPortWriteDelay(int delay)
+{
+    mSerialPortWriteDelay = delay;
+    if(mSessionFileName == "") mSettings->setValue("WriteDelay", mSerialPortWriteDelay);
 }
 
 int RespeqtSettings::backend()

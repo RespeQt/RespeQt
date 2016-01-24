@@ -86,6 +86,16 @@ void SioWorker::start(Priority p)
             break;
     }
 
+    QByteArray data;
+    for (int i=0; i <= 255; i++)
+    {
+        if(devices[i])
+        {
+            data.append(i);
+        }
+    }
+    mPort->setActiveSioDevices(data);
+
     mustTerminate = false;
     QThread::start(p);
 }
@@ -150,6 +160,18 @@ void SioWorker::installDevice(quint8 no, SioDevice *device)
     devices[no] = device;
     device->setDeviceNo(no);
     deviceMutex->unlock();
+    if(mPort)
+    {
+        QByteArray data;
+        for (int i=0; i <= 255; i++)
+        {
+            if(devices[i])
+            {
+                data.append(i);
+            }
+        }
+        mPort->setActiveSioDevices(data);
+    }
 }
 
 void SioWorker::uninstallDevice(quint8 no)
@@ -160,6 +182,18 @@ void SioWorker::uninstallDevice(quint8 no)
     }
     devices[no] = 0;
     deviceMutex->unlock();
+    if(mPort)
+    {
+        QByteArray data;
+        for (int i=0; i <= 255; i++)
+        {
+            if(devices[i])
+            {
+                data.append(i);
+            }
+        }
+        mPort->setActiveSioDevices(data);
+    }
 }
 
 void SioWorker::swapDevices(quint8 d1, quint8 d2)

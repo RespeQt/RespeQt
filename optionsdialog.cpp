@@ -40,6 +40,7 @@ OptionsDialog::OptionsDialog(QWidget *parent) :
     /* Retrieve application settings */
     m_ui->serialPortDeviceNameEdit->setText(respeqtSettings->serialPortName());
     m_ui->serialPortHandshakeCombo->setCurrentIndex(respeqtSettings->serialPortHandshakingMethod());
+    m_ui->serialPortWriteDelayCombo->setCurrentIndex(respeqtSettings->serialPortWriteDelay());
     m_ui->serialPortBaudCombo->setCurrentIndex(respeqtSettings->serialPortMaximumSpeed());
     m_ui->serialPortUseDivisorsBox->setChecked(respeqtSettings->serialPortUsePokeyDivisors());
     m_ui->serialPortDivisorEdit->setValue(respeqtSettings->serialPortPokeyDivisor());
@@ -90,6 +91,8 @@ OptionsDialog::OptionsDialog(QWidget *parent) :
         m_ui->i18nLanguageCombo->setCurrentIndex(i+2);
 	}
     }
+    m_ui->serialPortWriteDelayLabel->setVisible(respeqtSettings->serialPortHandshakingMethod()==3);
+    m_ui->serialPortWriteDelayCombo->setVisible(respeqtSettings->serialPortHandshakingMethod()==3);
 }
 
 OptionsDialog::~OptionsDialog()
@@ -113,6 +116,7 @@ void OptionsDialog::OptionsDialog_accepted()
 {
     respeqtSettings->setSerialPortName(m_ui->serialPortDeviceNameEdit->text());
     respeqtSettings->setSerialPortHandshakingMethod(m_ui->serialPortHandshakeCombo->currentIndex());
+    respeqtSettings->setSerialPortWriteDelay(m_ui->serialPortWriteDelayCombo->currentIndex());
     respeqtSettings->setSerialPortMaximumSpeed(m_ui->serialPortBaudCombo->currentIndex());
     respeqtSettings->setSerialPortUsePokeyDivisors(m_ui->serialPortUseDivisorsBox->isChecked());
     respeqtSettings->setSerialPortPokeyDivisor(m_ui->serialPortDivisorEdit->value());
@@ -166,6 +170,12 @@ void OptionsDialog::on_treeWidget_itemClicked(QTreeWidgetItem* item, int /*colum
     }
     m_ui->serialPortBox->setCheckState(itemStandard->checkState(0));
     m_ui->atariSioBox->setCheckState(itemAtariSio->checkState(0));
+}
+
+void OptionsDialog::on_serialPortHandshakeCombo_currentIndexChanged(int index)
+{
+    m_ui->serialPortWriteDelayLabel->setVisible(index==3);
+    m_ui->serialPortWriteDelayCombo->setVisible(index==3);
 }
 
 void OptionsDialog::on_serialPortUseDivisorsBox_toggled(bool checked)

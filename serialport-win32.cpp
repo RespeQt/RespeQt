@@ -57,29 +57,49 @@ bool StandardSerialPortBackend::open()
     QString name("\\\\.\\");
     name.append(respeqtSettings->serialPortName());
 
-    mHandle = (CreateFile(
-        (WCHAR*)name.utf16(),
-        GENERIC_READ | GENERIC_WRITE,
-        0,
-        NULL,
-        OPEN_EXISTING,
-        FILE_ATTRIBUTE_NORMAL | FILE_FLAG_OVERLAPPED,
-        0
-    ));
-    if (mHandle == INVALID_HANDLE_VALUE) {
-        qCritical() << "!e" << tr("Cannot open serial port '%1': %2").arg(respeqtSettings->serialPortName(), lastErrorMessage());
-        return false;
-    }
-    if (!EscapeCommFunction(mHandle, CLRRTS)) {
-        qCritical() << "!e" << tr("Cannot clear RTS line in serial port '%1': %2").arg(respeqtSettings->serialPortName(), lastErrorMessage());
-        return false;
-    }
-    if (!EscapeCommFunction(mHandle, CLRDTR)) {
-        qCritical() << "!e" << tr("Cannot clear DTR line in serial port '%1': %2").arg(respeqtSettings->serialPortName(), lastErrorMessage());
-        return false;
-    }
-
     mMethod = respeqtSettings->serialPortHandshakingMethod();
+    mDelay = SLEEP_FACTOR * respeqtSettings->serialPortWriteDelay();
+
+    if(mMethod==SOFTWARE_HANDSHAKE)
+    {
+        mHandle = (CreateFile(
+            (WCHAR*)name.utf16(),
+            GENERIC_READ | GENERIC_WRITE,
+            0,
+            NULL,
+            OPEN_EXISTING,
+            FILE_FLAG_WRITE_THROUGH,
+            0
+        ));
+        if (mHandle == INVALID_HANDLE_VALUE) {
+            qCritical() << "!e" << tr("Cannot open serial port '%1': %2").arg(respeqtSettings->serialPortName(), lastErrorMessage());
+            return false;
+        }
+    }
+    else
+    {
+        mHandle = (CreateFile(
+            (WCHAR*)name.utf16(),
+            GENERIC_READ | GENERIC_WRITE,
+            0,
+            NULL,
+            OPEN_EXISTING,
+            FILE_ATTRIBUTE_NORMAL | FILE_FLAG_OVERLAPPED,
+            0
+        ));
+        if (mHandle == INVALID_HANDLE_VALUE) {
+            qCritical() << "!e" << tr("Cannot open serial port '%1': %2").arg(respeqtSettings->serialPortName(), lastErrorMessage());
+            return false;
+        }
+        if (!EscapeCommFunction(mHandle, CLRRTS)) {
+            qCritical() << "!e" << tr("Cannot clear RTS line in serial port '%1': %2").arg(respeqtSettings->serialPortName(), lastErrorMessage());
+            return false;
+        }
+        if (!EscapeCommFunction(mHandle, CLRDTR)) {
+            qCritical() << "!e" << tr("Cannot clear DTR line in serial port '%1': %2").arg(respeqtSettings->serialPortName(), lastErrorMessage());
+            return false;
+        }
+    }
 
     mCanceled = false;
 
@@ -101,8 +121,9 @@ bool StandardSerialPortBackend::open()
     case 2:
         m = "CTS";
         break;
-    case 3:
-        m = "NO";
+    default:
+        m = "SOFTWARE";
+        break;
     }
     /* Notify the user that emulation is started */
     qWarning() << "!i" << tr("Emulation started through standard serial port backend on '%1' with %2 handshaking")
@@ -238,10 +259,21 @@ bool StandardSerialPortBackend::setSpeed(int speed)
 
     /* Adjust serial port timeouts */
     to.ReadIntervalTimeout = 0;
-    to.ReadTotalTimeoutMultiplier = 100;
-    to.ReadTotalTimeoutConstant = 0;
-    to.WriteTotalTimeoutMultiplier = 100;
-    to.WriteTotalTimeoutConstant = 0;
+
+    if(mMethod==SOFTWARE_HANDSHAKE)
+    {
+        to.ReadTotalTimeoutConstant = 300;
+        to.WriteTotalTimeoutConstant = 300;
+        to.ReadTotalTimeoutMultiplier = 200;
+        to.WriteTotalTimeoutMultiplier = 200;
+    }
+    else
+    {
+        to.ReadTotalTimeoutConstant = 0;
+        to.WriteTotalTimeoutConstant = 0;
+        to.ReadTotalTimeoutMultiplier = 100;
+        to.WriteTotalTimeoutMultiplier = 100;
+    }
 
     /* Set serial port timeouts */
     if (!SetCommTimeouts(mHandle, &to)) {
@@ -265,92 +297,137 @@ QByteArray StandardSerialPortBackend::readCommandFrame()
 //    qDebug() << "!d" << tr("DBG -- Serial Port readCommandFrame...");
 
     QByteArray data;
-    DWORD mask;
 
-    switch (mMethod) {
-    case 0:
-        mask = EV_RING;
-        break;
-    case 1:
-        mask = EV_DSR;
-        break;
-    case 2:
-        mask = EV_CTS;
-        break;
-    case 3:
-        mask = EV_RXCHAR;
-    }
-
-    if (!SetCommMask(mHandle, mask)) {
-        qCritical() << "!e" << tr("Cannot set serial port event mask: %1").arg(lastErrorMessage());
-        return data;
-    }
-
-    int retries = 0, totalRetries = 0;
-    do {
-        data.clear();
-        OVERLAPPED ov;
-
-        memset(&ov, 0, sizeof(ov));
-        ov.hEvent = CreateEvent(0, true, false, 0);
-
-        HANDLE events[2];
-        events[0] = ov.hEvent;
-        events[1] = mCancelHandle;
-
-        if (!WaitCommEvent(mHandle, &mask, &ov)) {
-            if (GetLastError() == ERROR_IO_PENDING) {
-                DWORD x = WaitForMultipleObjects(2, events, false, INFINITE);
-                CloseHandle(ov.hEvent);
-                if (x == WAIT_OBJECT_0 + 1) {
-                    data.clear();
-                    return data;
-                }
-                if (x == WAIT_FAILED) {
-                    qCritical() << "!e" << tr("Cannot wait for serial port event: %1").arg(lastErrorMessage());
-                    data.clear();
-                    return data;
-                }
-            } else {
-                CloseHandle(ov.hEvent);
-                qCritical() << "!e" << tr("Cannot wait for serial port event: %1").arg(lastErrorMessage());
-                return data;
-            }
-        }
-
+    if(mMethod==SOFTWARE_HANDSHAKE)
+    {
         if (!PurgeComm(mHandle, PURGE_RXCLEAR)) {
             qCritical() << "!e" << tr("Cannot clear serial port read buffer: %1").arg(lastErrorMessage());
             return data;
         }
 
-//        qDebug() << "!d" << tr("DBG -- Serial Port, just about to readDataFrame...");
+        const int size = 4;
+        quint8 expected = 0;
+        quint8 got = 1;
+        do
+        {
+            DWORD result;
+            char c;
+            if(ReadFile(mHandle, &c, 1, &result, NULL) && result == 1)
+            {
+                data.append(c);
+                if(data.size()==size+2)
+                {
+                    data.remove(0,1);
+                }
+                if(data.size()==size+1)
+                {
+                    for(int i=0 ; i<mSioDevices.size() ; i++)
+                    {
+                        if(data.at(0)==mSioDevices[i])
+                        {
+                            expected = (quint8)data.at(size);
+                            got = sioChecksum(data, size);
+                            break;
+                        }
+                    }
+                }
+            }
+        } while(got!=expected && !mCanceled);
 
-        data = readDataFrame(4, false);
+        if(got==expected)
+        {
+            data.resize(size);
+        }
+        else
+        {
+            data.clear();
+        }
+    }
+    else
+    {
+        DWORD mask;
 
-        if (!data.isEmpty()) {
+        switch (mMethod) {
+        case 0:
+            mask = EV_RING;
+            break;
+        case 1:
+            mask = EV_DSR;
+            break;
+        case 2:
+        default:
+            mask = EV_CTS;
+            break;
+        }
 
-//            qDebug() << "!d" << tr("DBG -- Serial Port, data not empty: [%1]").arg(data.data());
+        if (!SetCommMask(mHandle, mask)) {
+            qCritical() << "!e" << tr("Cannot set serial port event mask: %1").arg(lastErrorMessage());
+            return data;
+        }
 
-            if(mask != EV_RXCHAR) { // 
+        int retries = 0, totalRetries = 0;
+        do {
+            data.clear();
+            OVERLAPPED ov;
+
+            memset(&ov, 0, sizeof(ov));
+            ov.hEvent = CreateEvent(0, true, false, 0);
+
+            HANDLE events[2];
+            events[0] = ov.hEvent;
+            events[1] = mCancelHandle;
+
+            if (!WaitCommEvent(mHandle, &mask, &ov)) {
+                if (GetLastError() == ERROR_IO_PENDING) {
+                    DWORD x = WaitForMultipleObjects(2, events, false, INFINITE);
+                    CloseHandle(ov.hEvent);
+                    if (x == WAIT_OBJECT_0 + 1) {
+                        data.clear();
+                        return data;
+                    }
+                    if (x == WAIT_FAILED) {
+                        qCritical() << "!e" << tr("Cannot wait for serial port event: %1").arg(lastErrorMessage());
+                        data.clear();
+                        return data;
+                    }
+                } else {
+                    CloseHandle(ov.hEvent);
+                    qCritical() << "!e" << tr("Cannot wait for serial port event: %1").arg(lastErrorMessage());
+                    return data;
+                }
+            }
+
+            if (!PurgeComm(mHandle, PURGE_RXCLEAR)) {
+                qCritical() << "!e" << tr("Cannot clear serial port read buffer: %1").arg(lastErrorMessage());
+                return data;
+            }
+
+    //        qDebug() << "!d" << tr("DBG -- Serial Port, just about to readDataFrame...");
+
+            data = readDataFrame(4, false);
+
+            if (!data.isEmpty()) {
+
+    //            qDebug() << "!d" << tr("DBG -- Serial Port, data not empty: [%1]").arg(data.data());
                 do {
                     GetCommModemStatus(mHandle, &mask);
                 } while (mask && !mCanceled);
-            }
-            break;
-        } else {
-            retries++;
-            totalRetries++;
-            if (retries == 2) {
-                retries = 0;
-                if (mHighSpeed) {
-                    setNormalSpeed();
-                } else {
-                    setHighSpeed();
+                break;
+            } else {
+                retries++;
+                totalRetries++;
+                if (retries == 2) {
+                    retries = 0;
+                    if (mHighSpeed) {
+                        setNormalSpeed();
+                    } else {
+                        setHighSpeed();
+                    }
                 }
             }
-        }
-//    } while (totalRetries < 100);
-    } while (1);
+    //    } while (totalRetries < 100);
+        } while (1);
+    }
     return data;
 }
 
@@ -386,6 +463,7 @@ bool StandardSerialPortBackend::writeDataFrame(const QByteArray &data)
     QByteArray copy(data);
     copy.resize(copy.size() + 1);
     copy[copy.size() - 1] = sioChecksum(copy, copy.size() - 1);
+    if(mMethod==SOFTWARE_HANDSHAKE)SioWorker::usleep(mDelay);
     SioWorker::usleep(50);
     return writeRawFrame(copy);
 }
@@ -422,6 +500,7 @@ bool StandardSerialPortBackend::writeComplete()
 {
 //    qDebug() << "!d" << tr("DBG -- Serial Port writeComplete...");
 
+    if(mMethod==SOFTWARE_HANDSHAKE)SioWorker::usleep(mDelay);
     SioWorker::usleep(300);
     return writeRawFrame(QByteArray(1, 67));
 }
@@ -430,6 +509,7 @@ bool StandardSerialPortBackend::writeError()
 {
 //    qDebug() << "!d" << tr("DBG -- Serial Port writeError...");
 
+    if(mMethod==SOFTWARE_HANDSHAKE)SioWorker::usleep(mDelay);
     SioWorker::usleep(300);
     return writeRawFrame(QByteArray(1, 69));
 }
@@ -457,37 +537,53 @@ QByteArray StandardSerialPortBackend::readRawFrame(uint size, bool verbose)
 
     QByteArray data;
     DWORD result;
-    OVERLAPPED ov;
 
-    memset(&ov, 0, sizeof(ov));
-    ov.hEvent = CreateEvent(0, true, false, 0);
-
-    if (ov.hEvent == INVALID_HANDLE_VALUE) {
-        qCritical() << "!e" << tr("Cannot create event: %1").arg(lastErrorMessage());
-        return data;
+    if(mMethod==SOFTWARE_HANDSHAKE)
+    {
+        data.resize(size);
+        if (!ReadFile(mHandle, data.data(), size, &result, NULL) || (result != (DWORD)size))
+        {
+            data.clear();
+        }
     }
+    else
+    {
+        OVERLAPPED ov;
 
-    data.resize(size);
-    if (!ReadFile(mHandle, data.data(), size, &result, &ov)) {
-        if (GetLastError() == ERROR_IO_PENDING) {
-            if (!GetOverlappedResult(mHandle, &ov, &result, true)) {
+        memset(&ov, 0, sizeof(ov));
+        ov.hEvent = CreateEvent(0, true, false, 0);
+
+        if (ov.hEvent == INVALID_HANDLE_VALUE) {
+            qCritical() << "!e" << tr("Cannot create event: %1").arg(lastErrorMessage());
+            return data;
+        }
+
+        data.resize(size);
+        if (!ReadFile(mHandle, data.data(), size, &result, &ov)) {
+            if (GetLastError() == ERROR_IO_PENDING) {
+                if (!GetOverlappedResult(mHandle, &ov, &result, true)) {
+                    qCritical() << "!e" << tr("Cannot read from serial port: %1").arg(lastErrorMessage());
+                    data.clear();
+                    CloseHandle(ov.hEvent);
+                    return data;
+                }
+            } else {
                 qCritical() << "!e" << tr("Cannot read from serial port: %1").arg(lastErrorMessage());
                 data.clear();
                 CloseHandle(ov.hEvent);
                 return data;
             }
-        } else {
-            qCritical() << "!e" << tr("Cannot read from serial port: %1").arg(lastErrorMessage());
+        }
+        CloseHandle(ov.hEvent);
+        if (result != (DWORD)size)
+        {
+            if(verbose)
+            {
+                qCritical() << "!e" << tr("Serial port read timeout.");
+            }
             data.clear();
-            CloseHandle(ov.hEvent);
             return data;
         }
-    }
-    CloseHandle(ov.hEvent);
-    if (verbose && result != (DWORD)size) {
-        qCritical() << "!e" << tr("Serial port read timeout.");
-        data.clear();
-        return data;
     }
     return data;
 }
@@ -497,29 +593,38 @@ bool StandardSerialPortBackend::writeRawFrame(const QByteArray &data)
 //    qDebug() << "!d" << tr("DBG -- Serial Port writeRawFrame...");
 
     DWORD result;
-    OVERLAPPED ov;
-
-    memset(&ov, 0, sizeof(ov));
-    ov.hEvent = CreateEvent(0, true, false, 0);
 
     if (!PurgeComm(mHandle, PURGE_TXCLEAR)) {
         qCritical() << "!e" << tr("Cannot clear serial port write buffer: %1").arg(lastErrorMessage());
         return false;
     }
 
-    if (!WriteFile(mHandle, data.constData(), data.size(), &result, &ov)) {
-        if (GetLastError() == ERROR_IO_PENDING) {
-            if (!GetOverlappedResult(mHandle, &ov, &result, true)) {
+    if(mMethod==SOFTWARE_HANDSHAKE)
+    {
+        return WriteFile(mHandle, data.constData(), data.size(), &result, NULL);
+    }
+    else
+    {
+        OVERLAPPED ov;
+
+        memset(&ov, 0, sizeof(ov));
+        ov.hEvent = CreateEvent(0, true, false, 0);
+
+        if (!WriteFile(mHandle, data.constData(), data.size(), &result, &ov)) {
+            if (GetLastError() == ERROR_IO_PENDING) {
+                if (!GetOverlappedResult(mHandle, &ov, &result, true)) {
+                    qCritical() << "!e" << tr("Cannot write to serial port: %1").arg(lastErrorMessage());
+                    CloseHandle(ov.hEvent);
+                    return false;
+                }
+            } else {
                 qCritical() << "!e" << tr("Cannot write to serial port: %1").arg(lastErrorMessage());
-                CloseHandle(ov.hEvent);
                 return false;
             }
-        } else {
-            qCritical() << "!e" << tr("Cannot write to serial port: %1").arg(lastErrorMessage());
-            return false;
         }
+        CloseHandle(ov.hEvent);
     }
-    CloseHandle(ov.hEvent);
+
     if (result != (DWORD)data.size()) {
         qCritical() << "!e" << tr("Serial port write timeout.");
         return false;
@@ -547,6 +652,11 @@ QString StandardSerialPortBackend::lastErrorMessage()
     result.setUtf16((ushort *)lpMsgBuf, wcslen((wchar_t*)lpMsgBuf) - 2);
     LocalFree(lpMsgBuf);
     return result;
+}
+
+void StandardSerialPortBackend::setActiveSioDevices(const QByteArray &data)
+{
+    mSioDevices = data;
 }
 
 /* Dummy AtariSIO backend */
@@ -579,3 +689,4 @@ bool AtariSioBackend::writeComplete() {return false;}
 bool AtariSioBackend::writeError() {return false;}
 bool AtariSioBackend::setSpeed(int speed) {return false;}
 bool AtariSioBackend::writeRawFrame(const QByteArray &data) {return false;}
+void AtariSioBackend::setActiveSioDevices(const QByteArray &data){}

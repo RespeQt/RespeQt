@@ -34,6 +34,7 @@ private:
     QTreeWidgetItem *itemStandard, *itemAtariSio, *itemEmulation, *itemI18n;
 
 private slots:
+    void on_serialPortHandshakeCombo_currentIndexChanged(int index);
     void on_useEmulationCustomCasBaudBox_toggled(bool checked);
     void on_serialPortUseDivisorsBox_toggled(bool checked);
     void on_treeWidget_itemClicked(QTreeWidgetItem* item, int column);
