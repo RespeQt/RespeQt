@@ -37,12 +37,15 @@ public:
     bool writeError();
     bool setSpeed(int speed);
     bool writeRawFrame(const QByteArray &data);
+    void setActiveSioDevices(const QByteArray &data);
 
 private:
     bool mCanceled;
     int mHandle;
     int mSpeed;
     int mMethod;
+    int mDelay;
+    QByteArray mSioDevices;
 
     bool setNormalSpeed();
     bool setHighSpeed();
@@ -79,6 +82,7 @@ public:
     bool writeError();
     bool setSpeed(int speed);
     bool writeRawFrame(const QByteArray &data);
+    void setActiveSioDevices(const QByteArray &data);
 
 private:
     int mHandle, mCancelHandles[2];

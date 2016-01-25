@@ -51,6 +51,9 @@ public:
     int atariSioHandshakingMethod();
     void setAtariSioHandshakingMethod(int method);
 
+    int serialPortWriteDelay();
+    void setSerialPortWriteDelay(int delay);
+
     int backend();
     void setBackend(int backend);
 
@@ -199,6 +202,7 @@ private:
 //
     QString mSerialPortName;
     int mSerialPortHandshakingMethod;
+    int mSerialPortWriteDelay;
     int mSerialPortMaximumSpeed;
     bool mSerialPortUsePokeyDivisors;
     int mSerialPortPokeyDivisor;

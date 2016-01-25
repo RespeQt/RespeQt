@@ -78,6 +78,8 @@ bool StandardSerialPortBackend::open()
     }
 
     QString name = respeqtSettings->serialPortName();
+    mMethod = respeqtSettings->serialPortHandshakingMethod();
+    mDelay = SLEEP_FACTOR * respeqtSettings->serialPortWriteDelay();
 
     mHandle = ::open(name.toLocal8Bit().constData(), O_RDWR | O_NOCTTY | O_NDELAY);
 
@@ -87,18 +89,20 @@ bool StandardSerialPortBackend::open()
         return false;
     }
 
-    int status;
-    if (ioctl(mHandle, TIOCMGET, &status) < 0) {
-        qCritical() << "!e" << tr("Cannot clear DTR and RTS lines in serial port '%1': %2").arg(name, lastErrorMessage());
-        return false;
-    }
-    status = status & ~(TIOCM_DTR & TIOCM_RTS);
-    if (ioctl(mHandle, TIOCMSET, &status) < 0) {
-        qCritical() << "!e" << tr("Cannot clear DTR and RTS lines in serial port '%1': %2").arg(name, lastErrorMessage());
-        return false;
+    if(mMethod!=SOFTWARE_HANDSHAKE)
+    {
+        int status;
+        if (ioctl(mHandle, TIOCMGET, &status) < 0) {
+            qCritical() << "!e" << tr("Cannot clear DTR and RTS lines in serial port '%1': %2").arg(name, lastErrorMessage());
+            return false;
+        }
+        status = status & ~(TIOCM_DTR & TIOCM_RTS);
+        if (ioctl(mHandle, TIOCMSET, &status) < 0) {
+            qCritical() << "!e" << tr("Cannot clear DTR and RTS lines in serial port '%1': %2").arg(name, lastErrorMessage());
+            return false;
+        }
     }
 
-    mMethod = respeqtSettings->serialPortHandshakingMethod();
     mCanceled = false;
 
     if (!setNormalSpeed()) {
@@ -118,7 +122,8 @@ bool StandardSerialPortBackend::open()
         m = "CTS";
         break;
     default:
-        m = "DSR";
+        m = "SOFTWARE";
+        break;
     }
     /* Notify the user that emulation is started */
     qWarning() << "!i" << tr("Emulation started through standard serial port backend on '%1' with %2 handshaking.")
@@ -326,93 +331,142 @@ int StandardSerialPortBackend::speed()
 QByteArray StandardSerialPortBackend::readCommandFrame()
 {
     QByteArray data;
-    int mask;
 
-    switch (mMethod) {
-    case 0:
-        mask = TIOCM_RI;
-        break;
-    case 1:
-        mask = TIOCM_DSR;
-        break;
-    case 2:
-        mask = TIOCM_CTS;
-        break;
-    default:
-        mask = TIOCM_DSR;
+    if(mMethod==SOFTWARE_HANDSHAKE)
+    {
+        if (tcflush(mHandle, TCIFLUSH) != 0)
+        {
+            qCritical() << "!e" << tr("Cannot clear serial port read buffer: %1").arg(lastErrorMessage());
+            return data;
+        }
+
+        const int size = 4;
+        quint8 expected = 0;
+        quint8 got = 1;
+        do
+        {
+            int result;
+            char c;
+            if(1 == ::read(mHandle, &c, 1))
+            {
+                data.append(c);
+                if(data.size()==size+2)
+                {
+                    data.remove(0,1);
+                }
+                if(data.size()==size+1)
+                {
+                    for(int i=0 ; i<mSioDevices.size() ; i++)
+                    {
+                        if(data.at(0)==mSioDevices[i])
+                        {
+                            expected = (quint8)data.at(size);
+                            got = sioChecksum(data, size);
+                            break;
+                        }
+                    }
+                }
+            }
+        } while(got!=expected && !mCanceled);
+
+        if(got==expected)
+        {
+            data.resize(size);
+        }
+        else
+        {
+            data.clear();
+        }
     }
+    else
+    {
+        int mask;
 
-    int status;
-    int retries = 0, totalRetries = 0;
-    do {
-        data.clear();
-        /* First, wait until command line goes off */
-        do {
-            if (ioctl(mHandle, TIOCMGET, &status) < 0) {
-                qCritical() << "!e" << tr("Cannot retrieve serial port status: %1").arg(lastErrorMessage());
-                return data;
-            }
-            if (status & mask) {
-                #ifdef Q_OS_UNIX
-                    QThread::yieldCurrentThread();   // Venkman 07132015 OS definition blocks added
-                #endif
-
-                #ifdef Q_OS_MAC
-                    QThread::usleep(500);
-                #endif
-            }
-        } while ((status & mask) && !mCanceled);
-        /* Now wait for it to go on again */
-        do {
-            if (ioctl(mHandle, TIOCMGET, &status) < 0) {
-                qCritical() << "!e" << tr("Cannot retrieve serial port status: %1").arg(lastErrorMessage());
-                return data;
-            }
-            if (!(status & mask)) {
-                #ifdef Q_OS_UNIX
-                    QThread::yieldCurrentThread();   // Venkman 07132015 OS definition blocks added
-                #endif
-
-                #ifdef Q_OS_MAC
-                   QThread::usleep(500);
-                #endif
-            }
-        } while (!(status & mask) && !mCanceled);
-
-        if (mCanceled) {
-            return data;
+        switch (mMethod) {
+        case 0:
+            mask = TIOCM_RI;
+            break;
+        case 1:
+            mask = TIOCM_DSR;
+            break;
+        case 2:
+        default:
+            mask = TIOCM_CTS;
+            break;
         }
 
-        if (tcflush(mHandle, TCIFLUSH) != 0) {
-            qCritical() << "!e" << tr("Cannot clear serial port read buffer: %1")
-                           .arg(lastErrorMessage());
-            return data;
-        }
-
-        data = readDataFrame(4, false);
-
-        if (!data.isEmpty()) {
+        int status;
+        int retries = 0, totalRetries = 0;
+        do {
+            data.clear();
+            /* First, wait until command line goes off */
             do {
                 if (ioctl(mHandle, TIOCMGET, &status) < 0) {
                     qCritical() << "!e" << tr("Cannot retrieve serial port status: %1").arg(lastErrorMessage());
                     return data;
                 }
+                if (status & mask) {
+                    #ifdef Q_OS_UNIX
+                        QThread::yieldCurrentThread();   // Venkman 07132015 OS definition blocks added
+                    #endif
+
+                    #ifdef Q_OS_MAC
+                        QThread::usleep(500);
+                    #endif
+                }
             } while ((status & mask) && !mCanceled);
-            break;
-        } else {
-            retries++;
-            totalRetries++;
-            if (retries == 2) {
-                retries = 0;
-                if (mHighSpeed) {
-                    setNormalSpeed();
-                } else {
-                    setHighSpeed();
+            /* Now wait for it to go on again */
+            do {
+                if (ioctl(mHandle, TIOCMGET, &status) < 0) {
+                    qCritical() << "!e" << tr("Cannot retrieve serial port status: %1").arg(lastErrorMessage());
+                    return data;
+                }
+                if (!(status & mask)) {
+                    #ifdef Q_OS_UNIX
+                        QThread::yieldCurrentThread();   // Venkman 07132015 OS definition blocks added
+                    #endif
+
+                    #ifdef Q_OS_MAC
+                       QThread::usleep(500);
+                    #endif
+                }
+            } while (!(status & mask) && !mCanceled);
+
+            if (mCanceled) {
+                return data;
+            }
+
+            if (tcflush(mHandle, TCIFLUSH) != 0) {
+                qCritical() << "!e" << tr("Cannot clear serial port read buffer: %1")
+                               .arg(lastErrorMessage());
+                return data;
+            }
+
+            data = readDataFrame(4, false);
+
+            if (!data.isEmpty()) {
+                do {
+                    if (ioctl(mHandle, TIOCMGET, &status) < 0) {
+                        qCritical() << "!e" << tr("Cannot retrieve serial port status: %1").arg(lastErrorMessage());
+                        return data;
+                    }
+                } while ((status & mask) && !mCanceled);
+                break;
+            } else {
+                retries++;
+                totalRetries++;
+                if (retries == 2) {
+                    retries = 0;
+                    if (mHighSpeed) {
+                        setNormalSpeed();
+                    } else {
+                        setHighSpeed();
+                    }
                 }
             }
-        }
-//    } while (totalRetries < 100);
-    } while (1);
+    //    } while (totalRetries < 100);
+        } while (1);
+    }
     return data;
 }
 
@@ -444,6 +498,7 @@ bool StandardSerialPortBackend::writeDataFrame(const QByteArray &data)
     QByteArray copy(data);
     copy.resize(copy.size() + 1);
     copy[copy.size() - 1] = sioChecksum(copy, copy.size() - 1);
+    if(mMethod==SOFTWARE_HANDSHAKE)SioWorker::usleep(mDelay);
     SioWorker::usleep(50);
     return writeRawFrame(copy);
 }
@@ -470,12 +525,14 @@ bool StandardSerialPortBackend::writeDataNak()
 
 bool StandardSerialPortBackend::writeComplete()
 {
+    if(mMethod==SOFTWARE_HANDSHAKE)SioWorker::usleep(mDelay);
     SioWorker::usleep(800);
     return writeRawFrame(QByteArray(1, 67));
 }
 
 bool StandardSerialPortBackend::writeError()
 {
+    if(mMethod==SOFTWARE_HANDSHAKE)SioWorker::usleep(mDelay);
     SioWorker::usleep(800);
     return writeRawFrame(QByteArray(1, 69));
 }
@@ -506,7 +563,15 @@ QByteArray StandardSerialPortBackend::readRawFrame(uint size, bool verbose)
     total = 0;
     rest = size;
     QTime startTime = QTime::currentTime();
-    int timeOut = data.count() * 12000 / mSpeed + 10;
+    int timeOut;
+    if(mMethod==SOFTWARE_HANDSHAKE)
+    {
+        timeOut = data.count() * 24000 / mSpeed + 100;
+    }
+    else
+    {
+        timeOut = data.count() * 12000 / mSpeed + 10;
+    }
     int elapsed;
 
     do {
@@ -544,7 +609,15 @@ bool StandardSerialPortBackend::writeRawFrame(const QByteArray &data)
     total = 0;
     rest = data.count();
     QTime startTime = QTime::currentTime();
-    int timeOut = data.count() * 120000 / mSpeed + 10;
+    int timeOut;
+    if(mMethod==SOFTWARE_HANDSHAKE)
+    {
+        timeOut = data.count() * 24000 / mSpeed + 100;
+    }
+    else
+    {
+        timeOut = data.count() * 12000 / mSpeed + 10;
+    }
     int elapsed;
 
     do {
@@ -579,6 +652,11 @@ bool StandardSerialPortBackend::writeRawFrame(const QByteArray &data)
 QString StandardSerialPortBackend::lastErrorMessage()
 {
     return QString::fromUtf8(strerror(errno)) + ".";
+}
+
+void StandardSerialPortBackend::setActiveSioDevices(const QByteArray &data)
+{
+    mSioDevices = data;
 }
 
 AtariSioBackend::AtariSioBackend(QObject *parent)
@@ -915,3 +993,5 @@ QString AtariSioBackend::lastErrorMessage()
             return QString::fromUtf8(strerror(errno)) + ".";
     }
 }
+
+void AtariSioBackend::setActiveSioDevices(const QByteArray &data){}

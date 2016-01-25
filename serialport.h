@@ -12,6 +12,9 @@
 #include <QObject>
 #include <QByteArray>
 
+#define SOFTWARE_HANDSHAKE 3
+#define SLEEP_FACTOR 10000
+
 class AbstractSerialPortBackend : public QObject
 {
     Q_OBJECT
@@ -56,6 +59,7 @@ public:
     virtual bool writeError() = 0;
     virtual bool setSpeed(int speed) = 0;
     virtual bool writeRawFrame(const QByteArray &data) = 0;
+    virtual void setActiveSioDevices(const QByteArray &data) = 0;
 signals:
     void statusChanged(QString status);
 };
