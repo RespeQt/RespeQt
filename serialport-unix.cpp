@@ -89,7 +89,7 @@ bool StandardSerialPortBackend::open()
         return false;
     }
 
-    if(mMethod!=SOFTWARE_HANDSHAKE)
+    if(mMethod!=HANDSHAKE_SOFTWARE)
     {
         int status;
         if (ioctl(mHandle, TIOCMGET, &status) < 0) {
@@ -112,17 +112,21 @@ bool StandardSerialPortBackend::open()
 
     QString m;
     switch (mMethod) {
-    case 0:
+    case HANDSHAKE_RI:
         m = "RI";
         break;
-    case 1:
+    case HANDSHAKE_DSR:
         m = "DSR";
         break;
-    case 2:
+    case HANDSHAKE_CTS:
         m = "CTS";
         break;
+    case HANDSHAKE_NO_HANDSHAKE:
+        m = "NO";
+        break;
+    case HANDSHAKE_SOFTWARE:
     default:
-        m = "SOFTWARE";
+        m = "SOFTWARE (SIO2BT)";
         break;
     }
     /* Notify the user that emulation is started */
@@ -155,7 +159,9 @@ void StandardSerialPortBackend::cancel()
 
 int StandardSerialPortBackend::speedByte()
 {
-    if (respeqtSettings->serialPortUsePokeyDivisors()) {
+    if (respeqtSettings->serialPortHandshakingMethod()==HANDSHAKE_SOFTWARE) {
+        return 0x28; // standard speed (19200)
+    } else if (respeqtSettings->serialPortUsePokeyDivisors()) {
         return respeqtSettings->serialPortPokeyDivisor();
     } else {
         int speed = 0x08;
@@ -332,7 +338,7 @@ QByteArray StandardSerialPortBackend::readCommandFrame()
 {
     QByteArray data;
 
-    if(mMethod==SOFTWARE_HANDSHAKE)
+    if(mMethod==HANDSHAKE_SOFTWARE)
     {
         if (tcflush(mHandle, TCIFLUSH) != 0)
         {
@@ -345,7 +351,6 @@ QByteArray StandardSerialPortBackend::readCommandFrame()
         quint8 got = 1;
         do
         {
-            int result;
             char c;
             if(1 == ::read(mHandle, &c, 1))
             {
@@ -372,6 +377,11 @@ QByteArray StandardSerialPortBackend::readCommandFrame()
         if(got==expected)
         {
             data.resize(size);
+            // After sending the last byte of the command frame
+            // ATARI does not drop the command line immediately.
+            // Within this small time window ATARI is not able to process the ACK byte.
+            // For the "software handshake" approach, we need to wait here a little bit.
+            QThread::usleep(500);
         }
         else
         {
@@ -380,16 +390,17 @@ QByteArray StandardSerialPortBackend::readCommandFrame()
     }
     else
     {
-        int mask;
+        // RI/DSR/CTS/- handshake
 
+        int mask;
         switch (mMethod) {
-        case 0:
+        case HANDSHAKE_RI:
             mask = TIOCM_RI;
             break;
-        case 1:
+        case HANDSHAKE_DSR:
             mask = TIOCM_DSR;
             break;
-        case 2:
+        case HANDSHAKE_CTS:
         default:
             mask = TIOCM_CTS;
             break;
@@ -397,60 +408,98 @@ QByteArray StandardSerialPortBackend::readCommandFrame()
 
         int status;
         int retries = 0, totalRetries = 0;
+
         do {
             data.clear();
-            /* First, wait until command line goes off */
-            do {
-                if (ioctl(mHandle, TIOCMGET, &status) < 0) {
-                    qCritical() << "!e" << tr("Cannot retrieve serial port status: %1").arg(lastErrorMessage());
+
+            if(mMethod == HANDSHAKE_NO_HANDSHAKE)
+            {
+                if (tcflush(mHandle, TCIFLUSH) != 0)
+                {
+                    qCritical() << "!e" << tr("Cannot clear serial port read buffer: %1").arg(lastErrorMessage());
                     return data;
                 }
-                if (status & mask) {
+
+                int bytes;
+                do {
+                    ioctl(mHandle, FIONREAD, &bytes);
                     #ifdef Q_OS_UNIX
-                        QThread::yieldCurrentThread();   // Venkman 07132015 OS definition blocks added
+                        QThread::yieldCurrentThread();
                     #endif
 
                     #ifdef Q_OS_MAC
-                        QThread::usleep(500);
+                        QThread::usleep(300);
                     #endif
-                }
-            } while ((status & mask) && !mCanceled);
-            /* Now wait for it to go on again */
-            do {
-                if (ioctl(mHandle, TIOCMGET, &status) < 0) {
-                    qCritical() << "!e" << tr("Cannot retrieve serial port status: %1").arg(lastErrorMessage());
+                } while ((bytes==0) && !mCanceled);
+            }
+            else
+            {
+                // RI/DSR/CTS handshake
+                /* First, wait until command line goes off */
+                do {
+                    if (ioctl(mHandle, TIOCMGET, &status) < 0) {
+                        qCritical() << "!e" << tr("Cannot retrieve serial port status: %1").arg(lastErrorMessage());
+                        return data;
+                    }
+                    if (status & mask) {
+                        #ifdef Q_OS_UNIX
+                            QThread::yieldCurrentThread();   // Venkman 07132015 OS definition blocks added
+                        #endif
+
+                        #ifdef Q_OS_MAC
+                            QThread::usleep(500);
+                        #endif
+                    }
+                } while ((status & mask) && !mCanceled);
+                /* Now wait for it to go on again */
+                do {
+                    if (ioctl(mHandle, TIOCMGET, &status) < 0) {
+                        qCritical() << "!e" << tr("Cannot retrieve serial port status: %1").arg(lastErrorMessage());
+                        return data;
+                    }
+                    if (!(status & mask)) {
+                        #ifdef Q_OS_UNIX
+                            QThread::yieldCurrentThread();   // Venkman 07132015 OS definition blocks added
+                        #endif
+
+                        #ifdef Q_OS_MAC
+                           QThread::usleep(500);
+                        #endif
+                    }
+                } while (!(status & mask) && !mCanceled);
+
+                if (tcflush(mHandle, TCIFLUSH) != 0) {
+                    qCritical() << "!e" << tr("Cannot clear serial port read buffer: %1")
+                                   .arg(lastErrorMessage());
                     return data;
                 }
-                if (!(status & mask)) {
-                    #ifdef Q_OS_UNIX
-                        QThread::yieldCurrentThread();   // Venkman 07132015 OS definition blocks added
-                    #endif
-
-                    #ifdef Q_OS_MAC
-                       QThread::usleep(500);
-                    #endif
-                }
-            } while (!(status & mask) && !mCanceled);
-
-            if (mCanceled) {
-                return data;
             }
 
-            if (tcflush(mHandle, TCIFLUSH) != 0) {
-                qCritical() << "!e" << tr("Cannot clear serial port read buffer: %1")
-                               .arg(lastErrorMessage());
+            if (mCanceled) {
                 return data;
             }
 
             data = readDataFrame(4, false);
 
             if (!data.isEmpty()) {
-                do {
-                    if (ioctl(mHandle, TIOCMGET, &status) < 0) {
-                        qCritical() << "!e" << tr("Cannot retrieve serial port status: %1").arg(lastErrorMessage());
-                        return data;
-                    }
-                } while ((status & mask) && !mCanceled);
+                if(mMethod != HANDSHAKE_NO_HANDSHAKE)
+                {
+                    // wait for command line to go off
+                    do {
+                        if (ioctl(mHandle, TIOCMGET, &status) < 0) {
+                            qCritical() << "!e" << tr("Cannot retrieve serial port status: %1").arg(lastErrorMessage());
+                            return data;
+                        }
+                    } while ((status & mask) && !mCanceled);
+                }
+                else
+                {
+                    // After sending the last byte of the command frame
+                    // ATARI does not drop the command line immediately.
+                    // Within this small time window ATARI is not able to process the ACK byte.
+                    // For the "no handshake" approach, we need to wait here a little bit.
+                    QThread::usleep(500);
+                }
                 break;
             } else {
                 retries++;
@@ -498,7 +547,7 @@ bool StandardSerialPortBackend::writeDataFrame(const QByteArray &data)
     QByteArray copy(data);
     copy.resize(copy.size() + 1);
     copy[copy.size() - 1] = sioChecksum(copy, copy.size() - 1);
-    if(mMethod==SOFTWARE_HANDSHAKE)SioWorker::usleep(mDelay);
+    if(mMethod==HANDSHAKE_SOFTWARE)SioWorker::usleep(mDelay);
     SioWorker::usleep(50);
     return writeRawFrame(copy);
 }
@@ -525,14 +574,14 @@ bool StandardSerialPortBackend::writeDataNak()
 
 bool StandardSerialPortBackend::writeComplete()
 {
-    if(mMethod==SOFTWARE_HANDSHAKE)SioWorker::usleep(mDelay);
+    if(mMethod==HANDSHAKE_SOFTWARE)SioWorker::usleep(mDelay);
     SioWorker::usleep(800);
     return writeRawFrame(QByteArray(1, 67));
 }
 
 bool StandardSerialPortBackend::writeError()
 {
-    if(mMethod==SOFTWARE_HANDSHAKE)SioWorker::usleep(mDelay);
+    if(mMethod==HANDSHAKE_SOFTWARE)SioWorker::usleep(mDelay);
     SioWorker::usleep(800);
     return writeRawFrame(QByteArray(1, 69));
 }
@@ -564,7 +613,7 @@ QByteArray StandardSerialPortBackend::readRawFrame(uint size, bool verbose)
     rest = size;
     QTime startTime = QTime::currentTime();
     int timeOut;
-    if(mMethod==SOFTWARE_HANDSHAKE)
+    if(mMethod==HANDSHAKE_SOFTWARE)
     {
         timeOut = data.count() * 24000 / mSpeed + 100;
     }
@@ -610,7 +659,7 @@ bool StandardSerialPortBackend::writeRawFrame(const QByteArray &data)
     rest = data.count();
     QTime startTime = QTime::currentTime();
     int timeOut;
-    if(mMethod==SOFTWARE_HANDSHAKE)
+    if(mMethod==HANDSHAKE_SOFTWARE)
     {
         timeOut = data.count() * 24000 / mSpeed + 100;
     }
@@ -716,14 +765,14 @@ bool AtariSioBackend::open()
     mMethod = respeqtSettings->atariSioHandshakingMethod();
 
     switch (mMethod) {
-    case 0:
+    case HANDSHAKE_RI:
         mode = ATARISIO_MODE_SIOSERVER;
         break;
-    case 1:
+    case HANDSHAKE_DSR:
         mode = ATARISIO_MODE_SIOSERVER_DSR;
         break;
     default:
-    case 2:
+    case HANDSHAKE_CTS:
         mode = ATARISIO_MODE_SIOSERVER_CTS;
         break;
     }
@@ -748,14 +797,14 @@ bool AtariSioBackend::open()
 
     QString m;
     switch (mMethod) {
-    case 0:
+    case HANDSHAKE_RI:
         m = "RI";
         break;
-    case 1:
+    case HANDSHAKE_DSR:
         m = "DSR";
         break;
     default:
-    case 2:
+    case HANDSHAKE_CTS:
         m = "CTS";
         break;
     }
@@ -994,4 +1043,4 @@ QString AtariSioBackend::lastErrorMessage()
     }
 }
 
-void AtariSioBackend::setActiveSioDevices(const QByteArray &data){}
+void AtariSioBackend::setActiveSioDevices(const QByteArray &){}

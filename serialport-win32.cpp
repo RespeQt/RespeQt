@@ -60,7 +60,7 @@ bool StandardSerialPortBackend::open()
     mMethod = respeqtSettings->serialPortHandshakingMethod();
     mDelay = SLEEP_FACTOR * respeqtSettings->serialPortWriteDelay();
 
-    if(mMethod==SOFTWARE_HANDSHAKE)
+    if(mMethod==HANDSHAKE_SOFTWARE)
     {
         mHandle = (CreateFile(
             (WCHAR*)name.utf16(),
@@ -112,19 +112,24 @@ bool StandardSerialPortBackend::open()
 
     QString m;
     switch (mMethod) {
-    case 0:
+    case HANDSHAKE_RI:
         m = "RI";
         break;
-    case 1:
+    case HANDSHAKE_DSR:
         m = "DSR";
         break;
-    case 2:
+    case HANDSHAKE_CTS:
         m = "CTS";
         break;
+    case HANDSHAKE_NO_HANDSHAKE:
+        m = "NO";
+        break;
+    case HANDSHAKE_SOFTWARE:
     default:
-        m = "SOFTWARE";
+        m = "SOFTWARE (SIO2BT)";
         break;
     }
+
     /* Notify the user that emulation is started */
     qWarning() << "!i" << tr("Emulation started through standard serial port backend on '%1' with %2 handshaking")
                   .arg(respeqtSettings->serialPortName())
@@ -160,7 +165,9 @@ int StandardSerialPortBackend::speedByte()
 {
 //    qDebug() << "!d" << tr("DBG -- Serial Port speedByte...");
 
-    if (respeqtSettings->serialPortUsePokeyDivisors()) {
+    if (respeqtSettings->serialPortHandshakingMethod()==HANDSHAKE_SOFTWARE) {
+        return 0x28; // standard speed (19200)
+    } else if (respeqtSettings->serialPortUsePokeyDivisors()) {
         return respeqtSettings->serialPortPokeyDivisor();
     } else {
         int speed = 0x08;
@@ -260,7 +267,7 @@ bool StandardSerialPortBackend::setSpeed(int speed)
     /* Adjust serial port timeouts */
     to.ReadIntervalTimeout = 0;
 
-    if(mMethod==SOFTWARE_HANDSHAKE)
+    if(mMethod==HANDSHAKE_SOFTWARE)
     {
         to.ReadTotalTimeoutConstant = 300;
         to.WriteTotalTimeoutConstant = 300;
@@ -298,7 +305,7 @@ QByteArray StandardSerialPortBackend::readCommandFrame()
 
     QByteArray data;
 
-    if(mMethod==SOFTWARE_HANDSHAKE)
+    if(mMethod==HANDSHAKE_SOFTWARE)
     {
         if (!PurgeComm(mHandle, PURGE_RXCLEAR)) {
             qCritical() << "!e" << tr("Cannot clear serial port read buffer: %1").arg(lastErrorMessage());
@@ -337,6 +344,11 @@ QByteArray StandardSerialPortBackend::readCommandFrame()
         if(got==expected)
         {
             data.resize(size);
+            // After sending the last byte of the command frame
+            // ATARI does not drop the command line immediately.
+            // Within this small time window ATARI is not able to process the ACK byte.
+            // For the "software handshake" approach, we need to wait here a little bit.
+            QThread::usleep(500);
         }
         else
         {
@@ -348,15 +360,18 @@ QByteArray StandardSerialPortBackend::readCommandFrame()
         DWORD mask;
 
         switch (mMethod) {
-        case 0:
+        case HANDSHAKE_RI:
             mask = EV_RING;
             break;
-        case 1:
+        case HANDSHAKE_DSR:
             mask = EV_DSR;
             break;
-        case 2:
-        default:
+        case HANDSHAKE_CTS:
             mask = EV_CTS;
+            break;
+        case HANDSHAKE_NO_HANDSHAKE:
+        default:
+            mask = EV_RXCHAR;
             break;
         }
 
@@ -408,10 +423,21 @@ QByteArray StandardSerialPortBackend::readCommandFrame()
 
             if (!data.isEmpty()) {
 
-    //            qDebug() << "!d" << tr("DBG -- Serial Port, data not empty: [%1]").arg(data.data());
-                do {
-                    GetCommModemStatus(mHandle, &mask);
-                } while (mask && !mCanceled);
+//            qDebug() << "!d" << tr("DBG -- Serial Port, data not empty: [%1]").arg(data.data());
+
+                if(mask != EV_RXCHAR) { //
+                    do {
+                        GetCommModemStatus(mHandle, &mask);
+                    } while (mask && !mCanceled);
+                }
+                else
+                {
+                    // After sending the last byte of the command frame
+                    // ATARI does not drop the command line immediately.
+                    // Within this small time window ATARI is not able to process the ACK byte.
+                    // For the "software handshake" approach, we need to wait here a little bit.
+                    QThread::usleep(500);
+                }
                 break;
             } else {
                 retries++;
@@ -463,7 +489,7 @@ bool StandardSerialPortBackend::writeDataFrame(const QByteArray &data)
     QByteArray copy(data);
     copy.resize(copy.size() + 1);
     copy[copy.size() - 1] = sioChecksum(copy, copy.size() - 1);
-    if(mMethod==SOFTWARE_HANDSHAKE)SioWorker::usleep(mDelay);
+    if(mMethod==HANDSHAKE_SOFTWARE)SioWorker::usleep(mDelay);
     SioWorker::usleep(50);
     return writeRawFrame(copy);
 }
@@ -500,7 +526,7 @@ bool StandardSerialPortBackend::writeComplete()
 {
 //    qDebug() << "!d" << tr("DBG -- Serial Port writeComplete...");
 
-    if(mMethod==SOFTWARE_HANDSHAKE)SioWorker::usleep(mDelay);
+    if(mMethod==HANDSHAKE_SOFTWARE)SioWorker::usleep(mDelay);
     SioWorker::usleep(300);
     return writeRawFrame(QByteArray(1, 67));
 }
@@ -509,7 +535,7 @@ bool StandardSerialPortBackend::writeError()
 {
 //    qDebug() << "!d" << tr("DBG -- Serial Port writeError...");
 
-    if(mMethod==SOFTWARE_HANDSHAKE)SioWorker::usleep(mDelay);
+    if(mMethod==HANDSHAKE_SOFTWARE)SioWorker::usleep(mDelay);
     SioWorker::usleep(300);
     return writeRawFrame(QByteArray(1, 69));
 }
@@ -538,7 +564,7 @@ QByteArray StandardSerialPortBackend::readRawFrame(uint size, bool verbose)
     QByteArray data;
     DWORD result;
 
-    if(mMethod==SOFTWARE_HANDSHAKE)
+    if(mMethod==HANDSHAKE_SOFTWARE)
     {
         data.resize(size);
         if (!ReadFile(mHandle, data.data(), size, &result, NULL) || (result != (DWORD)size))
@@ -599,7 +625,7 @@ bool StandardSerialPortBackend::writeRawFrame(const QByteArray &data)
         return false;
     }
 
-    if(mMethod==SOFTWARE_HANDSHAKE)
+    if(mMethod==HANDSHAKE_SOFTWARE)
     {
         return WriteFile(mHandle, data.constData(), data.size(), &result, NULL);
     }

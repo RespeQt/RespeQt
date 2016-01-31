@@ -12,7 +12,15 @@
 #include <QObject>
 #include <QByteArray>
 
-#define SOFTWARE_HANDSHAKE 3
+enum eHandshake
+{
+    HANDSHAKE_RI=0,
+    HANDSHAKE_DSR=1,
+    HANDSHAKE_CTS=2,
+    HANDSHAKE_NO_HANDSHAKE=3,
+    HANDSHAKE_SOFTWARE=4
+};
+
 #define SLEEP_FACTOR 10000
 
 class AbstractSerialPortBackend : public QObject

@@ -195,7 +195,12 @@
           </item>
           <item>
            <property name="text">
-            <string>SOFTWARE</string>
+            <string>NONE</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>SOFTWARE (SIO2BT)</string>
            </property>
           </item>
          </widget>

@@ -1230,7 +1230,11 @@ void MainWindow::bootExe(const QString &fileName)
     SioDevice *old = sio->getDevice(0x31);
     AutoBoot loader(sio, old);    
     AutoBootDialog dlg(this);
-    if (!loader.open(fileName, respeqtSettings->useHighSpeedExeLoader())) {
+
+    bool highSpeed =    respeqtSettings->useHighSpeedExeLoader() &&
+                        (respeqtSettings->serialPortHandshakingMethod() != HANDSHAKE_SOFTWARE);
+
+    if (!loader.open(fileName, highSpeed)) {
         return;
     }
 
