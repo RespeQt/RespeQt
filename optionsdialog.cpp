@@ -91,8 +91,15 @@ OptionsDialog::OptionsDialog(QWidget *parent) :
         m_ui->i18nLanguageCombo->setCurrentIndex(i+2);
 	}
     }
-    m_ui->serialPortWriteDelayLabel->setVisible(respeqtSettings->serialPortHandshakingMethod()==3);
-    m_ui->serialPortWriteDelayCombo->setVisible(respeqtSettings->serialPortHandshakingMethod()==3);
+    bool software_handshake = (respeqtSettings->serialPortHandshakingMethod()==HANDSHAKE_SOFTWARE);
+    m_ui->serialPortWriteDelayLabel->setVisible(software_handshake);
+    m_ui->serialPortWriteDelayCombo->setVisible(software_handshake);
+    m_ui->serialPortBaudLabel->setVisible(!software_handshake);
+    m_ui->serialPortBaudCombo->setVisible(!software_handshake);
+    m_ui->serialPortUseDivisorsBox->setVisible(!software_handshake);
+    m_ui->serialPortDivisorLabel->setVisible(!software_handshake);
+    m_ui->serialPortDivisorEdit->setVisible(!software_handshake);
+    m_ui->emulationHighSpeedExeLoaderBox->setVisible(!software_handshake);
 }
 
 OptionsDialog::~OptionsDialog()
@@ -174,8 +181,15 @@ void OptionsDialog::on_treeWidget_itemClicked(QTreeWidgetItem* item, int /*colum
 
 void OptionsDialog::on_serialPortHandshakeCombo_currentIndexChanged(int index)
 {
-    m_ui->serialPortWriteDelayLabel->setVisible(index==3);
-    m_ui->serialPortWriteDelayCombo->setVisible(index==3);
+    bool software_handshake = (index==HANDSHAKE_SOFTWARE);
+    m_ui->serialPortWriteDelayLabel->setVisible(software_handshake);
+    m_ui->serialPortWriteDelayCombo->setVisible(software_handshake);
+    m_ui->serialPortBaudLabel->setVisible(!software_handshake);
+    m_ui->serialPortBaudCombo->setVisible(!software_handshake);
+    m_ui->serialPortUseDivisorsBox->setVisible(!software_handshake);
+    m_ui->serialPortDivisorLabel->setVisible(!software_handshake);
+    m_ui->serialPortDivisorEdit->setVisible(!software_handshake);
+    m_ui->emulationHighSpeedExeLoaderBox->setVisible(!software_handshake);
 }
 
 void OptionsDialog::on_serialPortUseDivisorsBox_toggled(bool checked)
