@@ -357,25 +357,31 @@ QByteArray StandardSerialPortBackend::readCommandFrame()
     }
     else
     {
-        DWORD mask;
+        DWORD MASK;
+        DWORD MODEM_STAT;
+        DWORD tmp;
 
         switch (mMethod) {
         case HANDSHAKE_RI:
-            mask = EV_RING;
+            MASK = EV_RING;
+            MODEM_STAT = MS_RING_ON;
             break;
         case HANDSHAKE_DSR:
-            mask = EV_DSR;
+            MASK = EV_DSR;
+            MODEM_STAT = MS_DSR_ON;
             break;
         case HANDSHAKE_CTS:
-            mask = EV_CTS;
+            MASK = EV_CTS;
+            MODEM_STAT = MS_CTS_ON;
             break;
         case HANDSHAKE_NO_HANDSHAKE:
         default:
-            mask = EV_RXCHAR;
+            MASK = EV_RXCHAR;
+            MODEM_STAT = 0;
             break;
         }
 
-        if (!SetCommMask(mHandle, mask)) {
+        if (!SetCommMask(mHandle, MASK)) {
             qCritical() << "!e" << tr("Cannot set serial port event mask: %1").arg(lastErrorMessage());
             return data;
         }
@@ -392,7 +398,7 @@ QByteArray StandardSerialPortBackend::readCommandFrame()
             events[0] = ov.hEvent;
             events[1] = mCancelHandle;
 
-            if (!WaitCommEvent(mHandle, &mask, &ov)) {
+            if (!WaitCommEvent(mHandle, &tmp, &ov)) {
                 if (GetLastError() == ERROR_IO_PENDING) {
                     DWORD x = WaitForMultipleObjects(2, events, false, INFINITE);
                     CloseHandle(ov.hEvent);
@@ -412,6 +418,9 @@ QByteArray StandardSerialPortBackend::readCommandFrame()
                 }
             }
 
+            // for hardware handshake methods check if the command line status is ON
+            if( (MODEM_STAT != 0) && (!GetCommModemStatus(mHandle, &tmp) || !(tmp & MODEM_STAT)) )continue;
+
             if (!PurgeComm(mHandle, PURGE_RXCLEAR)) {
                 qCritical() << "!e" << tr("Cannot clear serial port read buffer: %1").arg(lastErrorMessage());
                 return data;
@@ -425,10 +434,10 @@ QByteArray StandardSerialPortBackend::readCommandFrame()
 
 //            qDebug() << "!d" << tr("DBG -- Serial Port, data not empty: [%1]").arg(data.data());
 
-                if(mask != EV_RXCHAR) { //
+                if(MASK != EV_RXCHAR) { //
                     do {
-                        GetCommModemStatus(mHandle, &mask);
-                    } while (mask && !mCanceled);
+                        GetCommModemStatus(mHandle, &tmp);
+                    } while ((tmp & MODEM_STAT) && !mCanceled);
                 }
                 else
                 {
@@ -713,6 +722,6 @@ bool AtariSioBackend::writeDataAck() {return false;}
 bool AtariSioBackend::writeDataNak() {return false;}
 bool AtariSioBackend::writeComplete() {return false;}
 bool AtariSioBackend::writeError() {return false;}
-bool AtariSioBackend::setSpeed(int speed) {return false;}
-bool AtariSioBackend::writeRawFrame(const QByteArray &data) {return false;}
-void AtariSioBackend::setActiveSioDevices(const QByteArray &data){}
+bool AtariSioBackend::setSpeed(int ) {return false;}
+bool AtariSioBackend::writeRawFrame(const QByteArray &) {return false;}
+void AtariSioBackend::setActiveSioDevices(const QByteArray &){}
