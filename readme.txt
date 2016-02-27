@@ -48,7 +48,6 @@ Used in this package under Freeware License.
 
 Contact
 =======
-Ray Ataergin, mail to ray@atari8warez.com. Please include the word "aspeqt" in the subject field.
-Fatih Aygun, mail to cyco130@yahoo.com, Please include the word "aspeqt" in the subject field.
+Please include RespeQt in the subject field when emailing
 
-For SIO2PC/10502PC hardware purchase/support visit www.atari8warez.com
+Maintainer - Joe Zatarski - jzatar2@illinois.edu
