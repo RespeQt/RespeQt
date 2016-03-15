@@ -32,8 +32,6 @@
 #include "docdisplaywindow.h"
 #include "network.h"
 
-#define g_numberOfDisks 15
-
 namespace Ui
 {
     class MainWindow;
@@ -79,7 +77,7 @@ private:
     Ui::MainWindow *ui;
     SioWorker *sio;
     bool shownFirstTime;
-    DiskWidgets diskWidgets[g_numberOfDisks];    //
+    DiskWidgets diskWidgets[DISK_COUNT];    //
     QLabel *speedLabel, *onOffLabel, *prtOnOffLabel, *netLabel, *clearMessagesLabel;  //
     TextPrinterWindow *textPrinterWindow;
     DocDisplayWindow *docDisplayWindow;    //

@@ -14,6 +14,23 @@
 
 #include "serialport.h"
 
+enum SIO_CDEVIC
+{
+    DISK_BASE_CDEVIC = 0x31,
+    PRINTER_BASE_CDEVIC = 0x40,
+    APE_TIME_CDEVIC = 0x45,
+    ASPEQT_CLIENT_CDEVIC = 0x46,
+    RS232_BASE_CDEVIC = 0x50,
+    PCLINK_CDEVIC = 0x6F
+};
+
+enum SIO_DEVICE_COUNT
+{
+    DISK_COUNT = 15,
+    PRINTER_COUNT = 4,
+    RS232_COUNT = 4
+};
+
 class SioWorker;
 
 class SioDevice : public QObject

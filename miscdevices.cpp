@@ -189,7 +189,7 @@ void AspeCl::handleCommand(quint8 command, quint16 aux)
             if (swapDisk1 > 9) swapDisk1 -= 16;
             if (swapDisk2 > 9) swapDisk2 -= 16;
             if (swapDisk1 >= 0 and swapDisk1 < 15 and swapDisk2 >=0 and swapDisk2 < 15 and swapDisk1 != swapDisk2) {
-                sio->swapDevices(swapDisk1 + 0x31, swapDisk2 + 0x31);
+                sio->swapDevices(swapDisk1 + DISK_BASE_CDEVIC, swapDisk2 + DISK_BASE_CDEVIC);
                 respeqtSettings->swapImages(swapDisk1, swapDisk2);
                 qDebug() << "!n" << tr("[%1] Swapped disk %2 with disk %3.")
                                 .arg(deviceName())
@@ -220,15 +220,15 @@ void AspeCl::handleCommand(quint8 command, quint16 aux)
               // Eject All disks
                   int toBeSaved = 0;
                   for (int i = 0; i <= 14; i++) {    // 
-                      SimpleDiskImage *img = qobject_cast <SimpleDiskImage*> (sio->getDevice(i + 0x31));
+                      SimpleDiskImage *img = qobject_cast <SimpleDiskImage*> (sio->getDevice(i + DISK_BASE_CDEVIC));
                       if (img && img->isModified()) {
                           toBeSaved++;
                       }
                   }
                   if (!toBeSaved) {
                       for (int i = 14; i >= 0; i--) {
-                          SimpleDiskImage *img = qobject_cast <SimpleDiskImage*> (sio->getDevice(i + 0x31));
-                          sio->uninstallDevice(i + 0x31);
+                          SimpleDiskImage *img = qobject_cast <SimpleDiskImage*> (sio->getDevice(i + DISK_BASE_CDEVIC));
+                          sio->uninstallDevice(i + DISK_BASE_CDEVIC);
                           delete img;
                           respeqtSettings->unmountImage(i);
                           qDebug() << "!n" << tr("[%1] Unmounted disk %2")
@@ -244,7 +244,7 @@ void AspeCl::handleCommand(quint8 command, quint16 aux)
                   }
               } else {
                   // Single Disk Eject
-                  SimpleDiskImage *img = qobject_cast <SimpleDiskImage*> (sio->getDevice(unmountDisk - 1 + 0x31));
+                  SimpleDiskImage *img = qobject_cast <SimpleDiskImage*> (sio->getDevice(unmountDisk - 1 + DISK_BASE_CDEVIC));
 
                   if (img && img->isModified()) {
                       sio->port()->writeCommandNak();
@@ -252,7 +252,7 @@ void AspeCl::handleCommand(quint8 command, quint16 aux)
                                 .arg(deviceName())
                                 .arg(unmountDisk);
                   } else {
-                      sio->uninstallDevice(unmountDisk - 1 + 0x31);
+                      sio->uninstallDevice(unmountDisk - 1 + DISK_BASE_CDEVIC);
                       delete img;
                       respeqtSettings->unmountImage(unmountDisk - 1);
                       qDebug() << "!n" << tr("[%1] Remotely unmounted disk %2")
