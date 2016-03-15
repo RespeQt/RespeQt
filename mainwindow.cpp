@@ -269,7 +269,7 @@ MainWindow::MainWindow(QWidget *parent)
 
     /* Initialize diskWidgets array and tool button actions */
     
-    for (int i = 0; i < g_numberOfDisks; i++) {      //
+    for (int i = 0; i < DISK_COUNT; i++) {      //
 
         diskWidgets[i].fileNameLabel = findChild <QLabel*> (QString("labelFileName_%1").arg(i + 1));
         diskWidgets[i].imagePropertiesLabel = findChild <QLabel*> (QString("labelImageProperties_%1").arg(i + 1));
@@ -314,7 +314,7 @@ MainWindow::MainWindow(QWidget *parent)
     shownFirstTime = true;
 
     /* Restore application state */
-    for (int i = 0; i < g_numberOfDisks; i++) {      //
+    for (int i = 0; i < DISK_COUNT; i++) {
         RespeqtSettings::ImageSettings is;
         is = respeqtSettings->mountedImageSetting(i);
         mountFile(i, is.fileName, is.isWriteProtected);
@@ -325,12 +325,12 @@ MainWindow::MainWindow(QWidget *parent)
 
     // ApeTime device
     ApeTime *ape = new ApeTime(sio);
-    sio->installDevice(0x45, ape);
+    sio->installDevice(APE_TIME_CDEVIC, ape);
 
     // AspeQt Client  //
     AspeCl *acl = new AspeCl(sio);
-    sio->installDevice(0x46, acl);
-
+    sio->installDevice(ASPEQT_CLIENT_CDEVIC, acl);
+    
     textPrinterWindow = new TextPrinterWindow();
     // Documentation Display
     docDisplayWindow = new DocDisplayWindow();
@@ -340,7 +340,7 @@ MainWindow::MainWindow(QWidget *parent)
 
     Printer *printer = new Printer(sio);
     connect(printer, SIGNAL(print(QString)), textPrinterWindow, SLOT(print(QString)));
-    sio->installDevice(0x40, printer);
+    sio->installDevice(PRINTER_BASE_CDEVIC, printer);
     untitledName = 0;
 
     connect(&trayIcon, SIGNAL(activated(QSystemTrayIcon::ActivationReason)), this, SLOT(trayIconActivated(QSystemTrayIcon::ActivationReason)));
@@ -408,7 +408,7 @@ void MainWindow::dragEnterEvent(QDragEnterEvent *event)
     } else {
         i = -1;
     }
-    for (int j = 0; j < g_numberOfDisks; j++) { //
+    for (int j = 0; j < DISK_COUNT; j++) { //
         if (i == j) {
             diskWidgets[j].frame->setFrameShadow(QFrame::Sunken);
         } else {
@@ -426,7 +426,7 @@ void MainWindow::dragMoveEvent(QDragMoveEvent *event)
     } else {
         i = -1;
     }
-    for (int j = 0; j < g_numberOfDisks; j++) { //
+    for (int j = 0; j < DISK_COUNT; j++) { //
         if (i == j) {
             diskWidgets[j].frame->setFrameShadow(QFrame::Sunken);
         } else {
@@ -437,14 +437,14 @@ void MainWindow::dragMoveEvent(QDragMoveEvent *event)
 
 void MainWindow::dragLeaveEvent(QDragLeaveEvent *)
 {
-    for (int j = 0; j < g_numberOfDisks; j++) { //
+    for (int j = 0; j < DISK_COUNT; j++) { //
         diskWidgets[j].frame->setFrameShadow(QFrame::Raised);
     }
 }
 
 void MainWindow::dropEvent(QDropEvent *event)
 {
-    for (int j = 0; j < g_numberOfDisks; j++) { //
+    for (int j = 0; j < DISK_COUNT; j++) { //
         diskWidgets[j].frame->setFrameShadow(QFrame::Raised);
     }
     int slot = containingDiskSlot(event->pos());
@@ -461,7 +461,7 @@ void MainWindow::dropEvent(QDropEvent *event)
             return;
         }
 
-        sio->swapDevices(slot + 0x31, source + 0x31);
+        sio->swapDevices(slot + DISK_BASE_CDEVIC, source + DISK_BASE_CDEVIC);
 
         respeqtSettings->swapImages(slot, source);
 
@@ -544,15 +544,15 @@ void MainWindow::closeEvent(QCloseEvent *event)
 
     int toBeSaved = 0;
 
-    for (int i = 0; i < g_numberOfDisks; i++) {      //
-        SimpleDiskImage *img = qobject_cast <SimpleDiskImage*> (sio->getDevice(i + 0x31));
+    for (int i = 0; i < DISK_COUNT; i++) {      //
+        SimpleDiskImage *img = qobject_cast <SimpleDiskImage*> (sio->getDevice(i + DISK_BASE_CDEVIC));
         if (img && img->isModified()) {
             toBeSaved++;
         }
     }
 
-    for (int i = 0; i < g_numberOfDisks; i++) {      //
-        SimpleDiskImage *img = qobject_cast <SimpleDiskImage*> (sio->getDevice(i + 0x31));
+    for (int i = 0; i < DISK_COUNT; i++) {      //
+        SimpleDiskImage *img = qobject_cast <SimpleDiskImage*> (sio->getDevice(i + DISK_BASE_CDEVIC));
         if (img && img->isModified()) {
             toBeSaved--;
             answer = saveImageWhenClosing(i, answer, toBeSaved);
@@ -573,7 +573,7 @@ void MainWindow::closeEvent(QCloseEvent *event)
     //
     delete docDisplayWindow;
 
-    for (int i = 0x31; i < 0x39; i++) {
+    for (int i = DISK_BASE_CDEVIC; i < (DISK_BASE_CDEVIC+DISK_COUNT); i++) {
         SimpleDiskImage *s = qobject_cast <SimpleDiskImage*> (sio->getDevice(i));
         if (s) {
             s->close();
@@ -884,7 +884,7 @@ void MainWindow::sioStatusChanged(QString status)
 
 void MainWindow::deviceStatusChanged(int deviceNo)
 {
-    if (deviceNo >= 0x31 && deviceNo <= 0x3F) { //
+    if (deviceNo >= DISK_BASE_CDEVIC && deviceNo < (DISK_BASE_CDEVIC+DISK_COUNT)) { // 0x31 - 0x3E
         SimpleDiskImage *img = qobject_cast <SimpleDiskImage*> (sio->getDevice(deviceNo));
         if (img) {
 
@@ -905,35 +905,35 @@ void MainWindow::deviceStatusChanged(int deviceNo)
                 filenamelabel = "!!!!!!!!.!!!";
                 }
 
-            findChild <QLabel*> (QString("labelFileName_%1").arg(deviceNo - 0x31 + 1))->setToolTip(img->originalFileName().left(i - 1));
-            findChild <QLabel*> (QString("labelFileName_%1").arg(deviceNo - 0x31 + 1))->setStatusTip(img->originalFileName());
-            findChild <QLabel*> (QString("labelImageProperties_%1").arg(deviceNo - 0x31 + 1))->setToolTip(img->description());
+            findChild <QLabel*> (QString("labelFileName_%1").arg(deviceNo - DISK_BASE_CDEVIC + 1))->setToolTip(img->originalFileName().left(i - 1));
+            findChild <QLabel*> (QString("labelFileName_%1").arg(deviceNo - DISK_BASE_CDEVIC + 1))->setStatusTip(img->originalFileName());
+            findChild <QLabel*> (QString("labelImageProperties_%1").arg(deviceNo - DISK_BASE_CDEVIC + 1))->setToolTip(img->description());
 
-            diskWidgets[deviceNo - 0x31].fileNameLabel->setText(filenamelabel);
-            diskWidgets[deviceNo - 0x31].imagePropertiesLabel->setText(img->description());
-            diskWidgets[deviceNo - 0x31].ejectAction->setEnabled(true);
-            diskWidgets[deviceNo - 0x31].editAction->setChecked(img->editDialog() != 0);
+            diskWidgets[deviceNo - DISK_BASE_CDEVIC].fileNameLabel->setText(filenamelabel);
+            diskWidgets[deviceNo - DISK_BASE_CDEVIC].imagePropertiesLabel->setText(img->description());
+            diskWidgets[deviceNo - DISK_BASE_CDEVIC].ejectAction->setEnabled(true);
+            diskWidgets[deviceNo - DISK_BASE_CDEVIC].editAction->setChecked(img->editDialog() != 0);
             if (img->description() == tr("Folder image")) {
-                diskWidgets[deviceNo - 0x31].fileNameLabel->setStyleSheet("color: rgb(54, 168, 164); font-weight: bold");
-                diskWidgets[deviceNo - 0x31].editAction->setEnabled(true);              //
-                diskWidgets[deviceNo - 0x31].saveAsAction->setEnabled(false);
-                diskWidgets[deviceNo - 0x31].saveAction->setEnabled(false);
-                diskWidgets[deviceNo - 0x31].autoSaveAction->setEnabled(false);         //
-                diskWidgets[deviceNo - 0x31].revertAction->setEnabled(false);
-                if(deviceNo - 0x31 == 0)
-                    diskWidgets[deviceNo - 0x31].bootOptionAction->setEnabled(true);   //
+                diskWidgets[deviceNo - DISK_BASE_CDEVIC].fileNameLabel->setStyleSheet("color: rgb(54, 168, 164); font-weight: bold");
+                diskWidgets[deviceNo - DISK_BASE_CDEVIC].editAction->setEnabled(true);              //
+                diskWidgets[deviceNo - DISK_BASE_CDEVIC].saveAsAction->setEnabled(false);
+                diskWidgets[deviceNo - DISK_BASE_CDEVIC].saveAction->setEnabled(false);
+                diskWidgets[deviceNo - DISK_BASE_CDEVIC].autoSaveAction->setEnabled(false);         //
+                diskWidgets[deviceNo - DISK_BASE_CDEVIC].revertAction->setEnabled(false);
+                if(deviceNo - DISK_BASE_CDEVIC == 0)
+                    diskWidgets[deviceNo - DISK_BASE_CDEVIC].bootOptionAction->setEnabled(true);   //
             } else {
-                diskWidgets[deviceNo - 0x31].fileNameLabel->setStyleSheet("color: rgb(0, 0, 0); font-weight: normal");  //
-                diskWidgets[deviceNo - 0x31].editAction->setEnabled(true);
-                diskWidgets[deviceNo - 0x31].saveAsAction->setEnabled(true);
-                diskWidgets[deviceNo - 0x31].autoSaveAction->setEnabled(true);          //
-                if(deviceNo - 0x31 == 0)
-                    diskWidgets[deviceNo - 0x31].bootOptionAction->setEnabled(false);   //
+                diskWidgets[deviceNo - DISK_BASE_CDEVIC].fileNameLabel->setStyleSheet("color: rgb(0, 0, 0); font-weight: normal");  //
+                diskWidgets[deviceNo - DISK_BASE_CDEVIC].editAction->setEnabled(true);
+                diskWidgets[deviceNo - DISK_BASE_CDEVIC].saveAsAction->setEnabled(true);
+                diskWidgets[deviceNo - DISK_BASE_CDEVIC].autoSaveAction->setEnabled(true);          //
+                if(deviceNo - DISK_BASE_CDEVIC == 0)
+                    diskWidgets[deviceNo - DISK_BASE_CDEVIC].bootOptionAction->setEnabled(false);   //
 
                 if (img->isModified()) {
-                    if (!diskWidgets[deviceNo - 0x31].autoSaveAction->isChecked()) {    //
-                        diskWidgets[deviceNo - 0x31].saveAction->setEnabled(true);
-                        diskWidgets[deviceNo - 0x31].revertAction->setEnabled(true);
+                    if (!diskWidgets[deviceNo - DISK_BASE_CDEVIC].autoSaveAction->isChecked()) {    //
+                        diskWidgets[deviceNo - DISK_BASE_CDEVIC].saveAction->setEnabled(true);
+                        diskWidgets[deviceNo - DISK_BASE_CDEVIC].revertAction->setEnabled(true);
                     // Image is modified and autosave is checked, so save the image (no need to lock it)  //
                     } else {
                         bool saved;
@@ -944,28 +944,28 @@ void MainWindow::deviceStatusChanged(int deviceNo)
                                 saveDiskAs(deviceNo);
                             }
                         } else {
-                            diskWidgets[deviceNo - 0x31].saveAction->setEnabled(false);
-                            diskWidgets[deviceNo - 0x31].revertAction->setEnabled(false);
+                            diskWidgets[deviceNo - DISK_BASE_CDEVIC].saveAction->setEnabled(false);
+                            diskWidgets[deviceNo - DISK_BASE_CDEVIC].revertAction->setEnabled(false);
                         }
                     }
                 } else {
-                    diskWidgets[deviceNo - 0x31].saveAction->setEnabled(false);
-                    diskWidgets[deviceNo - 0x31].revertAction->setEnabled(false);
+                    diskWidgets[deviceNo - DISK_BASE_CDEVIC].saveAction->setEnabled(false);
+                    diskWidgets[deviceNo - DISK_BASE_CDEVIC].revertAction->setEnabled(false);
                 }
             }
         } else {
-            diskWidgets[deviceNo - 0x31].saveAction->setEnabled(false);
-            diskWidgets[deviceNo - 0x31].fileNameLabel->clear();
-            diskWidgets[deviceNo - 0x31].imagePropertiesLabel->clear();
-            diskWidgets[deviceNo - 0x31].ejectAction->setEnabled(false);
-            diskWidgets[deviceNo - 0x31].revertAction->setEnabled(false);
-            diskWidgets[deviceNo - 0x31].saveAsAction->setEnabled(false);
-            diskWidgets[deviceNo - 0x31].editAction->setEnabled(false);
-            diskWidgets[deviceNo - 0x31].editAction->setChecked(false);
-            diskWidgets[deviceNo - 0x31].autoSaveAction->setEnabled(false);             //
-            diskWidgets[deviceNo - 0x31].autoSaveAction->setChecked(false);             //
-            if(deviceNo - 0x31 == 0)
-                diskWidgets[deviceNo - 0x31].bootOptionAction->setEnabled(false);             //
+            diskWidgets[deviceNo - DISK_BASE_CDEVIC].saveAction->setEnabled(false);
+            diskWidgets[deviceNo - DISK_BASE_CDEVIC].fileNameLabel->clear();
+            diskWidgets[deviceNo - DISK_BASE_CDEVIC].imagePropertiesLabel->clear();
+            diskWidgets[deviceNo - DISK_BASE_CDEVIC].ejectAction->setEnabled(false);
+            diskWidgets[deviceNo - DISK_BASE_CDEVIC].revertAction->setEnabled(false);
+            diskWidgets[deviceNo - DISK_BASE_CDEVIC].saveAsAction->setEnabled(false);
+            diskWidgets[deviceNo - DISK_BASE_CDEVIC].editAction->setEnabled(false);
+            diskWidgets[deviceNo - DISK_BASE_CDEVIC].editAction->setChecked(false);
+            diskWidgets[deviceNo - DISK_BASE_CDEVIC].autoSaveAction->setEnabled(false);             //
+            diskWidgets[deviceNo - DISK_BASE_CDEVIC].autoSaveAction->setChecked(false);             //
+            if(deviceNo - DISK_BASE_CDEVIC == 0)
+                diskWidgets[deviceNo - DISK_BASE_CDEVIC].bootOptionAction->setEnabled(false);             //
 
         }
     }
@@ -1045,7 +1045,7 @@ void MainWindow::on_actionOptions_triggered()
 // retranslate Designer Form
     ui->retranslateUi(this);
 
-    for (int i = 0x31; i <= 0x3F; i++) {    //
+    for (int i = DISK_BASE_CDEVIC; i < (DISK_BASE_CDEVIC+DISK_COUNT); i++) {    // 0x31 - 0x3E
         deviceStatusChanged(i);
     }
     
@@ -1127,7 +1127,7 @@ void MainWindow::setSession()
     // load translators and retranslate
     loadTranslators();
     ui->retranslateUi(this);
-    for (int i = 0x31; i <= 0x3F; i++) {
+    for (int i = DISK_BASE_CDEVIC; i < (DISK_BASE_CDEVIC+DISK_COUNT); i++) {
         deviceStatusChanged(i);
     }
 
@@ -1161,7 +1161,7 @@ void MainWindow::updateRecentFileActions()
 
 bool MainWindow::ejectImage(int no, bool ask)
 {
-    SimpleDiskImage *img = qobject_cast <SimpleDiskImage*> (sio->getDevice(no + 0x31));
+    SimpleDiskImage *img = qobject_cast <SimpleDiskImage*> (sio->getDevice(no + DISK_BASE_CDEVIC));
 
     if (ask && img && img->isModified()) {
         QMessageBox::StandardButton answer;
@@ -1171,7 +1171,7 @@ bool MainWindow::ejectImage(int no, bool ask)
         }
     }
 
-    sio->uninstallDevice(no + 0x31);
+    sio->uninstallDevice(no + DISK_BASE_CDEVIC);
     if (!img) {
         return true;
     }
@@ -1185,7 +1185,7 @@ bool MainWindow::ejectImage(int no, bool ask)
 
     respeqtSettings->unmountImage(no);
     updateRecentFileActions();
-    deviceStatusChanged(no + 0x31);
+    deviceStatusChanged(no + DISK_BASE_CDEVIC);
     qDebug() << "!n" << tr("Unmounted disk %1").arg(no + 1);
     return true;
 }
@@ -1194,13 +1194,13 @@ int MainWindow::containingDiskSlot(const QPoint &point)
 {
     int i;
     QPoint distance = centralWidget()->geometry().topLeft();
-    for (i=0; i < g_numberOfDisks; i++) {    //
+    for (i=0; i < DISK_COUNT; i++) {    //
         QRect rect = diskWidgets[i].frame->geometry().translated(distance);
         if (rect.contains(point)) {
             break;
         }
     }
-    if (i > g_numberOfDisks-1) {   //
+    if (i > DISK_COUNT-1) {   //
         i = -1;
     }
     return i;
@@ -1209,14 +1209,14 @@ int MainWindow::containingDiskSlot(const QPoint &point)
 int MainWindow::firstEmptyDiskSlot(int startFrom, bool createOne)
 {
     int i;
-    for (i = startFrom; i < g_numberOfDisks; i++) {  //
-        if (!sio->getDevice(0x31 + i)) {
+    for (i = startFrom; i < DISK_COUNT; i++) {  //
+        if (!sio->getDevice(DISK_BASE_CDEVIC + i)) {
             break;
         }
     }
-    if (i > g_numberOfDisks-1) {   //
+    if (i > DISK_COUNT-1) {   //
         if (createOne) {
-            i = g_numberOfDisks-1;
+            i = DISK_COUNT-1;
         } else {
             i = -1;
         }
@@ -1227,7 +1227,7 @@ int MainWindow::firstEmptyDiskSlot(int startFrom, bool createOne)
 
 void MainWindow::bootExe(const QString &fileName)
 {
-    SioDevice *old = sio->getDevice(0x31);
+    SioDevice *old = sio->getDevice(DISK_BASE_CDEVIC);
     AutoBoot loader(sio, old);    
     AutoBootDialog dlg(this);
 
@@ -1238,8 +1238,8 @@ void MainWindow::bootExe(const QString &fileName)
         return;
     }
 
-    sio->uninstallDevice(0x31);
-    sio->installDevice(0x31, &loader);
+    sio->uninstallDevice(DISK_BASE_CDEVIC);
+    sio->installDevice(DISK_BASE_CDEVIC, &loader);
     connect(&loader, SIGNAL(booterStarted()), &dlg, SLOT(booterStarted()));
     connect(&loader, SIGNAL(booterLoaded()), &dlg, SLOT(booterLoaded()));
     connect(&loader, SIGNAL(blockRead(int, int)), &dlg, SLOT(blockRead(int, int)));
@@ -1248,11 +1248,11 @@ void MainWindow::bootExe(const QString &fileName)
 
     dlg.exec();
 
-    sio->uninstallDevice(0x31);
+    sio->uninstallDevice(DISK_BASE_CDEVIC);
     if (old) {
-        sio->installDevice(0x31, old);
+        sio->installDevice(DISK_BASE_CDEVIC, old);
         SimpleDiskImage *d = qobject_cast <SimpleDiskImage*> (old);
-        d = qobject_cast <SimpleDiskImage*> (sio->getDevice(0x31));
+        d = qobject_cast <SimpleDiskImage*> (sio->getDevice(DISK_BASE_CDEVIC));
     }
     if(!g_exefileName.isEmpty()) bootExe(g_exefileName);
 }
@@ -1325,7 +1325,7 @@ void MainWindow::mountFile(int no, const QString &fileName, bool /*prot*/)
             return;
         }
 
-        sio->installDevice(0x31 + no, disk);
+        sio->installDevice(DISK_BASE_CDEVIC + no, disk);
         diskWidgets[no].ejectAction->setEnabled(true);
         diskWidgets[no].editAction->setEnabled(true);
         diskWidgets[no].writeProtectAction->setChecked(disk->isReadOnly());
@@ -1336,7 +1336,7 @@ void MainWindow::mountFile(int no, const QString &fileName, bool /*prot*/)
         respeqtSettings->mountImage(no, fileName, disk->isReadOnly());
         updateRecentFileActions();
         connect(disk, SIGNAL(statusChanged(int)), this, SLOT(deviceStatusChanged(int)), Qt::QueuedConnection);
-        deviceStatusChanged(0x31 + no);
+        deviceStatusChanged(DISK_BASE_CDEVIC + no);
 
         // Extract the file name without the path //
         QString filenamelabel;
@@ -1398,7 +1398,7 @@ void MainWindow::mountFolderImage(int no)
 
 void MainWindow::toggleWriteProtection(int no)
 {
-    SimpleDiskImage *img = qobject_cast <SimpleDiskImage*> (sio->getDevice(no + 0x31));
+    SimpleDiskImage *img = qobject_cast <SimpleDiskImage*> (sio->getDevice(no + DISK_BASE_CDEVIC));
     if (diskWidgets[no].writeProtectAction->isChecked()) {
         img->setReadOnly(true);
     } else {
@@ -1409,7 +1409,7 @@ void MainWindow::toggleWriteProtection(int no)
 
 void MainWindow::openEditor(int no)
 {
-    SimpleDiskImage *img = qobject_cast <SimpleDiskImage*> (sio->getDevice(no + 0x31));
+    SimpleDiskImage *img = qobject_cast <SimpleDiskImage*> (sio->getDevice(no + DISK_BASE_CDEVIC));
     if (img->editDialog()) {
         img->editDialog()->close();
     } else {
@@ -1421,7 +1421,7 @@ void MainWindow::openEditor(int no)
 
 QMessageBox::StandardButton MainWindow::saveImageWhenClosing(int no, QMessageBox::StandardButton previousAnswer, int number)
 {
-    SimpleDiskImage *img = qobject_cast <SimpleDiskImage*> (sio->getDevice(no + 0x31));
+    SimpleDiskImage *img = qobject_cast <SimpleDiskImage*> (sio->getDevice(no + DISK_BASE_CDEVIC));
 
     if (previousAnswer != QMessageBox::YesToAll) {
         QMessageBox::StandardButtons buttons;
@@ -1462,7 +1462,7 @@ void MainWindow::loadTranslators()
 
 void MainWindow::saveDisk(int no)
 {
-    SimpleDiskImage *img = qobject_cast <SimpleDiskImage*> (sio->getDevice(no + 0x31));
+    SimpleDiskImage *img = qobject_cast <SimpleDiskImage*> (sio->getDevice(no + DISK_BASE_CDEVIC));
 
     if (img->isUnnamed()) {
         saveDiskAs(no);
@@ -1581,7 +1581,7 @@ void MainWindow::autoCommit(int no)
 
 void MainWindow::autoSaveDisk(int no)
 {
-    SimpleDiskImage *img = qobject_cast <SimpleDiskImage*> (sio->getDevice(no + 0x31));
+    SimpleDiskImage *img = qobject_cast <SimpleDiskImage*> (sio->getDevice(no + DISK_BASE_CDEVIC));
 
     if (img->isUnnamed()) {
         saveDiskAs(no);
@@ -1723,7 +1723,7 @@ void MainWindow::autoSaveDisk(int no)
 //
 void MainWindow::saveDiskAs(int no)
 {
-    SimpleDiskImage *img = qobject_cast <SimpleDiskImage*> (sio->getDevice(no + 0x31));
+    SimpleDiskImage *img = qobject_cast <SimpleDiskImage*> (sio->getDevice(no + DISK_BASE_CDEVIC));
     QString dir, fileName;
     bool saved = false;
 
@@ -1770,14 +1770,14 @@ void MainWindow::saveDiskAs(int no)
 
 void MainWindow::revertDisk(int no)
 {
-    SimpleDiskImage *img = qobject_cast <SimpleDiskImage*> (sio->getDevice(no + 0x31));
+    SimpleDiskImage *img = qobject_cast <SimpleDiskImage*> (sio->getDevice(no + DISK_BASE_CDEVIC));
     if (QMessageBox::question(this, tr("Revert to last saved"),
             tr("Do you really want to revert '%1' to its last saved state? You will lose the changes that has been made.")
             .arg(img->originalFileName()), QMessageBox::Yes, QMessageBox::No) == QMessageBox::Yes) {
         img->lock();
         img->reopen();
         img->unlock();
-        deviceStatusChanged(0x31 + no);
+        deviceStatusChanged(DISK_BASE_CDEVIC + no);
     }
 }
 
@@ -1954,15 +1954,15 @@ void MainWindow::on_actionEjectAll_triggered()
 
     int toBeSaved = 0;
 
-    for (int i = 0; i < g_numberOfDisks; i++) {  //
-        SimpleDiskImage *img = qobject_cast <SimpleDiskImage*> (sio->getDevice(i + 0x31));
+    for (int i = 0; i < DISK_COUNT; i++) {  //
+        SimpleDiskImage *img = qobject_cast <SimpleDiskImage*> (sio->getDevice(i + DISK_BASE_CDEVIC));
         if (img && img->isModified()) {
             toBeSaved++;
         }
     }
 
     if (!toBeSaved) {
-        for (int i = g_numberOfDisks-1; i >= 0; i--) {
+        for (int i = DISK_COUNT-1; i >= 0; i--) {
             ejectImage(i);
         }
         return;
@@ -1973,8 +1973,8 @@ void MainWindow::on_actionEjectAll_triggered()
         ui->actionStartEmulation->trigger();
     }
 
-    for (int i = g_numberOfDisks-1; i >= 0; i--) {
-        SimpleDiskImage *img = qobject_cast <SimpleDiskImage*> (sio->getDevice(i + 0x31));
+    for (int i = DISK_COUNT-1; i >= 0; i--) {
+        SimpleDiskImage *img = qobject_cast <SimpleDiskImage*> (sio->getDevice(i + DISK_BASE_CDEVIC));
         if (img && img->isModified()) {
             toBeSaved--;
             answer = saveImageWhenClosing(i, answer, toBeSaved);
@@ -1989,7 +1989,7 @@ void MainWindow::on_actionEjectAll_triggered()
             }
         }
     }
-    for (int i = g_numberOfDisks-1; i >= 0; i--) {
+    for (int i = DISK_COUNT-1; i >= 0; i--) {
         ejectImage(i, false);
     }
     if (wasRunning) {
@@ -2044,8 +2044,8 @@ void MainWindow::on_actionNewImage_triggered()
         return;
     }
 
-    sio->installDevice(0x31 + no, disk);
-    deviceStatusChanged(0x31 + no);
+    sio->installDevice(DISK_BASE_CDEVIC + no, disk);
+    deviceStatusChanged(DISK_BASE_CDEVIC + no);
     qDebug() << "!n" << tr("[%1] Mounted '%2' as '%3'.")
             .arg(disk->deviceName())
             .arg(disk->originalFileName())
@@ -2079,7 +2079,7 @@ void MainWindow::on_actionOpenSession_triggered()
     setWindowTitle(g_mainWindowTitle + tr(" -- Session: ") + g_sessionFile);
     setGeometry(respeqtSettings->lastHorizontalPos(), respeqtSettings->lastVerticalPos(), respeqtSettings->lastWidth() , respeqtSettings->lastHeight());
 
-    for (int i = 0; i < g_numberOfDisks; i++) {  //
+    for (int i = 0; i < DISK_COUNT; i++) {  //
         RespeqtSettings::ImageSettings is;
         is = respeqtSettings->mountedImageSetting(i);
         mountFile(i, is.fileName, is.isWriteProtected);

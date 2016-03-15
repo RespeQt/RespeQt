@@ -231,41 +231,44 @@ QString SioWorker::deviceName(int device)
             // It must be because of the piggy-backed autoboot
             result = tr("Disk 1 (below autoboot)");
             break;
-        case 0x31:
-        case 0x32:
-        case 0x33:
-        case 0x34:
-        case 0x35:
-        case 0x36:
-        case 0x37:
-        case 0x38:
-        case 0x39: // Sparta DOS supports up to 15 disk drives
-        case 0x3a:
-        case 0x3b:
-        case 0x3c:
-        case 0x3d:
-        case 0x3e:
-        case 0x3f:
+        case DISK_BASE_CDEVIC+0x0:
+        case DISK_BASE_CDEVIC+0x1:
+        case DISK_BASE_CDEVIC+0x2:
+        case DISK_BASE_CDEVIC+0x3:
+        case DISK_BASE_CDEVIC+0x4:
+        case DISK_BASE_CDEVIC+0x5:
+        case DISK_BASE_CDEVIC+0x6:
+        case DISK_BASE_CDEVIC+0x7:
+        case DISK_BASE_CDEVIC+0x8:
+        case DISK_BASE_CDEVIC+0x9:
+        case DISK_BASE_CDEVIC+0xA:
+        case DISK_BASE_CDEVIC+0xB:
+        case DISK_BASE_CDEVIC+0xC:
+        case DISK_BASE_CDEVIC+0xD:
+        case DISK_BASE_CDEVIC+0xE:
             result = tr("Disk %1").arg(device & 0x0F);
             break;
-        case 0x40:
-        case 0x41:
-        case 0x42:
-        case 0x43:
+        case PRINTER_BASE_CDEVIC+0:
+        case PRINTER_BASE_CDEVIC+1:
+        case PRINTER_BASE_CDEVIC+2:
+        case PRINTER_BASE_CDEVIC+3:
             result = tr("Printer %1").arg((device & 0x0F) + 1);
             break;
-        case 0x45:
+        case APE_TIME_CDEVIC:
             result = tr("APE time downloader");
             break;
-        case 0x46:
+        case ASPEQT_CLIENT_CDEVIC:
             result = tr("AspeQt Client");
             break;
-        case 0x50:
-        case 0x51:
-        case 0x52:
-        case 0x53:
-	    result = tr("RS232 %1").arg((device & 0x0F) +1);
-	    break;
+        case RS232_BASE_CDEVIC+0:
+        case RS232_BASE_CDEVIC+1:
+        case RS232_BASE_CDEVIC+2:
+        case RS232_BASE_CDEVIC+3:
+            result = tr("RS232 %1").arg((device & 0x0F) +1);
+            break;
+        case PCLINK_CDEVIC:
+            result = tr("PCLINK");
+            break;
         default:
             result = tr("Device $%1").arg(device, 2, 16, QChar('0'));
             break;
