@@ -1,4 +1,4 @@
-release 3 (WIP)
+release 3
 	* removed settings migration feature due to foreseeable
 	incompatibilities between AspeQt settings and RespeQt settings
 	* code cleanup by TheMontezuma to reorganize various SIO constants into
