@@ -1,5 +1,7 @@
 /*
- * serialport-unix.h
+ * serialport-win32.h
+ *
+ * Copyright 2016 TheMontezuma
  *
  * This file is copyrighted by either Fatih Aygun, Ray Ataergin, or both.
  * However, the years for these copyrights are unfortunately unknown. If you
