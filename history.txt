@@ -1,9 +1,23 @@
 release 3 (WIP)
+	* removed settings migration feature due to foreseeable
+	incompatibilities between AspeQt settings and RespeQt settings
+	* code cleanup by TheMontezuma to reorganize various SIO constants into
+	a pair of enumerations
+	* updated contact info in readme.txt (thanks to Kyle22 IIRC)
+	* fix for hardware handshaking issue in Windows which could cause data
+	which are not commands to be interpreted as commands. (issue #21)
+	* fix for performance issue with Software Handshaking using wired
+	SIO2PC (issue #21)
+	* Software handshaking for bluetooth (TheMontezuma)
+	* fix for serial port name in log windows (TheMontezuma)
+	* format command timeout value fixed (Marcin Sochacki)
+	* bug fix for COM ports higher than COM9 in windows (TheMontezuma)
 	* Spanish language update, thanks to ascrnet
 	* reorganization of messy HTML in about.html, thanks to ascrnet
 	* Spanish version is included in the about.html, thanks to ascrnet
 	* fixed broken language option in about dialog (#14)
-	* reorganization of messy HTML in RespeQt User Manual-English.html, thanks to ascrnet
+	* reorganization of messy HTML in RespeQt User Manual-English.html,
+	thanks to ascrnet
 
 release 2
         * merged OSX fixes from DrVenkman (LameLefty on github). These fixes
