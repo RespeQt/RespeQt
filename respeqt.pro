@@ -3,14 +3,14 @@
 # Last Update: Nov 29, 2014
 # -------------------------------------------------
 #
-# Copyright 2015 Joseph Zatarski
+# Copyright 2015,2016 Joseph Zatarski
 #
 # This file is copyrighted by either Fatih Aygun, Ray Ataergin, or both.
 # However, the years for these copyrights are unfortunately unknown. If you
 # know the specific year(s) please let the current maintainer know.
 #
 #CONFIG(release, debug|release):DEFINES += QT_NO_DEBUG_OUTPUT
-DEFINES += VERSION=\\\"1.01.Preview_1\\\"
+DEFINES += VERSION=\\\"R3\\\"
 TARGET = RespeQt
 TEMPLATE = app
 CONFIG += qt
