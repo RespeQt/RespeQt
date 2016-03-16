@@ -134,35 +134,6 @@ MainWindow::MainWindow(QWidget *parent)
         deltree(file.absoluteFilePath());
     }
     
-    // Check to see if settings for RespeQt already exist, and if not, see if they can be migrated from
-    // AspeQt versions
-    QSettings newSettings("ZeeSoft", "RespeQt");
-    if(newSettings.allKeys().size() == 0){
-        QSettings *oldSettings;
-
-        oldSettings = new QSettings("atari8warez.com", "AspeQt");
-
-        if (oldSettings->allKeys().size() == 0){
-            // if the a8w AspeQt settings not found, try for even older AspeQt settings
-            oldSettings = new QSettings("TrayGun Software", "AspeQt");
-            oldSettings->setFallbacksEnabled(false);
-        }
-
-        if (oldSettings->allKeys().size() > 0){
-            // of course, only import if we found settings
-            QMessageBox::information(this, tr("Import Settings"), tr("RespeQt has not found previously stored settings. "
-                                                                     "However, RespeQt has located previous AspeQt "
-                                                                     "settings. These will be imported to RespeQt. Your "
-                                                                     "previous AspeQt settings will not be modified."),
-                                     QMessageBox::Ok);
-            for (int i=0; i < oldSettings->allKeys().size(); ++i){
-                newSettings.setValue(oldSettings->allKeys().value(i), oldSettings->value(oldSettings->allKeys().value(i)));
-            }
-            QMessageBox::information(this, tr("Import Settings"), tr("Settings were imported successfully"), QMessageBox::Ok);
-        }
-    }
-
-    /* Set application properties */
     QCoreApplication::setOrganizationName("ZeeSoft");
     QCoreApplication::setOrganizationDomain("https://github.com/jzatarski/RespeQt");
     QCoreApplication::setApplicationName("RespeQt");
