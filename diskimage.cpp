@@ -2,7 +2,7 @@
  * diskimage.cpp
  *
  * Copyright 2015 Joseph Zatarski
- * Copyright 2016 Marcin Sochacki
+ * Copyright 2016 TheMontezuma
  *
  * This file is copyrighted by either Fatih Aygun, Ray Ataergin, or both.
  * However, the years for these copyrights are unfortunately unknown. If you

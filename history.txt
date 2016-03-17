@@ -10,7 +10,7 @@ release 3
 	SIO2PC (issue #21)
 	* Software handshaking for bluetooth (TheMontezuma)
 	* fix for serial port name in log windows (TheMontezuma)
-	* format command timeout value fixed (Marcin Sochacki)
+	* format command timeout value fixed (TheMontezuma)
 	* bug fix for COM ports higher than COM9 in windows (TheMontezuma)
 	* Spanish language update, thanks to ascrnet
 	* reorganization of messy HTML in about.html, thanks to ascrnet
