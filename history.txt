@@ -1,3 +1,6 @@
+release 4 (WIP)
+	* upgraded SpartaDOS boot files to 3.2G
+
 release 3
 	* removed settings migration feature due to foreseeable
 	incompatibilities between AspeQt settings and RespeQt settings
