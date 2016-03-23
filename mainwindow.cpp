@@ -541,6 +541,12 @@ void MainWindow::closeEvent(QCloseEvent *event)
         }
     }
 
+    //close any disk edit dialogs we have open
+    for (int i = 0; i < DISK_COUNT; i++) {
+        SimpleDiskImage *img = qobject_cast <SimpleDiskImage*> (sio->getDevice(i + DISK_BASE_CDEVIC));
+        if (img && img->editDialog()) img->editDialog()->close();
+    }
+
     delete textPrinterWindow;
     //
     delete docDisplayWindow;
