@@ -45,6 +45,7 @@ OptionsDialog::OptionsDialog(QWidget *parent) :
     m_ui->serialPortBaudCombo->setCurrentIndex(respeqtSettings->serialPortMaximumSpeed());
     m_ui->serialPortUseDivisorsBox->setChecked(respeqtSettings->serialPortUsePokeyDivisors());
     m_ui->serialPortDivisorEdit->setValue(respeqtSettings->serialPortPokeyDivisor());
+    m_ui->serialPortCompErrDelayBox->setValue(respeqtSettings->serialPortCompErrDelay());
     m_ui->atariSioDriverNameEdit->setText(respeqtSettings->atariSioDriverName());
     m_ui->atariSioHandshakingMethodCombo->setCurrentIndex(respeqtSettings->atariSioHandshakingMethod());
     m_ui->emulationHighSpeedExeLoaderBox->setChecked(respeqtSettings->useHighSpeedExeLoader());
@@ -87,10 +88,10 @@ OptionsDialog::OptionsDialog(QWidget *parent) :
     dir.setNameFilters(filters);
     for (int i = 0; i < dir.entryList().size(); ++i) {
         local_translator.load(":/translations/i18n/" + dir.entryList()[i]);
-    m_ui->i18nLanguageCombo->addItem(local_translator.translate("OptionsDialog", "English"), dir.entryList()[i].replace("respeqt_", "").replace(".qm", ""));
-    if (dir.entryList()[i].replace("respeqt_", "").replace(".qm", "").compare(respeqtSettings->i18nLanguage()) == 0) {
-        m_ui->i18nLanguageCombo->setCurrentIndex(i+2);
-	}
+        m_ui->i18nLanguageCombo->addItem(local_translator.translate("OptionsDialog", "English"), dir.entryList()[i].replace("respeqt_", "").replace(".qm", ""));
+        if (dir.entryList()[i].replace("respeqt_", "").replace(".qm", "").compare(respeqtSettings->i18nLanguage()) == 0) {
+            m_ui->i18nLanguageCombo->setCurrentIndex(i+2);
+        }
     }
     bool software_handshake = (respeqtSettings->serialPortHandshakingMethod()==HANDSHAKE_SOFTWARE);
     m_ui->serialPortWriteDelayLabel->setVisible(software_handshake);
@@ -101,6 +102,8 @@ OptionsDialog::OptionsDialog(QWidget *parent) :
     m_ui->serialPortDivisorLabel->setVisible(!software_handshake);
     m_ui->serialPortDivisorEdit->setVisible(!software_handshake);
     m_ui->emulationHighSpeedExeLoaderBox->setVisible(!software_handshake);
+    m_ui->serialPortCompErrDelayLabel->setVisible(!software_handshake);
+    m_ui->serialPortCompErrDelayBox->setVisible(!software_handshake);
 }
 
 OptionsDialog::~OptionsDialog()
@@ -125,6 +128,7 @@ void OptionsDialog::OptionsDialog_accepted()
     respeqtSettings->setSerialPortName(m_ui->serialPortDeviceNameEdit->text());
     respeqtSettings->setSerialPortHandshakingMethod(m_ui->serialPortHandshakeCombo->currentIndex());
     respeqtSettings->setSerialPortWriteDelay(m_ui->serialPortWriteDelayCombo->currentIndex());
+    respeqtSettings->setSerialPortCompErrDelay(m_ui->serialPortCompErrDelayBox->value());
     respeqtSettings->setSerialPortMaximumSpeed(m_ui->serialPortBaudCombo->currentIndex());
     respeqtSettings->setSerialPortUsePokeyDivisors(m_ui->serialPortUseDivisorsBox->isChecked());
     respeqtSettings->setSerialPortPokeyDivisor(m_ui->serialPortDivisorEdit->value());
@@ -191,6 +195,8 @@ void OptionsDialog::on_serialPortHandshakeCombo_currentIndexChanged(int index)
     m_ui->serialPortDivisorLabel->setVisible(!software_handshake);
     m_ui->serialPortDivisorEdit->setVisible(!software_handshake);
     m_ui->emulationHighSpeedExeLoaderBox->setVisible(!software_handshake);
+    m_ui->serialPortCompErrDelayLabel->setVisible(!software_handshake);
+    m_ui->serialPortCompErrDelayBox->setVisible(!software_handshake);
 }
 
 void OptionsDialog::on_serialPortUseDivisorsBox_toggled(bool checked)

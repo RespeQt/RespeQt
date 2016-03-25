@@ -80,7 +80,8 @@ bool StandardSerialPortBackend::open()
 
     QString name = respeqtSettings->serialPortName();
     mMethod = respeqtSettings->serialPortHandshakingMethod();
-    mDelay = SLEEP_FACTOR * respeqtSettings->serialPortWriteDelay();
+    mWriteDelay = SLEEP_FACTOR * respeqtSettings->serialPortWriteDelay();
+    mCompErrDelay = respeqtSettings->serialPortCompErrDelay();
 
     mHandle = ::open(name.toLocal8Bit().constData(), O_RDWR | O_NOCTTY | O_NDELAY);
 
@@ -548,7 +549,7 @@ bool StandardSerialPortBackend::writeDataFrame(const QByteArray &data)
     QByteArray copy(data);
     copy.resize(copy.size() + 1);
     copy[copy.size() - 1] = sioChecksum(copy, copy.size() - 1);
-    if(mMethod==HANDSHAKE_SOFTWARE)SioWorker::usleep(mDelay);
+    if(mMethod==HANDSHAKE_SOFTWARE)SioWorker::usleep(mWriteDelay);
     SioWorker::usleep(50);
     return writeRawFrame(copy);
 }
@@ -575,15 +576,15 @@ bool StandardSerialPortBackend::writeDataNak()
 
 bool StandardSerialPortBackend::writeComplete()
 {
-    if(mMethod==HANDSHAKE_SOFTWARE)SioWorker::usleep(mDelay);
-    SioWorker::usleep(800);
+    if(mMethod==HANDSHAKE_SOFTWARE)SioWorker::usleep(mWriteDelay);
+    else SioWorker::usleep(mCompErrDelay);
     return writeRawFrame(QByteArray(1, 67));
 }
 
 bool StandardSerialPortBackend::writeError()
 {
-    if(mMethod==HANDSHAKE_SOFTWARE)SioWorker::usleep(mDelay);
-    SioWorker::usleep(800);
+    if(mMethod==HANDSHAKE_SOFTWARE)SioWorker::usleep(mWriteDelay);
+    else SioWorker::usleep(mCompErrDelay);
     return writeRawFrame(QByteArray(1, 69));
 }
 

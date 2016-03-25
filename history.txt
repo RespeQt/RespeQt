@@ -1,4 +1,5 @@
 release 4 (WIP)
+	* added timing adjustment to close #2
 	* upgraded SpartaDOS boot files to 3.2G
 
 release 3

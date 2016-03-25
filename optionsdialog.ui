@@ -92,7 +92,7 @@
      <x>306</x>
      <y>9</y>
      <width>320</width>
-     <height>299</height>
+     <height>400</height>
     </rect>
    </property>
    <property name="sizePolicy">
@@ -102,7 +102,7 @@
     </sizepolicy>
    </property>
    <property name="currentIndex">
-    <number>1</number>
+    <number>0</number>
    </property>
    <widget class="QWidget" name="page_serialPort">
     <layout class="QVBoxLayout" name="verticalLayout_2">
@@ -334,6 +334,32 @@
           </property>
           <property name="value">
            <number>6</number>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QLabel" name="serialPortCompErrDelayLabel">
+          <property name="text">
+           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;Complete/Error response delay (μs)&lt;br&gt;See manual for more information&lt;/body&gt;&lt;/html&gt;</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QSpinBox" name="serialPortCompErrDelayBox">
+          <property name="suffix">
+           <string>μs</string>
+          </property>
+          <property name="minimum">
+           <number>250</number>
+          </property>
+          <property name="maximum">
+           <number>2000</number>
+          </property>
+          <property name="singleStep">
+           <number>10</number>
+          </property>
+          <property name="value">
+           <number>800</number>
           </property>
          </widget>
         </item>

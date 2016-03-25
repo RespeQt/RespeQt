@@ -46,7 +46,8 @@ private:
     int mHandle;
     int mSpeed;
     int mMethod;
-    int mDelay;
+    int mWriteDelay;
+    int mCompErrDelay;
     QByteArray mSioDevices;
 
     bool setNormalSpeed();

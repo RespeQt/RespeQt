@@ -36,6 +36,11 @@ RespeqtSettings::RespeqtSettings()
     mSerialPortName = mSettings->value("SerialPortName", StandardSerialPortBackend::defaultPortName()).toString();
     mSerialPortHandshakingMethod = mSettings->value("HandshakingMethod", 0).toInt();
     mSerialPortWriteDelay = mSettings->value("WriteDelay", 1).toInt();
+#ifdef Q_OS_WIN
+    mSerialPortCompErrDelay = mSettings->value("CompErrDelay", 300).toInt(); // default is 300us for windows
+#else
+    mSerialPortCompErrDelay = mSettings->value("CompErrDelay", 800).toInt(); // default value of 800us works OK with FTDI USB on linux/OSX
+#endif
     mSerialPortMaximumSpeed = mSettings->value("MaximumSerialPortSpeed", 2).toInt();
     mSerialPortUsePokeyDivisors = mSettings->value("SerialPortUsePokeyDivisors", false).toBool();
     mSerialPortPokeyDivisor = mSettings->value("SerialPortPokeyDivisor", 6).toInt();
@@ -297,6 +302,17 @@ void RespeqtSettings::setSerialPortWriteDelay(int delay)
 {
     mSerialPortWriteDelay = delay;
     if(mSessionFileName == "") mSettings->setValue("WriteDelay", mSerialPortWriteDelay);
+}
+
+int RespeqtSettings::serialPortCompErrDelay()
+{
+    return mSerialPortCompErrDelay;
+}
+
+void RespeqtSettings::setSerialPortCompErrDelay(int delay)
+{
+    mSerialPortCompErrDelay = delay;
+    if(mSessionFileName == "") mSettings->setValue("CompErrDelay", mSerialPortCompErrDelay);
 }
 
 int RespeqtSettings::backend()

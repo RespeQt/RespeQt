@@ -55,6 +55,9 @@ public:
     int serialPortWriteDelay();
     void setSerialPortWriteDelay(int delay);
 
+    int serialPortCompErrDelay();
+    void setSerialPortCompErrDelay(int delay);
+
     int backend();
     void setBackend(int backend);
 
@@ -204,6 +207,7 @@ private:
     QString mSerialPortName;
     int mSerialPortHandshakingMethod;
     int mSerialPortWriteDelay;
+    int mSerialPortCompErrDelay;
     int mSerialPortMaximumSpeed;
     bool mSerialPortUsePokeyDivisors;
     int mSerialPortPokeyDivisor;
