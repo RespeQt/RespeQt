@@ -309,11 +309,6 @@ QByteArray StandardSerialPortBackend::readCommandFrame()
 
     if(mMethod==HANDSHAKE_SOFTWARE)
     {
-        if (!PurgeComm(mHandle, PURGE_RXCLEAR)) {
-            qCritical() << "!e" << tr("Cannot clear serial port read buffer: %1").arg(lastErrorMessage());
-            return data;
-        }
-
         const int size = 4;
         quint8 expected = 0;
         quint8 got = 1;
@@ -423,9 +418,12 @@ QByteArray StandardSerialPortBackend::readCommandFrame()
             // for hardware handshake methods check if the command line status is ON
             if( (MODEM_STAT != 0) && (!GetCommModemStatus(mHandle, &tmp) || !(tmp & MODEM_STAT)) )continue;
 
-            if (!PurgeComm(mHandle, PURGE_RXCLEAR)) {
-                qCritical() << "!e" << tr("Cannot clear serial port read buffer: %1").arg(lastErrorMessage());
-                return data;
+            if(MASK != EV_RXCHAR)
+            {            
+               if (!PurgeComm(mHandle, PURGE_RXCLEAR)) {
+                   qCritical() << "!e" << tr("Cannot clear serial port read buffer: %1").arg(lastErrorMessage());
+                   return data;
+               }
             }
 
     //        qDebug() << "!d" << tr("DBG -- Serial Port, just about to readDataFrame...");
