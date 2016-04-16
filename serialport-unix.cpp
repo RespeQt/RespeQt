@@ -342,12 +342,6 @@ QByteArray StandardSerialPortBackend::readCommandFrame()
 
     if(mMethod==HANDSHAKE_SOFTWARE)
     {
-        if (tcflush(mHandle, TCIFLUSH) != 0)
-        {
-            qCritical() << "!e" << tr("Cannot clear serial port read buffer: %1").arg(lastErrorMessage());
-            return data;
-        }
-
         const int size = 4;
         quint8 expected = 0;
         quint8 got = 1;
@@ -416,12 +410,6 @@ QByteArray StandardSerialPortBackend::readCommandFrame()
 
             if(mMethod == HANDSHAKE_NO_HANDSHAKE)
             {
-                if (tcflush(mHandle, TCIFLUSH) != 0)
-                {
-                    qCritical() << "!e" << tr("Cannot clear serial port read buffer: %1").arg(lastErrorMessage());
-                    return data;
-                }
-
                 int bytes;
                 do {
                     ioctl(mHandle, FIONREAD, &bytes);
