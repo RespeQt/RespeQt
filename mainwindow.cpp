@@ -73,6 +73,9 @@ void logMessageOutput(QtMsgType type, const QMessageLogContext &context, const Q
     logMutex->lock();
     logFile->write(QString::number((quint64)QThread::currentThreadId(), 16).toLatin1());
     switch (type) {
+        case QtInfoMsg:
+            logFile->write(": [Info]    ");
+            break;
         case QtDebugMsg:
             logFile->write(": [Debug]    ");
             break;
