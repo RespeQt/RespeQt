@@ -25,7 +25,7 @@ public:
     bool readSector(quint16 sector, QByteArray &data);
     bool writeSector(quint16 sector, const QByteArray &data);
     void getStatus(QByteArray &status);
-    bool format(quint16 aSectorCount, quint16 aSectorSize);
+    bool format(const DiskGeometry& );
 protected:
     QFile *sourceFile;
     quint8 count[1040];

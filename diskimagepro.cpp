@@ -19,7 +19,7 @@ void DiskImagePro::close()
 {
 }
 
-bool DiskImagePro::format(quint16, quint16)
+bool DiskImagePro::format(const DiskGeometry&)
 {
     return false;
 }
