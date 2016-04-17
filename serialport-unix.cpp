@@ -98,7 +98,7 @@ bool StandardSerialPortBackend::open()
             qCritical() << "!e" << tr("Cannot clear DTR and RTS lines in serial port '%1': %2").arg(name, lastErrorMessage());
             return false;
         }
-        status = status & ~(TIOCM_DTR & TIOCM_RTS);
+        status = status & ~(TIOCM_DTR | TIOCM_RTS);
         if (ioctl(mHandle, TIOCMSET, &status) < 0) {
             qCritical() << "!e" << tr("Cannot clear DTR and RTS lines in serial port '%1': %2").arg(name, lastErrorMessage());
             return false;
