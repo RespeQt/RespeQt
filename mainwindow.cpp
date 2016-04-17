@@ -548,8 +548,10 @@ void MainWindow::closeEvent(QCloseEvent *event)
     }
 
     delete textPrinterWindow;
+    textPrinterWindow = NULL;
     //
     delete docDisplayWindow;
+    docDisplayWindow = NULL;
 
     for (int i = DISK_BASE_CDEVIC; i < (DISK_BASE_CDEVIC+DISK_COUNT); i++) {
         SimpleDiskImage *s = qobject_cast <SimpleDiskImage*> (sio->getDevice(i));
