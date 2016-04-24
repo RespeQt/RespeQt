@@ -365,9 +365,12 @@ MainWindow::~MainWindow()
      if (event->button() == Qt::LeftButton && prtOnOffLabel->geometry().translated(ui->statusBar->geometry().topLeft()).contains(event->pos())) {
          ui->actionPrinterEmulation->trigger();     //
      }
-      if (event->button() == Qt::LeftButton && clearMessagesLabel->geometry().translated(ui->statusBar->geometry().topLeft()).contains(event->pos())) {
+     if (event->button() == Qt::LeftButton && clearMessagesLabel->geometry().translated(ui->statusBar->geometry().topLeft()).contains(event->pos())) {
          ui->textEdit->clear();
          emit sendLogText("");
+     }
+     if (event->button() == Qt::LeftButton && !speedLabel->isHidden() && speedLabel->geometry().translated(ui->statusBar->geometry().topLeft()).contains(event->pos())) {
+        ui->actionOptions->trigger();
      }
 }
 
