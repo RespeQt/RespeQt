@@ -324,7 +324,7 @@ bool StandardSerialPortBackend::setSpeed(int speed)
                        .arg(lastErrorMessage());
         return false;
     }
-   emit statusChanged(tr("%1 bits/sec").arg(speed));
+    emit statusChanged(tr("%1 bits/sec").arg(speed));
     qWarning() << "!i" << tr("Serial port speed set to %1.").arg(speed);
     mSpeed = speed;
     return true;

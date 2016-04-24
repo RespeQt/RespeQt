@@ -1054,7 +1054,7 @@ void MainWindow::changeFonts()
         ui->labelFileName_13->setFont(font);
         ui->labelFileName_14->setFont(font);
         ui->labelFileName_15->setFont(font);
-} else {
+    } else {
         QFont font("MS Shell Dlg 2,8", 8, QFont::Normal);
         ui->labelFileName_1->setFont(font);
         ui->labelFileName_2->setFont(font);
