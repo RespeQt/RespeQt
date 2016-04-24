@@ -283,15 +283,12 @@ bool StandardSerialPortBackend::setSpeed(int speed)
     tcgetattr(mHandle, &tios);
     tios.c_cflag &= ~CSTOPB;
     cfmakeraw(&tios);
-    tios.c_cflag = CREAD | CLOCAL;     // turn on READ
+    tios.c_cflag |= CREAD | CLOCAL;     // turn on READ
     tios.c_cflag |= CS8;
+
     tios.c_cc[VMIN] = 0;
     tios.c_cc[VTIME] = 10;     // 1 sec timeout
 
-    if (ioctl(mHandle, TIOCSETA, &tios) != 0) {
-        qCritical() << "!e" << tr("Failed to set serial attrs");
-        return false;
-    }
     switch (speed) {
         case 600:
             cfsetispeed(&tios, B600);
