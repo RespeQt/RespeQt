@@ -113,9 +113,8 @@ void AutoBoot::handleCommand(quint8 command, quint16 aux)
             }
         case 0xFE:
             {   /* Get chunk */
-
                 if(aux >= chunks.count()) {
-                    qDebug() << "!e" << tr("[%1] Invalid chunk in GetChunk: aux = %2")
+                    qDebug() << "!e" << tr("[%1] Invalid chunk in get chunk: aux = %2")
                                    .arg(deviceName())
                                    .arg(aux);
                     return;
@@ -135,6 +134,13 @@ void AutoBoot::handleCommand(quint8 command, quint16 aux)
             }
         case 0xFF:
             {   /* Get chunk info */
+                if(aux >= chunks.count()) {
+                    qDebug() << "!e" << tr("[%1] Invalid chunk in get chunk info: aux = %2")
+                                   .arg(deviceName())
+                                   .arg(aux);
+                    return;
+                }
+
                 if (!sio->port()->writeCommandAck()) {
                     return;
                 }
