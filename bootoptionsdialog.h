@@ -34,7 +34,8 @@ private:
     Ui::BootOptionsDialog *m_ui;
 
 private slots:
-    void onClick(QAbstractButton* button);
+    void accepted();
+//    void onClick(QAbstractButton* button);
     void picoDOSToggled();
     void picoHighSpeedToggled();
 

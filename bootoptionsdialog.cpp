@@ -30,7 +30,7 @@ BootOptionsDialog::BootOptionsDialog(QWidget *parent) :
 
     m_ui->setupUi(this);
 
-    connect(m_ui->buttonBox, SIGNAL(clicked(QAbstractButton*)), this, SLOT(onClick(QAbstractButton*)));
+//    connect(m_ui->buttonBox, SIGNAL(clicked(QAbstractButton*)), this, SLOT(onClick(QAbstractButton*)));
     connect(m_ui->myPicoDOS, SIGNAL(toggled(bool)), this, SLOT(picoDOSToggled()));
     connect(m_ui->disablePicoHiSpeed, SIGNAL(toggled(bool)), this, SLOT(picoHighSpeedToggled()));
 }
@@ -51,20 +51,19 @@ void BootOptionsDialog::changeEvent(QEvent *e)
         break;
     }
 }
-void BootOptionsDialog::onClick(QAbstractButton* button)
+
+void BootOptionsDialog::accepted()
 {
-    if(button->text() == tr("Apply")){
-        if(m_ui->atariDOS->isChecked()) selectedDOS = "$bootata";
-        if(m_ui->myDOS->isChecked()) selectedDOS = "$bootmyd";
-        if(m_ui->dosXL->isChecked()) selectedDOS = "$bootdxl";
-        if(m_ui->smartDOS->isChecked()) selectedDOS = "$bootsma";
-        if(m_ui->spartaDOS->isChecked()) selectedDOS = "$bootspa";
-        if(m_ui->myPicoDOS->isChecked()) selectedDOS = "$bootpic";
-        bootDir = g_respeQtAppPath + "/" + selectedDOS;
-        emit giveFolderPath(0);
-    }
-    return;
+    if(m_ui->atariDOS->isChecked()) selectedDOS = "$bootata";
+    if(m_ui->myDOS->isChecked()) selectedDOS = "$bootmyd";
+    if(m_ui->dosXL->isChecked()) selectedDOS = "$bootdxl";
+    if(m_ui->smartDOS->isChecked()) selectedDOS = "$bootsma";
+    if(m_ui->spartaDOS->isChecked()) selectedDOS = "$bootspa";
+    if(m_ui->myPicoDOS->isChecked()) selectedDOS = "$bootpic";
+    bootDir = g_respeQtAppPath + "/" + selectedDOS;
+    emit giveFolderPath(0);
 }
+
 void BootOptionsDialog::folderPath(QString fPath)
 {
     // fPath is received from the MainWindow and it is

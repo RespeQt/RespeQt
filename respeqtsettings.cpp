@@ -398,6 +398,12 @@ RespeqtSettings::ImageSettings RespeqtSettings::recentImageSetting(int no)
     return mRecentImageSettings[no];
 }
 
+void RespeqtSettings::setMountedImageProtection(int no, bool prot)
+{
+    mMountedImageSettings[no].isWriteProtected = prot;
+    if(mSessionFileName == "") mSettings->setValue(QString("MountedImageSettings/%1/IsWriteProtected").arg(no+1), prot);
+}
+
 void RespeqtSettings::setMountedImageSetting(int no, const QString &fileName, bool prot)
 {
 

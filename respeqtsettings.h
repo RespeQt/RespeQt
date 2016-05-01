@@ -72,6 +72,7 @@ public:
     ImageSettings mountedImageSetting(int no);
 
     void setMountedImageSetting(int no, const QString &fileName, bool prot);
+    void setMountedImageProtection(int no, bool prot);
     ImageSettings recentImageSetting(int no);
 
     void mountImage(int no, const QString &fileName, bool prot);
