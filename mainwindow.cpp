@@ -15,6 +15,7 @@
 #include "diskimage.h"
 #include "diskimagepro.h"
 #include "folderimage.h"
+#include "pclink.h"
 #include "miscdevices.h"
 #include "respeqtsettings.h"
 #include "autobootdialog.h"
@@ -285,6 +286,9 @@ MainWindow::MainWindow(QWidget *parent)
     connect(sio, SIGNAL(statusChanged(QString)), this, SLOT(sioStatusChanged(QString)));
     shownFirstTime = true;
 
+    PCLINK* pclink = new PCLINK(sio);
+    sio->installDevice(PCLINK_CDEVIC, pclink);
+    
     /* Restore application state */
     for (int i = 0; i < DISK_COUNT; i++) {
         RespeqtSettings::ImageSettings is;
@@ -1307,6 +1311,21 @@ void MainWindow::mountFile(int no, const QString &fileName, bool /*prot*/)
         }
 
         sio->installDevice(DISK_BASE_CDEVIC + no, disk);
+        PCLINK* pclink = reinterpret_cast<PCLINK*>(sio->getDevice(PCLINK_CDEVIC));
+        if(isDir || pclink->hasLink(no))
+        {
+            sio->uninstallDevice(PCLINK_CDEVIC);
+            if(isDir)
+            {
+                pclink->setLink(no,QDir::toNativeSeparators(fileName));
+            }
+            else
+            {
+                pclink->resetLink(no);
+            }
+            sio->installDevice(PCLINK_CDEVIC,pclink);
+        }
+
         diskWidgets[no].ejectAction->setEnabled(true);
         diskWidgets[no].editAction->setEnabled(true);
         diskWidgets[no].writeProtectAction->setChecked(disk->isReadOnly());

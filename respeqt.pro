@@ -39,7 +39,8 @@ SOURCES += main.cpp \
     bootoptionsdialog.cpp \
     network.cpp \
     logdisplaydialog.cpp \
-    respeqtsettings.cpp
+    respeqtsettings.cpp \
+    pclink.cpp
 win32:LIBS += -lwinmm
 unix:LIBS += -lz
 win32:SOURCES += serialport-win32.cpp
@@ -65,7 +66,8 @@ HEADERS += mainwindow.h \
     bootoptionsdialog.h \
     network.h \
     logdisplaydialog.h \
-    respeqtsettings.h
+    respeqtsettings.h \
+    pclink.h
 
 win32:HEADERS += serialport-win32.h
 unix:HEADERS += serialport-unix.h
