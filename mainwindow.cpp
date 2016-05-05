@@ -57,7 +57,6 @@ bool g_D9DOVisible = true;
 bool g_miniMode = false;
 bool g_shadeMode = false;
 int g_savedWidth;
-bool g_logOpen;
 
 // ****************************** END OF GLOBALS ************************************//
 
@@ -622,29 +621,33 @@ bool MainWindow::eventFilter(QObject *obj, QEvent *event)
 }
 void MainWindow::on_actionLogWindow_triggered()
 {
-    if (g_logOpen == false) {
-        g_logOpen = true;
-        QDialog *ldd = new LogDisplayDialog(this);
+    if (logWindow_ == NULL )
+    {
+        logWindow_ = new LogDisplayDialog(this);
         int x, y, w, h;
         x = geometry().x();
         y = geometry().y();
         w = geometry().width();
         h = geometry().height();
         if (!g_miniMode) {
-            ldd->setGeometry(x+w/1.9, y+30, ldd->geometry().width(), geometry().height());
+            logWindow_->setGeometry(x+w/1.9, y+30, logWindow_->geometry().width(), geometry().height());
         } else {
-            ldd->setGeometry(x+20, y+60, w, h*2);
+            logWindow_->setGeometry(x+20, y+60, w, h*2);
         }
-        connect(this, SIGNAL(sendLogText(QString)), ldd, SLOT(getLogText(QString)));
-        connect(this, SIGNAL(sendLogTextChange(QString)), ldd, SLOT(getLogTextChange(QString)));
+        connect(this, SIGNAL(sendLogText(QString)), logWindow_, SLOT(getLogText(QString)));
+        connect(this, SIGNAL(sendLogTextChange(QString)), logWindow_, SLOT(getLogTextChange(QString)));
         emit sendLogText(ui->textEdit->toHtml());
-        ldd->show();
+        logWindow_->show();
+    }
+    else
+    {
+        logWindow_->show();
     }
 }
+
 void MainWindow::logChanged(QString text)
 {
     emit sendLogTextChange(text);
-
 }
 
 void MainWindow::saveWindowGeometry()

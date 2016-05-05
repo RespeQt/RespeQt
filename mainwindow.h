@@ -92,6 +92,9 @@ private:
     int lastMessageRepeat;
     bool isClosing;
 
+    QDialog *logWindow_;
+
+
     void setSession();  //
     void updateRecentFileActions();
     int containingDiskSlot(const QPoint &point);
