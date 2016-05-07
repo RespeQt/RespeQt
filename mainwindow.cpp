@@ -315,7 +315,7 @@ MainWindow::~MainWindow()
 void MainWindow::createDeviceWidgets()
 {
     for (int i = 0; i < DISK_COUNT; i++) {      //
-        auto deviceWidget = new DriveWidget(i);
+        DriveWidget* deviceWidget = new DriveWidget(i);
         if (i<8) {
             ui->leftColumn->addWidget( deviceWidget );
         } else {
@@ -1355,7 +1355,7 @@ void MainWindow::autoSaveDisk(int no)
 {
     SimpleDiskImage *img = qobject_cast <SimpleDiskImage*> (sio->getDevice(no + DISK_BASE_CDEVIC));
 
-    auto widget = diskWidgets[no];
+    DriveWidget* widget = diskWidgets[no];
 
     if (img->isUnnamed()) {
         saveDiskAs(no);
