@@ -641,12 +641,9 @@ void MainWindow::on_actionLogWindow_triggered()
         connect(this, SIGNAL(sendLogText(QString)), logWindow_, SLOT(getLogText(QString)));
         connect(this, SIGNAL(sendLogTextChange(QString)), logWindow_, SLOT(getLogTextChange(QString)));
         emit sendLogText(ui->textEdit->toHtml());
-        logWindow_->show();
     }
-    else
-    {
-        logWindow_->show();
-    }
+
+    logWindow_->show();
 }
 
 void MainWindow::logChanged(QString text)
@@ -1037,6 +1034,7 @@ void MainWindow::setSession()
 
     ui->actionStartEmulation->trigger();
 }
+
 void MainWindow::updateRecentFileActions()
 {
     // TODO: Fix the most recent to work again, but in a dynamic way.
@@ -1652,11 +1650,11 @@ void MainWindow::on_actionBootExe_triggered()
                                  tr(
                                          "Atari executables (*.xex *.com *.exe);;"
                                          "All files (*)"));
-    if (g_exefileName.isEmpty()) {
-        return;
-    }
+
+    if (!g_exefileName.isEmpty()) {
         respeqtSettings->setLastExeDir(QFileInfo(g_exefileName).absolutePath());
-    bootExe(g_exefileName);
+        bootExe(g_exefileName);
+    }
 }
 
 void MainWindow::on_actionShowPrinterTextOutput_triggered()
@@ -1722,16 +1720,9 @@ void MainWindow::trayIconActivated(QSystemTrayIcon::ActivationReason reason)
     }
 }
 
-void MainWindow::folderPath(int slot)
-{
-    // TODO: MAKE THIS WORK IN A WAY WHERE THE STATUS TIP IS NOT WHERE FILE PATH IS STORED!!!
-//   emit takeFolderPath(diskWidgets[slot].fileNameLabel->statusTip());
-}
-
 void MainWindow::on_actionBootOption_triggered()
 {
-    BootOptionsDialog bod(this);
-    connect(&bod, SIGNAL(giveFolderPath(int)), this, SLOT(folderPath(int)));
-    connect(this, SIGNAL(takeFolderPath(QString)), &bod, SLOT(folderPath(QString)));
+    QString folderPath = respeqtSettings->mountedImageSetting(0).fileName;
+    BootOptionsDialog bod(folderPath, this);
     bod.exec();
 }

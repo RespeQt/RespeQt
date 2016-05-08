@@ -72,7 +72,6 @@ public slots:
     int firstEmptyDiskSlot(int startFrom = 0, bool createOne = true);       //
     void mountFileWithDefaultProtection(int no, const QString &fileName);   //
     void autoCommit(int no);                                                //
-    void folderPath(int slot);                                              //
 
 private:
     int untitledName;
@@ -103,7 +102,7 @@ private:
     void mountDiskImage(int no);
     void mountFolderImage(int no);
     bool ejectImage(int no, bool ask = true);
-    void toggleWriteProtection(int no, bool protectionEanbled);
+    void toggleWriteProtection(int no, bool protectionEnabled);
     void openEditor(int no);
     void saveDisk(int no);
     void saveDiskAs(int no);
@@ -132,7 +131,6 @@ signals:
     void logMessage(int type, const QString &msg);
     void newSlot (int slot);
     void fileMounted(bool mounted);
-    void takeFolderPath (QString fPath);
     void sendLogText (QString logText);
     void sendLogTextChange (QString logTextChange);
     void setFont(const QFont &font);
@@ -169,7 +167,6 @@ private slots:
     void on_actionAutoSave_triggered(int deviceId);
     void on_actionSaveAs_triggered(int deviceId);
     void on_actionRevert_triggered(int deviceId);
-
 
 
     void on_actionBootOption_triggered();

@@ -21,25 +21,20 @@ class BootOptionsDialog : public QDialog {
     Q_OBJECT
 
 public:
-    BootOptionsDialog(QWidget *parent = 0);
+    BootOptionsDialog(const QString& bootFolderPath, QWidget *parent = 0);
     ~BootOptionsDialog();
-
-public slots:
-    void folderPath(QString fPath);
 
 protected:
     void changeEvent(QEvent *e);
 
 private:
+    const QString& bootFolderPath_;
     Ui::BootOptionsDialog *m_ui;
 
-private slots:
-    void accepted();
-//    void onClick(QAbstractButton* button);
-    void picoDOSToggled();
-    void picoHighSpeedToggled();
+public slots:
+    virtual void accept();
 
-signals:
-    void giveFolderPath(int slot);
+private slots:
+    void picoDOSToggled();
 };
 #endif // BOOTOPTIONSDIALOG_H
