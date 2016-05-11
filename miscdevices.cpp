@@ -22,7 +22,6 @@
 #include <QtDebug>
 
 extern char g_aspeclSlotNo;
-extern bool g_printerEmu;
 
 // 
 bool conversionMsgdisplayedOnce;
@@ -30,7 +29,7 @@ QString imageFileName;
 
 void Printer::handleCommand(quint8 command, quint16 aux)
 {
-    if(g_printerEmu) {  // Ignore printer commands  if Emulation turned OFF)    // 
+    if(respeqtSettings->printerEmulation()) {  // Ignore printer commands  if Emulation turned OFF)    // 
         switch(command) {
         case 0x53:
             {

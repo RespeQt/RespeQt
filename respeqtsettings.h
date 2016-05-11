@@ -46,6 +46,9 @@ public:
     bool useHighSpeedExeLoader();
     void setUseHighSpeedExeLoader(bool use);
 
+    bool printerEmulation();
+    void setPrinterEmulation(bool status);
+
     QString atariSioDriverName();
     void setAtariSioDriverName(const QString &name);
 
@@ -213,6 +216,7 @@ private:
     int mSerialPortPokeyDivisor;
 
     bool mUseHighSpeedExeLoader;
+    bool mPrinterEmulation;
 
     QString mAtariSioDriverName;
     int mAtariSioHandshakingMethod;
