@@ -33,6 +33,7 @@
 #include "docdisplaywindow.h"
 #include "network.h"
 #include "drivewidget.h"
+#include "infowidget.h"
 
 namespace Ui
 {
@@ -72,6 +73,7 @@ public slots:
     int firstEmptyDiskSlot(int startFrom = 0, bool createOne = true);       //
     void mountFileWithDefaultProtection(int no, const QString &fileName);   //
     void autoCommit(int no);                                                //
+    void openRecent();
 
 private:
     int untitledName;
@@ -79,6 +81,7 @@ private:
     SioWorker *sio;
     bool shownFirstTime;
     DriveWidget* diskWidgets[DISK_COUNT];    //
+    InfoWidget* infoWidget;
 
     QLabel *speedLabel, *onOffLabel, *prtOnOffLabel, *netLabel, *clearMessagesLabel;  //
     TextPrinterWindow *textPrinterWindow;
@@ -92,6 +95,9 @@ private:
     bool isClosing;
 
     QDialog *logWindow_;
+
+
+    QList<QAction*> recentFilesActions_;
 
 
     void setSession();  //

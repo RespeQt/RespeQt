@@ -429,7 +429,7 @@
     <string>Mount a disk image</string>
    </property>
    <property name="statusTip">
-    <string>Mount a disk image to D1</string>
+    <string>Mount a disk image to D%1</string>
    </property>
   </action>
   <action name="actionMountFolder">
@@ -444,7 +444,7 @@
     <string>Mount a folder image</string>
    </property>
    <property name="statusTip">
-    <string>Mount a folder image to D1</string>
+    <string>Mount a folder image to D%1</string>
    </property>
   </action>
   <action name="actionEject">
@@ -462,7 +462,7 @@
     <string>Unmount</string>
    </property>
    <property name="statusTip">
-    <string>Unmount D1</string>
+    <string>Unmount D%1</string>
    </property>
   </action>
   <action name="actionWriteProtect">
@@ -484,7 +484,7 @@
     <string>Toggle write protection</string>
    </property>
    <property name="statusTip">
-    <string>Toggle write protection for D1</string>
+    <string>Toggle write protection for D%1</string>
    </property>
   </action>
   <action name="actionEditDisk">
@@ -505,7 +505,7 @@
     <string>Show properties</string>
    </property>
    <property name="statusTip">
-    <string>Show D1's properties</string>
+    <string>Show D%1's properties</string>
    </property>
   </action>
   <action name="actionSave">
@@ -523,7 +523,7 @@
     <string>Save image</string>
    </property>
    <property name="statusTip">
-    <string>Save D1</string>
+    <string>Save D%1</string>
    </property>
   </action>
   <action name="actionRevert">
@@ -541,7 +541,7 @@
     <string>Revert image to its last saved state</string>
    </property>
    <property name="statusTip">
-    <string>Revert D1 to its last saved state</string>
+    <string>Revert D%1 to its last saved state</string>
    </property>
   </action>
   <action name="actionSaveAs">
@@ -559,7 +559,7 @@
     <string>Save to a file</string>
    </property>
    <property name="statusTip">
-    <string>Save D1 to a file</string>
+    <string>Save D%1 to a file</string>
    </property>
   </action>
   <action name="actionAutoSave">

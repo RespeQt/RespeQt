@@ -14,6 +14,9 @@
 
 #include <QSettings>
 
+
+#define NUM_RECENT_FILES 10
+
 class RespeqtSettings
 {
 public:
@@ -70,13 +73,13 @@ public:
     int customCasBaud();
     void setCustomCasBaud(int baud);
 
-    ImageSettings getImageSettingsFromName(const QString &fileName);
+    const ImageSettings* getImageSettingsFromName(const QString &fileName);
 
-    ImageSettings mountedImageSetting(int no);
+    const ImageSettings& mountedImageSetting(int no);
 
     void setMountedImageSetting(int no, const QString &fileName, bool prot);
     void setMountedImageProtection(int no, bool prot);
-    ImageSettings recentImageSetting(int no);
+    const ImageSettings& recentImageSetting(int no);
 
     void mountImage(int no, const QString &fileName, bool prot);
 
@@ -233,7 +236,7 @@ private:
 
     ImageSettings mMountedImageSettings[16];    //
 
-    ImageSettings mRecentImageSettings[10];
+    ImageSettings mRecentImageSettings[NUM_RECENT_FILES];
     QString mLastDiskImageDir;
     QString mLastFolderImageDir;
     QString mLastSessionDir;

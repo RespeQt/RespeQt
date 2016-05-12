@@ -64,6 +64,9 @@
     </item>
     <item row="0" column="0" colspan="2">
      <layout class="QHBoxLayout" name="horizontalLayout">
+      <property name="sizeConstraint">
+       <enum>QLayout::SetDefaultConstraint</enum>
+      </property>
       <item>
        <layout class="QGridLayout" name="leftColumn"/>
       </item>
@@ -84,7 +87,7 @@
     </rect>
    </property>
    <property name="nativeMenuBar">
-    <bool>true</bool>
+    <bool>false</bool>
    </property>
    <widget class="QMenu" name="menu_Disk">
     <property name="title">
@@ -96,7 +99,6 @@
     <addaction name="actionHideShowDrives"/>
     <addaction name="actionEjectAll"/>
     <addaction name="separator"/>
-    <addaction name="actionMountRecent_0"/>
    </widget>
    <widget class="QMenu" name="menu_File">
     <property name="title">

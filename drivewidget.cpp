@@ -15,15 +15,36 @@ DriveWidget::~DriveWidget()
     delete ui;
 }
 
+
+static void FormatStatusTip(QAction* action, QString& driveNum)
+{
+    const QString& tip = action->statusTip().arg(driveNum);
+    action->setStatusTip(tip);
+}
+
 void DriveWidget::setup()
 {
+    QString driveTxt;
     if(driveNo_ < 9 ) {
-        QString driveTxt = tr("%1:").arg(driveNo_+1);
+        driveTxt = QString("%1").arg(driveNo_+1);
         ui->driveLabel->setText(driveTxt);
     } else {
-        QString driveTxt = tr("%1:").arg((char)((char)(driveNo_-9)+'J'));
-        ui->driveLabel->setText(driveTxt);
+        driveTxt = QString("%1").arg((char)((char)(driveNo_-9)+'J'));
     }
+
+    ui->driveLabel->setText(QString("%1:").arg(driveTxt));
+
+    // Fixup status tips (Note: not all of these have an %1 in the status tip
+    FormatStatusTip(ui->actionBootOption, driveTxt);
+    FormatStatusTip(ui->actionSave, driveTxt);
+    FormatStatusTip(ui->actionAutoSave, driveTxt);
+    FormatStatusTip(ui->actionSaveAs, driveTxt);
+    FormatStatusTip(ui->actionRevert, driveTxt);
+    FormatStatusTip(ui->actionMountDisk, driveTxt);
+    FormatStatusTip(ui->actionMountFolder, driveTxt);
+    FormatStatusTip(ui->actionEject, driveTxt);
+    FormatStatusTip(ui->actionWriteProtect, driveTxt);
+    FormatStatusTip(ui->actionEditDisk, driveTxt);
 
     // Add actions to context menu
     if(driveNo_ == 0) insertAction(0, ui->actionBootOption );

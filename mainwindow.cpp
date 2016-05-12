@@ -24,6 +24,7 @@
 #include "cassettedialog.h"
 #include "bootoptionsdialog.h"
 #include "logdisplaydialog.h"
+#include "infowidget.h"
 
 #include <QEvent>
 #include <QDragEnterEvent>
@@ -43,10 +44,11 @@
 
 
 RespeqtSettings *respeqtSettings;
-MainWindow *mainWindow;
+static MainWindow *mainWindow;
 
-QFile *logFile;
-QMutex *logMutex;
+static QFile *logFile;
+static QMutex *logMutex;
+
 QString g_exefileName;
 QString g_aspeclFileName;
 QString g_respeQtAppPath;
@@ -67,15 +69,16 @@ int g_savedWidth;
 // Warning         (brown)         "!w"
 // Error           (red)           "!e"
 
-void logMessageOutput(QtMsgType type, const QMessageLogContext &context, const QString &msg)
-// void logMessageOutput(QtMsgType type, const char *msg)
+void logMessageOutput(QtMsgType type, const QMessageLogContext &/*context*/, const QString &msg)
 {
     logMutex->lock();
     logFile->write(QString::number((quint64)QThread::currentThreadId(), 16).toLatin1());
     switch (type) {
+#if QT_VERSION >= 0x050500
         case QtInfoMsg:
             logFile->write(": [Info]    ");
             break;
+#endif
         case QtDebugMsg:
             logFile->write(": [Debug]    ");
             break;
@@ -145,12 +148,29 @@ MainWindow::MainWindow(QWidget *parent)
        
     /* Load translators */
     loadTranslators();
-    
+
+
     /* Setup UI */
     ui->setupUi(this);
 
+    /* Add QActions for most recent */
+    for( int i = 0; i < NUM_RECENT_FILES; ++i ) {
+        QAction* recentAction = new QAction(this);
+        connect(recentAction,SIGNAL(triggered()), this, SLOT(openRecent()));
+        recentFilesActions_.append(recentAction);
+    }
+
+    QWidget* diskMenu = (QWidget*)menuBar()->children().at(1);
+
+    diskMenu->addActions( recentFilesActions_ );
+
     /* Initialize diskWidgets array and tool button actions */
     createDeviceWidgets();
+
+    /* Add info widget for symetry */
+    this->infoWidget = new InfoWidget();
+    ui->rightColumn->addWidget( infoWidget );
+
 
     /* Parse command line arguments:
       arg(1): session file (xxxxxxxx.respeqt)   */
@@ -318,6 +338,7 @@ void MainWindow::createDeviceWidgets()
 {
     for (int i = 0; i < DISK_COUNT; i++) {      //
         DriveWidget* deviceWidget = new DriveWidget(i);
+
         if (i<8) {
             ui->leftColumn->addWidget( deviceWidget );
         } else {
@@ -342,6 +363,8 @@ void MainWindow::createDeviceWidgets()
 
         connect(this, SIGNAL(setFont(const QFont&)),deviceWidget, SLOT(setFont(const QFont&)));
     }
+
+    changeFonts();
 }
 
  void MainWindow::mousePressEvent(QMouseEvent *event)
@@ -606,29 +629,33 @@ void MainWindow::show()
         ui->actionStartEmulation->trigger();
     }
 }
+
 void MainWindow::enterEvent(QEvent *)
 {
     if (g_miniMode && g_shadeMode) {
        setWindowOpacity(1.0);
     }
 }
+
 void MainWindow::leaveEvent(QEvent *)
 {
     if (g_miniMode && g_shadeMode) {
        setWindowOpacity(0.25);
     }
 }
+
 void MainWindow::resizeEvent(QResizeEvent *)
 {
 }
 
-bool MainWindow::eventFilter(QObject *obj, QEvent *event)
+bool MainWindow::eventFilter(QObject * /*obj*/, QEvent *event)
 {
     if (event->type() == QEvent::MouseButtonDblClick) {
         on_actionLogWindow_triggered();
     }
     return false;
 }
+
 void MainWindow::on_actionLogWindow_triggered()
 {
     if (logWindow_ == NULL )
@@ -742,14 +769,22 @@ void MainWindow::on_actionToggleMiniMode_triggered()
 
 void MainWindow::showHideDrives()
 {
-    if(!g_D9DOVisible) {
+    for( int i = 8; i < DISK_COUNT; ++i ) {
+        diskWidgets[i]->setVisible(g_D9DOVisible);
+    }
+
+    infoWidget->setVisible(g_D9DOVisible);
+
+    if( g_D9DOVisible ) {
+        ui->actionHideShowDrives->setText(QApplication::translate("MainWindow", "Hide drives D9-DO", 0));
+        ui->actionHideShowDrives->setStatusTip(QApplication::translate("MainWindow", "Hide drives D9-DO", 0));
+        ui->actionHideShowDrives->setIcon(QIcon(":/icons/silk-icons/icons/drive_add.png").pixmap(16, 16, QIcon::Normal, QIcon::On));
+        setMinimumWidth(688);
+    } else {
         ui->actionHideShowDrives->setText(QApplication::translate("MainWindow", "Show drives D9-DO", 0));
         ui->actionHideShowDrives->setStatusTip(QApplication::translate("MainWindow", "Show drives D9-DO", 0));
         ui->actionHideShowDrives->setIcon(QIcon(":/icons/silk-icons/icons/drive_delete.png").pixmap(16, 16, QIcon::Normal, QIcon::On));
-    }
-
-    for( int i = 8; i < DISK_COUNT; ++i ) {
-        diskWidgets[i]->setVisible( g_D9DOVisible );
+        setMinimumWidth(344);
     }
 }
 
@@ -759,24 +794,10 @@ void MainWindow::on_actionHideShowDrives_triggered()
     g_D9DOVisible = !g_D9DOVisible;
     g_miniMode = false;
 
-    for( int i = 8; i < DISK_COUNT; ++i ) {
-        diskWidgets[i]->setVisible( g_D9DOVisible );
-    }
+    showHideDrives();
 
-    if( g_D9DOVisible ) {
-        ui->actionHideShowDrives->setText(QApplication::translate("MainWindow", "Hide drives D9-DO", 0));
-        ui->actionHideShowDrives->setStatusTip(QApplication::translate("MainWindow", "Hide drives D9-DO", 0));
-        ui->actionHideShowDrives->setIcon(QIcon(":/icons/silk-icons/icons/drive_add.png").pixmap(16, 16, QIcon::Normal, QIcon::On));
-        setMinimumWidth(688);
-        setGeometry(geometry().x(), geometry().y(), 0, geometry().height());
-    } else {
-        ui->actionHideShowDrives->setText(QApplication::translate("MainWindow", "Show drives D9-DO", 0));
-        ui->actionHideShowDrives->setStatusTip(QApplication::translate("MainWindow", "Show drives D9-DO", 0));
-        ui->actionHideShowDrives->setIcon(QIcon(":/icons/silk-icons/icons/drive_delete.png").pixmap(16, 16, QIcon::Normal, QIcon::On));
-        setMinimumWidth(344);
-        setGeometry(geometry().x(), geometry().y(), 0, geometry().height());
-        saveWindowGeometry();
-    }
+    setGeometry(geometry().x(), geometry().y(), 0, geometry().height());
+    saveWindowGeometry();
 }
 
 // Toggle printer Emulation ON/OFF //
@@ -809,7 +830,6 @@ void MainWindow::setUpPrinterEmulationWidgets(bool enable)
     prtOnOffLabel->setToolTip(ui->actionPrinterEmulation->toolTip());
     prtOnOffLabel->setStatusTip(ui->actionPrinterEmulation->statusTip());
 }
-
 
 void MainWindow::on_actionStartEmulation_triggered()
 {
@@ -1049,14 +1069,35 @@ void MainWindow::setSession()
     ui->actionStartEmulation->trigger();
 }
 
+
+
+void MainWindow::openRecent()
+{
+    qDebug("open recent");
+    QAction *action = qobject_cast<QAction*>(sender());
+    if(action)
+    {
+        mountFileWithDefaultProtection(firstEmptyDiskSlot(), action->text());
+    }
+}
+
 void MainWindow::updateRecentFileActions()
 {
-    // TODO: Fix the most recent to work again, but in a dynamic way.
-    /*
-    // This but for 0..9, and smarter
-    ui->actionMountRecent_0->setText(respeqtSettings->recentImageSetting(0).fileName);
-    ui->actionMountRecent_0->setVisible(!ui->actionMountRecent_0->text().isEmpty());
-    */
+    for(int i = 0; i < NUM_RECENT_FILES; ++i)
+    {
+        QAction* action = this->recentFilesActions_[i];
+        const RespeqtSettings::ImageSettings& image = respeqtSettings->recentImageSetting(i);
+
+        if(image.fileName != "" )
+        {
+            action->setVisible(true);
+            action->setText(image.fileName);
+        }
+        else
+        {
+            action->setVisible(false);
+        }
+    }
 }
 
 
@@ -1186,7 +1227,8 @@ void MainWindow::mountFileWithDefaultProtection(int no, const QString &fileName)
         }
     }
 
-    bool prot = respeqtSettings->getImageSettingsFromName(atariFileName).isWriteProtected;
+    const RespeqtSettings::ImageSettings* imgSetting = respeqtSettings->getImageSettingsFromName(atariFileName);
+    bool prot = (imgSetting!=NULL) && imgSetting->isWriteProtected;
     mountFile(no, atariFileName, prot);
 }
 
@@ -1741,6 +1783,14 @@ void MainWindow::trayIconActivated(QSystemTrayIcon::ActivationReason reason)
         trayIcon.hide();
     }
 }
+
+/*
+void MainWindow::folderPath(int slot)
+{
+    // TODO: MAKE THIS WORK IN A WAY WHERE THE STATUS TIP IS NOT WHERE FILE PATH IS STORED!!!
+//   emit takeFolderPath(diskWidgets[slot].fileNameLabel->statusTip());
+}
+*/
 
 void MainWindow::on_actionBootOption_triggered()
 {
