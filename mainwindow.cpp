@@ -1160,6 +1160,14 @@ void MainWindow::updateRecentFileActions()
 
 bool MainWindow::ejectImage(int no, bool ask)
 {
+    PCLINK* pclink = reinterpret_cast<PCLINK*>(sio->getDevice(PCLINK_CDEVIC));
+    if(pclink->hasLink(no+1))
+    {
+        sio->uninstallDevice(PCLINK_CDEVIC);
+        pclink->resetLink(no+1);
+        sio->installDevice(PCLINK_CDEVIC,pclink);
+    }
+    
     SimpleDiskImage *img = qobject_cast <SimpleDiskImage*> (sio->getDevice(no + DISK_BASE_CDEVIC));
 
     if (ask && img && img->isModified()) {
