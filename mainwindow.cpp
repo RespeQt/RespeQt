@@ -442,6 +442,14 @@ void MainWindow::dropEvent(QDropEvent *event)
 
         respeqtSettings->swapImages(slot, source);
 
+        PCLINK* pclink = reinterpret_cast<PCLINK*>(sio->getDevice(PCLINK_CDEVIC));
+        if(pclink->hasLink(slot+1) || pclink->hasLink(source+1))
+        {
+            sio->uninstallDevice(PCLINK_CDEVIC);
+            pclink->swapLinks(slot+1,source+1);
+            sio->installDevice(PCLINK_CDEVIC,pclink);
+        }
+
         qDebug() << "!n" << tr("Swapped disk %1 with disk %2.").arg(slot + 1).arg(source + 1);
 
         return;
@@ -1152,6 +1160,14 @@ void MainWindow::updateRecentFileActions()
 
 bool MainWindow::ejectImage(int no, bool ask)
 {
+    PCLINK* pclink = reinterpret_cast<PCLINK*>(sio->getDevice(PCLINK_CDEVIC));
+    if(pclink->hasLink(no+1))
+    {
+        sio->uninstallDevice(PCLINK_CDEVIC);
+        pclink->resetLink(no+1);
+        sio->installDevice(PCLINK_CDEVIC,pclink);
+    }
+    
     SimpleDiskImage *img = qobject_cast <SimpleDiskImage*> (sio->getDevice(no + DISK_BASE_CDEVIC));
 
     if (ask && img && img->isModified()) {
@@ -1317,17 +1333,18 @@ void MainWindow::mountFile(int no, const QString &fileName, bool /*prot*/)
         }
 
         sio->installDevice(DISK_BASE_CDEVIC + no, disk);
+        
         PCLINK* pclink = reinterpret_cast<PCLINK*>(sio->getDevice(PCLINK_CDEVIC));
-        if(isDir || pclink->hasLink(no))
+        if(isDir || pclink->hasLink(no+1))
         {
             sio->uninstallDevice(PCLINK_CDEVIC);
             if(isDir)
             {
-                pclink->setLink(no,QDir::toNativeSeparators(fileName));
+                pclink->setLink(no+1,QDir::toNativeSeparators(fileName).toLatin1());
             }
             else
             {
-                pclink->resetLink(no);
+                pclink->resetLink(no+1);
             }
             sio->installDevice(PCLINK_CDEVIC,pclink);
         }
