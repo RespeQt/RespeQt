@@ -309,6 +309,11 @@ QByteArray StandardSerialPortBackend::readCommandFrame()
 
     if(mMethod==HANDSHAKE_SOFTWARE)
     {
+        if (!PurgeComm(mHandle, PURGE_RXCLEAR)) {
+            qCritical() << "!e" << tr("Cannot clear serial port read buffer: %1").arg(lastErrorMessage());
+            return data;
+        }
+
         const int size = 4;
         quint8 expected = 0;
         quint8 got = 1;
