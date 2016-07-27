@@ -106,7 +106,7 @@ typedef struct
     uchar dirbuf[23];
 } PCLDBF;
 
-static bool D = true; // extended debug
+static bool D = false; // extended debug
 static ulong upper_dir = 0; // in PCLink dirs accept lowercase characters only
 static IODESC iodesc[16];
 static DEVICE device[16];	/* 1 PCLINK device with support for 15 units */
