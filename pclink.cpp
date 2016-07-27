@@ -106,15 +106,11 @@ typedef struct
     uchar dirbuf[23];
 } PCLDBF;
 
-static bool D = false; // extended debug
+static bool D = true; // extended debug
 static ulong upper_dir = 0; // in PCLink dirs accept lowercase characters only
 static IODESC iodesc[16];
 static DEVICE device[16];	/* 1 PCLINK device with support for 15 units */
 static PCLDBF pcl_dbf;
-
-#ifdef Q_OS_LINUX
-static uid_t our_uid = 0;
-#endif
 
 static const char *fun[] =
 {
@@ -129,9 +125,6 @@ PCLINK::PCLINK(SioWorker *worker)
     :SioDevice(worker)
 {
     do_pclink_init(1);
-#ifdef Q_OS_LINUX
-    our_uid = getuid();
-#endif
 }
 
 /*************************************************************************/
@@ -1458,7 +1451,7 @@ complete_fopen:
             goto complete;
         }
 
-#ifdef Q_OS_LINUX
+#if defined(Q_OS_LINUX) || defined(Q_OS_OSX)
         if (mkdir(newpath, S_IRWXU|S_IRWXG|S_IRWXO))
 #else
         if (mkdir(newpath))
@@ -1522,10 +1515,10 @@ complete_fopen:
             goto complete;
         }
 
-#ifdef Q_OS_LINUX
-        if (sb.st_uid != our_uid)
+#if defined(Q_OS_LINUX) || defined(Q_OS_OSX)
+        if (!access(newpath, W_OK))
         {
-            if(D) qDebug() << "!n" << tr("'%1' wrong uid").arg(newpath);
+            if(D) qDebug() << "!n" << tr("'%1' can't be accessed").arg(newpath);
             device[cunit].status.err = 170;
             goto complete;
         }
@@ -2028,9 +2021,16 @@ int PCLINK::check_dos_name(char *newpath, struct dirent *dp, struct stat *sb)
     if (!S_ISREG(sb->st_mode) && !S_ISDIR(sb->st_mode))
         return 1;
 
-#ifdef Q_OS_LINUX
-    if (sb->st_uid != our_uid)		/* belongs to us? */
+#if defined(Q_OS_LINUX) || defined(Q_OS_OSX)
+    if (sb->st_mode == S_IFLNK) {
+        if (D) qDebug() << "!n" << tr("'%1': is a symlink").arg(temp_fspec);
+    }
+
+    if (access(temp_fspec, R_OK) < 0)	{	/* belongs to us? */
+        if (D) qDebug() << "!n" << tr("'%1': can't be accessed").arg(temp_fspec);
+        if (D) qDebug() << "!n" << tr("access error code %1").arg(errno);
         return 1;
+    }
 #endif
 
     if ((sb->st_mode & S_IRUSR) == 0)	/* unreadable? */
