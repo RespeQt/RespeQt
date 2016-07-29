@@ -112,10 +112,6 @@ static IODESC iodesc[16];
 static DEVICE device[16];	/* 1 PCLINK device with support for 15 units */
 static PCLDBF pcl_dbf;
 
-#ifdef Q_OS_LINUX
-static uid_t our_uid = 0;
-#endif
-
 static const char *fun[] =
 {
     "FREAD", "FWRITE", "FSEEK", "FTELL", "FLEN", "(none)", "FNEXT", "FCLOSE",
@@ -129,9 +125,6 @@ PCLINK::PCLINK(SioWorker *worker)
     :SioDevice(worker)
 {
     do_pclink_init(1);
-#ifdef Q_OS_LINUX
-    our_uid = getuid();
-#endif
 }
 
 /*************************************************************************/
@@ -246,10 +239,11 @@ void PCLINK::swapLinks(int from, int to)
 {
     if(from<1 || from>15 || to<1 || to>15)return;
 
-    char tmp_dir_name[PCL_MAX_DIR_LENGTH];
+    char tmp_dir_name[PCL_MAX_DIR_LENGTH+1];
     if(hasLink(from))
     {
         strncpy(tmp_dir_name, device[from].dirname, PCL_MAX_DIR_LENGTH);
+		tmp_dir_name[PCL_MAX_DIR_LENGTH]=0;
         resetLink(from);
         if(hasLink(to))
         {
@@ -283,6 +277,492 @@ void PCLINK::resetLink(int no)
 
 /*************************************************************************/
 
+void PCLINK::unix_time_2_sdx(time_t *todp, uchar *ob)
+{
+    struct tm *t;
+    uchar yy;
+
+    memset(ob, 0, 6);
+
+    if (*todp == 0)
+        return;
+
+    t = localtime(todp);
+
+    yy = t->tm_year;
+    while (yy >= 100)
+        yy-=100;
+
+    ob[0] = t->tm_mday;
+    ob[1] = t->tm_mon + 1;
+    ob[2] = yy;
+    ob[3] = t->tm_hour;
+    ob[4] = t->tm_min;
+    ob[5] = t->tm_sec;
+}
+
+/*************************************************************************/
+
+long PCLINK::dos_2_allowed(uchar c)
+{
+#ifdef Q_OS_LINUX
+    if (upper_dir)
+        return (isupper(c) || isdigit(c) || (c == '_') || (c == '@'));
+
+    return (islower(c) || isdigit(c) || (c == '_') || (c == '@'));
+#else
+    return (isalpha(c) || isdigit(c) || (c == '_') || (c == '@'));
+#endif
+}
+
+/*************************************************************************/
+
+long PCLINK::dos_2_term(uchar c)
+{
+    return ((c == 0) || (c == 0x20));
+}
+
+/*************************************************************************/
+
+long PCLINK::validate_fn(uchar *name, int len)
+{
+    int x;
+
+    for (x = 0; x < len; x++)
+    {
+        if (dos_2_term(name[x]))
+            return (x != 0);
+        if (name[x] == '.')
+            return 1;
+        if (!dos_2_allowed(name[x]))
+            return 0;
+    }
+
+    return 1;
+}
+
+/*************************************************************************/
+
+void PCLINK::ugefina(char *src, char *out)
+{
+    char *dot;
+    ushort i;
+
+    memset(out, 0x20, 8+3);
+
+    dot = strchr(src, '.');
+
+    if (dot)
+    {
+        i = 1;
+        while (dot[i] && (i < 4))
+        {
+            out[i+7] = toupper((uchar)dot[i]);
+            i++;
+        }
+    }
+
+    i = 0;
+    while ((src[i] != '.') && !dos_2_term(src[i]) && (i < 8))
+    {
+        out[i] = toupper((uchar)src[i]);
+        i++;
+    }
+}
+
+/*************************************************************************/
+
+void PCLINK::uexpand(uchar *rawname, char *name83)
+{
+    ushort x, y;
+    uchar t;
+
+    name83[0] = 0;
+
+    for (x = 0; x < 8; x++)
+    {
+        t = rawname[x];
+        if (t && (t != 0x20))
+            name83[x] = upper_dir ? toupper(t) : tolower(t);
+        else
+            break;
+    }
+
+    y = 8;
+
+    if (rawname[y] && (rawname[y] != 0x20))
+    {
+        name83[x] = '.';
+        x++;
+
+        while ((y < 11) && rawname[y] && (rawname[y] != 0x20))
+        {
+            name83[x] = upper_dir ? toupper(rawname[y]) : tolower(rawname[y]);
+            x++;
+            y++;
+        }
+    }
+
+    name83[x] = 0;
+}
+
+/*************************************************************************/
+
+int PCLINK::match_dos_names(char *name, char *mask, uchar fatr1, struct stat *sb)
+{
+    if(D) qDebug() << "!n" << tr("match: %1%2%3%4%5%6%7%8%9%10%11 with %12%13%14%15%16%17%18%19%20%21%22: ")
+    .arg(name[0]).arg(name[1]).arg(name[2]).arg(name[3]).arg(name[4]).arg(name[5]).arg(name[6]).arg(name[7])
+    .arg(name[8]).arg(name[9]).arg(name[10])
+    .arg(mask[0]).arg(mask[1]).arg(mask[2]).arg(mask[3]).arg(mask[4]).arg(mask[5]).arg(mask[6]).arg(mask[7])
+    .arg(mask[8]).arg(mask[9]).arg(mask[10]);
+
+    ushort i;
+
+    for (i = 0; i < 11; i++)
+    {
+        if (mask[i] != '?')
+            if (toupper((uchar)name[i]) != toupper((uchar)mask[i]))
+            {
+                if(D) qDebug() << "!n" << tr("no match");
+                return 1;
+            }
+    }
+
+    /* There are no such attributes in Unix */
+    fatr1 &= ~(RA_NO_HIDDEN|RA_NO_ARCHIVED);
+
+    /* Now check the attributes */
+    if (fatr1 & (RA_HIDDEN | RA_ARCHIVED))
+    {
+        if(D) qDebug() << "!n" << tr("atr mismatch: not HIDDEN or ARCHIVED");
+        return 1;
+    }
+
+    if (fatr1 & RA_PROTECT)
+    {
+        if (sb->st_mode & S_IWUSR)
+        {
+            if(D) qDebug() << "!n" << tr("atr mismatch: not PROTECTED");
+            return 1;
+        }
+    }
+
+    if (fatr1 & RA_NO_PROTECT)
+    {
+        if ((sb->st_mode & S_IWUSR) == 0)
+        {
+            if(D) qDebug() << "!n" << tr("atr mismatch: not UNPROTECTED");
+            return 1;
+        }
+    }
+
+    if (fatr1 & RA_SUBDIR)
+    {
+        if (!S_ISDIR(sb->st_mode))
+        {
+            if(D) qDebug() << "!n" << tr("atr mismatch: not SUBDIR");
+            return 1;
+        }
+    }
+
+    if (fatr1 & RA_NO_SUBDIR)
+    {
+        if (S_ISDIR(sb->st_mode))
+        {
+            if(D) qDebug() << "!n" << tr("atr mismatch: not FILE");
+            return 1;
+        }
+    }
+
+    if(D) qDebug() << "!n" << tr("match");
+    return 0;
+}
+
+/*************************************************************************/
+
+int PCLINK::validate_dos_name(char *fname)
+{
+    char *dot = strchr(fname, '.');
+    long valid_fn, valid_xx;
+
+    if ((dot == NULL) && (strlen(fname) > 8))
+        return 1;
+    if (dot)
+    {
+        long dd = strlen(dot);
+
+        if (dd > 4)
+            return 1;
+        if ((dot - fname) > 8)
+            return 1;
+        if ((dot == fname) && (dd == 1))
+            return 1;
+        if ((dd == 2) && (dot[1] == '.'))
+            return 1;
+        if ((dd == 3) && ((dot[1] == '.') || (dot[2] == '.')))
+            return 1;
+        if ((dd == 4) && ((dot[1] == '.') || (dot[2] == '.') || (dot[3] == '.')))
+            return 1;
+    }
+
+    valid_fn = validate_fn((uchar *)fname, 8);
+    if (dot != NULL)
+        valid_xx = validate_fn((uchar *)(dot + 1), 3);
+    else
+        valid_xx = 1;
+
+    if (!valid_fn || !valid_xx)
+        return 1;
+
+    return 0;
+}
+
+/*************************************************************************/
+
+int PCLINK::check_dos_name(char *newpath, struct dirent *dp, struct stat *sb)
+{
+    char temp_fspec[PCL_MAX_DIR_LENGTH+1], fname[256];
+
+    strcpy(fname, dp->d_name);
+
+    if(D) qDebug() << "!n" << tr("%1: got fname '%2'").arg(__extension__ __FUNCTION__).arg(fname);
+
+    if (validate_dos_name(fname))
+        return 1;
+
+    /* stat() the file (fetches the length) */
+    sprintf(temp_fspec, "%s/%s", newpath, fname);
+
+    if(D) qDebug() << "!n" << tr("%1: stat '%2'").arg(__extension__ __FUNCTION__).arg(fname);
+
+    if (stat(temp_fspec, sb))
+        return 1;
+
+    if (!S_ISREG(sb->st_mode) && !S_ISDIR(sb->st_mode))
+        return 1;
+
+#if defined(Q_OS_LINUX) || defined(Q_OS_OSX)
+    if (sb->st_mode == S_IFLNK) {
+        if (D) qDebug() << "!n" << tr("'%1': is a symlink").arg(temp_fspec);
+    }
+
+    if (access(temp_fspec, R_OK) < 0)	{	/* belongs to us? */
+        if (D) qDebug() << "!n" << tr("'%1': can't be accessed").arg(temp_fspec);
+        if (D) qDebug() << "!n" << tr("access error code %1").arg(errno);
+        return 1;
+    }
+#endif
+
+    if ((sb->st_mode & S_IRUSR) == 0)	/* unreadable? */
+        return 1;
+
+    if (S_ISDIR(sb->st_mode) && ((sb->st_mode & S_IXUSR) == 0))
+        return 1;
+
+    return 0;
+}
+
+/*************************************************************************/
+
+void PCLINK::fps_close(int i)
+{
+    if (iodesc[i].fps.file != NULL)
+    {
+        if (iodesc[i].fpmode & 0x10)
+            closedir(iodesc[i].fps.dir);
+        else
+            fclose(iodesc[i].fps.file);
+    }
+
+    if (iodesc[i].dir_cache != NULL)
+    {
+        free(iodesc[i].dir_cache);
+        iodesc[i].dir_cache = NULL;
+    }
+
+    iodesc[i].fps.file = NULL;
+
+    iodesc[i].devno = 0;
+    iodesc[i].cunit = 0;
+    iodesc[i].fpmode = 0;
+    iodesc[i].fatr1 = 0;
+    iodesc[i].fatr2 = 0;
+    iodesc[i].t1 = 0;
+    iodesc[i].t2 = 0;
+    iodesc[i].t3 = 0;
+    iodesc[i].d1 = 0;
+    iodesc[i].d2 = 0;
+    iodesc[i].d3 = 0;
+    iodesc[i].fpname[0] = 0;
+    iodesc[i].fppos = 0;
+    iodesc[i].fpread = 0;
+    iodesc[i].eof = 0;
+    iodesc[i].pathname[0] = 0;
+    memset(&iodesc[i].fpstat, 0, sizeof(struct stat));
+}
+
+/*************************************************************************/
+
+ulong PCLINK::get_file_len(uchar handle)
+{
+    ulong filelen;
+    struct dirent *dp;
+    struct stat sb;
+
+    if (iodesc[handle].fpmode & 0x10)	/* directory */
+    {
+        rewinddir(iodesc[handle].fps.dir);
+        filelen = sizeof(DIRENTRY);
+
+        while ((dp = readdir(iodesc[handle].fps.dir)) != NULL)
+        {
+            if (check_dos_name(iodesc[handle].pathname, dp, &sb))
+                continue;
+            filelen += sizeof(DIRENTRY);
+        }
+        rewinddir(iodesc[handle].fps.dir);
+    }
+    else
+        filelen = iodesc[handle].fpstat.st_size;
+
+    if (filelen > SDX_MAXLEN)
+        filelen = SDX_MAXLEN;
+
+    return filelen;
+}
+
+/*************************************************************************/
+
+DIRENTRY * PCLINK::cache_dir(uchar handle)
+{
+    char *bs, *cwd;
+    uchar dirnode = 0x00;
+    ushort node;
+    ulong dlen, flen, sl, dirlen = iodesc[handle].fpstat.st_size;
+    DIRENTRY *dbuf, *dir;
+    struct dirent *dp;
+    struct stat sb;
+
+    if (iodesc[handle].dir_cache != NULL)
+    {
+        if(D) qDebug() << "!n" << tr("Internal error: dir_cache should be NULL!");
+        free(iodesc[handle].dir_cache);
+        iodesc[handle].dir_cache = NULL;
+    }
+
+    dir = dbuf = (DIRENTRY*)malloc(dirlen + sizeof(DIRENTRY));
+    memset(dbuf, 0, dirlen + sizeof(DIRENTRY));
+
+    dir->status = 0x28;
+    dir->map_l = 0x00;			/* low 11 bits: file number, high 5 bits: dir number */
+    dir->map_h = dirnode;
+    dir->len_l = dirlen & 0x000000ffL;
+    dir->len_m = (dirlen & 0x0000ff00L) >> 8;
+    dir->len_h = (dirlen & 0x00ff0000L) >> 16;
+
+    memset(dir->fname, 0x20, 11);
+
+    sl = strlen(device[iodesc[handle].cunit].dirname);
+
+    cwd = iodesc[handle].pathname + sl;
+
+    bs = strrchr(cwd, '/');
+
+    if (bs == NULL)
+        memcpy(dir->fname, "MAIN", 4);
+    else
+    {
+        char *cp = cwd;
+
+        ugefina(bs+1, (char *)dir->fname);
+
+        node = 0;
+
+        while (cp <= bs)
+        {
+            if (*cp == '/')
+                dirnode++;
+            cp++;
+        }
+
+        dir->map_h = (dirnode & 0x1f) << 3;
+    }
+
+    unix_time_2_sdx(&iodesc[handle].fpstat.st_mtime, dir->stamp);
+
+    dir++;
+    flen = sizeof(DIRENTRY);
+
+    node = 1;
+
+    while ((dp = readdir(iodesc[handle].fps.dir)) != NULL)
+    {
+        ushort map;
+
+        if (check_dos_name(iodesc[handle].pathname, dp, &sb))
+            continue;
+
+        dlen = sb.st_size;
+        if (dlen > SDX_MAXLEN)
+            dlen = SDX_MAXLEN;
+
+        dir->status = (sb.st_mode & S_IWUSR) ? 0x08 : 0x09;
+
+        if (S_ISDIR(sb.st_mode))
+        {
+            dir->status |= 0x20;		/* directory */
+            dlen = sizeof(DIRENTRY);
+        }
+
+        map = dirnode << 11;
+        map |= (node & 0x07ff);
+
+        dir->map_l = map & 0x00ff;
+        dir->map_h = ((map & 0xff00) >> 8);
+        dir->len_l = dlen & 0x000000ffL;
+        dir->len_m = (dlen & 0x0000ff00L) >> 8;
+        dir->len_h = (dlen & 0x00ff0000L) >> 16;
+
+        ugefina(dp->d_name, (char *)dir->fname);
+
+        unix_time_2_sdx(&sb.st_mtime, dir->stamp);
+
+        node++;
+        dir++;
+        flen += sizeof(DIRENTRY);
+
+        if (flen >= dirlen)
+            break;
+    }
+
+    return dbuf;
+}
+
+/*************************************************************************/
+
+ulong PCLINK::dir_read(uchar *mem, ulong blk_size, uchar handle, int *eof_sig)
+{
+    uchar *db = (uchar *)iodesc[handle].dir_cache;
+    ulong dirlen = iodesc[handle].fpstat.st_size, newblk;
+
+    eof_sig[0] = 0;
+
+    newblk = dirlen - iodesc[handle].fppos;
+
+    if (newblk < blk_size)
+    {
+        blk_size = newblk;
+        eof_sig[0] = 1;
+    }
+
+    if (blk_size)
+        memcpy(mem, db+iodesc[handle].fppos, blk_size);
+
+    return blk_size;
+}
+
+/*************************************************************************/
+
 void PCLINK::do_pclink_init(int force)
 {
     uchar handle;
@@ -299,6 +779,162 @@ void PCLINK::do_pclink_init(int force)
         fps_close(handle);
         memset(&device[handle].parbuf, 0, sizeof(PARBUF));
     }
+}
+
+/*************************************************************************/
+
+void PCLINK::set_status_size(uchar cunit, ushort size)
+{
+    device[cunit].status.tmot = (size & 0x00ff);
+    device[cunit].status.none = (size & 0xff00) >> 8;
+}
+
+/*************************************************************************/
+
+/* defwd - a mounted directory
+ * newpath - ?
+ */
+int PCLINK::validate_user_path(char *defwd, char *newpath)
+{
+    char *d, oldwd[PCL_MAX_DIR_LENGTH+1], newwd[PCL_MAX_DIR_LENGTH+1];
+
+    (void)getcwd(oldwd, sizeof(oldwd));
+    if (chdir(newpath) < 0)
+        return 0;
+    (void)getcwd(newwd, sizeof(newwd));
+    (void)chdir(oldwd);
+
+    d = strstr(newwd, defwd);
+
+    if (d == NULL)
+        return 0;
+    if (d != newwd)
+        return 0;
+
+    return 1;
+}
+
+/*************************************************************************/
+
+/* is it a Sparta Dos path separator? */
+int PCLINK::ispathsep(uchar c)
+{
+    return ((c == '>') || (c == '\\'));
+}
+
+/*************************************************************************/
+
+void PCLINK::path_copy(uchar *dst, uchar *src)
+{
+    uchar a;
+
+    while (*src)
+    {
+        a = *src;
+        if (ispathsep(a))
+        {
+            while (ispathsep(*src))
+                src++;
+            src--;
+        }
+        *dst = a;
+        src++;
+        dst++;
+    }
+
+    *dst = 0;
+}
+
+/*************************************************************************/
+
+// from SPARTA DOS file system to unix file system
+void PCLINK::path2unix(uchar *out, uchar *path)
+{
+    int i, y = 0;
+
+    for (i = 0; path[i] && (i < 64); i++)
+    {
+        char a;
+
+        a = upper_dir ? toupper(path[i]) : tolower(path[i]);
+
+        if (ispathsep(a))
+            a = '/';
+        else if (a == '<')
+        {
+            a = '.';
+            out[y++] = '.';
+        }
+        out[y++] = a;
+    }
+
+    if (y && (out[y-1] != '/'))
+        out[y++] = '/';
+
+    out[y] = 0;
+}
+
+/*************************************************************************/
+
+
+void PCLINK::create_user_path(uchar cunit, char *newpath)
+{
+    long sl, cwdo = 0;
+    uchar lpath[128], upath[128];
+
+    strcpy(newpath, device[cunit].dirname);
+
+    /* this is user-requested new path */
+    path_copy(lpath, device[cunit].parbuf.path);
+    path2unix(upath, lpath);
+
+    if (upath[0] != '/')
+    {
+        sl = strlen(newpath);
+        if (sl && (newpath[sl-1] != '/'))
+            strcat(newpath, "/");
+        if (device[cunit].cwd[0] == '/')
+            cwdo++;
+        strcat(newpath, (char *)device[cunit].cwd + cwdo);
+        sl = strlen(newpath);
+        if (sl && (newpath[sl-1] != '/'))
+            strcat(newpath, "/");
+    }
+    strcat(newpath, (char *)upath);
+    sl = strlen(newpath);
+    if (sl && (newpath[sl-1] == '/'))
+        newpath[sl-1] = 0;
+}
+
+/*************************************************************************/
+
+time_t PCLINK::timestamp2mtime(uchar *stamp)
+{
+    struct tm sdx_tm;
+
+    memset(&sdx_tm, 0, sizeof(struct tm));
+
+    sdx_tm.tm_sec = stamp[5];
+    sdx_tm.tm_min = stamp[4];
+    sdx_tm.tm_hour = stamp[3];
+    sdx_tm.tm_mday = stamp[0];
+    sdx_tm.tm_mon = stamp[1];
+    sdx_tm.tm_year = stamp[2];
+
+    if ((sdx_tm.tm_mday == 0) || (sdx_tm.tm_mon == 0))
+        return 0;
+
+    if (sdx_tm.tm_mon)
+        sdx_tm.tm_mon--;
+
+    if (sdx_tm.tm_year < 80)
+        sdx_tm.tm_year += 2000;
+    else
+        sdx_tm.tm_year += 1900;
+
+    sdx_tm.tm_year -= 1900;
+
+    return mktime(&sdx_tm);
 }
 
 /*************************************************************************/
@@ -346,6 +982,7 @@ void PCLINK::do_pclink(uchar devno, uchar ccom, uchar caux1, uchar caux2)
         if (data.length() != parsize)
         {
             device[cunit].status.stat |= 0x02;
+			if(D) qDebug() << "!n" << tr("'P' WRONG DATA FRAME, expected size %1 got %2").arg(parsize).arg(data.length());
             device[cunit].status.err = 143;
             goto complete;
         }
@@ -420,8 +1057,8 @@ void PCLINK::do_pclink(uchar devno, uchar ccom, uchar caux1, uchar caux2)
             }
             if(D) qDebug() << "!n" << tr("size $%1 (%2), buffer $%3 (%4)").arg(blk_size,0,16)
                                                                     .arg(blk_size)
-                                                                    .arg(blk_size,0,16)
-                                                                    .arg(blk_size);
+                                                                    .arg(buffer,0,16)
+                                                                    .arg(buffer);
             set_status_size(cunit, (ushort)blk_size);
             goto complete;
         }
@@ -437,7 +1074,7 @@ void PCLINK::do_pclink(uchar devno, uchar ccom, uchar caux1, uchar caux2)
 
         if(D) qDebug() << "!n" << tr("handle %1").arg(handle);
 
-        mem = (uchar*)malloc(blk_size + 1);
+        mem = (uchar*)malloc(blk_size);
 
         if ((device[cunit].status.err == 1))
         {
@@ -566,7 +1203,7 @@ void PCLINK::do_pclink(uchar devno, uchar ccom, uchar caux1, uchar caux2)
             }
         }
 
-        mem = (uchar*)malloc(blk_size + 1);
+        mem = (uchar*)malloc(blk_size);
 
         QByteArray data = sio->port()->readDataFrame(blk_size);
 
@@ -1458,7 +2095,7 @@ complete_fopen:
             goto complete;
         }
 
-#ifdef Q_OS_LINUX
+#if defined(Q_OS_LINUX) || defined(Q_OS_OSX)
         if (mkdir(newpath, S_IRWXU|S_IRWXG|S_IRWXO))
 #else
         if (mkdir(newpath))
@@ -1522,10 +2159,10 @@ complete_fopen:
             goto complete;
         }
 
-#ifdef Q_OS_LINUX
-        if (sb.st_uid != our_uid)
+#if defined(Q_OS_LINUX) || defined(Q_OS_OSX)
+        if (!access(newpath, W_OK))
         {
-            if(D) qDebug() << "!n" << tr("'%1' wrong uid").arg(newpath);
+            if(D) qDebug() << "!n" << tr("'%1' can't be accessed").arg(newpath);
             device[cunit].status.err = 170;
             goto complete;
         }
@@ -1807,633 +2444,3 @@ exit:
 }
 
 /*************************************************************************/
-
-void PCLINK::fps_close(int i)
-{
-    if (iodesc[i].fps.file != NULL)
-    {
-        if (iodesc[i].fpmode & 0x10)
-            closedir(iodesc[i].fps.dir);
-        else
-            fclose(iodesc[i].fps.file);
-    }
-
-    if (iodesc[i].dir_cache != NULL)
-    {
-        free(iodesc[i].dir_cache);
-        iodesc[i].dir_cache = NULL;
-    }
-
-    iodesc[i].fps.file = NULL;
-
-    iodesc[i].devno = 0;
-    iodesc[i].cunit = 0;
-    iodesc[i].fpmode = 0;
-    iodesc[i].fatr1 = 0;
-    iodesc[i].fatr2 = 0;
-    iodesc[i].t1 = 0;
-    iodesc[i].t2 = 0;
-    iodesc[i].t3 = 0;
-    iodesc[i].d1 = 0;
-    iodesc[i].d2 = 0;
-    iodesc[i].d3 = 0;
-    iodesc[i].fpname[0] = 0;
-    iodesc[i].fppos = 0;
-    iodesc[i].fpread = 0;
-    iodesc[i].eof = 0;
-    iodesc[i].pathname[0] = 0;
-    memset(&iodesc[i].fpstat, 0, sizeof(struct stat));
-}
-
-/*************************************************************************/
-
-void PCLINK::set_status_size(uchar cunit, ushort size)
-{
-    device[cunit].status.tmot = (size & 0x00ff);
-    device[cunit].status.none = (size & 0xff00) >> 8;
-}
-
-/*************************************************************************/
-
-ulong PCLINK::dir_read(uchar *mem, ulong blk_size, uchar handle, int *eof_sig)
-{
-    uchar *db = (uchar *)iodesc[handle].dir_cache;
-    ulong dirlen = iodesc[handle].fpstat.st_size, newblk;
-
-    eof_sig[0] = 0;
-
-    newblk = dirlen - iodesc[handle].fppos;
-
-    if (newblk < blk_size)
-    {
-        blk_size = newblk;
-        eof_sig[0] = 1;
-    }
-
-    if (blk_size)
-        memcpy(mem, db+iodesc[handle].fppos, blk_size);
-
-    return blk_size;
-}
-
-/*************************************************************************/
-
-int PCLINK::match_dos_names(char *name, char *mask, uchar fatr1, struct stat *sb)
-{
-    if(D) qDebug() << "!n" << tr("match: %1%2%3%4%5%6%7%8%9%10%11 with %12%13%14%15%16%17%18%19%20%21%22: ")
-    .arg(name[0]).arg(name[1]).arg(name[2]).arg(name[3]).arg(name[4]).arg(name[5]).arg(name[6]).arg(name[7])
-    .arg(name[8]).arg(name[9]).arg(name[10])
-    .arg(mask[0]).arg(mask[1]).arg(mask[2]).arg(mask[3]).arg(mask[4]).arg(mask[5]).arg(mask[6]).arg(mask[7])
-    .arg(mask[8]).arg(mask[9]).arg(mask[10]);
-
-    ushort i;
-
-    for (i = 0; i < 11; i++)
-    {
-        if (mask[i] != '?')
-            if (toupper((uchar)name[i]) != toupper((uchar)mask[i]))
-            {
-                if(D) qDebug() << "!n" << tr("no match");
-                return 1;
-            }
-    }
-
-    /* There are no such attributes in Unix */
-    fatr1 &= ~(RA_NO_HIDDEN|RA_NO_ARCHIVED);
-
-    /* Now check the attributes */
-    if (fatr1 & (RA_HIDDEN | RA_ARCHIVED))
-    {
-        if(D) qDebug() << "!n" << tr("atr mismatch: not HIDDEN or ARCHIVED");
-        return 1;
-    }
-
-    if (fatr1 & RA_PROTECT)
-    {
-        if (sb->st_mode & S_IWUSR)
-        {
-            if(D) qDebug() << "!n" << tr("atr mismatch: not PROTECTED");
-            return 1;
-        }
-    }
-
-    if (fatr1 & RA_NO_PROTECT)
-    {
-        if ((sb->st_mode & S_IWUSR) == 0)
-        {
-            if(D) qDebug() << "!n" << tr("atr mismatch: not UNPROTECTED");
-            return 1;
-        }
-    }
-
-    if (fatr1 & RA_SUBDIR)
-    {
-        if (!S_ISDIR(sb->st_mode))
-        {
-            if(D) qDebug() << "!n" << tr("atr mismatch: not SUBDIR");
-            return 1;
-        }
-    }
-
-    if (fatr1 & RA_NO_SUBDIR)
-    {
-        if (S_ISDIR(sb->st_mode))
-        {
-            if(D) qDebug() << "!n" << tr("atr mismatch: not FILE");
-            return 1;
-        }
-    }
-
-    if(D) qDebug() << "!n" << tr("match");
-    return 0;
-}
-
-/*************************************************************************/
-
-void PCLINK::create_user_path(uchar cunit, char *newpath)
-{
-    long sl, cwdo = 0;
-    uchar lpath[128], upath[128];
-
-    strcpy(newpath, device[cunit].dirname);
-
-    /* this is user-requested new path */
-    path_copy(lpath, device[cunit].parbuf.path);
-    path2unix(upath, lpath);
-
-    if (upath[0] != '/')
-    {
-        sl = strlen(newpath);
-        if (sl && (newpath[sl-1] != '/'))
-            strcat(newpath, "/");
-        if (device[cunit].cwd[0] == '/')
-            cwdo++;
-        strcat(newpath, (char *)device[cunit].cwd + cwdo);
-        sl = strlen(newpath);
-        if (sl && (newpath[sl-1] != '/'))
-            strcat(newpath, "/");
-    }
-    strcat(newpath, (char *)upath);
-    sl = strlen(newpath);
-    if (sl && (newpath[sl-1] == '/'))
-        newpath[sl-1] = 0;
-}
-
-/*************************************************************************/
-
-/* defwd - a mounted directory
- * newpath - ?
- */
-int PCLINK::validate_user_path(char *defwd, char *newpath)
-{
-    char *d, oldwd[PCL_MAX_DIR_LENGTH+1], newwd[PCL_MAX_DIR_LENGTH+1];
-
-    (void)getcwd(oldwd, sizeof(oldwd));
-    if (chdir(newpath) < 0)
-        return 0;
-    (void)getcwd(newwd, sizeof(newwd));
-    (void)chdir(oldwd);
-
-    d = strstr(newwd, defwd);
-
-    if (d == NULL)
-        return 0;
-    if (d != newwd)
-        return 0;
-
-    return 1;
-}
-
-/*************************************************************************/
-
-int PCLINK::check_dos_name(char *newpath, struct dirent *dp, struct stat *sb)
-{
-    char temp_fspec[PCL_MAX_DIR_LENGTH+1], fname[256];
-
-    strcpy(fname, dp->d_name);
-
-    if(D) qDebug() << "!n" << tr("%1: got fname '%2'").arg(__extension__ __FUNCTION__).arg(fname);
-
-    if (validate_dos_name(fname))
-        return 1;
-
-    /* stat() the file (fetches the length) */
-    sprintf(temp_fspec, "%s/%s", newpath, fname);
-
-    if(D) qDebug() << "!n" << tr("%1: stat '%2'").arg(__extension__ __FUNCTION__).arg(fname);
-
-    if (stat(temp_fspec, sb))
-        return 1;
-
-    if (!S_ISREG(sb->st_mode) && !S_ISDIR(sb->st_mode))
-        return 1;
-
-#ifdef Q_OS_LINUX
-    if (sb->st_uid != our_uid)		/* belongs to us? */
-        return 1;
-#endif
-
-    if ((sb->st_mode & S_IRUSR) == 0)	/* unreadable? */
-        return 1;
-
-    if (S_ISDIR(sb->st_mode) && ((sb->st_mode & S_IXUSR) == 0))
-        return 1;
-
-    return 0;
-}
-
-/*************************************************************************/
-
-void PCLINK::ugefina(char *src, char *out)
-{
-    char *dot;
-    ushort i;
-
-    memset(out, 0x20, 8+3);
-
-    dot = strchr(src, '.');
-
-    if (dot)
-    {
-        i = 1;
-        while (dot[i] && (i < 4))
-        {
-            out[i+7] = toupper((uchar)dot[i]);
-            i++;
-        }
-    }
-
-    i = 0;
-    while ((src[i] != '.') && !dos_2_term(src[i]) && (i < 8))
-    {
-        out[i] = toupper((uchar)src[i]);
-        i++;
-    }
-}
-
-/*************************************************************************/
-
-time_t PCLINK::timestamp2mtime(uchar *stamp)
-{
-    struct tm sdx_tm;
-
-    memset(&sdx_tm, 0, sizeof(struct tm));
-
-    sdx_tm.tm_sec = stamp[5];
-    sdx_tm.tm_min = stamp[4];
-    sdx_tm.tm_hour = stamp[3];
-    sdx_tm.tm_mday = stamp[0];
-    sdx_tm.tm_mon = stamp[1];
-    sdx_tm.tm_year = stamp[2];
-
-    if ((sdx_tm.tm_mday == 0) || (sdx_tm.tm_mon == 0))
-        return 0;
-
-    if (sdx_tm.tm_mon)
-        sdx_tm.tm_mon--;
-
-    if (sdx_tm.tm_year < 80)
-        sdx_tm.tm_year += 2000;
-    else
-        sdx_tm.tm_year += 1900;
-
-    sdx_tm.tm_year -= 1900;
-
-    return mktime(&sdx_tm);
-}
-
-/*************************************************************************/
-
-void PCLINK::uexpand(uchar *rawname, char *name83)
-{
-    ushort x, y;
-    uchar t;
-
-    name83[0] = 0;
-
-    for (x = 0; x < 8; x++)
-    {
-        t = rawname[x];
-        if (t && (t != 0x20))
-            name83[x] = upper_dir ? toupper(t) : tolower(t);
-        else
-            break;
-    }
-
-    y = 8;
-
-    if (rawname[y] && (rawname[y] != 0x20))
-    {
-        name83[x] = '.';
-        x++;
-
-        while ((y < 11) && rawname[y] && (rawname[y] != 0x20))
-        {
-            name83[x] = upper_dir ? toupper(rawname[y]) : tolower(rawname[y]);
-            x++;
-            y++;
-        }
-    }
-
-    name83[x] = 0;
-}
-
-/*************************************************************************/
-
-int PCLINK::validate_dos_name(char *fname)
-{
-    char *dot = strchr(fname, '.');
-    long valid_fn, valid_xx;
-
-    if ((dot == NULL) && (strlen(fname) > 8))
-        return 1;
-    if (dot)
-    {
-        long dd = strlen(dot);
-
-        if (dd > 4)
-            return 1;
-        if ((dot - fname) > 8)
-            return 1;
-        if ((dot == fname) && (dd == 1))
-            return 1;
-        if ((dd == 2) && (dot[1] == '.'))
-            return 1;
-        if ((dd == 3) && ((dot[1] == '.') || (dot[2] == '.')))
-            return 1;
-        if ((dd == 4) && ((dot[1] == '.') || (dot[2] == '.') || (dot[3] == '.')))
-            return 1;
-    }
-
-    valid_fn = validate_fn((uchar *)fname, 8);
-    if (dot != NULL)
-        valid_xx = validate_fn((uchar *)(dot + 1), 3);
-    else
-        valid_xx = 1;
-
-    if (!valid_fn || !valid_xx)
-        return 1;
-
-    return 0;
-}
-
-/*************************************************************************/
-
-ulong PCLINK::get_file_len(uchar handle)
-{
-    ulong filelen;
-    struct dirent *dp;
-    struct stat sb;
-
-    if (iodesc[handle].fpmode & 0x10)	/* directory */
-    {
-        rewinddir(iodesc[handle].fps.dir);
-        filelen = sizeof(DIRENTRY);
-
-        while ((dp = readdir(iodesc[handle].fps.dir)) != NULL)
-        {
-            if (check_dos_name(iodesc[handle].pathname, dp, &sb))
-                continue;
-            filelen += sizeof(DIRENTRY);
-        }
-        rewinddir(iodesc[handle].fps.dir);
-    }
-    else
-        filelen = iodesc[handle].fpstat.st_size;
-
-    if (filelen > SDX_MAXLEN)
-        filelen = SDX_MAXLEN;
-
-    return filelen;
-}
-
-/*************************************************************************/
-
-void PCLINK::unix_time_2_sdx(time_t *todp, uchar *ob)
-{
-    struct tm *t;
-    uchar yy;
-
-    memset(ob, 0, 6);
-
-    if (*todp == 0)
-        return;
-
-    t = localtime(todp);
-
-    yy = t->tm_year;
-    while (yy >= 100)
-        yy-=100;
-
-    ob[0] = t->tm_mday;
-    ob[1] = t->tm_mon + 1;
-    ob[2] = yy;
-    ob[3] = t->tm_hour;
-    ob[4] = t->tm_min;
-    ob[5] = t->tm_sec;
-}
-
-/*************************************************************************/
-
-DIRENTRY * PCLINK::cache_dir(uchar handle)
-{
-    char *bs, *cwd;
-    uchar dirnode = 0x00;
-    ushort node;
-    ulong dlen, flen, sl, dirlen = iodesc[handle].fpstat.st_size;
-    DIRENTRY *dbuf, *dir;
-    struct dirent *dp;
-    struct stat sb;
-
-    if (iodesc[handle].dir_cache != NULL)
-    {
-        if(D) qDebug() << "!n" << tr("Internal error: dir_cache should be NULL!");
-        free(iodesc[handle].dir_cache);
-        iodesc[handle].dir_cache = NULL;
-    }
-
-    dir = dbuf = (DIRENTRY*)malloc(dirlen + sizeof(DIRENTRY));
-    memset(dbuf, 0, dirlen + sizeof(DIRENTRY));
-
-    dir->status = 0x28;
-    dir->map_l = 0x00;			/* low 11 bits: file number, high 5 bits: dir number */
-    dir->map_h = dirnode;
-    dir->len_l = dirlen & 0x000000ffL;
-    dir->len_m = (dirlen & 0x0000ff00L) >> 8;
-    dir->len_h = (dirlen & 0x00ff0000L) >> 16;
-
-    memset(dir->fname, 0x20, 11);
-
-    sl = strlen(device[iodesc[handle].cunit].dirname);
-
-    cwd = iodesc[handle].pathname + sl;
-
-    bs = strrchr(cwd, '/');
-
-    if (bs == NULL)
-        memcpy(dir->fname, "MAIN", 4);
-    else
-    {
-        char *cp = cwd;
-
-        ugefina(bs+1, (char *)dir->fname);
-
-        node = 0;
-
-        while (cp <= bs)
-        {
-            if (*cp == '/')
-                dirnode++;
-            cp++;
-        }
-
-        dir->map_h = (dirnode & 0x1f) << 3;
-    }
-
-    unix_time_2_sdx(&iodesc[handle].fpstat.st_mtime, dir->stamp);
-
-    dir++;
-    flen = sizeof(DIRENTRY);
-
-    node = 1;
-
-    while ((dp = readdir(iodesc[handle].fps.dir)) != NULL)
-    {
-        ushort map;
-
-        if (check_dos_name(iodesc[handle].pathname, dp, &sb))
-            continue;
-
-        dlen = sb.st_size;
-        if (dlen > SDX_MAXLEN)
-            dlen = SDX_MAXLEN;
-
-        dir->status = (sb.st_mode & S_IWUSR) ? 0x08 : 0x09;
-
-        if (S_ISDIR(sb.st_mode))
-        {
-            dir->status |= 0x20;		/* directory */
-            dlen = sizeof(DIRENTRY);
-        }
-
-        map = dirnode << 11;
-        map |= (node & 0x07ff);
-
-        dir->map_l = map & 0x00ff;
-        dir->map_h = ((map & 0xff00) >> 8);
-        dir->len_l = dlen & 0x000000ffL;
-        dir->len_m = (dlen & 0x0000ff00L) >> 8;
-        dir->len_h = (dlen & 0x00ff0000L) >> 16;
-
-        ugefina(dp->d_name, (char *)dir->fname);
-
-        unix_time_2_sdx(&sb.st_mtime, dir->stamp);
-
-        node++;
-        dir++;
-        flen += sizeof(DIRENTRY);
-
-        if (flen >= dirlen)
-            break;
-    }
-
-    return dbuf;
-}
-
-/*************************************************************************/
-
-void PCLINK::path_copy(uchar *dst, uchar *src)
-{
-    uchar a;
-
-    while (*src)
-    {
-        a = *src;
-        if (ispathsep(a))
-        {
-            while (ispathsep(*src))
-                src++;
-            src--;
-        }
-        *dst = a;
-        src++;
-        dst++;
-    }
-
-    *dst = 0;
-}
-
-/*************************************************************************/
-
-// from SPARTA DOS file system to unix file system
-void PCLINK::path2unix(uchar *out, uchar *path)
-{
-    int i, y = 0;
-
-    for (i = 0; path[i] && (i < 64); i++)
-    {
-        char a;
-
-        a = upper_dir ? toupper(path[i]) : tolower(path[i]);
-
-        if (ispathsep(a))
-            a = '/';
-        else if (a == '<')
-        {
-            a = '.';
-            out[y++] = '.';
-        }
-        out[y++] = a;
-    }
-
-    if (y && (out[y-1] != '/'))
-        out[y++] = '/';
-
-    out[y] = 0;
-}
-
-/*************************************************************************/
-
-long PCLINK::dos_2_term(uchar c)
-{
-    return ((c == 0) || (c == 0x20));
-}
-
-long PCLINK::validate_fn(uchar *name, int len)
-{
-    int x;
-
-    for (x = 0; x < len; x++)
-    {
-        if (dos_2_term(name[x]))
-            return (x != 0);
-        if (name[x] == '.')
-            return 1;
-        if (!dos_2_allowed(name[x]))
-            return 0;
-    }
-
-    return 1;
-}
-
-/*************************************************************************/
-
-/* is it a Sparta Dos path separator? */
-int PCLINK::ispathsep(uchar c)
-{
-    return ((c == '>') || (c == '\\'));
-}
-
-/*************************************************************************/
-
-long PCLINK::dos_2_allowed(uchar c)
-{
-#ifdef Q_OS_LINUX
-    if (upper_dir)
-        return (isupper(c) || isdigit(c) || (c == '_') || (c == '@'));
-
-    return (islower(c) || isdigit(c) || (c == '_') || (c == '@'));
-#else
-    return (isalpha(c) || isdigit(c) || (c == '_') || (c == '@'));
-#endif
-}
