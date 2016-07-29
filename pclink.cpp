@@ -2160,7 +2160,7 @@ complete_fopen:
         }
 
 #if defined(Q_OS_LINUX) || defined(Q_OS_OSX)
-        if (!access(newpath, W_OK))
+        if (access(newpath, W_OK) < 0)
         {
             if(D) qDebug() << "!n" << tr("'%1' can't be accessed").arg(newpath);
             device[cunit].status.err = 170;
