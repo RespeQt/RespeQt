@@ -53,7 +53,6 @@ QString g_respeQtAppPath;
 QRect g_savedGeometry;
 char g_aspeclSlotNo;
 bool g_disablePicoHiSpeed;
-bool g_printerEmu = true;
 bool g_D9DOVisible = true;
 bool g_miniMode = false;
 bool g_shadeMode = false;
@@ -209,9 +208,6 @@ MainWindow::MainWindow(QWidget *parent)
     speedLabel->setText(tr("19200 bits/sec"));
     onOffLabel->setMinimumWidth(21);
     prtOnOffLabel->setMinimumWidth(18);
-    prtOnOffLabel->setPixmap(QIcon(":/icons/silk-icons/icons/printer.png").pixmap(16, 16, QIcon::Normal));  //
-    prtOnOffLabel->setToolTip(ui->actionPrinterEmulation->toolTip());
-    prtOnOffLabel->setStatusTip(ui->actionPrinterEmulation->statusTip());
     netLabel->setMinimumWidth(18);
 
     clearMessagesLabel->setMinimumWidth(21);
@@ -285,6 +281,8 @@ MainWindow::MainWindow(QWidget *parent)
     Printer *printer = new Printer(sio);
     connect(printer, SIGNAL(print(QString)), textPrinterWindow, SLOT(print(QString)));
     sio->installDevice(PRINTER_BASE_CDEVIC, printer);
+    setUpPrinterEmulationWidgets(respeqtSettings->printerEmulation());
+
     untitledName = 0;
 
     connect(&trayIcon, SIGNAL(activated(QSystemTrayIcon::ActivationReason)), this, SLOT(trayIconActivated(QSystemTrayIcon::ActivationReason)));
@@ -438,6 +436,14 @@ void MainWindow::dropEvent(QDropEvent *event)
         if (slot != source) {
             sio->swapDevices(slot + DISK_BASE_CDEVIC, source + DISK_BASE_CDEVIC);
             respeqtSettings->swapImages(slot, source);
+
+            PCLINK* pclink = reinterpret_cast<PCLINK*>(sio->getDevice(PCLINK_CDEVIC));
+            if(pclink->hasLink(slot+1) || pclink->hasLink(source+1))
+            {
+                sio->uninstallDevice(PCLINK_CDEVIC);
+                pclink->swapLinks(slot+1,source+1);
+                sio->installDevice(PCLINK_CDEVIC,pclink);
+            }
             qDebug() << "!n" << tr("Swapped disk %1 with disk %2.").arg(slot + 1).arg(source + 1);
         }
         return;
@@ -776,26 +782,34 @@ void MainWindow::on_actionHideShowDrives_triggered()
 // Toggle printer Emulation ON/OFF //
 void MainWindow::on_actionPrinterEmulation_triggered()
 {
-    if (g_printerEmu) {
-        ui->actionPrinterEmulation->setText(QApplication::translate("MainWindow", "Start printer emulation", 0));
-        ui->actionPrinterEmulation->setStatusTip(QApplication::translate("MainWindow", "Start printer emulation", 0));
-        ui->actionPrinterEmulation->setIcon(QIcon(":/icons/silk-icons/icons/printer_delete.png").pixmap(16, 16, QIcon::Normal, QIcon::On));
-        prtOnOffLabel->setPixmap(QIcon(":/icons/silk-icons/icons/printer_delete.png").pixmap(16, 16, QIcon::Normal, QIcon::On));
-        prtOnOffLabel->setToolTip(tr("Start printer emulation"));
-        prtOnOffLabel->setStatusTip(prtOnOffLabel->toolTip());
-        g_printerEmu = false;
+    if (respeqtSettings->printerEmulation()) {
+        setUpPrinterEmulationWidgets(false);
+        respeqtSettings->setPrinterEmulation(false);
         qWarning() << "!i" << tr("Printer emulation stopped.");
     } else {
+        setUpPrinterEmulationWidgets(true);
+        respeqtSettings->setPrinterEmulation(true);
+        qWarning() << "!i" << tr("Printer emulation started.");
+    }
+}
+
+void MainWindow::setUpPrinterEmulationWidgets(bool enable)
+{
+    if (enable) {
         ui->actionPrinterEmulation->setText(QApplication::translate("MainWindow", "Stop printer emulation", 0));
         ui->actionPrinterEmulation->setStatusTip(QApplication::translate("MainWindow", "Stop printer emulation", 0));
         ui->actionPrinterEmulation->setIcon(QIcon(":/icons/silk-icons/icons/printer.png").pixmap(16, 16, QIcon::Normal, QIcon::On));
         prtOnOffLabel->setPixmap(QIcon(":/icons/silk-icons/icons/printer.png").pixmap(16, 16, QIcon::Normal, QIcon::On));
-        prtOnOffLabel->setToolTip(tr("Stop printer emulation"));
-        prtOnOffLabel->setStatusTip(prtOnOffLabel->toolTip());
-        g_printerEmu = true;
-        qWarning() << "!i" << tr("Printer emulation started.");
+    } else {
+        ui->actionPrinterEmulation->setText(QApplication::translate("MainWindow", "Start printer emulation", 0));
+        ui->actionPrinterEmulation->setStatusTip(QApplication::translate("MainWindow", "Start printer emulation", 0));
+        ui->actionPrinterEmulation->setIcon(QIcon(":/icons/silk-icons/icons/printer_delete.png").pixmap(16, 16, QIcon::Normal, QIcon::On));
+        prtOnOffLabel->setPixmap(QIcon(":/icons/silk-icons/icons/printer_delete.png").pixmap(16, 16, QIcon::Normal, QIcon::On));
     }
+    prtOnOffLabel->setToolTip(ui->actionPrinterEmulation->toolTip());
+    prtOnOffLabel->setStatusTip(ui->actionPrinterEmulation->statusTip());
 }
+
 
 void MainWindow::on_actionStartEmulation_triggered()
 {
@@ -1048,6 +1062,14 @@ void MainWindow::updateRecentFileActions()
 
 bool MainWindow::ejectImage(int no, bool ask)
 {
+    PCLINK* pclink = reinterpret_cast<PCLINK*>(sio->getDevice(PCLINK_CDEVIC));
+    if(pclink->hasLink(no+1))
+    {
+        sio->uninstallDevice(PCLINK_CDEVIC);
+        pclink->resetLink(no+1);
+        sio->installDevice(PCLINK_CDEVIC,pclink);
+    }
+    
     SimpleDiskImage *img = qobject_cast <SimpleDiskImage*> (sio->getDevice(no + DISK_BASE_CDEVIC));
 
     if (ask && img && img->isModified()) {
@@ -1202,16 +1224,16 @@ void MainWindow::mountFile(int no, const QString &fileName, bool /*prot*/)
         sio->installDevice(DISK_BASE_CDEVIC + no, disk);
 
         PCLINK* pclink = reinterpret_cast<PCLINK*>(sio->getDevice(PCLINK_CDEVIC));
-        if(isDir || pclink->hasLink(no))
+        if(isDir || pclink->hasLink(no+1))
         {
             sio->uninstallDevice(PCLINK_CDEVIC);
             if(isDir)
             {
-                pclink->setLink(no,QDir::toNativeSeparators(fileName));
+                pclink->setLink(no+1,QDir::toNativeSeparators(fileName).toLatin1());
             }
             else
             {
-                pclink->resetLink(no);
+                pclink->resetLink(no+1);
             }
             sio->installDevice(PCLINK_CDEVIC,pclink);
         }

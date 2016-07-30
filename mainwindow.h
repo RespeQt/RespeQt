@@ -110,6 +110,7 @@ private:
     QMessageBox::StandardButton saveImageWhenClosing(int no, QMessageBox::StandardButton previousAnswer, int number);
     void loadTranslators();
     void autoSaveDisk(int no);                                              //
+    void setUpPrinterEmulationWidgets(bool enabled);
 
 
     void createDeviceWidgets();

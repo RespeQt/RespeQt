@@ -46,6 +46,7 @@ RespeqtSettings::RespeqtSettings()
     mSerialPortPokeyDivisor = mSettings->value("SerialPortPokeyDivisor", 6).toInt();
 
     mUseHighSpeedExeLoader = mSettings->value("UseHighSpeedExeLoader", false).toBool();
+    mPrinterEmulation = mSettings->value("PrinterEmulation", true).toBool();
 
     mAtariSioDriverName = mSettings->value("AtariSioDriverName", AtariSioBackend::defaultPortName()).toString();
     mAtariSioHandshakingMethod = mSettings->value("AtariSioHandshakingMethod", 0).toInt();
@@ -125,6 +126,7 @@ void RespeqtSettings::saveSessionToFile(const QString &fileName)
         s.setValue("SerialPortUsePokeyDivisors", mSerialPortUsePokeyDivisors);
         s.setValue("SerialPortPokeyDivisor", mSerialPortPokeyDivisor);
         s.setValue("UseHighSpeedExeLoader", mUseHighSpeedExeLoader);
+        s.setValue("PrinterEmulation", mPrinterEmulation);
         s.setValue("CustomCasBaud", mCustomCasBaud);
         s.setValue("UseCustomCasBaud", mUseCustomCasBaud);
         s.setValue("I18nLanguage", mI18nLanguage);
@@ -174,6 +176,7 @@ void RespeqtSettings::saveSessionToFile(const QString &fileName)
         mSerialPortUsePokeyDivisors = s.value("SerialPortUsePokeyDivisors", false).toBool();
         mSerialPortPokeyDivisor = s.value("SerialPortPokeyDivisor", 6).toInt();
         mUseHighSpeedExeLoader = s.value("UseHighSpeedExeLoader", false).toBool();
+        mPrinterEmulation = s.value("PrinterEmulation", true).toBool();
         mCustomCasBaud = s.value("CustomCasBaud", 875).toInt();
         mUseCustomCasBaud = s.value("UseCustomCasBaud", false).toBool();
         mI18nLanguage = s.value("I18nLanguage").toString();
@@ -335,6 +338,17 @@ void RespeqtSettings::setUseHighSpeedExeLoader(bool use)
 {   
     mUseHighSpeedExeLoader = use;
     if(mSessionFileName == "") mSettings->setValue("UseHighSpeedExeLoader", mUseHighSpeedExeLoader);
+}
+
+bool RespeqtSettings::printerEmulation()
+{
+    return mPrinterEmulation;
+}
+
+void RespeqtSettings::setPrinterEmulation(bool status)
+{
+    mPrinterEmulation = status;
+    if(mSessionFileName == "") mSettings->setValue("PrinterEmulation", mPrinterEmulation);
 }
 
 bool RespeqtSettings::useCustomCasBaud()
