@@ -1991,6 +1991,12 @@ complete_fopen:
 
                 strcpy(xpath, newpath);
                 strcat(xpath, "/");
+                if(is_fname_reserved(dp->d_name))
+                {
+                    int xpath_len = strlen(xpath);
+                    newpath[xpath_len] = RESERVED_NAME_PREFIX_CHAR;
+                    newpath[xpath_len+1] = 0;
+                }
                 strcat(xpath, dp->d_name);
 
                 memcpy(names, device[cunit].parbuf.names, 12);
@@ -2092,6 +2098,12 @@ complete_fopen:
 
                 strcpy(xpath, newpath);
                 strcat(xpath, "/");
+                if(is_fname_reserved(dp->d_name))
+                {
+                    int xpath_len = strlen(xpath);
+                    newpath[xpath_len] = RESERVED_NAME_PREFIX_CHAR;
+                    newpath[xpath_len+1] = 0;
+                }
                 strcat(xpath, dp->d_name);
 
                 if (!S_ISDIR(sb.st_mode))
@@ -2177,6 +2189,12 @@ complete_fopen:
 
                 strcpy(xpath, newpath);
                 strcat(xpath, "/");
+                if(is_fname_reserved(dp->d_name))
+                {
+                    int xpath_len = strlen(xpath);
+                    newpath[xpath_len] = RESERVED_NAME_PREFIX_CHAR;
+                    newpath[xpath_len+1] = 0;
+                }
                 strcat(xpath, dp->d_name);
                 if(D) qDebug() << "!n" << tr("CHMOD: change atrs in '%1'").arg(xpath);
 
