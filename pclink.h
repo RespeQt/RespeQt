@@ -65,7 +65,7 @@ private:
     void create_user_path(uchar cunit, char *newpath);
     time_t timestamp2mtime(uchar *stamp);
     void do_pclink(uchar devno, uchar ccom, uchar caux1, uchar caux2);
-    bool is_fname_reserved(const char* fname, size_t length = -1) const;
+    bool is_fname_reserved(const char* fname, int length = -1) const;
     bool is_fname_encoded(const char* fname) const;
 };
 

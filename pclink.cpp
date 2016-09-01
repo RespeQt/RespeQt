@@ -1346,7 +1346,7 @@ void PCLINK::do_pclink(uchar devno, uchar ccom, uchar caux1, uchar caux2)
 
         sio->port()->writeDataAck(); 	/* ack the block of data */
 
-        if (data.length() != blk_size)
+        if ((ulong)data.length() != blk_size)
         {
             if(D) qDebug() << "!n" << tr("FWRITE: block CRC mismatch");
             device[cunit].status.err = 143;
@@ -1757,7 +1757,6 @@ void PCLINK::do_pclink(uchar devno, uchar ccom, uchar caux1, uchar caux2)
                             goto complete_fopen;
                         }
 
-                        char * dot_ptr = strchr(name83,'.');
                         if(is_fname_reserved(name83))
                         {
                             strcat(newpath, RESERVED_NAME_PREFIX_STR);
@@ -2640,7 +2639,7 @@ exit:
  * length = 4
  *************************************************************************/
 
-bool PCLINK::is_fname_reserved(const char* fname, size_t length) const
+bool PCLINK::is_fname_reserved(const char* fname, int length) const
 {
     bool fname_reserved = false;
     const char *const *p = invalid_file_names;
@@ -2674,7 +2673,7 @@ bool PCLINK::is_fname_encoded(const char* fname) const
     const char *const *p = invalid_file_names;
     
     const char* dot_ptr = strchr(fname,'.');
-    size_t length = (dot_ptr==NULL)?strlen(fname):(dot_ptr-fname);
+    int length = (dot_ptr==NULL)?strlen(fname):(dot_ptr-fname);
     
     while(const char *s = *p++)
     {
