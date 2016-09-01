@@ -154,6 +154,9 @@ static const char *fun[] =
     "CHDIR", "GETCWD", "SETBOOT", "DFREE", "CHVOL"
 };
 
+char HOST_SEPARATOR_STR[] = {HOST_SEPARATOR_CHAR,0};
+char RESERVED_NAME_PREFIX_STR[] = {RESERVED_NAME_PREFIX_CHAR,0};
+
 /*************************************************************************/
 
 PCLINK::PCLINK(SioWorker *worker)
@@ -1718,6 +1721,10 @@ void PCLINK::do_pclink(uchar devno, uchar ccom, uchar caux1, uchar caux2)
 
                 if (dp)
                 {
+                    if(is_fname_reserved(dp->d_name))
+                    {
+                        strcat(newpath, RESERVED_NAME_PREFIX_STR);
+                    }
                     strcat(newpath, dp->d_name);
                     /* convert 8+3 to NNNNNNNNXXX */
                     ugefina(dp->d_name, raw_name);
@@ -1753,9 +1760,7 @@ void PCLINK::do_pclink(uchar devno, uchar ccom, uchar caux1, uchar caux2)
                         char * dot_ptr = strchr(name83,'.');
                         if(is_fname_reserved(name83))
                         {
-                            int newpath_len = strlen(newpath);
-                            newpath[newpath_len] = RESERVED_NAME_PREFIX_CHAR;
-                            newpath[newpath_len+1] = 0;
+                            strcat(newpath, RESERVED_NAME_PREFIX_STR);
                         }
                         strcat(newpath, name83);
                         /* convert 8+3 to NNNNNNNNXXX */
@@ -1990,12 +1995,10 @@ complete_fopen:
                 fcnt++;
 
                 strcpy(xpath, newpath);
-                strcat(xpath, "/");
+                strcat(xpath, HOST_SEPARATOR_STR);
                 if(is_fname_reserved(dp->d_name))
                 {
-                    int xpath_len = strlen(xpath);
-                    newpath[xpath_len] = RESERVED_NAME_PREFIX_CHAR;
-                    newpath[xpath_len+1] = 0;
+                    strcat(xpath, RESERVED_NAME_PREFIX_STR);
                 }
                 strcat(xpath, dp->d_name);
 
@@ -2011,12 +2014,10 @@ complete_fopen:
                 uexpand(names, newname);
 
                 strcpy(xpath2, newpath);
-                strcat(xpath2, "/");
+                strcat(xpath2, HOST_SEPARATOR_STR);
                 if(is_fname_reserved(newname))
                 {
-                    int xpath2_len = strlen(xpath2);
-                    newpath[xpath2_len] = RESERVED_NAME_PREFIX_CHAR;
-                    newpath[xpath2_len+1] = 0;
+                    strcat(xpath2, RESERVED_NAME_PREFIX_STR);
                 }
                 strcat(xpath2, newname);
 
@@ -2097,12 +2098,10 @@ complete_fopen:
                 char xpath[1024];
 
                 strcpy(xpath, newpath);
-                strcat(xpath, "/");
+                strcat(xpath, HOST_SEPARATOR_STR);
                 if(is_fname_reserved(dp->d_name))
                 {
-                    int xpath_len = strlen(xpath);
-                    newpath[xpath_len] = RESERVED_NAME_PREFIX_CHAR;
-                    newpath[xpath_len+1] = 0;
+                    strcat(xpath, RESERVED_NAME_PREFIX_STR);
                 }
                 strcat(xpath, dp->d_name);
 
@@ -2188,12 +2187,10 @@ complete_fopen:
                 mode_t newmode = sb.st_mode;
 
                 strcpy(xpath, newpath);
-                strcat(xpath, "/");
+                strcat(xpath, HOST_SEPARATOR_STR);
                 if(is_fname_reserved(dp->d_name))
                 {
-                    int xpath_len = strlen(xpath);
-                    newpath[xpath_len] = RESERVED_NAME_PREFIX_CHAR;
-                    newpath[xpath_len+1] = 0;
+                    strcat(xpath, RESERVED_NAME_PREFIX_STR);
                 }
                 strcat(xpath, dp->d_name);
                 if(D) qDebug() << "!n" << tr("CHMOD: change atrs in '%1'").arg(xpath);
@@ -2250,12 +2247,10 @@ complete_fopen:
             goto complete;
         }
 
-        strcat(newpath, "/");
+        strcat(newpath, HOST_SEPARATOR_STR);
         if(is_fname_reserved(fname))
         {
-           int newpath_len = strlen(newpath);
-           newpath[newpath_len] = RESERVED_NAME_PREFIX_CHAR;
-           newpath[newpath_len+1] = 0;
+            strcat(newpath, RESERVED_NAME_PREFIX_STR);
         }
         strcat(newpath, fname);
 
@@ -2326,15 +2321,11 @@ complete_fopen:
             goto complete;
         }
 
-        strcat(newpath, "/");
-        
+        strcat(newpath, HOST_SEPARATOR_STR);
         if(is_fname_reserved(fname))
         {
-           int newpath_len = strlen(newpath);
-           newpath[newpath_len] = RESERVED_NAME_PREFIX_CHAR;
-           newpath[newpath_len+1] = 0;
+           strcat(newpath, RESERVED_NAME_PREFIX_STR);
         }
-
         strcat(newpath, fname);
 
         if (stat(newpath, &sb) < 0)
@@ -2527,7 +2518,9 @@ complete_fopen:
         memset(dfree + 0x0e, 0x020, 8);
 
         strcpy(lpath, (char *)device[cunit].dirname);
-        strcat(lpath, "/");
+        
+        strcat(lpath, HOST_SEPARATOR_STR);
+        
         strcat(lpath, DEVICE_LABEL);
 
         if(D) qDebug() << "!n" << tr("reading '%1'").arg(lpath);
@@ -2600,7 +2593,7 @@ complete_fopen:
         }
 
         strcpy(lpath, device[cunit].dirname);
-        strcat(lpath, "/");
+        strcat(lpath, HOST_SEPARATOR_STR);
         strcat(lpath, DEVICE_LABEL);
 
         if(D) qDebug() << "!n" << tr("writing '%1'").arg(lpath);
