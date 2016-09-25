@@ -45,7 +45,7 @@ public:
     void resetLink(int no);
 private:
     void unix_time_2_sdx(time_t *todp, uchar *ob);
-    long dos_2_allowed(uchar c);
+    bool isSDXLegalChar(uchar c);
     long dos_2_term(uchar c);
     long validate_fn(uchar *name, int len);
     void ugefina(char *src, char *out);
@@ -60,12 +60,13 @@ private:
     void do_pclink_init(int force);
     void set_status_size(uchar cunit, ushort size);
     int validate_user_path(char *defwd, char *newpath);
-    int ispathsep(uchar c);
+    bool isSDXPathSeparator(uchar c);
     void path_copy(uchar *dst, uchar *src);
-    void path2unix(uchar *out, uchar *path);
     void create_user_path(uchar cunit, char *newpath);
     time_t timestamp2mtime(uchar *stamp);
     void do_pclink(uchar devno, uchar ccom, uchar caux1, uchar caux2);
+    bool is_fname_reserved(const char* fname, int length = -1) const;
+    bool is_fname_encoded(const char* fname) const;
 };
 
 #endif // PCLINK_H

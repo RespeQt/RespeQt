@@ -5,7 +5,6 @@
  */
 
 #include <QtDebug>
-#include <dirent.h>
 #include <stdio.h>
 #include <dirent.h>
 #include <unistd.h>
@@ -41,7 +40,17 @@
 # define DEVICE_LABEL	".PCLINK.VOLUME.LABEL"
 
 # define PCL_MAX_FNO	0x14
-# define PCL_MAX_DIR_LENGTH 1023
+
+# define RESERVED_NAME_PREFIX_CHAR '!'
+
+# if defined(Q_OS_WIN)
+# define HOST_SEPARATOR_CHAR '\\'
+# else
+# define HOST_SEPARATOR_CHAR '/'
+# endif
+
+# define SDX_CURRENT_DIR_CHAR ':'
+# define SDX_GO_UP_DIR_CHAR '<'
 
 /* Atari SIO status block */
 typedef struct
@@ -70,7 +79,7 @@ typedef struct
 {
     STATUS status;		/* the 4-byte status block */
     int on;			    /* PCLink mount flag */
-    char dirname[PCL_MAX_DIR_LENGTH+1];	/* PCLink root directory path */
+    char dirname[1024];	/* PCLink root directory path */
     uchar cwd[65];		/* PCLink current working dir, relative to the above */
     PARBUF parbuf;		/* PCLink parameter buffer */
 } DEVICE;
@@ -97,7 +106,7 @@ typedef struct
     long fppos;
     long fpread;
     int eof;
-    char pathname[PCL_MAX_DIR_LENGTH+1];
+    char pathname[1024];
 } IODESC;
 
 typedef struct
@@ -105,6 +114,32 @@ typedef struct
     uchar handle;
     uchar dirbuf[23];
 } PCLDBF;
+
+static const char *const invalid_file_names[]={
+    "CON",
+    "PRN",
+    "AUX",
+    "NUL",
+    "COM1",
+    "COM2",
+    "COM3",
+    "COM4",
+    "COM5",
+    "COM6",
+    "COM7",
+    "COM8",
+    "COM9",
+    "LPT1",
+    "LPT2",
+    "LPT3",
+    "LPT4",
+    "LPT5",
+    "LPT6",
+    "LPT7",
+    "LPT8",
+    "LPT9",
+    0
+};
 
 static bool D = false; // extended debug
 static ulong upper_dir = 0; // in PCLink dirs accept lowercase characters only
@@ -118,6 +153,9 @@ static const char *fun[] =
     "INIT", "FOPEN", "FFIRST", "RENAME", "REMOVE", "CHMOD", "MKDIR", "RMDIR",
     "CHDIR", "GETCWD", "SETBOOT", "DFREE", "CHVOL"
 };
+
+char HOST_SEPARATOR_STR[] = {HOST_SEPARATOR_CHAR,0};
+char RESERVED_NAME_PREFIX_STR[] = {RESERVED_NAME_PREFIX_CHAR,0};
 
 /*************************************************************************/
 
@@ -225,8 +263,8 @@ void PCLINK::setLink(int no, const char* fileName)
     fps_close(no);
     memset(&device[no].parbuf, 0, sizeof(PARBUF));
 
-    strncpy(device[no].dirname,fileName,PCL_MAX_DIR_LENGTH);
-    device[no].dirname[PCL_MAX_DIR_LENGTH]=0;
+    strncpy(device[no].dirname,fileName,1023);
+    device[no].dirname[1023]=0;
     device[no].cwd[0]=0;
     device[no].on = 1;
 
@@ -239,11 +277,11 @@ void PCLINK::swapLinks(int from, int to)
 {
     if(from<1 || from>15 || to<1 || to>15)return;
 
-    char tmp_dir_name[PCL_MAX_DIR_LENGTH+1];
+    char tmp_dir_name[1024];
     if(hasLink(from))
     {
-        strncpy(tmp_dir_name, device[from].dirname, PCL_MAX_DIR_LENGTH);
-		tmp_dir_name[PCL_MAX_DIR_LENGTH]=0;
+        strncpy(tmp_dir_name, device[from].dirname, 1023);
+		tmp_dir_name[1023]=0;
         resetLink(from);
         if(hasLink(to))
         {
@@ -303,9 +341,9 @@ void PCLINK::unix_time_2_sdx(time_t *todp, uchar *ob)
 
 /*************************************************************************/
 
-long PCLINK::dos_2_allowed(uchar c)
+bool PCLINK::isSDXLegalChar(uchar c)
 {
-#ifdef Q_OS_LINUX
+#if defined(Q_OS_LINUX) || defined(Q_OS_OSX)
     if (upper_dir)
         return (isupper(c) || isdigit(c) || (c == '_') || (c == '@'));
 
@@ -322,8 +360,12 @@ long PCLINK::dos_2_term(uchar c)
     return ((c == 0) || (c == 0x20));
 }
 
-/*************************************************************************/
-
+/*************************************************************************
+ * checks is a name contains valid SDX characters
+ *
+ * returns 1 file name is OK, otherwise 0
+ *************************************************************************/
+ 
 long PCLINK::validate_fn(uchar *name, int len)
 {
     int x;
@@ -334,14 +376,18 @@ long PCLINK::validate_fn(uchar *name, int len)
             return (x != 0);
         if (name[x] == '.')
             return 1;
-        if (!dos_2_allowed(name[x]))
+        if (!isSDXLegalChar(name[x]))
             return 0;
     }
 
     return 1;
 }
 
-/*************************************************************************/
+/*************************************************************************
+ * converts host file name: fname.xxx to SDX file name: NNNNNNNNXXX
+ * input:  src
+ * output: out
+ *************************************************************************/
 
 void PCLINK::ugefina(char *src, char *out)
 {
@@ -370,8 +416,12 @@ void PCLINK::ugefina(char *src, char *out)
     }
 }
 
-/*************************************************************************/
-
+/*************************************************************************
+ * converts SDX file name: NNNNNNNNXXX to host file name: fname.xxx 
+ * input:  rawname
+ * output: name83
+ *************************************************************************/
+ 
 void PCLINK::uexpand(uchar *rawname, char *name83)
 {
     ushort x, y;
@@ -406,7 +456,10 @@ void PCLINK::uexpand(uchar *rawname, char *name83)
     name83[x] = 0;
 }
 
-/*************************************************************************/
+/*************************************************************************
+ *
+ *
+ *************************************************************************/
 
 int PCLINK::match_dos_names(char *name, char *mask, uchar fatr1, struct stat *sb)
 {
@@ -478,9 +531,14 @@ int PCLINK::match_dos_names(char *name, char *mask, uchar fatr1, struct stat *sb
     return 0;
 }
 
-/*************************************************************************/
+/*************************************************************************
+ * checks is fname is a valid file name (contains valid SDX characters)
+ * input: fname 8+3
+ * 
+ * return 0 if file name is OK, otherwise 1
+ *************************************************************************/
 
-int PCLINK::validate_dos_name(char *fname)
+ int PCLINK::validate_dos_name(char *fname)
 {
     char *dot = strchr(fname, '.');
     long valid_fn, valid_xx;
@@ -517,23 +575,32 @@ int PCLINK::validate_dos_name(char *fname)
     return 0;
 }
 
-/*************************************************************************/
+/*************************************************************************
+ * checks if a file newpath/dp->d_name is a valid file
+ *
+ * returns 0 when eveything is OK, 1 otherwise
+ *************************************************************************/
 
 int PCLINK::check_dos_name(char *newpath, struct dirent *dp, struct stat *sb)
 {
-    char temp_fspec[PCL_MAX_DIR_LENGTH+1], fname[256];
-
+    char temp_fspec[1024], fname[256];
+    
     strcpy(fname, dp->d_name);
+    
+    if(is_fname_encoded(dp->d_name))
+    {
+       memcpy(dp->d_name,(dp->d_name)+1,strlen(dp->d_name)+1);
+    }
 
-    if(D) qDebug() << "!n" << tr("%1: got fname '%2'").arg(__extension__ __FUNCTION__).arg(fname);
+    if(D) qDebug() << "!n" << tr("%1: got fname '%2'").arg(__extension__ __FUNCTION__).arg(dp->d_name);
 
-    if (validate_dos_name(fname))
+    if (validate_dos_name(dp->d_name))
         return 1;
 
     /* stat() the file (fetches the length) */
     sprintf(temp_fspec, "%s/%s", newpath, fname);
 
-    if(D) qDebug() << "!n" << tr("%1: stat '%2'").arg(__extension__ __FUNCTION__).arg(fname);
+    if(D) qDebug() << "!n" << tr("%1: stat '%2'").arg(__extension__ __FUNCTION__).arg(dp->d_name);
 
     if (stat(temp_fspec, sb))
         return 1;
@@ -666,7 +733,7 @@ DIRENTRY * PCLINK::cache_dir(uchar handle)
 
     cwd = iodesc[handle].pathname + sl;
 
-    bs = strrchr(cwd, '/');
+    bs = strrchr(cwd, HOST_SEPARATOR_CHAR);
 
     if (bs == NULL)
         memcpy(dir->fname, "MAIN", 4);
@@ -674,13 +741,19 @@ DIRENTRY * PCLINK::cache_dir(uchar handle)
     {
         char *cp = cwd;
 
+        /* convert 8+3 to NNNNNNNNXXX */
         ugefina(bs+1, (char *)dir->fname);
+        
+        if(is_fname_encoded(bs+1))
+        {
+           memcpy(dir->fname,(dir->fname)+1,strlen(dir->fname)+1);
+        }
 
         node = 0;
 
         while (cp <= bs)
         {
-            if (*cp == '/')
+            if (*cp == HOST_SEPARATOR_CHAR)
                 dirnode++;
             cp++;
         }
@@ -723,6 +796,7 @@ DIRENTRY * PCLINK::cache_dir(uchar handle)
         dir->len_m = (dlen & 0x0000ff00L) >> 8;
         dir->len_h = (dlen & 0x00ff0000L) >> 16;
 
+        /* convert 8+3 to NNNNNNNNXXX */
         ugefina(dp->d_name, (char *)dir->fname);
 
         unix_time_2_sdx(&sb.st_mtime, dir->stamp);
@@ -789,14 +863,16 @@ void PCLINK::set_status_size(uchar cunit, ushort size)
     device[cunit].status.none = (size & 0xff00) >> 8;
 }
 
-/*************************************************************************/
-
-/* defwd - a mounted directory
- * newpath - ?
- */
+/*************************************************************************
+ * checks if "newpath" exists and if it starts with "defwd"
+ * input: defwd - a mounted directory (PCLink root directory path)
+ * input: newpath - complete path to a file (starting with defwd)
+ * returns 1 if everything is OK, otherwise 0
+ *************************************************************************/
+ 
 int PCLINK::validate_user_path(char *defwd, char *newpath)
 {
-    char *d, oldwd[PCL_MAX_DIR_LENGTH+1], newwd[PCL_MAX_DIR_LENGTH+1];
+    char *d, oldwd[1024], newwd[1024];
 
     (void)getcwd(oldwd, sizeof(oldwd));
     if (chdir(newpath) < 0)
@@ -804,7 +880,7 @@ int PCLINK::validate_user_path(char *defwd, char *newpath)
     (void)getcwd(newwd, sizeof(newwd));
     (void)chdir(oldwd);
 
-    d = strstr(newwd, defwd);
+	d = strstr(newwd, defwd);
 
     if (d == NULL)
         return 0;
@@ -814,95 +890,156 @@ int PCLINK::validate_user_path(char *defwd, char *newpath)
     return 1;
 }
 
-/*************************************************************************/
-
-/* is it a Sparta Dos path separator? */
-int PCLINK::ispathsep(uchar c)
+/*************************************************************************
+ * is it a Sparta Dos path separator?
+ *************************************************************************/
+ 
+bool PCLINK::isSDXPathSeparator(uchar c)
 {
     return ((c == '>') || (c == '\\'));
 }
 
-/*************************************************************************/
+/*************************************************************************
+ * copy "src" path to "dst" path
+ * input: src
+ * output: dst
+ *************************************************************************/
 
 void PCLINK::path_copy(uchar *dst, uchar *src)
 {
-    uchar a;
+   bool in_file_name = false;
+   bool in_file_suffix = false;
+   
+   uchar* src_prev_ptr = src;
+   uchar* src_ptr = src;
+   uchar* dst_ptr = dst;
 
-    while (*src)
-    {
-        a = *src;
-        if (ispathsep(a))
-        {
-            while (ispathsep(*src))
-                src++;
-            src--;
-        }
-        *dst = a;
-        src++;
-        dst++;
-    }
+   while(true)
+   {
+      if(in_file_name)
+      {
+         if(!in_file_suffix)
+         {
+            if(*src_ptr && !isSDXPathSeparator(*src_ptr) && *src_ptr!=SDX_GO_UP_DIR_CHAR && *src_ptr!='.')
+            {
+               src_ptr++;
+            }
+            else
+            {
+               int length = src_ptr-src_prev_ptr;
+               if(length!=0 && is_fname_reserved((char*)src_prev_ptr, length)) *dst++ = RESERVED_NAME_PREFIX_CHAR;
 
-    *dst = 0;
+               for(int i=0 ; i<length ; i++)
+               {
+                  *dst++ = upper_dir? toupper(*src_prev_ptr) : tolower(*src_prev_ptr);
+                  src_prev_ptr++;
+               }
+               
+               if(*src_ptr=='.')
+               {
+                  *dst++ = *src_ptr++;
+                  src_prev_ptr = src_ptr;
+                  in_file_suffix = true;
+               }
+               else
+               {
+                  in_file_name = false;
+               }
+            }
+         }
+         else // in a suffix
+         {
+            if(*src_ptr && !isSDXPathSeparator(*src_ptr) && *src_ptr!=SDX_GO_UP_DIR_CHAR)
+            {
+               *dst++ = upper_dir? toupper(*src_ptr) : tolower(*src_ptr);
+               src_ptr++;
+            }
+            else
+            {
+               in_file_name = false;
+               in_file_suffix = false;
+            }
+         }
+      }
+      else // outside file name
+      {
+         if(*src_ptr==SDX_GO_UP_DIR_CHAR)
+         {
+            *dst++ = '.';
+            *dst++ = '.';
+            *dst++ = HOST_SEPARATOR_CHAR;
+            src_ptr++;
+         }
+         else if(isSDXPathSeparator(*src_ptr))
+         {
+            if(dst_ptr==dst || *(dst-1)!=HOST_SEPARATOR_CHAR) *dst++ = HOST_SEPARATOR_CHAR; // make sure that the last character was a slash
+            while(*src_ptr && isSDXPathSeparator(*src_ptr)) src_ptr++; // skip superfluous seperators
+         }
+         else if(*src_ptr==0)
+         {
+            *dst = 0;
+            break;
+         }
+         else
+         {
+            in_file_name = true;
+            src_prev_ptr = src_ptr;
+         }
+      }
+   }
 }
 
-/*************************************************************************/
-
-// from SPARTA DOS file system to unix file system
-void PCLINK::path2unix(uchar *out, uchar *path)
-{
-    int i, y = 0;
-
-    for (i = 0; path[i] && (i < 64); i++)
-    {
-        char a;
-
-        a = upper_dir ? toupper(path[i]) : tolower(path[i]);
-
-        if (ispathsep(a))
-            a = '/';
-        else if (a == '<')
-        {
-            a = '.';
-            out[y++] = '.';
-        }
-        out[y++] = a;
-    }
-
-    if (y && (out[y-1] != '/'))
-        out[y++] = '/';
-
-    out[y] = 0;
-}
-
-/*************************************************************************/
-
+/*************************************************************************
+ * create_user_path() builds the complete path to a file
+ * (without the file name itself)
+ *
+ * It consist of:
+ * - DEVICE.dirname (PC path to the mounted folder)
+ * - DEVICE.cwd (current working dir) in case the requested path is relative
+ * - the requested path itself
+ *
+ * called from:
+ * R FOPEN/FFIRST
+ * P RENAME/RENDIR
+ * P REMOVE
+ * P CHMOD
+ * P MKDIR
+ * P RMDIR
+ * P CHDIR
+ *************************************************************************/
 
 void PCLINK::create_user_path(uchar cunit, char *newpath)
 {
     long sl, cwdo = 0;
-    uchar lpath[128], upath[128];
+    uchar upath[128];
 
     strcpy(newpath, device[cunit].dirname);
 
-    /* this is user-requested new path */
-    path_copy(lpath, device[cunit].parbuf.path);
-    path2unix(upath, lpath);
+    path_copy(upath, device[cunit].parbuf.path);
 
-    if (upath[0] != '/')
+    if (upath[0] != HOST_SEPARATOR_CHAR)
     {
         sl = strlen(newpath);
-        if (sl && (newpath[sl-1] != '/'))
-            strcat(newpath, "/");
-        if (device[cunit].cwd[0] == '/')
+        if (sl && (newpath[sl-1] != HOST_SEPARATOR_CHAR))
+        {
+            newpath[sl++] = HOST_SEPARATOR_CHAR;
+            newpath[sl] = 0;
+        }
+        if (device[cunit].cwd[0] == HOST_SEPARATOR_CHAR)
             cwdo++;
-        strcat(newpath, (char *)device[cunit].cwd + cwdo);
+         
+        path_copy((uchar*)newpath+sl, (uchar *)device[cunit].cwd + cwdo);
+        
         sl = strlen(newpath);
-        if (sl && (newpath[sl-1] != '/'))
-            strcat(newpath, "/");
+        if (sl && (newpath[sl-1] != HOST_SEPARATOR_CHAR))
+        {
+            newpath[sl++] = HOST_SEPARATOR_CHAR;
+            newpath[sl] = 0;
+        }
     }
     strcat(newpath, (char *)upath);
     sl = strlen(newpath);
-    if (sl && (newpath[sl-1] == '/'))
+    if (sl && (newpath[sl-1] == HOST_SEPARATOR_CHAR))
         newpath[sl-1] = 0;
 }
 
@@ -937,11 +1074,11 @@ time_t PCLINK::timestamp2mtime(uchar *stamp)
     return mktime(&sdx_tm);
 }
 
-/*************************************************************************/
-
-/* Command: DDEVIC+DUNIT-1 = $6f, DAUX1 = parbuf size, DAUX2 = %vvvvuuuu
+/*************************************************************************
+ * Command: DDEVIC+DUNIT-1 = $6f, DAUX1 = parbuf size, DAUX2 = %vvvvuuuu
  * where: v - protocol version number (0), u - unit number
- */
+ *************************************************************************/
+ 
 void PCLINK::do_pclink(uchar devno, uchar ccom, uchar caux1, uchar caux2)
 {
     uchar fno, ob[7], handle;
@@ -1209,7 +1346,7 @@ void PCLINK::do_pclink(uchar devno, uchar ccom, uchar caux1, uchar caux2)
 
         sio->port()->writeDataAck(); 	/* ack the block of data */
 
-        if (data.length() != blk_size)
+        if ((ulong)data.length() != blk_size)
         {
             if(D) qDebug() << "!n" << tr("FWRITE: block CRC mismatch");
             device[cunit].status.err = 143;
@@ -1421,7 +1558,7 @@ void PCLINK::do_pclink(uchar devno, uchar ccom, uchar caux1, uchar caux2)
     {
         uchar fpmode;
         time_t mtime;
-        char pathname[PCL_MAX_DIR_LENGTH+1];
+        char pathname[1024];
 
         if (ccom == 'R')
         {
@@ -1498,7 +1635,7 @@ void PCLINK::do_pclink(uchar devno, uchar ccom, uchar caux1, uchar caux2)
             uchar i;
             long sl;
             struct stat tempstat;
-            char newpath[PCL_MAX_DIR_LENGTH+1], raw_name[12];
+            char newpath[1024], raw_name[12];
 
             if ((ccom == 'R') && (old_ccom == 'R'))
             {
@@ -1552,8 +1689,6 @@ void PCLINK::do_pclink(uchar devno, uchar ccom, uchar caux1, uchar caux2)
 
             dh = opendir(newpath);
 
-            if(D) qDebug() << "!n" << tr("OPEN DIR");
-
             if (device[cunit].parbuf.fmode & 0x10)
             {
                 iodesc[i].fps.dir = dh;
@@ -1564,8 +1699,6 @@ void PCLINK::do_pclink(uchar devno, uchar ccom, uchar caux1, uchar caux2)
                 if(D) qDebug() << "!n" << tr(" ! fmode & 0x10");
                 while ((dp = readdir(dh)) != NULL)
                 {
-                    if(D) qDebug() << "!n" << tr("CHECK DOS NAME");
-
                     if (check_dos_name(newpath, dp, &sb))
                         continue;
 
@@ -1580,12 +1713,20 @@ void PCLINK::do_pclink(uchar devno, uchar ccom, uchar caux1, uchar caux2)
                 }
 
                 sl = strlen(newpath);
-                if (sl && (newpath[sl-1] != '/'))
-                    strcat(newpath, "/");
+                if (sl && (newpath[sl-1] != HOST_SEPARATOR_CHAR))
+                {
+                   newpath[sl] = HOST_SEPARATOR_CHAR;
+                   newpath[sl+1] = 0;
+                }
 
                 if (dp)
                 {
+                    if(is_fname_reserved(dp->d_name))
+                    {
+                        strcat(newpath, RESERVED_NAME_PREFIX_STR);
+                    }
                     strcat(newpath, dp->d_name);
+                    /* convert 8+3 to NNNNNNNNXXX */
                     ugefina(dp->d_name, raw_name);
                     if ((device[cunit].parbuf.fmode & 0x0c) == 0x08)
                         sb.st_mtime = timestamp2mtime(&device[cunit].parbuf.f1);
@@ -1606,6 +1747,7 @@ void PCLINK::do_pclink(uchar devno, uchar ccom, uchar caux1, uchar caux2)
 
                         if(D) qDebug() << "!n" << tr("FOPEN: creating file");
 
+                        /* convert NNNNNNNNXXX to 8+3 */
                         uexpand(device[cunit].parbuf.name, name83);
 
                         if (validate_dos_name(name83))
@@ -1615,7 +1757,12 @@ void PCLINK::do_pclink(uchar devno, uchar ccom, uchar caux1, uchar caux2)
                             goto complete_fopen;
                         }
 
+                        if(is_fname_reserved(name83))
+                        {
+                            strcat(newpath, RESERVED_NAME_PREFIX_STR);
+                        }
                         strcat(newpath, name83);
+                        /* convert 8+3 to NNNNNNNNXXX */
                         ugefina(name83, raw_name);
 
                         memset(&sb, 0, sizeof(struct stat));
@@ -1696,6 +1843,7 @@ void PCLINK::do_pclink(uchar devno, uchar ccom, uchar caux1, uchar caux2)
             iodesc[handle].fppos = 0L;
             strcpy(iodesc[handle].pathname, newpath);
             memcpy((void *)&iodesc[handle].fpstat, (void *)&sb, sizeof(struct stat));
+            
             if (iodesc[handle].fpmode & 0x10)
                 memcpy(iodesc[handle].fpname, device[cunit].parbuf.name, sizeof(iodesc[i].fpname));
             else
@@ -1789,7 +1937,7 @@ complete_fopen:
 
     if (fno == 0x0b)	/* RENAME/RENDIR */
     {
-        char newpath[PCL_MAX_DIR_LENGTH+1];
+        char newpath[1024];
         DIR *renamedir;
         ulong fcnt = 0;
 
@@ -1838,7 +1986,7 @@ complete_fopen:
             if (match_dos_names(raw_name, (char *)device[cunit].parbuf.name, \
                 device[cunit].parbuf.fatr1 | RA_NO_PROTECT, &sb) == 0)
             {
-                char xpath[PCL_MAX_DIR_LENGTH+1], xpath2[PCL_MAX_DIR_LENGTH+1], newname[16];
+                char xpath[1024], xpath2[1024], newname[16];
                 uchar names[12];
                 struct stat dummy;
                 ushort x;
@@ -1846,7 +1994,11 @@ complete_fopen:
                 fcnt++;
 
                 strcpy(xpath, newpath);
-                strcat(xpath, "/");
+                strcat(xpath, HOST_SEPARATOR_STR);
+                if(is_fname_reserved(dp->d_name))
+                {
+                    strcat(xpath, RESERVED_NAME_PREFIX_STR);
+                }
                 strcat(xpath, dp->d_name);
 
                 memcpy(names, device[cunit].parbuf.names, 12);
@@ -1857,10 +2009,15 @@ complete_fopen:
                         names[x] = raw_name[x];
                 }
 
+                /* convert NNNNNNNNXXX to 8+3 */
                 uexpand(names, newname);
 
                 strcpy(xpath2, newpath);
-                strcat(xpath2, "/");
+                strcat(xpath2, HOST_SEPARATOR_STR);
+                if(is_fname_reserved(newname))
+                {
+                    strcat(xpath2, RESERVED_NAME_PREFIX_STR);
+                }
                 strcat(xpath2, newname);
 
                 if(D) qDebug() << "!n" << tr("RENAME: renaming '%1' -> '%2'").arg(dp->d_name).arg(newname);
@@ -1889,7 +2046,7 @@ complete_fopen:
 
     if (fno == 0x0c)	/* REMOVE */
     {
-        char newpath[PCL_MAX_DIR_LENGTH+1];
+        char newpath[1024];
         DIR *deldir;
         ulong delcnt = 0;
 
@@ -1937,10 +2094,14 @@ complete_fopen:
             if (match_dos_names(raw_name, (char *)device[cunit].parbuf.name, \
                 RA_NO_PROTECT | RA_NO_SUBDIR | RA_NO_HIDDEN, &sb) == 0)
             {
-                char xpath[PCL_MAX_DIR_LENGTH+1];
+                char xpath[1024];
 
                 strcpy(xpath, newpath);
-                strcat(xpath, "/");
+                strcat(xpath, HOST_SEPARATOR_STR);
+                if(is_fname_reserved(dp->d_name))
+                {
+                    strcat(xpath, RESERVED_NAME_PREFIX_STR);
+                }
                 strcat(xpath, dp->d_name);
 
                 if (!S_ISDIR(sb.st_mode))
@@ -1963,7 +2124,7 @@ complete_fopen:
 
     if (fno == 0x0d)	/* CHMOD */
     {
-        char newpath[PCL_MAX_DIR_LENGTH+1];
+        char newpath[1024];
         DIR *chmdir;
         ulong fcnt = 0;
         uchar fatr2 = device[cunit].parbuf.fatr2;
@@ -2010,7 +2171,7 @@ complete_fopen:
         while ((dp = readdir(chmdir)) != NULL)
         {
             char raw_name[12];
-
+            
             if (check_dos_name(newpath, dp, &sb))
                 continue;
 
@@ -2021,11 +2182,15 @@ complete_fopen:
             if (match_dos_names(raw_name, (char *)device[cunit].parbuf.name, \
                 device[cunit].parbuf.fatr1, &sb) == 0)
             {
-                char xpath[PCL_MAX_DIR_LENGTH+1];
+                char xpath[1024];
                 mode_t newmode = sb.st_mode;
 
                 strcpy(xpath, newpath);
-                strcat(xpath, "/");
+                strcat(xpath, HOST_SEPARATOR_STR);
+                if(is_fname_reserved(dp->d_name))
+                {
+                    strcat(xpath, RESERVED_NAME_PREFIX_STR);
+                }
                 strcat(xpath, dp->d_name);
                 if(D) qDebug() << "!n" << tr("CHMOD: change atrs in '%1'").arg(xpath);
 
@@ -2050,7 +2215,7 @@ complete_fopen:
 
     if (fno == 0x0e)	/* MKDIR - warning, fatr2 is bogus */
     {
-        char newpath[PCL_MAX_DIR_LENGTH+1], fname[12];
+        char newpath[1024], fname[12];
         uchar dt[6];
         struct stat dummy;
 
@@ -2071,6 +2236,7 @@ complete_fopen:
             goto complete;
         }
 
+        /* convert NNNNNNNNXXX to 8+3 */
         uexpand(device[cunit].parbuf.name, fname);
 
         if (validate_dos_name(fname))
@@ -2080,7 +2246,11 @@ complete_fopen:
             goto complete;
         }
 
-        strcat(newpath, "/");
+        strcat(newpath, HOST_SEPARATOR_STR);
+        if(is_fname_reserved(fname))
+        {
+            strcat(newpath, RESERVED_NAME_PREFIX_STR);
+        }
         strcat(newpath, fname);
 
         memcpy(dt, &device[cunit].parbuf.f1, sizeof(dt));
@@ -2121,7 +2291,7 @@ complete_fopen:
 
     if (fno == 0x0f)	/* RMDIR */
     {
-        char newpath[PCL_MAX_DIR_LENGTH+1], fname[12];
+        char newpath[1024], fname[12];
 
         if (ccom == 'R')
         {
@@ -2140,8 +2310,9 @@ complete_fopen:
             goto complete;
         }
 
+        /* convert NNNNNNNNXXX to 8+3 */
         uexpand(device[cunit].parbuf.name, fname);
-
+        
         if (validate_dos_name(fname))
         {
             if(D) qDebug() << "!n" << tr("bad dir name '%1'").arg(fname);
@@ -2149,7 +2320,11 @@ complete_fopen:
             goto complete;
         }
 
-        strcat(newpath, "/");
+        strcat(newpath, HOST_SEPARATOR_STR);
+        if(is_fname_reserved(fname))
+        {
+           strcat(newpath, RESERVED_NAME_PREFIX_STR);
+        }
         strcat(newpath, fname);
 
         if (stat(newpath, &sb) < 0)
@@ -2200,7 +2375,7 @@ complete_fopen:
     if (fno == 0x10)	/* CHDIR */
     {
         ulong i;
-        char newpath[PCL_MAX_DIR_LENGTH+1], newwd[PCL_MAX_DIR_LENGTH+1], oldwd[PCL_MAX_DIR_LENGTH+1];
+        char newpath[1024], newwd[1024], oldwd[1024];
 
         if (ccom == 'R')
         {
@@ -2209,8 +2384,6 @@ complete_fopen:
             if(D) qDebug() << "!n" << tr("bad exec");
             goto complete;
         }
-
-//		if(D) qDebug() << "!n" << tr(("req. path '%s'\n", device[cunit].parbuf.path);
 
         create_user_path(cunit, newpath);
 
@@ -2234,7 +2407,22 @@ complete_fopen:
 
         /* validate_user_path() guarantees that .dirname is part of newwd */
         i = strlen(device[cunit].dirname);
-        strcpy((char *)device[cunit].cwd, newwd + i);
+        
+        // copy the newwd (new working directory) to cwd (current working directory)
+        // and remove RESERVED_NAME_PREFIX_CHAR (i.e. replace "!com1" with "com1")
+        // to report proper names to SDX
+        char* src_ptr = newwd + i;
+        char* dst_ptr = (char *)device[cunit].cwd;
+        while(*src_ptr)
+        {
+           if(*src_ptr!=RESERVED_NAME_PREFIX_CHAR)
+           {
+              *dst_ptr++ = *src_ptr;
+           }
+           src_ptr++;
+        }
+        *dst_ptr = 0;
+        
         if(D) qDebug() << "!n" << tr("new current dir '%1'").arg((char *)device[cunit].cwd);
 
         device[cunit].status.err = 1;
@@ -2266,7 +2454,7 @@ complete_fopen:
             uchar a;
 
             a = toupper(device[cunit].cwd[i]);
-            if (a == '/')
+            if (a == HOST_SEPARATOR_CHAR)
                 a = '>';
             tempcwd[i] = a;
         }
@@ -2287,7 +2475,7 @@ complete_fopen:
         FILE *vf;
         int x;
         uchar c = 0, volname[8];
-        char lpath[PCL_MAX_DIR_LENGTH+1];
+        char lpath[1024];
         static uchar dfree[65] =
         {
             0x21,		/* data format version */
@@ -2329,7 +2517,9 @@ complete_fopen:
         memset(dfree + 0x0e, 0x020, 8);
 
         strcpy(lpath, (char *)device[cunit].dirname);
-        strcat(lpath, "/");
+        
+        strcat(lpath, HOST_SEPARATOR_STR);
+        
         strcat(lpath, DEVICE_LABEL);
 
         if(D) qDebug() << "!n" << tr("reading '%1'").arg(lpath);
@@ -2380,7 +2570,7 @@ complete_fopen:
     {
         FILE *vf;
         ulong nl;
-        char lpath[PCL_MAX_DIR_LENGTH+1];
+        char lpath[1024];
 
         device[cunit].status.err = 1;
 
@@ -2402,7 +2592,7 @@ complete_fopen:
         }
 
         strcpy(lpath, device[cunit].dirname);
-        strcat(lpath, "/");
+        strcat(lpath, HOST_SEPARATOR_STR);
         strcat(lpath, DEVICE_LABEL);
 
         if(D) qDebug() << "!n" << tr("writing '%1'").arg(lpath);
@@ -2441,6 +2631,62 @@ exit:
     old_ccom = ccom;
 
     return;
+}
+
+/*************************************************************************
+ * check if a file name (without a suffix) is a reserved file name, for example:
+ * fname = "com1.txt"
+ * length = 4
+ *************************************************************************/
+
+bool PCLINK::is_fname_reserved(const char* fname, int length) const
+{
+    bool fname_reserved = false;
+    const char *const *p = invalid_file_names;
+    
+    if(length == -1)
+    {
+        const char* dot_ptr = strchr(fname,'.');
+        length = (dot_ptr==NULL)?strlen(fname):(dot_ptr-fname);
+    }
+    
+    while(const char *s = *p++)
+    {
+        int reserved_str_len = strlen(s);
+        if(length==reserved_str_len && strncasecmp(s,fname,reserved_str_len)==0)
+        {
+            fname_reserved = true;
+            break;
+        }
+    }
+    return fname_reserved;
+}
+
+/*************************************************************************
+ * check if a file name is an encoded reserved file name, for example:
+ * fname = "!com1.txt"
+ *************************************************************************/
+
+bool PCLINK::is_fname_encoded(const char* fname) const
+{
+    bool fname_encoded = false;
+    const char *const *p = invalid_file_names;
+    
+    const char* dot_ptr = strchr(fname,'.');
+    int length = (dot_ptr==NULL)?strlen(fname):(dot_ptr-fname);
+    
+    while(const char *s = *p++)
+    {
+        int reserved_str_len = strlen(s);
+        if( length==reserved_str_len+1 && 
+            RESERVED_NAME_PREFIX_CHAR == fname[0] &&
+            strncasecmp(s,fname+1,reserved_str_len)==0 )
+        {
+            fname_encoded = true;
+            break;
+        }
+    }
+    return fname_encoded;
 }
 
 /*************************************************************************/
