@@ -95,12 +95,12 @@ bool StandardSerialPortBackend::open()
     {
         int status;
         if (ioctl(mHandle, TIOCMGET, &status) < 0) {
-            qCritical() << "!e" << tr("Cannot clear DTR and RTS lines in serial port '%1': %2").arg(name, lastErrorMessage());
+            qCritical() << "!e" << tr("Cannot get serial port status");
             return false;
         }
-        status = status & ~(TIOCM_DTR & TIOCM_RTS);
+        status = status & ~(TIOCM_RI | TIOCM_RTS | TIOCM_CTS);
         if (ioctl(mHandle, TIOCMSET, &status) < 0) {
-            qCritical() << "!e" << tr("Cannot clear DTR and RTS lines in serial port '%1': %2").arg(name, lastErrorMessage());
+            qCritical() << "!e" << tr("Cannot clear RI, RTS and CTS lines in serial port '%1': %2").arg(name, lastErrorMessage());
             return false;
         }
     }
@@ -608,17 +608,14 @@ QByteArray StandardSerialPortBackend::readRawFrame(uint size, bool verbose)
     total = 0;
     rest = size;
     QTime startTime = QTime::currentTime();
-    int timeOut;
+
+    int timeOut = data.count() * 12000 / mSpeed + 100;
     if(mMethod==HANDSHAKE_SOFTWARE)
     {
-        timeOut = data.count() * 24000 / mSpeed + 100;
+        timeOut += 100;
     }
-    else
-    {
-        timeOut = data.count() * 12000 / mSpeed + 10;
-    }
-    int elapsed;
 
+    int elapsed;
     do {
         result = ::read(mHandle, data.data() + total, rest);
         if (result < 0 && errno != EAGAIN) {
@@ -632,14 +629,12 @@ QByteArray StandardSerialPortBackend::readRawFrame(uint size, bool verbose)
         }
         total += result;
         rest -= result;
-        elapsed = QTime::currentTime().msecsTo(startTime);
-    } while (total < size && elapsed > -timeOut);
+        elapsed = startTime.msecsTo(QTime::currentTime());
+    } while (total < size && elapsed < timeOut);
 
-    if ((uint)total != size) {
-        if (verbose) {
-            data.resize(total);
-            qCritical() << "!e" << tr("Serial port read timeout.");
-        }
+    if ((uint)total != size)
+    {
+        qCritical() << "!e" << tr("Serial port read timeout. %1 of %2 read in %3 ms").arg(total).arg(data.count()).arg(elapsed);
         data.clear();
         return data;
     }
@@ -654,17 +649,14 @@ bool StandardSerialPortBackend::writeRawFrame(const QByteArray &data)
     total = 0;
     rest = data.count();
     QTime startTime = QTime::currentTime();
-    int timeOut;
+
+    int timeOut = data.count() * 12000 / mSpeed + 100;
     if(mMethod==HANDSHAKE_SOFTWARE)
     {
-        timeOut = data.count() * 24000 / mSpeed + 100;
+        timeOut += 100;
     }
-    else
-    {
-        timeOut = data.count() * 12000 / mSpeed + 10;
-    }
-    int elapsed;
 
+    int elapsed;
     do {
         result = ::write(mHandle, data.constData() + total, rest);
         if (result < 0 && errno != EAGAIN) {
@@ -677,11 +669,12 @@ bool StandardSerialPortBackend::writeRawFrame(const QByteArray &data)
         }
         total += result;
         rest -= result;
-        elapsed = QTime::currentTime().msecsTo(startTime);
-    } while (total < (uint)data.count() && elapsed > -timeOut);
+        elapsed = startTime.msecsTo(QTime::currentTime());
+    } while (total < (uint)data.count() && elapsed < timeOut);
 
-    if (total != (uint)data.count()) {
-        qCritical() << "!e" << tr("Serial port write timeout. (%1 of %2 written)").arg(total).arg(data.count());
+    if (total != (uint)data.count())
+    {
+        qCritical() << "!e" << tr("Serial port write timeout. %1 of %2 written in %3 ms").arg(total).arg(data.count()).arg(elapsed);
         return false;
     }
 
