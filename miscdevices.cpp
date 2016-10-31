@@ -20,6 +20,8 @@
 
 #include <QDateTime>
 #include <QtDebug>
+#include <QDesktopServices>
+#include <QUrl>
 
 extern char g_aspeclSlotNo;
 
@@ -115,17 +117,22 @@ void Printer::handleCommand(quint8 command, quint16 aux)
     }
 }
 
-//ApeTime device
+//SmartDevice (ApeTime + URL submit)
 
-void ApeTime::handleCommand(quint8 command, quint16 aux)
+void SmartDevice::handleCommand(quint8 command, quint16 aux)
 {
-    QByteArray data(5, 0);
-    QDateTime dateTime = QDateTime::currentDateTime();
-
-    if (command == 0x93) {
-        if (!sio->port()->writeCommandAck()) {
+    switch(command)
+    {
+    // Get APE Time
+    case 0x93:
+    {
+        if (!sio->port()->writeCommandAck())
+        {
             return;
         }
+
+        QByteArray data(6, 0);
+        QDateTime dateTime = QDateTime::currentDateTime();
 
         data[0] = dateTime.date().day();
         data[1] = dateTime.date().month();
@@ -140,12 +147,58 @@ void ApeTime::handleCommand(quint8 command, quint16 aux)
         qDebug() << "!n" << tr("[%1] Read date/time (%2).")
                        .arg(deviceName())
                        .arg(dateTime.toString(Qt::SystemLocaleShortDate));
-    } else {
+        break;
+    }
+
+    // Submit URL
+    case 0x55:
+    {
+        if(aux!=0 && aux<=2000)
+        {
+            if (!sio->port()->writeCommandAck())
+            {
+                return;
+            }
+
+            QByteArray data(aux, 0);
+            data = sio->port()->readDataFrame(aux);
+            if (data.isEmpty())
+            {
+                qCritical() << "!e" << tr("[%1] Read data frame failed").arg(deviceName());
+                sio->port()->writeDataNak();
+                sio->port()->writeError();
+                return;
+            }
+            sio->port()->writeDataAck();
+            sio->port()->writeComplete();
+
+            QString urlstr(data);
+            QDesktopServices::openUrl(QUrl(urlstr));
+
+            qDebug() << "!n" << tr("URL [%1] submitted").arg(urlstr);
+        }
+        else
+        {
+            sio->port()->writeCommandNak();
+            qWarning() << "!w" << tr("[%1] command: $%2, aux: $%3 NAKed.")
+                           .arg(deviceName())
+                           .arg(command, 2, 16, QChar('0'))
+                           .arg(aux, 4, 16, QChar('0'));
+            return;
+        }
+        break;
+    }
+
+    default:
+    {
         sio->port()->writeCommandNak();
         qWarning() << "!w" << tr("[%1] command: $%2, aux: $%3 NAKed.")
                        .arg(deviceName())
                        .arg(command, 2, 16, QChar('0'))
                        .arg(aux, 4, 16, QChar('0'));
+        break;
+    }
+
     }
 }
 
