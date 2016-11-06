@@ -255,8 +255,8 @@ QString SioWorker::deviceName(int device)
         case PRINTER_BASE_CDEVIC+3:
             result = tr("Printer %1").arg((device & 0x0F) + 1);
             break;
-        case APE_TIME_CDEVIC:
-            result = tr("APE time downloader");
+        case SMART_CDEVIC:
+            result = tr("Smart device (APE time + URL)");
             break;
         case ASPEQT_CLIENT_CDEVIC:
             result = tr("AspeQt Client");

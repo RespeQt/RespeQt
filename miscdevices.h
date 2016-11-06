@@ -25,13 +25,13 @@ signals:
     void print(const QString &text);
 };
 
-// ApeTime device
-class ApeTime: public SioDevice
+// SmartDevice (ApeTime + URL submit)
+class SmartDevice: public SioDevice
 {
     Q_OBJECT
 
 public:
-    ApeTime(SioWorker *worker): SioDevice(worker) {}
+    SmartDevice(SioWorker *worker): SioDevice(worker) {}
     void handleCommand(quint8 command, quint16 aux);
 };
 
