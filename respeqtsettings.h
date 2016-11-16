@@ -169,6 +169,10 @@ public:
     bool filterUnderscore();
     void setfilterUnderscore(bool filter);
 
+// CAPITAL letters in file names for PCLINK
+    bool capitalLettersInPCLINK();
+    void setCapitalLettersInPCLINK(bool caps);
+
 // Enable Shade Mode //
     bool enableShade();
     void setEnableShade(bool shade);
@@ -241,6 +245,7 @@ private:
 
     bool mMinimizeToTray;
     bool mFilterUnderscore;
+    bool mUseCapitalLettersInPCLINK;
     bool mUseLargeFont;
     bool mExplorerOnTop;
     bool mEnableShade;
