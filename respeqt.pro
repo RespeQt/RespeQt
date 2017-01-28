@@ -42,7 +42,7 @@ SOURCES += main.cpp \
     respeqtsettings.cpp \
     drivewidget.cpp \
     pclink.cpp
-win32:LIBS += -lwinmm
+win32:LIBS += -lwinmm -lz
 unix:LIBS += -lz
 win32:SOURCES += serialport-win32.cpp
 unix:SOURCES += serialport-unix.cpp

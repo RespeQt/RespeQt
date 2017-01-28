@@ -263,9 +263,9 @@ MainWindow::MainWindow(QWidget *parent)
 
     setAcceptDrops(true);
 
-    // ApeTime device
-    ApeTime *ape = new ApeTime(sio);
-    sio->installDevice(APE_TIME_CDEVIC, ape);
+    // SmartDevice (ApeTime + URL submit)
+    SmartDevice *smart = new SmartDevice(sio);
+    sio->installDevice(SMART_CDEVIC, smart);
 
     // AspeQt Client  //
     AspeCl *acl = new AspeCl(sio);

@@ -88,6 +88,7 @@ RespeqtSettings::RespeqtSettings()
     mMinimizeToTray = mSettings->value("MinimizeToTray", false).toBool();
     msaveWindowsPos = mSettings->value("SaveWindowsPosSize", true).toBool();
     mFilterUnderscore = mSettings->value("FilterUnderscore", true).toBool();
+    mUseCapitalLettersInPCLINK = mSettings->value("CapitalLettersInPCLINK", false).toBool();
     msaveDiskVis = mSettings->value("SaveDiskVisibility", true).toBool();
     mdVis = mSettings->value("D9DOVisible",true).toBool();
     if (mMainW < 688 && mdVis) mMainW = 688;
@@ -147,6 +148,7 @@ void RespeqtSettings::saveSessionToFile(const QString &fileName)
         s.setValue("PrtW", mPrtW);
         s.setValue("PrtH", mPrtH);
         s.setValue("FilterUnderscore", mFilterUnderscore);
+        s.setValue("CapitalLettersInPCLINK", mUseCapitalLettersInPCLINK);
         s.setValue("UseLargeFont", mUseLargeFont);
         s.setValue("ExplorerOnTop", mExplorerOnTop);
         s.setValue("EnableShadeByDefault", mEnableShade);
@@ -196,6 +198,7 @@ void RespeqtSettings::saveSessionToFile(const QString &fileName)
         mPrtW = s.value("PrtW", 600).toInt();
         mPrtH = s.value("PrtH", 486).toInt();
         mFilterUnderscore = s.value("FilterUnderscore", true).toBool();
+        mUseCapitalLettersInPCLINK = s.value("CapitalLettersInPCLINK", false).toBool();
         mUseLargeFont = s.value("UseLargeFont", false).toBool();
         mExplorerOnTop = s.value("ExplorerOnTop", false).toBool();
         mEnableShade = s.value("EnableShadeByDefault", true).toBool();
@@ -756,6 +759,17 @@ void RespeqtSettings::setfilterUnderscore(bool filter)
 {
     mFilterUnderscore = filter;
     mSettings->setValue("FilterUnderscore", mFilterUnderscore);
+}
+
+bool RespeqtSettings::capitalLettersInPCLINK()
+{
+    return mUseCapitalLettersInPCLINK;
+}
+
+void RespeqtSettings::setCapitalLettersInPCLINK(bool caps)
+{
+    mUseCapitalLettersInPCLINK = caps;
+    mSettings->setValue("CapitalLettersInPCLINK", mUseCapitalLettersInPCLINK);
 }
 
 void RespeqtSettings::writeRecentImageSettings()
