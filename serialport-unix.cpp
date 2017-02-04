@@ -377,11 +377,7 @@ QByteArray StandardSerialPortBackend::readCommandFrame()
             else
             {
                 // avoid high CPU load in idle state
-                #ifdef Q_OS_UNIX
-                    QThread::yieldCurrentThread();
-                #endif
-
-                #ifdef Q_OS_MAC
+                #if defined Q_OS_UNIX || defined Q_OS_MAC
                     QThread::usleep(300);
                 #endif
             }
