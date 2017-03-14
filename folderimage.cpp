@@ -40,7 +40,7 @@ void FolderImage::close()
     return;
 }
 
-bool FolderImage::format(quint16, quint16)
+bool FolderImage::format(const DiskGeometry&)
 {
     return false;
 }

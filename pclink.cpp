@@ -1213,7 +1213,7 @@ void PCLINK::do_pclink(uchar devno, uchar ccom, uchar caux1, uchar caux2)
 
         mem = (uchar*)malloc(blk_size);
 
-        if ((device[cunit].status.err == 1))
+        if (device[cunit].status.err == 1)
         {
             iodesc[handle].fpread = blk_size;
 

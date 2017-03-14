@@ -604,7 +604,7 @@ quint8 StandardSerialPortBackend::sioChecksum(const QByteArray &data, uint size)
     return sum;
 }
 
-QByteArray StandardSerialPortBackend::readRawFrame(uint size, bool verbose)
+QByteArray StandardSerialPortBackend::readRawFrame(uint size, bool /*verbose*/)
 {
     QByteArray data;
     int result;
