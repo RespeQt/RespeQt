@@ -358,6 +358,13 @@ QByteArray StandardSerialPortBackend::readCommandFrame()
                     }
                 }
             }
+            else
+            {
+                // avoid high CPU load in idle state
+                #if defined Q_OS_UNIX || defined Q_OS_MAC
+                    QThread::usleep(300);
+                #endif
+            }
         } while(got!=expected && !mCanceled);
 
         if(got==expected)
@@ -581,7 +588,7 @@ quint8 StandardSerialPortBackend::sioChecksum(const QByteArray &data, uint size)
     return sum;
 }
 
-QByteArray StandardSerialPortBackend::readRawFrame(uint size, bool verbose)
+QByteArray StandardSerialPortBackend::readRawFrame(uint size, bool /*verbose*/)
 {
     QByteArray data;
     int result;

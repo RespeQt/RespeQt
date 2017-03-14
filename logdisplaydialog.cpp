@@ -34,7 +34,7 @@ LogDisplayDialog::~LogDisplayDialog()
 {
     delete l_ui;
 }
-void LogDisplayDialog::onClick(QAbstractButton* button)
+void LogDisplayDialog::onClick(QAbstractButton* /*button*/)
 {
     this->close();
 }
