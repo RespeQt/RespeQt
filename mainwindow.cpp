@@ -2332,4 +2332,6 @@ void MainWindow::changePrinterType(int index, int typeId)
     }
     sio->installDevice(PRINTER_BASE_CDEVIC + index, newPrinter);
     printerWidgets[index].printer = newPrinter;
+    printerWidgets[index].actionConnectPrinter -> setEnabled(newPrinter -> requiresNativePrinter());
+    printerWidgets[index].actionDisconnectPrinter -> setEnabled(newPrinter -> requiresNativePrinter());
 }
