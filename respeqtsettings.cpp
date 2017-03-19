@@ -68,7 +68,7 @@ RespeqtSettings::RespeqtSettings()
     mSettings->endArray();
 
     mSettings->beginReadArray("RecentImageSettings");
-    for (i = 0; i < 10; i++) {
+    for (i = 0; i < NUM_RECENT_FILES; i++) {
         mSettings->setArrayIndex(i);
         mRecentImageSettings[i].fileName = mSettings->value("FileName", QString()).toString();
         mRecentImageSettings[i].isWriteProtected = mSettings->value("IsWriteProtected", false).toBool();
@@ -156,7 +156,7 @@ void RespeqtSettings::saveSessionToFile(const QString &fileName)
 //
     s.beginWriteArray("MountedImageSettings");
     for (int i = 0; i < 15; i++) {                      //
-        ImageSettings is = mMountedImageSettings[i];
+        ImageSettings& is = mMountedImageSettings[i];
         s.setArrayIndex(i);
         s.setValue("FileName", is.fileName);
         s.setValue("IsWriteProtected", is.isWriteProtected);
@@ -376,43 +376,45 @@ void RespeqtSettings::setCustomCasBaud(int baud)
     if(mSessionFileName == "") mSettings->setValue("CustomCasBaud", mCustomCasBaud);
 }
 
-RespeqtSettings::ImageSettings RespeqtSettings::getImageSettingsFromName(const QString &fileName)
+const RespeqtSettings::ImageSettings* RespeqtSettings::getImageSettingsFromName(const QString &fileName)
 {
-    ImageSettings is;
+    ImageSettings *is = NULL;
     int i;
     bool found = false;
 
     for (i = 0; i < 15; i++) {          //
         if (mMountedImageSettings[i].fileName == fileName) {
-            is = mMountedImageSettings[i];
+            is = &mMountedImageSettings[i];
             found = true;
             break;
         }
     }
     if (!found) {
-        for (i = 0; i < 10; i++) {
+        for (i = 0; i < NUM_RECENT_FILES; i++) {
             if (mRecentImageSettings[i].fileName == fileName) {
-                is = mRecentImageSettings[i];
+                is = &mRecentImageSettings[i];
                 found = true;
                 break;
             }
         }
     }
-    if (!found) {
-        is.fileName = fileName;
-        is.isWriteProtected = true;
-    }
     return is;
 }
 
-RespeqtSettings::ImageSettings RespeqtSettings::mountedImageSetting(int no)
+const RespeqtSettings::ImageSettings& RespeqtSettings::mountedImageSetting(int no)
 {
     return mMountedImageSettings[no];
 }
 
-RespeqtSettings::ImageSettings RespeqtSettings::recentImageSetting(int no)
+const RespeqtSettings::ImageSettings& RespeqtSettings::recentImageSetting(int no)
 {
     return mRecentImageSettings[no];
+}
+
+void RespeqtSettings::setMountedImageProtection(int no, bool prot)
+{
+    mMountedImageSettings[no].isWriteProtected = prot;
+    if(mSessionFileName == "") mSettings->setValue(QString("MountedImageSettings/%1/IsWriteProtected").arg(no+1), prot);
 }
 
 void RespeqtSettings::setMountedImageSetting(int no, const QString &fileName, bool prot)
@@ -423,6 +425,7 @@ void RespeqtSettings::setMountedImageSetting(int no, const QString &fileName, bo
     if(mSessionFileName == "") mSettings->setValue(QString("MountedImageSettings/%1/FileName").arg(no+1), fileName);
     if(mSessionFileName == "") mSettings->setValue(QString("MountedImageSettings/%1/IsWriteProtected").arg(no+1), prot);
 }
+
 void RespeqtSettings::mountImage(int no, const QString &fileName, bool prot)
 {
     if (fileName.isEmpty()) {
@@ -430,17 +433,17 @@ void RespeqtSettings::mountImage(int no, const QString &fileName, bool prot)
     }
     int i;
     bool found = false;
-    for (i = 0; i < 10; i++) {
+    for (i = 0; i < NUM_RECENT_FILES; i++) {
         if (mRecentImageSettings[i].fileName == fileName) {
             found = true;
             break;
         }
     }
     if (found) {
-        for (int j = i; j < 9; j++) {
+        for (int j = i; j < (NUM_RECENT_FILES-1); j++) {
             mRecentImageSettings[j] = mRecentImageSettings[j + 1];
         }
-        mRecentImageSettings[9].fileName = "";
+        mRecentImageSettings[(NUM_RECENT_FILES-1)].fileName = "";
         writeRecentImageSettings();
     }
     setMountedImageSetting(no, fileName, prot);
@@ -450,7 +453,7 @@ void RespeqtSettings::unmountImage(int no)
 {
     ImageSettings is = mMountedImageSettings[no];
 
-    for (int i = 9; i > 0; i--) {
+    for (int i = (NUM_RECENT_FILES-1); i > 0; i--) {
             mRecentImageSettings[i] = mRecentImageSettings[i - 1];
     }
     mRecentImageSettings[0] = is;
@@ -769,7 +772,7 @@ void RespeqtSettings::setCapitalLettersInPCLINK(bool caps)
 void RespeqtSettings::writeRecentImageSettings()
 {
     mSettings->beginWriteArray("RecentImageSettings");
-    for (int i = 0; i < 10; i++) {
+    for (int i = 0; i < NUM_RECENT_FILES; i++) {
         mSettings->setArrayIndex(i);
         mSettings->setValue("FileName", mRecentImageSettings[i].fileName);
         mSettings->setValue("IsWriteProtected", mRecentImageSettings[i].isWriteProtected);

@@ -40,7 +40,9 @@ SOURCES += main.cpp \
     network.cpp \
     logdisplaydialog.cpp \
     respeqtsettings.cpp \
-    pclink.cpp
+    drivewidget.cpp \
+    pclink.cpp \
+    infowidget.cpp
 win32:LIBS += -lwinmm -lz
 unix:LIBS += -lz
 win32:SOURCES += serialport-win32.cpp
@@ -67,7 +69,9 @@ HEADERS += mainwindow.h \
     network.h \
     logdisplaydialog.h \
     respeqtsettings.h \
-    pclink.h
+    drivewidget.h \
+    pclink.h \
+    infowidget.h
 
 win32:HEADERS += serialport-win32.h
 unix:HEADERS += serialport-unix.h
@@ -81,7 +85,9 @@ FORMS += mainwindow.ui \
     cassettedialog.ui \
     docdisplaywindow.ui \
     bootoptionsdialog.ui \
-    logdisplaydialog.ui
+    logdisplaydialog.ui \
+    drivewidget.ui \
+    infowidget.ui
 RESOURCES += icons.qrc \
     atarifiles.qrc \
     i18n.qrc \

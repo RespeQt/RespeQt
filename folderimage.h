@@ -44,7 +44,7 @@ public:
     bool open(const QString &fileName, FileTypes::FileType /* type */);
     bool readSector(quint16 sector, QByteArray &data);
     bool writeSector(quint16 sector, const QByteArray &data);
-    bool format(const DiskGeometry &geo);
+    bool format(const DiskGeometry& geo);
     QString longName (QString &lastMountedFolder, QString &atariFileName);   // 
     QString description() const {return tr("Folder image");}
 };

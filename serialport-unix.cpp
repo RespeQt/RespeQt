@@ -283,39 +283,15 @@ bool StandardSerialPortBackend::setSpeed(int speed)
     tcgetattr(mHandle, &tios);
     tios.c_cflag &= ~CSTOPB;
     cfmakeraw(&tios);
-    tios.c_cflag = CREAD | CLOCAL;     // turn on READ
+    tios.c_cflag |= CREAD | CLOCAL;     // turn on READ
     tios.c_cflag |= CS8;
+
     tios.c_cc[VMIN] = 0;
     tios.c_cc[VTIME] = 10;     // 1 sec timeout
 
-    if (ioctl(mHandle, TIOCSETA, &tios) != 0) {
-        qCritical() << "!e" << tr("Failed to set serial attrs");
-        return false;
-    }
-    switch (speed) {
-        case 600:
-            cfsetispeed(&tios, B600);
-            cfsetospeed(&tios, B600);
-            break;
-        case 19200:
-            cfsetispeed(&tios, B19200);
-            cfsetospeed(&tios, B19200);
-            break;
-        case 38400:
-            cfsetispeed(&tios, B38400);
-            cfsetospeed(&tios, B38400);
-            break;
-        case 57600:
-            cfsetispeed(&tios, B57600);
-            cfsetospeed(&tios, B57600);
-            break;
-        default:
-           if (ioctl(mHandle, IOSSIOSPEED, &speed) < 0 ){
-                qCritical() << "!e" << tr("Failed to set serial port speed to %1").arg(speed);
-                return false;
-            }
-           break;
-    }
+    /* Default speed */
+    cfsetispeed(&tios, B19200);
+    cfsetospeed(&tios, B19200);
 
     /* Set serial port state */
     if (tcsetattr(mHandle, TCSANOW, &tios) != 0) {
@@ -324,7 +300,15 @@ bool StandardSerialPortBackend::setSpeed(int speed)
                        .arg(lastErrorMessage());
         return false;
     }
-   emit statusChanged(tr("%1 bits/sec").arg(speed));
+
+    /* Set requested speed */
+    speed_t spd = speed;
+    if (ioctl(mHandle, IOSSIOSPEED, &spd) < 0) {
+         qCritical() << "!e" << tr("Failed to set serial port speed to %1").arg(speed);
+         return false;
+    }
+
+    emit statusChanged(tr("%1 bits/sec").arg(speed));
     qWarning() << "!i" << tr("Serial port speed set to %1.").arg(speed);
     mSpeed = speed;
     return true;
