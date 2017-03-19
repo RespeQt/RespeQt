@@ -23,6 +23,9 @@
 #include "cassettedialog.h"
 #include "bootoptionsdialog.h"
 #include "logdisplaydialog.h"
+#include "selectprinterdialog.h"
+#include "textprinter.h"
+#include "atari1027.h"
 
 #include <QEvent>
 #include <QDragEnterEvent>
@@ -42,7 +45,6 @@
 
 
 RespeqtSettings *respeqtSettings;
-MainWindow *mainWindow;
 
 QFile *logFile;
 QMutex *logMutex;
@@ -67,7 +69,7 @@ bool g_logOpen;
 // Warning         (brown)         "!w"
 // Error           (red)           "!e"
 
-void logMessageOutput(QtMsgType type, const QMessageLogContext &context, const QString &msg)
+void logMessageOutput(QtMsgType type, const QMessageLogContext &/*context*/, const QString &msg)
 // void logMessageOutput(QtMsgType type, const char *msg)
 {
     logMutex->lock();
@@ -84,6 +86,9 @@ void logMessageOutput(QtMsgType type, const QMessageLogContext &context, const Q
             break;
         case QtFatalMsg:
             logFile->write(": [Fatal]    ");
+            break;
+        case QtInfoMsg:
+            logFile->write(": [Info]     ");
             break;
     }
     QByteArray localMsg = msg.toLocal8Bit();
@@ -102,7 +107,7 @@ void logMessageOutput(QtMsgType type, const QMessageLogContext &context, const Q
             return;
         }
 #endif
-        mainWindow->doLogMessage(localMsg.at(1), displayMsg);
+        MainWindow::getInstance()->doLogMessage(localMsg.at(1), displayMsg);
     }
 }
 
@@ -111,12 +116,13 @@ void MainWindow::doLogMessage(int type, const QString &msg)
     emit logMessage(type, msg);
 }
 
+MainWindow *MainWindow::instance = NULL;
+
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent), ui(new Ui::MainWindow)
 {
-
     /* Setup the logging system */
-    mainWindow = this;
+    instance = this;
     g_respeQtAppPath = QCoreApplication::applicationDirPath();
     g_disablePicoHiSpeed = false;
     logFile = new QFile(QDir::temp().absoluteFilePath("respeqt.log"));
@@ -216,7 +222,7 @@ MainWindow::MainWindow(QWidget *parent)
     ui->statusBar->addPermanentWidget(prtOnOffLabel);
     ui->statusBar->addPermanentWidget(netLabel);
     ui->statusBar->addPermanentWidget(clearMessagesLabel);
-    ui->textEdit->installEventFilter(mainWindow);
+    ui->textEdit->installEventFilter(MainWindow::getInstance());
     changeFonts();
     g_D9DOVisible =  respeqtSettings->D9DOVisible();
     showHideDrives();
@@ -275,6 +281,22 @@ MainWindow::MainWindow(QWidget *parent)
         findChild <QToolButton*> (QString("buttonEditDisk_%1").arg(i + 1)) -> setDefaultAction(diskWidgets[i].editAction);
     }
 
+    /* Initialize printWidgets array and tool button actions */
+
+    for (int i = 0; i < PRINTER_COUNT; i++) {      //
+
+        printerWidgets[i].printerTypeComboBox = findChild <QComboBox*> (QString("comboBoxPrinterType_%1").arg(i + 17));
+        printerWidgets[i].actionConnectPrinter = findChild <QAction*> (QString("actionConnectPrinter_%1").arg(i + 17));
+        printerWidgets[i].actionDisconnectPrinter = findChild <QAction*> (QString("actionDisconnectPrinter_%1").arg(i + 17));
+        printerWidgets[i].actionSelectAtariPrinter = findChild <QAction*> (QString("actionSelectAtariPrinter_%1").arg(i + 17));
+
+        findChild <QToolButton*> (QString("buttonConnectPrinter_%1").arg(i + 17)) -> setDefaultAction(printerWidgets[i].actionConnectPrinter);
+        findChild <QToolButton*> (QString("buttonDisconnectPrinter_%1").arg(i + 17)) -> setDefaultAction(printerWidgets[i].actionDisconnectPrinter);
+
+        //printerWidgets[i].printerTypeComboBox -> addItem(QString("Text"));
+        //printerWidgets[i].printerTypeComboBox -> addItem(QString("Atari 1027"));
+    }
+
     /* Connect SioWorker signals */
     sio = new SioWorker();
     connect(sio, SIGNAL(started()), this, SLOT(sioStarted()));
@@ -310,9 +332,33 @@ MainWindow::MainWindow(QWidget *parent)
     connect(textPrinterWindow, SIGNAL(closed()), this, SLOT(textPrinterWindowClosed()));
     connect(docDisplayWindow, SIGNAL(closed()), this, SLOT(docDisplayWindowClosed()));
 
-    Printer *printer = new Printer(sio);
-    connect(printer, SIGNAL(print(QString)), textPrinterWindow, SLOT(print(QString)));
-    sio->installDevice(PRINTER_BASE_CDEVIC, printer);
+    // Set up the printers
+    for (int i = 0; i < PRINTER_COUNT; i++) {
+        // Restore printer settings
+        RespeqtSettings::PrinterSettings ps;
+        ps = respeqtSettings->connectedPrinterSettings(i);
+        BasePrinter *printer = NULL;
+        switch(ps.printerType) {
+            default:
+            case 1:
+                // Connection to TextPrinterWindow is implicitely set in constructor
+                printer = new TextPrinter(sio);
+            break;
+            case 2:
+            break;
+        }
+        if (printer != NULL) {
+            printerWidgets[i].printerTypeComboBox -> setCurrentIndex(printer -> typeId() - 1);
+            if (!printer -> requiresNativePrinter()) {
+                printerWidgets[i].actionConnectPrinter -> setEnabled(false);
+                printerWidgets[i].actionDisconnectPrinter -> setEnabled(false);
+            }
+            sio->installDevice(PRINTER_BASE_CDEVIC+i, printer);
+            printerWidgets[i].printer = printer;
+        } else {
+            printerWidgets[i].printerTypeComboBox -> setCurrentIndex(0);
+        }
+    }
     setUpPrinterEmulationWidgets(respeqtSettings->printerEmulation());
 
     untitledName = 0;
@@ -624,7 +670,7 @@ void MainWindow::resizeEvent(QResizeEvent *)
 {
 }
 
-bool MainWindow::eventFilter(QObject *obj, QEvent *event)
+bool MainWindow::eventFilter(QObject */*obj*/, QEvent *event)
 {
     if (event->type() == QEvent::MouseButtonDblClick) {
         on_actionLogWindow_triggered();
@@ -1806,6 +1852,22 @@ void MainWindow::revertDisk(int no)
     }
 }
 
+void MainWindow::connectPrinter(qint8 no) {
+
+    SelectPrinterDialog dialog;
+    if (dialog.exec() == QDialog::Accepted)
+    {
+        QString printer = dialog.selectedPrinterName();
+        if (printer.size() > 0) {
+            respeqtSettings->setSelectedPrinter(no, printer);
+        }
+    }
+}
+
+void MainWindow::disconnectPrinter(qint8 no) {
+    respeqtSettings->setSelectedPrinter(no, "");
+}
+
 void MainWindow::on_actionMountDisk_1_triggered() {mountDiskImage(0);}
 void MainWindow::on_actionMountDisk_2_triggered() {mountDiskImage(1);}
 void MainWindow::on_actionMountDisk_3_triggered() {mountDiskImage(2);}
@@ -1972,6 +2034,15 @@ void MainWindow::on_actionRevert_12_triggered() {revertDisk(11);}
 void MainWindow::on_actionRevert_13_triggered() {revertDisk(12);}
 void MainWindow::on_actionRevert_14_triggered() {revertDisk(13);}
 void MainWindow::on_actionRevert_15_triggered() {revertDisk(14);}
+
+void MainWindow::on_actionConnectPrinter_17_triggered() {connectPrinter(1);}
+void MainWindow::on_actionConnectPrinter_18_triggered() {connectPrinter(2);}
+void MainWindow::on_actionConnectPrinter_19_triggered() {connectPrinter(3);}
+void MainWindow::on_actionConnectPrinter_20_triggered() {connectPrinter(4);}
+void MainWindow::on_actionDisconnectPrinter_17_triggered() {disconnectPrinter(1);}
+void MainWindow::on_actionDisconnectPrinter_18_triggered() {disconnectPrinter(2);}
+void MainWindow::on_actionDisconnectPrinter_19_triggered() {disconnectPrinter(3);}
+void MainWindow::on_actionDisconnectPrinter_20_triggered() {disconnectPrinter(4);}
 
 void MainWindow::on_actionEjectAll_triggered()
 {
@@ -2225,4 +2296,40 @@ void MainWindow::on_actionBootOption_triggered()
     connect(&bod, SIGNAL(giveFolderPath(int)), this, SLOT(folderPath(int)));
     connect(this, SIGNAL(takeFolderPath(QString)), &bod, SLOT(folderPath(QString)));
     bod.exec();
+}
+
+void MainWindow::on_comboBoxPrinterType_17_currentIndexChanged(int index)
+{
+    changePrinterType(0, index + 1);
+}
+
+void MainWindow::on_comboBoxPrinterType_18_currentIndexChanged(int index)
+{
+    changePrinterType(1, index + 1);
+}
+
+void MainWindow::on_comboBoxPrinterType_19_currentIndexChanged(int index)
+{
+    changePrinterType(2, index + 1);
+}
+
+void MainWindow::on_comboBoxPrinterType_20_currentIndexChanged(int index)
+{
+    changePrinterType(3, index + 1);
+}
+
+void MainWindow::changePrinterType(int index, int typeId)
+{
+    BasePrinter *newPrinter = NULL;
+    switch (typeId) {
+        default:
+        case 1:
+            newPrinter = new TextPrinter(sio);
+        break;
+        case 2:
+            newPrinter = new Atari1027(sio);
+        break;
+    }
+    sio->installDevice(PRINTER_BASE_CDEVIC + index, newPrinter);
+    printerWidgets[index].printer = newPrinter;
 }

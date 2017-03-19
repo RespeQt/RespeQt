@@ -32,11 +32,13 @@
 #include "textprinterwindow.h"
 #include "docdisplaywindow.h"
 #include "network.h"
+#include "baseprinter.h"
 
 namespace Ui
 {
     class MainWindow;
 }
+
 class DiskWidgets
 {
 public:
@@ -55,6 +57,16 @@ public:
     QFrame *frame;
 };
 
+class PrinterWidgets
+{
+public:
+    QComboBox *printerTypeComboBox;
+    QAction *actionSelectAtariPrinter;
+    QAction *actionConnectPrinter;
+    QAction *actionDisconnectPrinter;
+    BasePrinter *printer;
+};
+
 class MainWindow : public QMainWindow
 {
     Q_OBJECT
@@ -65,6 +77,8 @@ public:
     QString g_sessionFile;
     QString g_sessionFilePath;
     QString g_mainWindowTitle;
+    static MainWindow *getInstance() { return instance; }
+    TextPrinterWindow *getTextPrinterWindow() { return textPrinterWindow; }
 
 public slots:
     void show();
@@ -79,6 +93,7 @@ private:
     SioWorker *sio;
     bool shownFirstTime;
     DiskWidgets diskWidgets[DISK_COUNT];    //
+    PrinterWidgets printerWidgets[PRINTER_COUNT]; //
     QLabel *speedLabel, *onOffLabel, *prtOnOffLabel, *netLabel, *clearMessagesLabel;  //
     TextPrinterWindow *textPrinterWindow;
     DocDisplayWindow *docDisplayWindow;    //
@@ -88,6 +103,7 @@ private:
     Qt::WindowStates oldWindowStates;
     QString lastMessage;
     int lastMessageRepeat;
+    static MainWindow *instance;
     
     void setSession();  //
     void updateRecentFileActions();
@@ -106,6 +122,8 @@ private:
     void loadTranslators();
     void autoSaveDisk(int no);                                              //
     void setUpPrinterEmulationWidgets(bool enabled);
+    void connectPrinter(qint8 no);
+    void disconnectPrinter(qint8 no);
 
 protected:
     void mousePressEvent(QMouseEvent *event);
@@ -297,6 +315,14 @@ private slots:
     void on_actionToggleMiniMode_triggered();
     void on_actionToggleShade_triggered();
     void on_actionLogWindow_triggered();
+    void on_actionConnectPrinter_17_triggered();
+    void on_actionConnectPrinter_18_triggered();
+    void on_actionConnectPrinter_19_triggered();
+    void on_actionConnectPrinter_20_triggered();
+    void on_actionDisconnectPrinter_17_triggered();
+    void on_actionDisconnectPrinter_18_triggered();
+    void on_actionDisconnectPrinter_19_triggered();
+    void on_actionDisconnectPrinter_20_triggered();
     void showHideDrives();
     void sioFinished();
     void sioStarted();
@@ -311,6 +337,11 @@ private slots:
     void saveMiniWindowGeometry();
     void logChanged(QString text);
     void changeFonts();
+    void on_comboBoxPrinterType_17_currentIndexChanged(int index);
+    void on_comboBoxPrinterType_18_currentIndexChanged(int index);
+    void on_comboBoxPrinterType_19_currentIndexChanged(int index);
+    void on_comboBoxPrinterType_20_currentIndexChanged(int index);
+    void changePrinterType(int index, int typeId);
 };
 
 #endif // MAINWINDOW_H

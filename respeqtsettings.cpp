@@ -11,7 +11,7 @@
 
 #include "respeqtsettings.h"
 #include "serialport.h"
-#include "mainwindow.h"
+//#include "mainwindow.h"
 
 RespeqtSettings::RespeqtSettings()
 {
@@ -162,6 +162,15 @@ void RespeqtSettings::saveSessionToFile(const QString &fileName)
         s.setValue("IsWriteProtected", is.isWriteProtected);
     }
     s.endArray();
+
+    s.beginWriteArray("ConnectedPrinterSettings");
+    for (int i = 0; i < PRINTER_COUNT; i++) {
+        PrinterSettings ps = mConnectedPrinterSettings[i];
+        s.setArrayIndex(i);
+        s.setValue("PrinterName", ps.printerName);
+        s.setValue("PrinterType", ps.printerType);
+    }
+    s.endArray();
 }
 // Get all session related settings, so that a session could be fully restored //
  void RespeqtSettings::loadSessionFromFile(const QString &fileName)
@@ -210,6 +219,12 @@ void RespeqtSettings::saveSessionToFile(const QString &fileName)
         setMountedImageSetting(i, s.value("FileName", "").toString(), s.value("IsWriteProtected", false).toBool());
     }
     s.endArray();
+
+    s.beginReadArray("ConnectedPrinterSettings");
+    for (int i = 0; i < PRINTER_COUNT; i++) {
+        s.setArrayIndex(i);
+        setConnectedPrinterSetting(i, s.value("PrinterName", "").toString(), s.value("PrinterType", 0).toInt());
+    }
 }
 // Get MainWindow title from MainWindow  //
 void RespeqtSettings::setMainWindowTitle(const QString &g_mainWindowTitle)
@@ -775,4 +790,30 @@ void RespeqtSettings::writeRecentImageSettings()
         mSettings->setValue("IsWriteProtected", mRecentImageSettings[i].isWriteProtected);
     }
     mSettings->endArray();
+}
+
+void RespeqtSettings::setConnectedPrinterSetting(int no, const QString &printerName, int printerType)
+{
+    mConnectedPrinterSettings[no].printerName = printerName;
+    mConnectedPrinterSettings[no].printerType = printerType;
+}
+
+void RespeqtSettings::setSelectedPrinter(int no, const QString &printerName) {
+    mConnectedPrinterSettings[no].printerName = printerName;
+}
+
+const QString &RespeqtSettings::selectedPrinter(int no) const {
+    return mConnectedPrinterSettings[no].printerName;
+}
+
+void RespeqtSettings::setPrinterType(int no, int printerType) {
+    mConnectedPrinterSettings[no].printerType = printerType;
+}
+
+int RespeqtSettings::printerType(int no) const {
+    return mConnectedPrinterSettings[no].printerType;
+}
+
+const RespeqtSettings::PrinterSettings &RespeqtSettings::connectedPrinterSettings(int no) const {
+    return mConnectedPrinterSettings[no];
 }
