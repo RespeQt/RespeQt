@@ -1784,14 +1784,6 @@ void MainWindow::trayIconActivated(QSystemTrayIcon::ActivationReason reason)
     }
 }
 
-/*
-void MainWindow::folderPath(int slot)
-{
-    // TODO: MAKE THIS WORK IN A WAY WHERE THE STATUS TIP IS NOT WHERE FILE PATH IS STORED!!!
-//   emit takeFolderPath(diskWidgets[slot].fileNameLabel->statusTip());
-}
-*/
-
 void MainWindow::on_actionBootOption_triggered()
 {
     QString folderPath = respeqtSettings->mountedImageSetting(0).fileName;

@@ -31,7 +31,6 @@ BootOptionsDialog::BootOptionsDialog(const QString& bootFolderPath, QWidget *par
 
     m_ui->setupUi(this);
 
-//    connect(m_ui->buttonBox, SIGNAL(clicked(QAbstractButton*)), this, SLOT(onClick(QAbstractButton*)));
     connect(m_ui->myPicoDOS, SIGNAL(toggled(bool)), this, SLOT(picoDOSToggled()));
 }
 
