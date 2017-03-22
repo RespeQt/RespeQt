@@ -70,7 +70,7 @@ bool StandardSerialPortBackend::open()
             0,
             NULL,
             OPEN_EXISTING,
-            FILE_FLAG_WRITE_THROUGH,
+            0,
             0
         ));
         if (mHandle == INVALID_HANDLE_VALUE) {
@@ -93,12 +93,12 @@ bool StandardSerialPortBackend::open()
             qCritical() << "!e" << tr("Cannot open serial port '%1': %2").arg(respeqtSettings->serialPortName(), lastErrorMessage());
             return false;
         }
-        if (!EscapeCommFunction(mHandle, CLRRTS)) {
-            qCritical() << "!e" << tr("Cannot clear RTS line in serial port '%1': %2").arg(respeqtSettings->serialPortName(), lastErrorMessage());
+        if (!EscapeCommFunction(mHandle, SETDTR)) {
+            qCritical() << "!e" << tr("Cannot set DTR line in serial port '%1': %2").arg(respeqtSettings->serialPortName(), lastErrorMessage());
             return false;
         }
-        if (!EscapeCommFunction(mHandle, CLRDTR)) {
-            qCritical() << "!e" << tr("Cannot clear DTR line in serial port '%1': %2").arg(respeqtSettings->serialPortName(), lastErrorMessage());
+        if (!EscapeCommFunction(mHandle, SETRTS)) {
+            qCritical() << "!e" << tr("Cannot set RTS line in serial port '%1': %2").arg(respeqtSettings->serialPortName(), lastErrorMessage());
             return false;
         }
     }
@@ -231,14 +231,14 @@ bool StandardSerialPortBackend::setSpeed(int speed)
 
     dcb.fOutxCtsFlow = FALSE;
     dcb.fOutxDsrFlow = FALSE;
-    dcb.fDtrControl = DTR_CONTROL_DISABLE;
+    dcb.fDtrControl = DTR_CONTROL_ENABLE;
     dcb.fDsrSensitivity = FALSE;
     dcb.fTXContinueOnXoff = FALSE;
     dcb.fOutX = FALSE;
     dcb.fInX = FALSE;
     dcb.fErrorChar = FALSE;
     dcb.fNull = FALSE;
-    dcb.fRtsControl = RTS_CONTROL_DISABLE;
+    dcb.fRtsControl = RTS_CONTROL_ENABLE;
     dcb.fAbortOnError = FALSE;
     dcb.fDummy2 = 0;
     dcb.wReserved = 0;
@@ -512,28 +512,28 @@ bool StandardSerialPortBackend::writeCommandAck()
 {
 //    qDebug() << "!d" << tr("DBG -- Serial Port writeCommandAck...");
 
-    return writeRawFrame(QByteArray(1, 65));
+    return writeRawFrame(QByteArray(1, SIO_ACK));
 }
 
 bool StandardSerialPortBackend::writeCommandNak()
 {
 //    qDebug() << "!d" << tr("DBG -- Serial Port writeCommandNak...");
 
-    return writeRawFrame(QByteArray(1, 78));
+    return writeRawFrame(QByteArray(1, SIO_NACK));
 }
 
 bool StandardSerialPortBackend::writeDataAck()
 {
 //    qDebug() << "!d" << tr("DBG -- Serial Port writeDataAck...");
 
-    return writeRawFrame(QByteArray(1, 65));
+    return writeRawFrame(QByteArray(1, SIO_ACK));
 }
 
 bool StandardSerialPortBackend::writeDataNak()
 {
 //    qDebug() << "!d" << tr("DBG -- Serial Port writeDataNak...");
 
-    return writeRawFrame(QByteArray(1, 78));
+    return writeRawFrame(QByteArray(1, SIO_NACK));
 }
 
 bool StandardSerialPortBackend::writeComplete()
@@ -542,7 +542,7 @@ bool StandardSerialPortBackend::writeComplete()
 
     if(mMethod==HANDSHAKE_SOFTWARE)SioWorker::usleep(mWriteDelay);
     else SioWorker::usleep(mCompErrDelay);
-    return writeRawFrame(QByteArray(1, 67));
+    return writeRawFrame(QByteArray(1, SIO_COMPLETE));
 }
 
 bool StandardSerialPortBackend::writeError()
@@ -551,7 +551,7 @@ bool StandardSerialPortBackend::writeError()
 
     if(mMethod==HANDSHAKE_SOFTWARE)SioWorker::usleep(mWriteDelay);
     else SioWorker::usleep(mCompErrDelay);
-    return writeRawFrame(QByteArray(1, 69));
+    return writeRawFrame(QByteArray(1, SIO_ERROR));
 }
 
 quint8 StandardSerialPortBackend::sioChecksum(const QByteArray &data, uint size)

@@ -10,11 +10,11 @@
 # know the specific year(s) please let the current maintainer know.
 #
 #CONFIG(release, debug|release):DEFINES += QT_NO_DEBUG_OUTPUT
-DEFINES += VERSION=\\\"R3\\\"
+DEFINES += VERSION=\\\"R4-RC2\\\"
 TARGET = RespeQt
 TEMPLATE = app
 CONFIG += qt
-QT += core gui network widgets printsupport
+QT += core gui network widgets printsupport serialport
 CONFIG += mobility
 MOBILITY = bearer
 INCLUDEPATH += $$[QT_INSTALL_HEADERS]/QtZlib
@@ -42,7 +42,8 @@ SOURCES += main.cpp \
     respeqtsettings.cpp \
     drivewidget.cpp \
     pclink.cpp \
-    infowidget.cpp
+    infowidget.cpp \
+    serialport-Qt.cpp
 win32:LIBS += -lwinmm -lz
 unix:LIBS += -lz
 win32:SOURCES += serialport-win32.cpp
@@ -71,7 +72,8 @@ HEADERS += mainwindow.h \
     respeqtsettings.h \
     drivewidget.h \
     pclink.h \
-    infowidget.h
+    infowidget.h \
+    serialport-Qt.h
 
 win32:HEADERS += serialport-win32.h
 unix:HEADERS += serialport-unix.h

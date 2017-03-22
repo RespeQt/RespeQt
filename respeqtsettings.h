@@ -46,11 +46,32 @@ public:
     int serialPortPokeyDivisor();
     void setSerialPortPokeyDivisor(int divisor);
 
-    bool useHighSpeedExeLoader();
-    void setUseHighSpeedExeLoader(bool use);
+    int serialPortWriteDelay();
+    void setSerialPortWriteDelay(int delay);
 
-    bool printerEmulation();
-    void setPrinterEmulation(bool status);
+    int serialPortCompErrDelay();
+    void setSerialPortCompErrDelay(int delay);
+
+    QString QtSerialPortName();
+    void setQtSerialPortName(const QString &name);
+
+    int QtSerialPortHandshakingMethod();
+    void setQtSerialPortHandshakingMethod(int method);
+
+    int QtSerialPortMaximumSpeed();
+    void setQtSerialPortMaximumSpeed(int speed);
+
+    bool QtSerialPortUsePokeyDivisors();
+    void setQtSerialPortUsePokeyDivisors(bool use);
+
+    int QtSerialPortPokeyDivisor();
+    void setQtSerialPortPokeyDivisor(int divisor);
+
+    int QtSerialPortWriteDelay();
+    void setQtSerialPortWriteDelay(int delay);
+
+    int QtSerialPortCompErrDelay();
+    void setQtSerialPortCompErrDelay(int delay);
 
     QString atariSioDriverName();
     void setAtariSioDriverName(const QString &name);
@@ -58,14 +79,14 @@ public:
     int atariSioHandshakingMethod();
     void setAtariSioHandshakingMethod(int method);
 
-    int serialPortWriteDelay();
-    void setSerialPortWriteDelay(int delay);
-
-    int serialPortCompErrDelay();
-    void setSerialPortCompErrDelay(int delay);
-
     int backend();
     void setBackend(int backend);
+
+    bool useHighSpeedExeLoader();
+    void setUseHighSpeedExeLoader(bool use);
+
+    bool printerEmulation();
+    void setPrinterEmulation(bool status);
 
     bool useCustomCasBaud();
     void setUseCustomCasBaud(bool use);
@@ -222,6 +243,14 @@ private:
     int mSerialPortMaximumSpeed;
     bool mSerialPortUsePokeyDivisors;
     int mSerialPortPokeyDivisor;
+
+    QString mQtSerialPortName;
+    int mQtSerialPortHandshakingMethod;
+    int mQtSerialPortWriteDelay;
+    int mQtSerialPortCompErrDelay;
+    int mQtSerialPortMaximumSpeed;
+    bool mQtSerialPortUsePokeyDivisors;
+    int mQtSerialPortPokeyDivisor;
 
     bool mUseHighSpeedExeLoader;
     bool mPrinterEmulation;

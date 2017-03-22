@@ -33,12 +33,14 @@ protected:
 
 private:
     Ui::OptionsDialog *m_ui;
-    QTreeWidgetItem *itemStandard, *itemAtariSio, *itemEmulation, *itemI18n;
+    QTreeWidgetItem *itemStandard, *itemQt, *itemAtariSio, *itemEmulation, *itemI18n;
 
 private slots:
     void on_serialPortHandshakeCombo_currentIndexChanged(int index);
+    void on_QtSerialPortHandshakeCombo_currentIndexChanged(int index);
     void on_useEmulationCustomCasBaudBox_toggled(bool checked);
     void on_serialPortUseDivisorsBox_toggled(bool checked);
+    void on_QtSerialPortUseDivisorsBox_toggled(bool checked);
     void on_treeWidget_itemClicked(QTreeWidgetItem* item, int column);
     void on_treeWidget_currentItemChanged(QTreeWidgetItem* current, QTreeWidgetItem* previous);
     void OptionsDialog_accepted();
