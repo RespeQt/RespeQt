@@ -167,7 +167,7 @@ void RespeqtSettings::saveSessionToFile(const QString &fileName)
     for (int i = 0; i < PRINTER_COUNT; i++) {
         PrinterSettings ps = mConnectedPrinterSettings[i];
         s.setArrayIndex(i);
-        s.setValue("PrinterName", ps.printerName);
+        s.setValue("PrinterName", ps.printer->printerName());
         s.setValue("PrinterType", ps.printerType);
     }
     s.endArray();
@@ -223,7 +223,8 @@ void RespeqtSettings::saveSessionToFile(const QString &fileName)
     s.beginReadArray("ConnectedPrinterSettings");
     for (int i = 0; i < PRINTER_COUNT; i++) {
         s.setArrayIndex(i);
-        setConnectedPrinterSetting(i, s.value("PrinterName", "").toString(), s.value("PrinterType", 0).toInt());
+        setPrinterType(i, s.value("PrinterType", 0).toInt());
+        // TODO Get Printerdata out of it.
     }
 }
 // Get MainWindow title from MainWindow  //
@@ -792,18 +793,13 @@ void RespeqtSettings::writeRecentImageSettings()
     mSettings->endArray();
 }
 
-void RespeqtSettings::setConnectedPrinterSetting(int no, const QString &printerName, int printerType)
+void RespeqtSettings::setConnectedPrinter(int no, QPrinter *printer)
 {
-    mConnectedPrinterSettings[no].printerName = printerName;
-    mConnectedPrinterSettings[no].printerType = printerType;
+    mConnectedPrinterSettings[no].printer = printer;
 }
 
-void RespeqtSettings::setSelectedPrinter(int no, const QString &printerName) {
-    mConnectedPrinterSettings[no].printerName = printerName;
-}
-
-const QString &RespeqtSettings::selectedPrinter(int no) const {
-    return mConnectedPrinterSettings[no].printerName;
+QPrinter *RespeqtSettings::connectedPrinter(int no) const {
+    return mConnectedPrinterSettings[no].printer;
 }
 
 void RespeqtSettings::setPrinterType(int no, int printerType) {

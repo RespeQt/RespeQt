@@ -15,18 +15,11 @@ public:
     Atari1027(SioWorker *worker);
 
     virtual void handleCommand(quint8 command, quint16 aux);
-    void setNativePrinter(QPrinter *printer) { mNativePrinter = printer; }
-    const QPrinter *nativePrinter() const { return mNativePrinter; }
 
 private:
     int m_lastOperation;
     bool mInternational;
     bool mFirstESC, mSecondESC;
-    QFont mFont;
-    int x, y;
-    QRect mBoundingBox;
-    QFontMetrics mFontMetrics;
-    QPrinter *mNativePrinter;
 
     bool handleBuffer(const QByteArray &buffer);
     bool handleEscapedCodes(const char b);

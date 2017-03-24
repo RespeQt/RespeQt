@@ -5,6 +5,11 @@
 
 #include <QByteArray>
 #include <QPainter>
+#include <QPrinter>
+#include <QRect>
+#include <QPainter>
+#include <QFont>
+#include <QFontMetrics>
 
 class BasePrinter : public SioDevice
 {
@@ -12,7 +17,8 @@ class BasePrinter : public SioDevice
 public:
     BasePrinter(SioWorker *worker) : SioDevice(worker),
         mRequiresNativePrinter(false),
-        mPainter(NULL) {}
+        mPainter(NULL),
+        mFontMetrics(NULL) {}
     virtual ~BasePrinter();
 
     int typeId() const { return mTypeId; }
@@ -21,8 +27,11 @@ public:
 
     virtual void handleCommand(quint8 /*command*/, quint16 /*aux*/) {}
 
-    const QPainter *painter() { return mPainter; }
-    void setPainter(QPainter *painter) { mPainter = painter; }
+    virtual QPainter *painter() const { return mPainter; }
+    virtual void setPainter(QPainter *painter) { mPainter = painter; }
+
+    // TODO Decide whether needed void setNativePrinter(QPrinter *printer) { mNativePrinter = printer; }
+    virtual QPrinter *nativePrinter() const { return mNativePrinter; }
 
     virtual const QChar &translateAtascii(const char b);
 
@@ -31,6 +40,12 @@ protected:
     QString *mTypeName;
     bool mRequiresNativePrinter;
     QPainter *mPainter;
+
+    QFont mFont;
+    int x, y;
+    QRect mBoundingBox;
+    QFontMetrics *mFontMetrics;
+    QPrinter *mNativePrinter;
 
 private:
     int m_lastOperation;

@@ -23,7 +23,6 @@
 #include "cassettedialog.h"
 #include "bootoptionsdialog.h"
 #include "logdisplaydialog.h"
-#include "selectprinterdialog.h"
 #include "textprinter.h"
 #include "atari1027.h"
 
@@ -39,6 +38,8 @@
 #include <QtDebug>
 #include <QDesktopWidget>
 #include <QFont>
+#include <QPrintDialog>
+#include <QPrinter>
 
 #include "atarifilesystem.h"
 #include "miscutils.h"
@@ -1854,18 +1855,27 @@ void MainWindow::revertDisk(int no)
 
 void MainWindow::connectPrinter(qint8 no) {
 
-    SelectPrinterDialog dialog;
+    QPrinter *printer = new QPrinter();//printerWidgets[no].printer->nativePrinter();
+    //QPrinter printer;
+    if (!printer) return;
+    //printer->setFromTo(1, 1);
+    //printer->setPaperSize(QPrinter::A4);
+
+    QPrintDialog dialog(printer, this);
     if (dialog.exec() == QDialog::Accepted)
     {
-        QString printer = dialog.selectedPrinterName();
-        if (printer.size() > 0) {
-            respeqtSettings->setSelectedPrinter(no, printer);
+        if (printer) {
+            respeqtSettings->setConnectedPrinter(no, printer);
         }
     }
 }
 
 void MainWindow::disconnectPrinter(qint8 no) {
-    respeqtSettings->setSelectedPrinter(no, "");
+    BasePrinter *printer = printerWidgets[no].printer;
+    if (printer && printer->painter()) {
+        printer->painter()->end();
+    }
+    respeqtSettings->setConnectedPrinter(no, NULL);
 }
 
 void MainWindow::on_actionMountDisk_1_triggered() {mountDiskImage(0);}
@@ -2035,14 +2045,14 @@ void MainWindow::on_actionRevert_13_triggered() {revertDisk(12);}
 void MainWindow::on_actionRevert_14_triggered() {revertDisk(13);}
 void MainWindow::on_actionRevert_15_triggered() {revertDisk(14);}
 
-void MainWindow::on_actionConnectPrinter_17_triggered() {connectPrinter(1);}
-void MainWindow::on_actionConnectPrinter_18_triggered() {connectPrinter(2);}
-void MainWindow::on_actionConnectPrinter_19_triggered() {connectPrinter(3);}
-void MainWindow::on_actionConnectPrinter_20_triggered() {connectPrinter(4);}
-void MainWindow::on_actionDisconnectPrinter_17_triggered() {disconnectPrinter(1);}
-void MainWindow::on_actionDisconnectPrinter_18_triggered() {disconnectPrinter(2);}
-void MainWindow::on_actionDisconnectPrinter_19_triggered() {disconnectPrinter(3);}
-void MainWindow::on_actionDisconnectPrinter_20_triggered() {disconnectPrinter(4);}
+void MainWindow::on_actionConnectPrinter_17_triggered() {connectPrinter(0);}
+void MainWindow::on_actionConnectPrinter_18_triggered() {connectPrinter(1);}
+void MainWindow::on_actionConnectPrinter_19_triggered() {connectPrinter(2);}
+void MainWindow::on_actionConnectPrinter_20_triggered() {connectPrinter(3);}
+void MainWindow::on_actionDisconnectPrinter_17_triggered() {disconnectPrinter(0);}
+void MainWindow::on_actionDisconnectPrinter_18_triggered() {disconnectPrinter(1);}
+void MainWindow::on_actionDisconnectPrinter_19_triggered() {disconnectPrinter(2);}
+void MainWindow::on_actionDisconnectPrinter_20_triggered() {disconnectPrinter(3);}
 
 void MainWindow::on_actionEjectAll_triggered()
 {

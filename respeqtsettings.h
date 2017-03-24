@@ -15,6 +15,7 @@
 #include "mainwindow.h"
 
 #include <QSettings>
+#include <QPrinterInfo>
 
 class RespeqtSettings
 {
@@ -26,7 +27,7 @@ public:
     };
     class PrinterSettings {
     public:
-        QString printerName;
+        QPrinter *printer;
         int printerType;
     };
 
@@ -193,11 +194,10 @@ public:
     void setExplorerOnTop(bool expOnTop);
 
 // Methods for setting and getting the Printer emulation settings.
-    void setSelectedPrinter(int no, const QString &printerName);
-    const QString &selectedPrinter(int no) const;
     void setPrinterType(int no, int printerType);
     int printerType(int no) const;
-    void setConnectedPrinterSetting(int no, const QString &printerName, int printerType);
+    void setConnectedPrinter(int no, QPrinter *printerInfo);
+    QPrinter *connectedPrinter(int no) const;
     const PrinterSettings &connectedPrinterSettings(int no) const;
 
 private:

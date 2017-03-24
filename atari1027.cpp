@@ -6,21 +6,24 @@
 Atari1027::Atari1027(SioWorker *worker)
     : BasePrinter(worker),
       mInternational(false),
-      mFirstESC(false), mSecondESC(false),
-      mFontMetrics(mFont)
+      mFirstESC(false), mSecondESC(false)
 {
     mTypeId = 2;
     mTypeName = new QString("Atari 2017");
+    mRequiresNativePrinter = true;
     mFont.setStyleHint(QFont::TypeWriter);
     mFont.setPointSize(12);
     mFont.setUnderline(false);
 
-    mFontMetrics = QFontMetrics(mFont);
+    mFontMetrics = new QFontMetrics(mFont);
 
+    mNativePrinter = new QPrinter();
+    mPainter = new QPainter();
     mPainter -> setFont(mFont);
     mBoundingBox = mNativePrinter -> pageRect();
     x = mBoundingBox.left();
     y = mBoundingBox.top();
+    mPainter->begin(mNativePrinter);
 }
 
 void Atari1027::handleCommand(quint8 command, quint16 aux)
@@ -50,6 +53,18 @@ void Atari1027::handleCommand(quint8 command, quint16 aux)
                 int aux2 = aux % 256;
                 int len;
                 switch (aux2) {
+                case 0x4e:
+                    // Normal
+                    len = 40;
+                    break;
+                case 0x53:
+                    // Sideways
+                    len = 29;
+                    break;
+                case 0x44:
+                    // Double width
+                    len = 21;
+                    break;
                 default:
                     sio->port()->writeCommandNak();
                     qWarning() << "!w" << tr("[%1] command: $%2, aux: $%3 NAKed.")
@@ -117,12 +132,12 @@ bool Atari1027::handleBuffer(const QByteArray &buffer)
 
             case 155: // EOL
                 x = mBoundingBox.left();
-                if (y + mFontMetrics.height() > mBoundingBox.bottom())
+                if (y + mFontMetrics->height() > mBoundingBox.bottom())
                 {
                     mNativePrinter -> newPage();
                     y = mBoundingBox.top();
                 } else {
-                    y += mFontMetrics.height();
+                    y += mFontMetrics->height();
                 }
             break;
 
@@ -211,18 +226,20 @@ bool Atari1027::handleEscapedCodes(const char b)
 bool Atari1027::handlePrintableCodes(const char b)
 {
     QChar qb = translateAtascii(b);
-    QRect bound = mFontMetrics.boundingRect(qb);
+    QRect bound = mFontMetrics->boundingRect(qb);
     if (bound.width() + x > mBoundingBox.right()) { // Char has to go on next line
         x = mBoundingBox.left();
-        if (y + mFontMetrics.height() > mBoundingBox.bottom())
+        if (y + mFontMetrics->height() > mBoundingBox.bottom())
         {
             mNativePrinter -> newPage();
             y = mBoundingBox.top();
         } else {
-            y += mFontMetrics.height();
+            y += mFontMetrics->height();
         }
     }
 
     mPainter -> drawText(x, y, qb);
+    x += bound.width();
+
     return true;
 }

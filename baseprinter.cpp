@@ -13,7 +13,7 @@ const QChar &BasePrinter::translateAtascii(const char b)
 {
     QChar result;
 
-    QChar::fromLatin1(b);
+    result = QChar::fromLatin1(b);
 
     return result;
 }

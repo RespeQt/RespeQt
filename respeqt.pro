@@ -41,7 +41,6 @@ SOURCES += main.cpp \
     logdisplaydialog.cpp \
     respeqtsettings.cpp \
     pclink.cpp \
-    selectprinterdialog.cpp \
     baseprinter.cpp \
     textprinter.cpp \
     atari1027.cpp
@@ -72,7 +71,6 @@ HEADERS += mainwindow.h \
     logdisplaydialog.h \
     respeqtsettings.h \
     pclink.h \
-    selectprinterdialog.h \
     baseprinter.h \
     textprinter.h \
     atari1027.h
@@ -89,8 +87,7 @@ FORMS += mainwindow.ui \
     cassettedialog.ui \
     docdisplaywindow.ui \
     bootoptionsdialog.ui \
-    logdisplaydialog.ui \
-    selectprinterdialog.ui
+    logdisplaydialog.ui
 RESOURCES += icons.qrc \
     atarifiles.qrc \
     i18n.qrc \
