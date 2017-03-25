@@ -79,10 +79,13 @@ bool SioWorker::wait(unsigned long time)
 void SioWorker::start(Priority p)
 {
     switch (respeqtSettings->backend()) {
-        case 0:
+        case SERIAL_BACKEND_STANDARD:
             mPort = new StandardSerialPortBackend(0);
             break;
-        case 1:
+        case SERIAL_BACKEND_QT:
+            mPort = new QtSerialPortBackend(0);
+            break;
+        case SERIAL_BACKEND_SIO_DRIVER:
             mPort = new AtariSioBackend(0);
             break;
     }
@@ -456,10 +459,13 @@ void CassetteWorker::run()
 void CassetteWorker::start(Priority p)
 {
     switch (respeqtSettings->backend()) {
-        case 0:
+        case SERIAL_BACKEND_STANDARD:
             mPort = new StandardSerialPortBackend(0);
             break;
-        case 1:
+        case SERIAL_BACKEND_QT:
+            mPort = new QtSerialPortBackend(0);
+            break;
+        case SERIAL_BACKEND_SIO_DRIVER:
             mPort = new AtariSioBackend(0);
             break;
     }

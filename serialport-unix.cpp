@@ -98,9 +98,9 @@ bool StandardSerialPortBackend::open()
             qCritical() << "!e" << tr("Cannot get serial port status");
             return false;
         }
-        status = status & ~(TIOCM_RI | TIOCM_RTS | TIOCM_CTS);
+        status |= (TIOCM_DTR | TIOCM_RTS);
         if (ioctl(mHandle, TIOCMSET, &status) < 0) {
-            qCritical() << "!e" << tr("Cannot clear RI, RTS and CTS lines in serial port '%1': %2").arg(name, lastErrorMessage());
+            qCritical() << "!e" << tr("Cannot set DTR and RTS lines in serial port '%1': %2").arg(name, lastErrorMessage());
             return false;
         }
     }
@@ -541,36 +541,36 @@ bool StandardSerialPortBackend::writeDataFrame(const QByteArray &data)
 
 bool StandardSerialPortBackend::writeCommandAck()
 {
-    return writeRawFrame(QByteArray(1, 65));
+    return writeRawFrame(QByteArray(1, SIO_ACK));
 }
 
 bool StandardSerialPortBackend::writeCommandNak()
 {
-    return writeRawFrame(QByteArray(1, 78));
+    return writeRawFrame(QByteArray(1, SIO_NACK));
 }
 
 bool StandardSerialPortBackend::writeDataAck()
 {
-    return writeRawFrame(QByteArray(1, 65));
+    return writeRawFrame(QByteArray(1, SIO_ACK));
 }
 
 bool StandardSerialPortBackend::writeDataNak()
 {
-    return writeRawFrame(QByteArray(1, 78));
+    return writeRawFrame(QByteArray(1, SIO_NACK));
 }
 
 bool StandardSerialPortBackend::writeComplete()
 {
     if(mMethod==HANDSHAKE_SOFTWARE)SioWorker::usleep(mWriteDelay);
     else SioWorker::usleep(mCompErrDelay);
-    return writeRawFrame(QByteArray(1, 67));
+    return writeRawFrame(QByteArray(1, SIO_COMPLETE));
 }
 
 bool StandardSerialPortBackend::writeError()
 {
     if(mMethod==HANDSHAKE_SOFTWARE)SioWorker::usleep(mWriteDelay);
     else SioWorker::usleep(mCompErrDelay);
-    return writeRawFrame(QByteArray(1, 69));
+    return writeRawFrame(QByteArray(1, SIO_ERROR));
 }
 
 quint8 StandardSerialPortBackend::sioChecksum(const QByteArray &data, uint size)
