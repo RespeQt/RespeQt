@@ -6,7 +6,7 @@
 TextPrinter::TextPrinter(SioWorker *worker)
     : BasePrinter(worker)
 {
-    mTypeId = 1;
+    mTypeId = TEXTPRINTER;
     mTypeName = new QString("Text");
 
     connect(this, SIGNAL(print(QString)), MainWindow::getInstance()->getTextPrinterWindow(), SLOT(print(QString)));

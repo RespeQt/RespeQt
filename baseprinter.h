@@ -2,6 +2,7 @@
 #define BASEPRINTER_H
 
 #include "sioworker.h"
+#include "atascii.h"
 
 #include <QByteArray>
 #include <QPainter>
@@ -30,10 +31,12 @@ public:
     virtual QPainter *painter() const { return mPainter; }
     virtual void setPainter(QPainter *painter) { mPainter = painter; }
 
-    // TODO Decide whether needed void setNativePrinter(QPrinter *printer) { mNativePrinter = printer; }
     virtual QPrinter *nativePrinter() const { return mNativePrinter; }
 
     virtual const QChar &translateAtascii(const char b);
+
+    // create a printer object of specified type
+    static BasePrinter *createPrinter(int type, SioWorker *worker);
 
 protected:
     int mTypeId;
@@ -46,6 +49,11 @@ protected:
     QRect mBoundingBox;
     QFontMetrics *mFontMetrics;
     QPrinter *mNativePrinter;
+
+    static const int TEXTPRINTER = 1;
+    static const int ATARI1027 = 2;
+
+    Atascii mAtascii;
 
 private:
     int m_lastOperation;

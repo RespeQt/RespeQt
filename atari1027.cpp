@@ -1,5 +1,6 @@
 #include "atari1027.h"
 #include "respeqtsettings.h"
+#include <stdlib.h>
 
 #include <QtDebug>
 
@@ -8,22 +9,25 @@ Atari1027::Atari1027(SioWorker *worker)
       mInternational(false),
       mFirstESC(false), mSecondESC(false)
 {
-    mTypeId = 2;
+    mTypeId = ATARI1027;
     mTypeName = new QString("Atari 2017");
     mRequiresNativePrinter = true;
     mFont.setStyleHint(QFont::TypeWriter);
+    mFont.setFamily("Courier");
     mFont.setPointSize(12);
     mFont.setUnderline(false);
+    qDebug() << "!n" << mFont;
 
     mFontMetrics = new QFontMetrics(mFont);
 
     mNativePrinter = new QPrinter();
     mPainter = new QPainter();
     mPainter -> setFont(mFont);
-    mBoundingBox = mNativePrinter -> pageRect();
+    mBoundingBox = mNativePrinter -> paperRect();
     x = mBoundingBox.left();
-    y = mBoundingBox.top();
-    mPainter->begin(mNativePrinter);
+    y = mBoundingBox.top() + mFontMetrics->lineSpacing();
+    //mPainter->begin(mNativePrinter);
+    //mPainter->setFont(mFont);
 }
 
 void Atari1027::handleCommand(quint8 command, quint16 aux)
@@ -139,6 +143,7 @@ bool Atari1027::handleBuffer(const QByteArray &buffer)
                 } else {
                     y += mFontMetrics->height();
                 }
+                //qDebug() << "!n new line (" << x << ", " << y << ")";
             break;
 
             case 27: // ESC could be starting something
@@ -226,20 +231,20 @@ bool Atari1027::handleEscapedCodes(const char b)
 bool Atari1027::handlePrintableCodes(const char b)
 {
     QChar qb = translateAtascii(b);
-    QRect bound = mFontMetrics->boundingRect(qb);
-    if (bound.width() + x > mBoundingBox.right()) { // Char has to go on next line
+
+    if (mFontMetrics->width(qb) + x > mBoundingBox.right()) { // Char has to go on next line
         x = mBoundingBox.left();
         if (y + mFontMetrics->height() > mBoundingBox.bottom())
         {
             mNativePrinter -> newPage();
             y = mBoundingBox.top();
         } else {
-            y += mFontMetrics->height();
+            y += mFontMetrics->lineSpacing();
         }
     }
-
-    mPainter -> drawText(x, y, qb);
-    x += bound.width();
+    mPainter->drawRect(x,y-mFontMetrics->lineSpacing(),mFontMetrics->width(qb),mFontMetrics->lineSpacing());
+    mPainter -> drawText(x, y-mFontMetrics->height(), qb);
+    x += mFontMetrics->width(qb);
 
     return true;
 }

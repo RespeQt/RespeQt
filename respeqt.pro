@@ -43,7 +43,8 @@ SOURCES += main.cpp \
     pclink.cpp \
     baseprinter.cpp \
     textprinter.cpp \
-    atari1027.cpp
+    atari1027.cpp \
+    atascii.cpp
 win32:LIBS += -lwinmm -lz
 unix:LIBS += -lz
 win32:SOURCES += serialport-win32.cpp
@@ -73,7 +74,8 @@ HEADERS += mainwindow.h \
     pclink.h \
     baseprinter.h \
     textprinter.h \
-    atari1027.h
+    atari1027.h \
+    atascii.h
 
 win32:HEADERS += serialport-win32.h
 unix:HEADERS += serialport-unix.h
