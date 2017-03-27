@@ -28,7 +28,8 @@ OptionsDialog::OptionsDialog(QWidget *parent) :
 
     m_ui->treeWidget->expandAll();
     itemStandard = m_ui->treeWidget->topLevelItem(0)->child(0);
-    itemAtariSio = m_ui->treeWidget->topLevelItem(0)->child(1);
+    itemQt       = m_ui->treeWidget->topLevelItem(0)->child(1);
+    itemAtariSio = m_ui->treeWidget->topLevelItem(0)->child(2);
     itemEmulation = m_ui->treeWidget->topLevelItem(1);
     itemI18n = m_ui->treeWidget->topLevelItem(2);
 
@@ -46,6 +47,13 @@ OptionsDialog::OptionsDialog(QWidget *parent) :
     m_ui->serialPortUseDivisorsBox->setChecked(respeqtSettings->serialPortUsePokeyDivisors());
     m_ui->serialPortDivisorEdit->setValue(respeqtSettings->serialPortPokeyDivisor());
     m_ui->serialPortCompErrDelayBox->setValue(respeqtSettings->serialPortCompErrDelay());
+    m_ui->QtSerialPortDeviceNameEdit->setText(respeqtSettings->QtSerialPortName());
+    m_ui->QtSerialPortHandshakeCombo->setCurrentIndex(respeqtSettings->QtSerialPortHandshakingMethod());
+    m_ui->QtSerialPortWriteDelayCombo->setCurrentIndex(respeqtSettings->QtSerialPortWriteDelay());
+    m_ui->QtSerialPortBaudCombo->setCurrentIndex(respeqtSettings->QtSerialPortMaximumSpeed());
+    m_ui->QtSerialPortUseDivisorsBox->setChecked(respeqtSettings->QtSerialPortUsePokeyDivisors());
+    m_ui->QtSerialPortDivisorEdit->setValue(respeqtSettings->QtSerialPortPokeyDivisor());
+    m_ui->QtSerialPortCompErrDelayBox->setValue(respeqtSettings->QtSerialPortCompErrDelay());
     m_ui->atariSioDriverNameEdit->setText(respeqtSettings->atariSioDriverName());
     m_ui->atariSioHandshakingMethodCombo->setCurrentIndex(respeqtSettings->atariSioHandshakingMethod());
     m_ui->emulationHighSpeedExeLoaderBox->setChecked(respeqtSettings->useHighSpeedExeLoader());
@@ -60,18 +68,27 @@ OptionsDialog::OptionsDialog(QWidget *parent) :
     m_ui->enableShade->setChecked(respeqtSettings->enableShade());
 
     switch (respeqtSettings->backend()) {
-        case 0:
+        case SERIAL_BACKEND_STANDARD:
             itemStandard->setCheckState(0, Qt::Checked);
+            itemQt->setCheckState(0, Qt::Unchecked);
             itemAtariSio->setCheckState(0, Qt::Unchecked);
             m_ui->treeWidget->setCurrentItem(itemStandard);
             break;
-        case 1:
+        case SERIAL_BACKEND_QT:
             itemStandard->setCheckState(0, Qt::Unchecked);
+            itemQt->setCheckState(0, Qt::Checked);
+            itemAtariSio->setCheckState(0, Qt::Unchecked);
+            m_ui->treeWidget->setCurrentItem(itemQt);
+            break;
+        case SERIAL_BACKEND_SIO_DRIVER:
+            itemStandard->setCheckState(0, Qt::Unchecked);
+            itemQt->setCheckState(0, Qt::Unchecked);
             itemAtariSio->setCheckState(0, Qt::Checked);
             m_ui->treeWidget->setCurrentItem(itemAtariSio);
             break;
     }
     m_ui->serialPortBox->setCheckState(itemStandard->checkState(0));
+    m_ui->QtSerialPortBox->setCheckState(itemQt->checkState(0));
     m_ui->atariSioBox->setCheckState(itemAtariSio->checkState(0));
     
     /* list available translations */
@@ -94,6 +111,7 @@ OptionsDialog::OptionsDialog(QWidget *parent) :
             m_ui->i18nLanguageCombo->setCurrentIndex(i+2);
         }
     }
+
     bool software_handshake = (respeqtSettings->serialPortHandshakingMethod()==HANDSHAKE_SOFTWARE);
     m_ui->serialPortWriteDelayLabel->setVisible(software_handshake);
     m_ui->serialPortWriteDelayCombo->setVisible(software_handshake);
@@ -102,9 +120,29 @@ OptionsDialog::OptionsDialog(QWidget *parent) :
     m_ui->serialPortUseDivisorsBox->setVisible(!software_handshake);
     m_ui->serialPortDivisorLabel->setVisible(!software_handshake);
     m_ui->serialPortDivisorEdit->setVisible(!software_handshake);
-    m_ui->emulationHighSpeedExeLoaderBox->setVisible(!software_handshake);
     m_ui->serialPortCompErrDelayLabel->setVisible(!software_handshake);
     m_ui->serialPortCompErrDelayBox->setVisible(!software_handshake);
+
+    bool qt_software_handshake = (respeqtSettings->QtSerialPortHandshakingMethod()==HANDSHAKE_SOFTWARE);
+    m_ui->QtSerialPortWriteDelayLabel->setVisible(qt_software_handshake);
+    m_ui->QtSerialPortWriteDelayCombo->setVisible(qt_software_handshake);
+    m_ui->QtSerialPortBaudLabel->setVisible(!qt_software_handshake);
+    m_ui->QtSerialPortBaudCombo->setVisible(!qt_software_handshake);
+    m_ui->QtSerialPortUseDivisorsBox->setVisible(!qt_software_handshake);
+    m_ui->QtSerialPortDivisorLabel->setVisible(!qt_software_handshake);
+    m_ui->QtSerialPortDivisorEdit->setVisible(!qt_software_handshake);
+    m_ui->QtSerialPortCompErrDelayLabel->setVisible(!qt_software_handshake);
+    m_ui->QtSerialPortCompErrDelayBox->setVisible(!qt_software_handshake);
+
+    if(    ((SERIAL_BACKEND_STANDARD == respeqtSettings->backend()) && software_handshake) ||
+           ((SERIAL_BACKEND_QT == respeqtSettings->backend()) && qt_software_handshake))
+    {
+        m_ui->emulationHighSpeedExeLoaderBox->setVisible(false);
+    }
+    else
+    {
+        m_ui->emulationHighSpeedExeLoaderBox->setVisible(true);
+    }
 }
 
 OptionsDialog::~OptionsDialog()
@@ -133,6 +171,13 @@ void OptionsDialog::OptionsDialog_accepted()
     respeqtSettings->setSerialPortMaximumSpeed(m_ui->serialPortBaudCombo->currentIndex());
     respeqtSettings->setSerialPortUsePokeyDivisors(m_ui->serialPortUseDivisorsBox->isChecked());
     respeqtSettings->setSerialPortPokeyDivisor(m_ui->serialPortDivisorEdit->value());
+    respeqtSettings->setQtSerialPortName(m_ui->QtSerialPortDeviceNameEdit->text());
+    respeqtSettings->setQtSerialPortHandshakingMethod(m_ui->QtSerialPortHandshakeCombo->currentIndex());
+    respeqtSettings->setQtSerialPortWriteDelay(m_ui->QtSerialPortWriteDelayCombo->currentIndex());
+    respeqtSettings->setQtSerialPortCompErrDelay(m_ui->QtSerialPortCompErrDelayBox->value());
+    respeqtSettings->setQtSerialPortMaximumSpeed(m_ui->QtSerialPortBaudCombo->currentIndex());
+    respeqtSettings->setQtSerialPortUsePokeyDivisors(m_ui->QtSerialPortUseDivisorsBox->isChecked());
+    respeqtSettings->setQtSerialPortPokeyDivisor(m_ui->QtSerialPortDivisorEdit->value());
     respeqtSettings->setAtariSioDriverName(m_ui->atariSioDriverNameEdit->text());
     respeqtSettings->setAtariSioHandshakingMethod(m_ui->atariSioHandshakingMethodCombo->currentIndex());
     respeqtSettings->setUseHighSpeedExeLoader(m_ui->emulationHighSpeedExeLoaderBox->isChecked());
@@ -146,9 +191,14 @@ void OptionsDialog::OptionsDialog_accepted()
     respeqtSettings->setUseLargeFont(m_ui->useLargerFont->isChecked());
     respeqtSettings->setEnableShade(m_ui->enableShade->isChecked());
 
-    int backend = 0;
-    if (itemAtariSio->checkState(0) == Qt::Checked) {
-        backend = 1;
+    int backend = SERIAL_BACKEND_STANDARD;
+    if (itemQt->checkState(0) == Qt::Checked)
+    {
+        backend = SERIAL_BACKEND_QT;
+    }
+    else if (itemAtariSio->checkState(0) == Qt::Checked)
+    {
+        backend = SERIAL_BACKEND_SIO_DRIVER;
     }
 
     respeqtSettings->setBackend(backend);
@@ -160,29 +210,54 @@ void OptionsDialog::on_treeWidget_currentItemChanged(QTreeWidgetItem* current, Q
 {
     if (current == itemStandard) {
         m_ui->stackedWidget->setCurrentIndex(0);
-    } else if (current == itemAtariSio) {
+    } else if (current == itemQt) {
         m_ui->stackedWidget->setCurrentIndex(1);
-    } else if (current == itemEmulation) {
+    } else if (current == itemAtariSio) {
         m_ui->stackedWidget->setCurrentIndex(2);
+    } else if (current == itemEmulation) {
+        m_ui->stackedWidget->setCurrentIndex(3);
     } else if (current == itemI18n) {
-	m_ui->stackedWidget->setCurrentIndex(3);
+    m_ui->stackedWidget->setCurrentIndex(4);
     }
 }
 
 void OptionsDialog::on_treeWidget_itemClicked(QTreeWidgetItem* item, int /*column*/)
 {
-    if (item->checkState(0) == Qt::Checked) {
-        if (item != itemStandard) {
+    if (item->checkState(0) == Qt::Checked)
+    {
+        if (item == itemStandard)
+        {
+            m_ui->emulationHighSpeedExeLoaderBox->setVisible(HANDSHAKE_SOFTWARE != m_ui->serialPortHandshakeCombo->currentIndex());
+        }
+        else
+        {
             itemStandard->setCheckState(0, Qt::Unchecked);
         }
-        if (item != itemAtariSio) {
+        if (item == itemQt)
+        {
+            m_ui->emulationHighSpeedExeLoaderBox->setVisible(HANDSHAKE_SOFTWARE != m_ui->QtSerialPortHandshakeCombo->currentIndex());
+        }
+        else
+        {
+            itemQt->setCheckState(0, Qt::Unchecked);
+        }
+        if (item == itemAtariSio)
+        {
+            m_ui->emulationHighSpeedExeLoaderBox->setVisible(true);
+        }
+        else
+        {
             itemAtariSio->setCheckState(0, Qt::Unchecked);
         }
-    } else if ((itemStandard->checkState(0) == Qt::Unchecked) &&
-               (itemAtariSio->checkState(0) == Qt::Unchecked)) {
+    }
+    else if ((itemStandard->checkState(0) == Qt::Unchecked) &&
+            (itemQt->checkState(0) == Qt::Unchecked) &&
+            (itemAtariSio->checkState(0) == Qt::Unchecked))
+    {
         item->setCheckState(0, Qt::Checked);
     }
     m_ui->serialPortBox->setCheckState(itemStandard->checkState(0));
+    m_ui->QtSerialPortBox->setCheckState(itemQt->checkState(0));
     m_ui->atariSioBox->setCheckState(itemAtariSio->checkState(0));
 }
 
@@ -196,9 +271,30 @@ void OptionsDialog::on_serialPortHandshakeCombo_currentIndexChanged(int index)
     m_ui->serialPortUseDivisorsBox->setVisible(!software_handshake);
     m_ui->serialPortDivisorLabel->setVisible(!software_handshake);
     m_ui->serialPortDivisorEdit->setVisible(!software_handshake);
-    m_ui->emulationHighSpeedExeLoaderBox->setVisible(!software_handshake);
     m_ui->serialPortCompErrDelayLabel->setVisible(!software_handshake);
     m_ui->serialPortCompErrDelayBox->setVisible(!software_handshake);
+    if(itemStandard->checkState((0)) == Qt::Checked)
+    {
+        m_ui->emulationHighSpeedExeLoaderBox->setVisible(!software_handshake);
+    }
+}
+
+void OptionsDialog::on_QtSerialPortHandshakeCombo_currentIndexChanged(int index)
+{
+    bool software_handshake = (index==HANDSHAKE_SOFTWARE);
+    m_ui->QtSerialPortWriteDelayLabel->setVisible(software_handshake);
+    m_ui->QtSerialPortWriteDelayCombo->setVisible(software_handshake);
+    m_ui->QtSerialPortBaudLabel->setVisible(!software_handshake);
+    m_ui->QtSerialPortBaudCombo->setVisible(!software_handshake);
+    m_ui->QtSerialPortUseDivisorsBox->setVisible(!software_handshake);
+    m_ui->QtSerialPortDivisorLabel->setVisible(!software_handshake);
+    m_ui->QtSerialPortDivisorEdit->setVisible(!software_handshake);
+    m_ui->QtSerialPortCompErrDelayLabel->setVisible(!software_handshake);
+    m_ui->QtSerialPortCompErrDelayBox->setVisible(!software_handshake);
+    if(itemQt->checkState((0)) == Qt::Checked)
+    {
+        m_ui->emulationHighSpeedExeLoaderBox->setVisible(!software_handshake);
+    }
 }
 
 void OptionsDialog::on_serialPortUseDivisorsBox_toggled(bool checked)
@@ -208,6 +304,15 @@ void OptionsDialog::on_serialPortUseDivisorsBox_toggled(bool checked)
     m_ui->serialPortDivisorLabel->setEnabled(checked);
     m_ui->serialPortDivisorEdit->setEnabled(checked);
 }
+
+void OptionsDialog::on_QtSerialPortUseDivisorsBox_toggled(bool checked)
+{
+    m_ui->QtSerialPortBaudLabel->setEnabled(!checked);
+    m_ui->QtSerialPortBaudCombo->setEnabled(!checked);
+    m_ui->QtSerialPortDivisorLabel->setEnabled(checked);
+    m_ui->QtSerialPortDivisorEdit->setEnabled(checked);
+}
+
 
 void OptionsDialog::on_useEmulationCustomCasBaudBox_toggled(bool checked)
 {

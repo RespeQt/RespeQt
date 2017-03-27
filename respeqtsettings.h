@@ -16,6 +16,9 @@
 
 #include <QSettings>
 
+
+#define NUM_RECENT_FILES 10
+
 class RespeqtSettings
 {
 public:
@@ -50,11 +53,32 @@ public:
     int serialPortPokeyDivisor();
     void setSerialPortPokeyDivisor(int divisor);
 
-    bool useHighSpeedExeLoader();
-    void setUseHighSpeedExeLoader(bool use);
+    int serialPortWriteDelay();
+    void setSerialPortWriteDelay(int delay);
 
-    bool printerEmulation();
-    void setPrinterEmulation(bool status);
+    int serialPortCompErrDelay();
+    void setSerialPortCompErrDelay(int delay);
+
+    QString QtSerialPortName();
+    void setQtSerialPortName(const QString &name);
+
+    int QtSerialPortHandshakingMethod();
+    void setQtSerialPortHandshakingMethod(int method);
+
+    int QtSerialPortMaximumSpeed();
+    void setQtSerialPortMaximumSpeed(int speed);
+
+    bool QtSerialPortUsePokeyDivisors();
+    void setQtSerialPortUsePokeyDivisors(bool use);
+
+    int QtSerialPortPokeyDivisor();
+    void setQtSerialPortPokeyDivisor(int divisor);
+
+    int QtSerialPortWriteDelay();
+    void setQtSerialPortWriteDelay(int delay);
+
+    int QtSerialPortCompErrDelay();
+    void setQtSerialPortCompErrDelay(int delay);
 
     QString atariSioDriverName();
     void setAtariSioDriverName(const QString &name);
@@ -62,14 +86,14 @@ public:
     int atariSioHandshakingMethod();
     void setAtariSioHandshakingMethod(int method);
 
-    int serialPortWriteDelay();
-    void setSerialPortWriteDelay(int delay);
-
-    int serialPortCompErrDelay();
-    void setSerialPortCompErrDelay(int delay);
-
     int backend();
     void setBackend(int backend);
+
+    bool useHighSpeedExeLoader();
+    void setUseHighSpeedExeLoader(bool use);
+
+    bool printerEmulation();
+    void setPrinterEmulation(bool status);
 
     bool useCustomCasBaud();
     void setUseCustomCasBaud(bool use);
@@ -77,12 +101,13 @@ public:
     int customCasBaud();
     void setCustomCasBaud(int baud);
 
-    ImageSettings getImageSettingsFromName(const QString &fileName);
+    const ImageSettings* getImageSettingsFromName(const QString &fileName);
 
-    ImageSettings mountedImageSetting(int no);
+    const ImageSettings& mountedImageSetting(int no);
 
     void setMountedImageSetting(int no, const QString &fileName, bool prot);
-    ImageSettings recentImageSetting(int no);
+    void setMountedImageProtection(int no, bool prot);
+    const ImageSettings& recentImageSetting(int no);
 
     void mountImage(int no, const QString &fileName, bool prot);
 
@@ -234,6 +259,14 @@ private:
     bool mSerialPortUsePokeyDivisors;
     int mSerialPortPokeyDivisor;
 
+    QString mQtSerialPortName;
+    int mQtSerialPortHandshakingMethod;
+    int mQtSerialPortWriteDelay;
+    int mQtSerialPortCompErrDelay;
+    int mQtSerialPortMaximumSpeed;
+    bool mQtSerialPortUsePokeyDivisors;
+    int mQtSerialPortPokeyDivisor;
+
     bool mUseHighSpeedExeLoader;
     bool mPrinterEmulation;
 
@@ -248,7 +281,7 @@ private:
     ImageSettings mMountedImageSettings[16];    //
     PrinterSettings mConnectedPrinterSettings[PRINTER_COUNT];
 
-    ImageSettings mRecentImageSettings[10];
+    ImageSettings mRecentImageSettings[NUM_RECENT_FILES];
     QString mLastDiskImageDir;
     QString mLastFolderImageDir;
     QString mLastSessionDir;

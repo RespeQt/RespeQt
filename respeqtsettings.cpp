@@ -45,13 +45,27 @@ RespeqtSettings::RespeqtSettings()
     mSerialPortUsePokeyDivisors = mSettings->value("SerialPortUsePokeyDivisors", false).toBool();
     mSerialPortPokeyDivisor = mSettings->value("SerialPortPokeyDivisor", 6).toInt();
 
-    mUseHighSpeedExeLoader = mSettings->value("UseHighSpeedExeLoader", false).toBool();
-    mPrinterEmulation = mSettings->value("PrinterEmulation", true).toBool();
+    /* Qt serial port backend */
+    mQtSerialPortName = mSettings->value("QtSerialPortName", QtSerialPortBackend::defaultPortName()).toString();
+    mQtSerialPortHandshakingMethod = mSettings->value("QtHandshakingMethod", 0).toInt();
+    mQtSerialPortWriteDelay = mSettings->value("QtWriteDelay", 1).toInt();
+#ifdef Q_OS_WIN
+    mQtSerialPortCompErrDelay = mSettings->value("QtCompErrDelay", 300).toInt(); // default is 300us for windows
+#else
+    mQtSerialPortCompErrDelay = mSettings->value("QtCompErrDelay", 800).toInt(); // default value of 800us works OK with FTDI USB on linux/OSX
+#endif
+    mQtSerialPortMaximumSpeed = mSettings->value("QtMaximumSerialPortSpeed", 2).toInt();
+    mQtSerialPortUsePokeyDivisors = mSettings->value("QtSerialPortUsePokeyDivisors", false).toBool();
+    mQtSerialPortPokeyDivisor = mSettings->value("QtSerialPortPokeyDivisor", 6).toInt();
 
+    /* AtariSIO backend */
     mAtariSioDriverName = mSettings->value("AtariSioDriverName", AtariSioBackend::defaultPortName()).toString();
     mAtariSioHandshakingMethod = mSettings->value("AtariSioHandshakingMethod", 0).toInt();
 
     mBackend = mSettings->value("Backend", 0).toInt();
+
+    mUseHighSpeedExeLoader = mSettings->value("UseHighSpeedExeLoader", false).toBool();
+    mPrinterEmulation = mSettings->value("PrinterEmulation", true).toBool();
 
     mUseCustomCasBaud = mSettings->value("UseCustomCasBaud", false).toBool();
     mCustomCasBaud = mSettings->value("CustomCasBaud", 875).toInt();
@@ -68,7 +82,7 @@ RespeqtSettings::RespeqtSettings()
     mSettings->endArray();
 
     mSettings->beginReadArray("RecentImageSettings");
-    for (i = 0; i < 10; i++) {
+    for (i = 0; i < NUM_RECENT_FILES; i++) {
         mSettings->setArrayIndex(i);
         mRecentImageSettings[i].fileName = mSettings->value("FileName", QString()).toString();
         mRecentImageSettings[i].isWriteProtected = mSettings->value("IsWriteProtected", false).toBool();
@@ -123,9 +137,17 @@ void RespeqtSettings::saveSessionToFile(const QString &fileName)
         s.setValue("SerialPortName", mSerialPortName);
         s.setValue("HandshakingMethod", mSerialPortHandshakingMethod);
         s.setValue("WriteDelay", mSerialPortWriteDelay);
+        s.setValue("CompErrDelay", mSerialPortCompErrDelay);
         s.setValue("MaximumSerialPortSpeed", mSerialPortMaximumSpeed);
         s.setValue("SerialPortUsePokeyDivisors", mSerialPortUsePokeyDivisors);
         s.setValue("SerialPortPokeyDivisor", mSerialPortPokeyDivisor);
+        s.setValue("QtSerialPortName", mQtSerialPortName);
+        s.setValue("QtHandshakingMethod", mQtSerialPortHandshakingMethod);
+        s.setValue("QtWriteDelay", mQtSerialPortWriteDelay);
+        s.setValue("QtCompErrDelay", mQtSerialPortCompErrDelay);
+        s.setValue("QtMaximumSerialPortSpeed", mQtSerialPortMaximumSpeed);
+        s.setValue("QtSerialPortUsePokeyDivisors", mQtSerialPortUsePokeyDivisors);
+        s.setValue("QtSerialPortPokeyDivisor", mQtSerialPortPokeyDivisor);
         s.setValue("UseHighSpeedExeLoader", mUseHighSpeedExeLoader);
         s.setValue("PrinterEmulation", mPrinterEmulation);
         s.setValue("CustomCasBaud", mCustomCasBaud);
@@ -156,7 +178,7 @@ void RespeqtSettings::saveSessionToFile(const QString &fileName)
 //
     s.beginWriteArray("MountedImageSettings");
     for (int i = 0; i < 15; i++) {                      //
-        ImageSettings is = mMountedImageSettings[i];
+        ImageSettings& is = mMountedImageSettings[i];
         s.setArrayIndex(i);
         s.setValue("FileName", is.fileName);
         s.setValue("IsWriteProtected", is.isWriteProtected);
@@ -183,9 +205,17 @@ void RespeqtSettings::saveSessionToFile(const QString &fileName)
         mSerialPortName = s.value("SerialPortName", StandardSerialPortBackend::defaultPortName()).toString();
         mSerialPortHandshakingMethod = s.value("HandshakingMethod", 0).toInt();
         mSerialPortWriteDelay = s.value("WriteDelay", 1).toInt();
+        mSerialPortCompErrDelay = s.value("CompErrDelay", 1).toInt();
         mSerialPortMaximumSpeed = s.value("MaximumSerialPortSpeed", 2).toInt();
         mSerialPortUsePokeyDivisors = s.value("SerialPortUsePokeyDivisors", false).toBool();
         mSerialPortPokeyDivisor = s.value("SerialPortPokeyDivisor", 6).toInt();
+        mQtSerialPortName = s.value("QtSerialPortName", QtSerialPortBackend::defaultPortName()).toString();
+        mQtSerialPortHandshakingMethod = s.value("QtHandshakingMethod", 0).toInt();
+        mQtSerialPortWriteDelay = s.value("QtWriteDelay", 1).toInt();
+        mQtSerialPortCompErrDelay = s.value("QtCompErrDelay", 1).toInt();
+        mQtSerialPortMaximumSpeed = s.value("QtMaximumSerialPortSpeed", 2).toInt();
+        mQtSerialPortUsePokeyDivisors = s.value("QtSerialPortUsePokeyDivisors", false).toBool();
+        mQtSerialPortPokeyDivisor = s.value("QtSerialPortPokeyDivisor", 6).toInt();
         mUseHighSpeedExeLoader = s.value("UseHighSpeedExeLoader", false).toBool();
         mPrinterEmulation = s.value("PrinterEmulation", true).toBool();
         mCustomCasBaud = s.value("CustomCasBaud", 875).toInt();
@@ -248,35 +278,13 @@ void RespeqtSettings::setSerialPortName(const QString &name)
     if(mSessionFileName == "") mSettings->setValue("SerialPortName", mSerialPortName);
 }
 
-QString RespeqtSettings::atariSioDriverName()
-{
-    return mAtariSioDriverName;
-}
-
-void RespeqtSettings::setAtariSioDriverName(const QString &name)
-{    
-    mAtariSioDriverName = name;
-    if(mSessionFileName == "") mSettings->setValue("AtariSioDriverName", mAtariSioDriverName);
-}
-
-int RespeqtSettings::atariSioHandshakingMethod()
-{
-    return mAtariSioHandshakingMethod;
-}
-
-void RespeqtSettings::setAtariSioHandshakingMethod(int method)
-{    
-    mAtariSioHandshakingMethod = method;
-    if(mSessionFileName == "") mSettings->setValue("AtariSioHandshakingMethod", mAtariSioHandshakingMethod);
-}
-
 int RespeqtSettings::serialPortMaximumSpeed()
 {
     return mSerialPortMaximumSpeed;
 }
 
 void RespeqtSettings::setSerialPortMaximumSpeed(int speed)
-{    
+{
     mSerialPortMaximumSpeed = speed;
     if(mSessionFileName == "") mSettings->setValue("MaximumSerialPortSpeed", mSerialPortMaximumSpeed);
 }
@@ -287,7 +295,7 @@ bool RespeqtSettings::serialPortUsePokeyDivisors()
 }
 
 void RespeqtSettings::setSerialPortUsePokeyDivisors(bool use)
-{    
+{
     mSerialPortUsePokeyDivisors = use;
     if(mSessionFileName == "") mSettings->setValue("SerialPortUsePokeyDivisors", mSerialPortUsePokeyDivisors);
 }
@@ -298,7 +306,7 @@ int RespeqtSettings::serialPortPokeyDivisor()
 }
 
 void RespeqtSettings::setSerialPortPokeyDivisor(int divisor)
-{  
+{
     mSerialPortPokeyDivisor = divisor;
     if(mSessionFileName == "") mSettings->setValue("SerialPortPokeyDivisor", mSerialPortPokeyDivisor);
 }
@@ -309,7 +317,7 @@ int RespeqtSettings::serialPortHandshakingMethod()
 }
 
 void RespeqtSettings::setSerialPortHandshakingMethod(int method)
-{ 
+{
     mSerialPortHandshakingMethod = method;
     if(mSessionFileName == "") mSettings->setValue("HandshakingMethod", mSerialPortHandshakingMethod);
 }
@@ -334,6 +342,106 @@ void RespeqtSettings::setSerialPortCompErrDelay(int delay)
 {
     mSerialPortCompErrDelay = delay;
     if(mSessionFileName == "") mSettings->setValue("CompErrDelay", mSerialPortCompErrDelay);
+}
+
+QString RespeqtSettings::QtSerialPortName()
+{
+    return mQtSerialPortName;
+}
+
+void RespeqtSettings::setQtSerialPortName(const QString &name)
+{
+    mQtSerialPortName = name;
+    if(mSessionFileName == "") mSettings->setValue("QtSerialPortName", mQtSerialPortName);
+}
+
+int RespeqtSettings::QtSerialPortMaximumSpeed()
+{
+    return mQtSerialPortMaximumSpeed;
+}
+
+void RespeqtSettings::setQtSerialPortMaximumSpeed(int speed)
+{
+    mQtSerialPortMaximumSpeed = speed;
+    if(mSessionFileName == "") mSettings->setValue("QtMaximumSerialPortSpeed", mQtSerialPortMaximumSpeed);
+}
+
+bool RespeqtSettings::QtSerialPortUsePokeyDivisors()
+{
+    return mQtSerialPortUsePokeyDivisors;
+}
+
+void RespeqtSettings::setQtSerialPortUsePokeyDivisors(bool use)
+{
+    mQtSerialPortUsePokeyDivisors = use;
+    if(mSessionFileName == "") mSettings->setValue("QtSerialPortUsePokeyDivisors", mQtSerialPortUsePokeyDivisors);
+}
+
+int RespeqtSettings::QtSerialPortPokeyDivisor()
+{
+    return mQtSerialPortPokeyDivisor;
+}
+
+void RespeqtSettings::setQtSerialPortPokeyDivisor(int divisor)
+{
+    mQtSerialPortPokeyDivisor = divisor;
+    if(mSessionFileName == "") mSettings->setValue("QtSerialPortPokeyDivisor", mQtSerialPortPokeyDivisor);
+}
+
+int RespeqtSettings::QtSerialPortHandshakingMethod()
+{
+    return mQtSerialPortHandshakingMethod;
+}
+
+void RespeqtSettings::setQtSerialPortHandshakingMethod(int method)
+{
+    mQtSerialPortHandshakingMethod = method;
+    if(mSessionFileName == "") mSettings->setValue("QtHandshakingMethod", mQtSerialPortHandshakingMethod);
+}
+
+int RespeqtSettings::QtSerialPortWriteDelay()
+{
+    return mQtSerialPortWriteDelay;
+}
+
+void RespeqtSettings::setQtSerialPortWriteDelay(int delay)
+{
+    mQtSerialPortWriteDelay = delay;
+    if(mSessionFileName == "") mSettings->setValue("QtWriteDelay", mQtSerialPortWriteDelay);
+}
+
+int RespeqtSettings::QtSerialPortCompErrDelay()
+{
+    return mQtSerialPortCompErrDelay;
+}
+
+void RespeqtSettings::setQtSerialPortCompErrDelay(int delay)
+{
+    mQtSerialPortCompErrDelay = delay;
+    if(mSessionFileName == "") mSettings->setValue("QtCompErrDelay", mQtSerialPortCompErrDelay);
+}
+
+
+QString RespeqtSettings::atariSioDriverName()
+{
+    return mAtariSioDriverName;
+}
+
+void RespeqtSettings::setAtariSioDriverName(const QString &name)
+{    
+    mAtariSioDriverName = name;
+    if(mSessionFileName == "") mSettings->setValue("AtariSioDriverName", mAtariSioDriverName);
+}
+
+int RespeqtSettings::atariSioHandshakingMethod()
+{
+    return mAtariSioHandshakingMethod;
+}
+
+void RespeqtSettings::setAtariSioHandshakingMethod(int method)
+{    
+    mAtariSioHandshakingMethod = method;
+    if(mSessionFileName == "") mSettings->setValue("AtariSioHandshakingMethod", mAtariSioHandshakingMethod);
 }
 
 int RespeqtSettings::backend()
@@ -391,43 +499,45 @@ void RespeqtSettings::setCustomCasBaud(int baud)
     if(mSessionFileName == "") mSettings->setValue("CustomCasBaud", mCustomCasBaud);
 }
 
-RespeqtSettings::ImageSettings RespeqtSettings::getImageSettingsFromName(const QString &fileName)
+const RespeqtSettings::ImageSettings* RespeqtSettings::getImageSettingsFromName(const QString &fileName)
 {
-    ImageSettings is;
+    ImageSettings *is = NULL;
     int i;
     bool found = false;
 
     for (i = 0; i < 15; i++) {          //
         if (mMountedImageSettings[i].fileName == fileName) {
-            is = mMountedImageSettings[i];
+            is = &mMountedImageSettings[i];
             found = true;
             break;
         }
     }
     if (!found) {
-        for (i = 0; i < 10; i++) {
+        for (i = 0; i < NUM_RECENT_FILES; i++) {
             if (mRecentImageSettings[i].fileName == fileName) {
-                is = mRecentImageSettings[i];
+                is = &mRecentImageSettings[i];
                 found = true;
                 break;
             }
         }
     }
-    if (!found) {
-        is.fileName = fileName;
-        is.isWriteProtected = true;
-    }
     return is;
 }
 
-RespeqtSettings::ImageSettings RespeqtSettings::mountedImageSetting(int no)
+const RespeqtSettings::ImageSettings& RespeqtSettings::mountedImageSetting(int no)
 {
     return mMountedImageSettings[no];
 }
 
-RespeqtSettings::ImageSettings RespeqtSettings::recentImageSetting(int no)
+const RespeqtSettings::ImageSettings& RespeqtSettings::recentImageSetting(int no)
 {
     return mRecentImageSettings[no];
+}
+
+void RespeqtSettings::setMountedImageProtection(int no, bool prot)
+{
+    mMountedImageSettings[no].isWriteProtected = prot;
+    if(mSessionFileName == "") mSettings->setValue(QString("MountedImageSettings/%1/IsWriteProtected").arg(no+1), prot);
 }
 
 void RespeqtSettings::setMountedImageSetting(int no, const QString &fileName, bool prot)
@@ -438,6 +548,7 @@ void RespeqtSettings::setMountedImageSetting(int no, const QString &fileName, bo
     if(mSessionFileName == "") mSettings->setValue(QString("MountedImageSettings/%1/FileName").arg(no+1), fileName);
     if(mSessionFileName == "") mSettings->setValue(QString("MountedImageSettings/%1/IsWriteProtected").arg(no+1), prot);
 }
+
 void RespeqtSettings::mountImage(int no, const QString &fileName, bool prot)
 {
     if (fileName.isEmpty()) {
@@ -445,17 +556,17 @@ void RespeqtSettings::mountImage(int no, const QString &fileName, bool prot)
     }
     int i;
     bool found = false;
-    for (i = 0; i < 10; i++) {
+    for (i = 0; i < NUM_RECENT_FILES; i++) {
         if (mRecentImageSettings[i].fileName == fileName) {
             found = true;
             break;
         }
     }
     if (found) {
-        for (int j = i; j < 9; j++) {
+        for (int j = i; j < (NUM_RECENT_FILES-1); j++) {
             mRecentImageSettings[j] = mRecentImageSettings[j + 1];
         }
-        mRecentImageSettings[9].fileName = "";
+        mRecentImageSettings[(NUM_RECENT_FILES-1)].fileName = "";
         writeRecentImageSettings();
     }
     setMountedImageSetting(no, fileName, prot);
@@ -465,7 +576,7 @@ void RespeqtSettings::unmountImage(int no)
 {
     ImageSettings is = mMountedImageSettings[no];
 
-    for (int i = 9; i > 0; i--) {
+    for (int i = (NUM_RECENT_FILES-1); i > 0; i--) {
             mRecentImageSettings[i] = mRecentImageSettings[i - 1];
     }
     mRecentImageSettings[0] = is;
@@ -784,7 +895,7 @@ void RespeqtSettings::setCapitalLettersInPCLINK(bool caps)
 void RespeqtSettings::writeRecentImageSettings()
 {
     mSettings->beginWriteArray("RecentImageSettings");
-    for (int i = 0; i < 10; i++) {
+    for (int i = 0; i < NUM_RECENT_FILES; i++) {
         mSettings->setArrayIndex(i);
         mSettings->setValue("FileName", mRecentImageSettings[i].fileName);
         mSettings->setValue("IsWriteProtected", mRecentImageSettings[i].isWriteProtected);

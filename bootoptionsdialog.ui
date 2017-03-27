@@ -38,7 +38,7 @@
     <enum>Qt::Horizontal</enum>
    </property>
    <property name="standardButtons">
-    <set>QDialogButtonBox::Apply|QDialogButtonBox::Close</set>
+    <set>QDialogButtonBox::Cancel|QDialogButtonBox::Ok</set>
    </property>
   </widget>
   <widget class="QGroupBox" name="groupBox">
@@ -73,51 +73,6 @@
       </property>
       <property name="text">
        <string>Select the DOS you want to boot your Atari with</string>
-      </property>
-     </widget>
-    </item>
-    <item row="1" column="0" colspan="3">
-     <widget class="QRadioButton" name="atariDOS">
-      <property name="font">
-       <font>
-        <weight>75</weight>
-        <bold>true</bold>
-       </font>
-      </property>
-      <property name="styleSheet">
-       <string notr="true">color: rgb(140, 96, 115);</string>
-      </property>
-      <property name="text">
-       <string>AtariDOS 2.x</string>
-      </property>
-      <property name="checked">
-       <bool>true</bool>
-      </property>
-     </widget>
-    </item>
-    <item row="2" column="0" colspan="3">
-     <widget class="QRadioButton" name="myDOS">
-      <property name="font">
-       <font>
-        <weight>75</weight>
-        <bold>true</bold>
-       </font>
-      </property>
-      <property name="styleSheet">
-       <string notr="true">color: rgb(140, 96, 115);</string>
-      </property>
-      <property name="text">
-       <string>MyDOS 4.x</string>
-      </property>
-     </widget>
-    </item>
-    <item row="3" column="0" colspan="3">
-     <widget class="QRadioButton" name="dosXL">
-      <property name="styleSheet">
-       <string notr="true">color: rgb(140, 96, 115);</string>
-      </property>
-      <property name="text">
-       <string>DosXL 2.x</string>
       </property>
      </widget>
     </item>
@@ -163,20 +118,66 @@
       </property>
      </widget>
     </item>
-    <item row="7" column="0" rowspan="2">
-     <spacer name="horizontalSpacer_2">
-      <property name="orientation">
-       <enum>Qt::Horizontal</enum>
+    <item row="2" column="0" colspan="3">
+     <widget class="QRadioButton" name="myDOS">
+      <property name="font">
+       <font>
+        <weight>75</weight>
+        <bold>true</bold>
+       </font>
       </property>
-      <property name="sizeHint" stdset="0">
-       <size>
-        <width>30</width>
-        <height>38</height>
-       </size>
+      <property name="styleSheet">
+       <string notr="true">color: rgb(140, 96, 115);</string>
       </property>
-     </spacer>
+      <property name="text">
+       <string>MyDOS 4.x</string>
+      </property>
+     </widget>
     </item>
-    <item row="7" column="1">
+    <item row="1" column="0" colspan="3">
+     <widget class="QRadioButton" name="atariDOS">
+      <property name="font">
+       <font>
+        <weight>75</weight>
+        <bold>true</bold>
+       </font>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">color: rgb(140, 96, 115);</string>
+      </property>
+      <property name="text">
+       <string>AtariDOS 2.x</string>
+      </property>
+      <property name="checked">
+       <bool>true</bool>
+      </property>
+     </widget>
+    </item>
+    <item row="3" column="0" colspan="3">
+     <widget class="QRadioButton" name="dosXL">
+      <property name="styleSheet">
+       <string notr="true">color: rgb(140, 96, 115);</string>
+      </property>
+      <property name="text">
+       <string>DosXL 2.x</string>
+      </property>
+     </widget>
+    </item>
+    <item row="8" column="0" rowspan="2" colspan="3">
+     <widget class="QLabel" name="label_2">
+      <property name="font">
+       <font>
+        <weight>50</weight>
+        <italic>true</italic>
+        <bold>false</bold>
+       </font>
+      </property>
+      <property name="text">
+       <string>(Check if you're already using a high-speed OS)</string>
+      </property>
+     </widget>
+    </item>
+    <item row="7" column="0" colspan="2">
      <widget class="QCheckBox" name="disablePicoHiSpeed">
       <property name="enabled">
        <bool>false</bool>
@@ -189,33 +190,6 @@
       </property>
       <property name="text">
        <string>Disable high speed SIO</string>
-      </property>
-     </widget>
-    </item>
-    <item row="7" column="2">
-     <spacer name="horizontalSpacer">
-      <property name="orientation">
-       <enum>Qt::Horizontal</enum>
-      </property>
-      <property name="sizeHint" stdset="0">
-       <size>
-        <width>88</width>
-        <height>20</height>
-       </size>
-      </property>
-     </spacer>
-    </item>
-    <item row="8" column="1" colspan="2">
-     <widget class="QLabel" name="label_2">
-      <property name="font">
-       <font>
-        <weight>50</weight>
-        <italic>true</italic>
-        <bold>false</bold>
-       </font>
-      </property>
-      <property name="text">
-       <string>(Check if you're already using a high-speed OS)</string>
       </property>
      </widget>
     </item>

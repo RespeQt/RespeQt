@@ -33,13 +33,14 @@
 #include "docdisplaywindow.h"
 #include "network.h"
 #include "baseprinter.h"
+#include "drivewidget.h"
+#include "infowidget.h"
 
 namespace Ui
 {
     class MainWindow;
 }
-
-class DiskWidgets
+class DiskWidget
 {
 public:
     QLabel *fileNameLabel;
@@ -85,15 +86,17 @@ public slots:
     int firstEmptyDiskSlot(int startFrom = 0, bool createOne = true);       //
     void mountFileWithDefaultProtection(int no, const QString &fileName);   //
     void autoCommit(int no);                                                //
-    void folderPath(int slot);                                              //
+    void openRecent();
 
 private:
     int untitledName;
     Ui::MainWindow *ui;
     SioWorker *sio;
     bool shownFirstTime;
-    DiskWidgets diskWidgets[DISK_COUNT];    //
     PrinterWidgets printerWidgets[PRINTER_COUNT]; //
+    DriveWidget* diskWidgets[DISK_COUNT];    //
+    InfoWidget* infoWidget;
+
     QLabel *speedLabel, *onOffLabel, *prtOnOffLabel, *netLabel, *clearMessagesLabel;  //
     TextPrinterWindow *textPrinterWindow;
     DocDisplayWindow *docDisplayWindow;    //
@@ -105,6 +108,13 @@ private:
     int lastMessageRepeat;
     static MainWindow *instance;
     
+    bool isClosing;
+
+    QDialog *logWindow_;
+
+
+    QList<QAction*> recentFilesActions_;
+
     void setSession();  //
     void updateRecentFileActions();
     int containingDiskSlot(const QPoint &point);
@@ -113,7 +123,7 @@ private:
     void mountDiskImage(int no);
     void mountFolderImage(int no);
     bool ejectImage(int no, bool ask = true);
-    void toggleWriteProtection(int no);
+    void toggleWriteProtection(int no, bool protectionEnabled);
     void openEditor(int no);
     void saveDisk(int no);
     void saveDiskAs(int no);
@@ -124,6 +134,9 @@ private:
     void setUpPrinterEmulationWidgets(bool enabled);
     void connectPrinter(qint8 no);
     void disconnectPrinter(qint8 no);
+
+
+    void createDeviceWidgets();
 
 protected:
     void mousePressEvent(QMouseEvent *event);
@@ -142,9 +155,9 @@ signals:
     void logMessage(int type, const QString &msg);
     void newSlot (int slot);
     void fileMounted(bool mounted);
-    void takeFolderPath (QString fPath);
     void sendLogText (QString logText);
     void sendLogTextChange (QString logTextChange);
+    void setFont(const QFont &font);
 
 public:
     void doLogMessage(int type, const QString &msg);
@@ -166,155 +179,25 @@ private slots:
     void on_actionQuit_triggered();
     void on_actionAbout_triggered();
     void on_actionDocumentation_triggered();
-    void on_actionMountDisk_1_triggered();
-    void on_actionMountDisk_2_triggered();
-    void on_actionMountDisk_3_triggered();
-    void on_actionMountDisk_4_triggered();
-    void on_actionMountDisk_5_triggered();
-    void on_actionMountDisk_6_triggered();
-    void on_actionMountDisk_7_triggered();
-    void on_actionMountDisk_8_triggered();
-    void on_actionMountDisk_9_triggered();
-    void on_actionMountDisk_10_triggered();
-    void on_actionMountDisk_11_triggered();
-    void on_actionMountDisk_12_triggered();
-    void on_actionMountDisk_13_triggered();
-    void on_actionMountDisk_14_triggered();
-    void on_actionMountDisk_15_triggered();
-    void on_actionMountFolder_1_triggered();
-    void on_actionMountFolder_2_triggered();
-    void on_actionMountFolder_3_triggered();
-    void on_actionMountFolder_4_triggered();
-    void on_actionMountFolder_5_triggered();
-    void on_actionMountFolder_6_triggered();
-    void on_actionMountFolder_7_triggered();
-    void on_actionMountFolder_8_triggered();
-    void on_actionMountFolder_9_triggered();
-    void on_actionMountFolder_10_triggered();
-    void on_actionMountFolder_11_triggered();
-    void on_actionMountFolder_12_triggered();
-    void on_actionMountFolder_13_triggered();
-    void on_actionMountFolder_14_triggered();
-    void on_actionMountFolder_15_triggered();
-    void on_actionEject_1_triggered();
-    void on_actionEject_2_triggered();
-    void on_actionEject_3_triggered();
-    void on_actionEject_4_triggered();
-    void on_actionEject_5_triggered();
-    void on_actionEject_6_triggered();
-    void on_actionEject_7_triggered();
-    void on_actionEject_8_triggered();
-    void on_actionEject_9_triggered();
-    void on_actionEject_10_triggered();
-    void on_actionEject_11_triggered();
-    void on_actionEject_12_triggered();
-    void on_actionEject_13_triggered();
-    void on_actionEject_14_triggered();
-    void on_actionEject_15_triggered();
-    void on_actionWriteProtect_1_triggered();
-    void on_actionWriteProtect_2_triggered();
-    void on_actionWriteProtect_3_triggered();
-    void on_actionWriteProtect_4_triggered();
-    void on_actionWriteProtect_5_triggered();
-    void on_actionWriteProtect_6_triggered();
-    void on_actionWriteProtect_7_triggered();
-    void on_actionWriteProtect_8_triggered();
-    void on_actionWriteProtect_9_triggered();
-    void on_actionWriteProtect_10_triggered();
-    void on_actionWriteProtect_11_triggered();
-    void on_actionWriteProtect_12_triggered();
-    void on_actionWriteProtect_13_triggered();
-    void on_actionWriteProtect_14_triggered();
-    void on_actionWriteProtect_15_triggered();
-    void on_actionMountRecent_0_triggered();
-    void on_actionMountRecent_1_triggered();
-    void on_actionMountRecent_2_triggered();
-    void on_actionMountRecent_3_triggered();
-    void on_actionMountRecent_4_triggered();
-    void on_actionMountRecent_5_triggered();
-    void on_actionMountRecent_6_triggered();
-    void on_actionMountRecent_7_triggered();
-    void on_actionMountRecent_8_triggered();
-    void on_actionMountRecent_9_triggered();
-    void on_actionEditDisk_1_triggered();
-    void on_actionEditDisk_2_triggered();
-    void on_actionEditDisk_3_triggered();
-    void on_actionEditDisk_4_triggered();
-    void on_actionEditDisk_5_triggered();
-    void on_actionEditDisk_6_triggered();
-    void on_actionEditDisk_7_triggered();
-    void on_actionEditDisk_8_triggered();
-    void on_actionEditDisk_9_triggered();
-    void on_actionEditDisk_10_triggered();
-    void on_actionEditDisk_11_triggered();
-    void on_actionEditDisk_12_triggered();
-    void on_actionEditDisk_13_triggered();
-    void on_actionEditDisk_14_triggered();
-    void on_actionEditDisk_15_triggered();
-    void on_actionSave_1_triggered();
-    void on_actionSave_2_triggered();
-    void on_actionSave_3_triggered();
-    void on_actionSave_4_triggered();
-    void on_actionSave_5_triggered();
-    void on_actionSave_6_triggered();
-    void on_actionSave_7_triggered();
-    void on_actionSave_8_triggered();
-    void on_actionSave_9_triggered();
-    void on_actionSave_10_triggered();
-    void on_actionSave_11_triggered();
-    void on_actionSave_12_triggered();
-    void on_actionSave_13_triggered();
-    void on_actionSave_14_triggered();
-    void on_actionSave_15_triggered();
-    void on_actionAutoSave_1_triggered();
-    void on_actionAutoSave_2_triggered();
-    void on_actionAutoSave_3_triggered();
-    void on_actionAutoSave_4_triggered();
-    void on_actionAutoSave_5_triggered();
-    void on_actionAutoSave_6_triggered();
-    void on_actionAutoSave_7_triggered();
-    void on_actionAutoSave_8_triggered();
-    void on_actionAutoSave_9_triggered();
-    void on_actionAutoSave_10_triggered();
-    void on_actionAutoSave_11_triggered();
-    void on_actionAutoSave_12_triggered();
-    void on_actionAutoSave_13_triggered();
-    void on_actionAutoSave_14_triggered();
-    void on_actionAutoSave_15_triggered();
-    void on_actionSaveAs_1_triggered();
-    void on_actionSaveAs_2_triggered();
-    void on_actionSaveAs_3_triggered();
-    void on_actionSaveAs_4_triggered();
-    void on_actionSaveAs_5_triggered();
-    void on_actionSaveAs_6_triggered();
-    void on_actionSaveAs_7_triggered();
-    void on_actionSaveAs_8_triggered();
-    void on_actionSaveAs_9_triggered();
-    void on_actionSaveAs_10_triggered();
-    void on_actionSaveAs_11_triggered();
-    void on_actionSaveAs_12_triggered();
-    void on_actionSaveAs_13_triggered();
-    void on_actionSaveAs_14_triggered();
-    void on_actionSaveAs_15_triggered();
-    void on_actionRevert_1_triggered();
-    void on_actionRevert_2_triggered();
-    void on_actionRevert_3_triggered();
-    void on_actionRevert_4_triggered();
-    void on_actionRevert_5_triggered();
-    void on_actionRevert_6_triggered();
-    void on_actionRevert_7_triggered();
-    void on_actionRevert_8_triggered();
-    void on_actionRevert_9_triggered();
-    void on_actionRevert_10_triggered();
-    void on_actionRevert_11_triggered();
-    void on_actionRevert_12_triggered();
-    void on_actionRevert_13_triggered();
-    void on_actionRevert_14_triggered();
-    void on_actionRevert_15_triggered();
+
+    // Device widget events
+    void on_actionMountDisk_triggered(int deviceId);
+    void on_actionMountFolder_triggered(int deviceId);
+    void on_actionEject_triggered(int deviceId);
+    void on_actionWriteProtect_triggered(int deviceId, bool writeProtectEnabled);
+    void on_actionMountRecent_triggered(const QString &fileName);
+    void on_actionEditDisk_triggered(int deviceId);
+    void on_actionSave_triggered(int deviceId);
+    void on_actionAutoSave_triggered(int deviceId);
+    void on_actionSaveAs_triggered(int deviceId);
+    void on_actionRevert_triggered(int deviceId);
+
+
     void on_actionBootOption_triggered();
     void on_actionToggleMiniMode_triggered();
     void on_actionToggleShade_triggered();
     void on_actionLogWindow_triggered();
+
     void on_actionConnectPrinter_17_triggered();
     void on_actionConnectPrinter_18_triggered();
     void on_actionConnectPrinter_19_triggered();
@@ -323,6 +206,7 @@ private slots:
     void on_actionDisconnectPrinter_18_triggered();
     void on_actionDisconnectPrinter_19_triggered();
     void on_actionDisconnectPrinter_20_triggered();
+
     void showHideDrives();
     void sioFinished();
     void sioStarted();
