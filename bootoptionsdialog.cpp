@@ -20,8 +20,9 @@ extern bool g_disablePicoHiSpeed;
 
 QString selectedDOS, bootDir;
 
-BootOptionsDialog::BootOptionsDialog(QWidget *parent) :
+BootOptionsDialog::BootOptionsDialog(const QString& bootFolderPath, QWidget *parent) :
     QDialog(parent),
+    bootFolderPath_(bootFolderPath),
     m_ui(new Ui::BootOptionsDialog)
 {
     Qt::WindowFlags flags = windowFlags();
@@ -30,9 +31,7 @@ BootOptionsDialog::BootOptionsDialog(QWidget *parent) :
 
     m_ui->setupUi(this);
 
-    connect(m_ui->buttonBox, SIGNAL(clicked(QAbstractButton*)), this, SLOT(onClick(QAbstractButton*)));
     connect(m_ui->myPicoDOS, SIGNAL(toggled(bool)), this, SLOT(picoDOSToggled()));
-    connect(m_ui->disablePicoHiSpeed, SIGNAL(toggled(bool)), this, SLOT(picoHighSpeedToggled()));
 }
 
 BootOptionsDialog::~BootOptionsDialog()
@@ -51,62 +50,49 @@ void BootOptionsDialog::changeEvent(QEvent *e)
         break;
     }
 }
-void BootOptionsDialog::onClick(QAbstractButton* button)
-{
-    if(button->text() == tr("Apply")){
-        if(m_ui->atariDOS->isChecked()) selectedDOS = "$bootata";
-        if(m_ui->myDOS->isChecked()) selectedDOS = "$bootmyd";
-        if(m_ui->dosXL->isChecked()) selectedDOS = "$bootdxl";
-        if(m_ui->smartDOS->isChecked()) selectedDOS = "$bootsma";
-        if(m_ui->spartaDOS->isChecked()) selectedDOS = "$bootspa";
-        if(m_ui->myPicoDOS->isChecked()) selectedDOS = "$bootpic";
-        bootDir = g_respeQtAppPath + "/" + selectedDOS;
-        emit giveFolderPath(0);
-    }
-    return;
-}
-void BootOptionsDialog::folderPath(QString fPath)
-{
-    // fPath is received from the MainWindow and it is
-    // the path to the PC Folder Image mounted as boot drive
 
+void BootOptionsDialog::accept()
+{
     QDir dir;
     QFile file;
     QStringList filters;
     QStringList allFiles;
     QString fileName;
 
+    if(m_ui->atariDOS->isChecked()) selectedDOS = "$bootata";
+    if(m_ui->myDOS->isChecked()) selectedDOS = "$bootmyd";
+    if(m_ui->dosXL->isChecked()) selectedDOS = "$bootdxl";
+    if(m_ui->smartDOS->isChecked()) selectedDOS = "$bootsma";
+    if(m_ui->spartaDOS->isChecked()) selectedDOS = "$bootspa";
+    if(m_ui->myPicoDOS->isChecked()) {
+        selectedDOS = "$bootpic";
+        g_disablePicoHiSpeed = m_ui->disablePicoHiSpeed->isChecked();
+    }
+
+    bootDir = g_respeQtAppPath + "/" + selectedDOS;
+
     // First delete existing boot files in the Folder Image
     // then copy new boot files from the appropriate DOS directory
 
-    dir.setPath(fPath);
+    dir.setPath(bootFolderPath_);
     filters << "*dos.sys" << "dup.sys" << "dosxl.sys"
             << "autorun.sys" << "ramdisk.com" << "menu.com"
             << "startup.exc" << "x*.dos" << "startup.bat" << "$*.bin";
     allFiles =  dir.entryList(filters, QDir::Files);
     foreach(fileName, allFiles) {
-        file.remove(fPath + "/" + fileName);
+        file.remove(bootFolderPath_ + "/" + fileName);
     }
     dir.setPath(g_respeQtAppPath + "/" + selectedDOS);
     allFiles =  dir.entryList(QDir::NoDotAndDotDot | QDir::Files);
     foreach(fileName, allFiles) {
-        file.copy(dir.path() + "/" + fileName, fPath + "/" + fileName);
+        file.copy(dir.path() + "/" + fileName, bootFolderPath_ + "/" + fileName);
     }
-    close();
+
+    QDialog::accept();
 }
 
 void BootOptionsDialog::picoDOSToggled()
 {
-    if(m_ui->myPicoDOS->isChecked()) {
-        m_ui->disablePicoHiSpeed->setEnabled(true);
-        g_disablePicoHiSpeed = false;
-    } else {
-        m_ui->disablePicoHiSpeed->setEnabled(false);
-    }
-}
-
-void BootOptionsDialog::picoHighSpeedToggled()
-{
-    if(m_ui->disablePicoHiSpeed->isChecked())
-        g_disablePicoHiSpeed = true;
+    bool enable = m_ui->myPicoDOS->isChecked();
+    m_ui->disablePicoHiSpeed->setEnabled(enable);
 }

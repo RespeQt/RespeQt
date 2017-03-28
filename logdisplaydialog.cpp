@@ -15,7 +15,6 @@
 #include <QMessageBox>
 
 QString g_savedLog, g_filter;
-extern bool g_logOpen;
 
 LogDisplayDialog::LogDisplayDialog(QWidget *parent) :
     QDialog(parent),
@@ -37,13 +36,11 @@ LogDisplayDialog::~LogDisplayDialog()
 }
 void LogDisplayDialog::onClick(QAbstractButton* /*button*/)
 {
-    g_logOpen = false;
-    return;
+    this->close();
 }
 
 void LogDisplayDialog::closeEvent(QCloseEvent *)
 {
-    g_logOpen = false;
 }
 
 void LogDisplayDialog::changeEvent(QEvent *e)
@@ -102,5 +99,4 @@ void LogDisplayDialog::diskFilter()
         l_ui->textEdit->clear();
         l_ui->textEdit->setHtml(g_savedLog);
     }
-    show();
 }

@@ -26,7 +26,7 @@ void Atascii::initMapping()
         { 0x0B,	QChar(0x259D) },
         { 0x0C,	QChar(0x2598) },
         { 0x0D, QChar(' ') },
-        { 0x0E, QChar(' ') },
+        { 0x0E, QChar(0x2582) },
         { 0x0F,	QChar(0x2596) },
         { 0x10,	QChar(0x2663) },
         { 0x11,	QChar(0x250C) },

@@ -16,22 +16,19 @@ class BasePrinter : public SioDevice
 {
     Q_OBJECT
 public:
-    BasePrinter(SioWorker *worker) : SioDevice(worker),
-        mRequiresNativePrinter(false),
-        mPainter(NULL),
-        mFontMetrics(NULL) {}
+    BasePrinter(SioWorker *worker);
     virtual ~BasePrinter();
 
     int typeId() const { return mTypeId; }
     const QString *typeName() const { return mTypeName; }
-    bool requiresNativePrinter() const { return mRequiresNativePrinter; }
+    virtual bool requiresNativePrinter() const { return false; }
 
     virtual void handleCommand(quint8 /*command*/, quint16 /*aux*/) {}
 
-    virtual QPainter *painter() const { return mPainter; }
-    virtual void setPainter(QPainter *painter) { mPainter = painter; }
-
     virtual QPrinter *nativePrinter() const { return mNativePrinter; }
+
+    virtual void beginPrint();
+    virtual void endPrint();
 
     virtual const QChar &translateAtascii(const char b);
 
@@ -41,7 +38,6 @@ public:
 protected:
     int mTypeId;
     QString *mTypeName;
-    bool mRequiresNativePrinter;
     QPainter *mPainter;
 
     QFont mFont;
@@ -54,6 +50,10 @@ protected:
     static const int ATARI1027 = 2;
 
     Atascii mAtascii;
+
+    void setupFont() {}
+    void setupPrinter();
+
 
 private:
     int m_lastOperation;

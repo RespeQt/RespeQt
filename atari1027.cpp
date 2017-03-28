@@ -11,23 +11,17 @@ Atari1027::Atari1027(SioWorker *worker)
 {
     mTypeId = ATARI1027;
     mTypeName = new QString("Atari 2017");
-    mRequiresNativePrinter = true;
+    setupFont();
+    setupPrinter();
+}
+
+void Atari1027::setupFont()
+{
     mFont.setStyleHint(QFont::TypeWriter);
     mFont.setFamily("Courier");
     mFont.setPointSize(12);
     mFont.setUnderline(false);
-    qDebug() << "!n" << mFont;
-
     mFontMetrics = new QFontMetrics(mFont);
-
-    mNativePrinter = new QPrinter();
-    mPainter = new QPainter();
-    mPainter -> setFont(mFont);
-    mBoundingBox = mNativePrinter -> paperRect();
-    x = mBoundingBox.left();
-    y = mBoundingBox.top() + mFontMetrics->lineSpacing();
-    //mPainter->begin(mNativePrinter);
-    //mPainter->setFont(mFont);
 }
 
 void Atari1027::handleCommand(quint8 command, quint16 aux)

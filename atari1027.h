@@ -15,6 +15,8 @@ public:
     Atari1027(SioWorker *worker);
 
     virtual void handleCommand(quint8 command, quint16 aux);
+    virtual void setupFont();
+    virtual bool requiresNativePrinter() const { return true; }
 
 private:
     int m_lastOperation;
