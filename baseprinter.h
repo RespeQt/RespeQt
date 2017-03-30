@@ -23,14 +23,15 @@ public:
     const QString *typeName() const { return mTypeName; }
     virtual bool requiresNativePrinter() const { return false; }
 
-    virtual void handleCommand(quint8 /*command*/, quint16 /*aux*/) {}
+    virtual void handleCommand(quint8 command, quint16 aux);
+    virtual bool handleBuffer(QByteArray &buffer, int len) = 0;
 
     virtual QPrinter *nativePrinter() const { return mNativePrinter; }
 
     virtual void beginPrint();
     virtual void endPrint();
 
-    virtual const QChar &translateAtascii(const char b);
+    virtual const QChar translateAtascii(const char b);
 
     // create a printer object of specified type
     static BasePrinter *createPrinter(int type, SioWorker *worker);
@@ -50,6 +51,8 @@ protected:
     static const int ATARI1027 = 2;
 
     Atascii mAtascii;
+
+    bool mPrinting;
 
     void setupFont() {}
     void setupPrinter();

@@ -24,92 +24,25 @@ void Atari1027::setupFont()
     mFontMetrics = new QFontMetrics(mFont);
 }
 
-void Atari1027::handleCommand(quint8 command, quint16 aux)
+bool Atari1027::handleBuffer(QByteArray &buffer, int len)
 {
-    if(respeqtSettings->printerEmulation()) {  // Ignore printer commands  if Emulation turned OFF)    //
-        switch(command) {
-        case 0x53:
-            {
-                // Get status
-                if (!sio->port()->writeCommandAck()) {
-                    return;
-                }
-
-                QByteArray status(4, 0);
-                status[0] = 0;
-                status[1] = m_lastOperation;
-                status[2] = 3;
-                status[3] = 0;
-                sio->port()->writeComplete();
-                sio->port()->writeDataFrame(status);
-                qDebug() << "!n" << tr("[%1] Get status.").arg(deviceName());
-                break;
-            }
-        case 0x57:
-            {
-                // Write
-                int aux2 = aux % 256;
-                int len;
-                switch (aux2) {
-                case 0x4e:
-                    // Normal
-                    len = 40;
-                    break;
-                case 0x53:
-                    // Sideways
-                    len = 29;
-                    break;
-                case 0x44:
-                    // Double width
-                    len = 21;
-                    break;
-                default:
-                    sio->port()->writeCommandNak();
-                    qWarning() << "!w" << tr("[%1] command: $%2, aux: $%3 NAKed.")
-                                   .arg(deviceName())
-                                   .arg(command, 2, 16, QChar('0'))
-                                   .arg(aux, 4, 16, QChar('0'));
-                    return;
-                }
-                sio->port()->writeCommandAck();
-
-                QByteArray data = sio->port()->readDataFrame(len);
-                if (data.isEmpty()) {
-                    qCritical() << "!e" << tr("[%1] Print: data frame failed")
-                                  .arg(deviceName());
-                    sio->port()->writeDataNak();
-                    return;
-                }
-                handleBuffer(data);
-                sio->port()->writeDataAck();
-                qDebug() << "!n" << tr("[%1] Print (%2 chars)").arg(deviceName()).arg(len);
-                sio->port()->writeComplete();
-                break;
-            }
-        default:
-            sio->port()->writeCommandNak();
-            qWarning() << "!w" << tr("[%1] command: $%2, aux: $%3 NAKed.")
-                           .arg(deviceName())
-                           .arg(command, 2, 16, QChar('0'))
-                           .arg(aux, 4, 16, QChar('0'));
-        }
-    } else {
-        qDebug() << "!u" << tr("[%1] ignored").arg(deviceName());
+    if (!mPrinting)
+    {
+        mPrinting = true;
+        beginPrint();
     }
-}
 
-bool Atari1027::handleBuffer(const QByteArray &buffer)
-{
-    int len = buffer.size();
     for(int i = 0; i < len; i++)
     {
         unsigned char b = buffer.at(i);
         switch(b) {
             case 15: // CTRL+O starts underline mode
+                qDebug() << "!n" << tr("Start underline mode");
                 mFont.setUnderline(true);
             break;
 
             case 14: // CTRL+N ends underline mode
+                qDebug() << "!n" << tr("End underline mode");
                 mFont.setUnderline(false);
             break;
 
@@ -129,6 +62,7 @@ bool Atari1027::handleBuffer(const QByteArray &buffer)
             break;
 
             case 155: // EOL
+                mFirstESC = mSecondESC = false;
                 x = mBoundingBox.left();
                 if (y + mFontMetrics->height() > mBoundingBox.bottom())
                 {
@@ -137,7 +71,9 @@ bool Atari1027::handleBuffer(const QByteArray &buffer)
                 } else {
                     y += mFontMetrics->height();
                 }
-                //qDebug() << "!n new line (" << x << ", " << y << ")";
+                qDebug() << "!n new line (" << x << ", " << y << ")";
+                // Drop the rest of the buffer
+                return true;
             break;
 
             case 27: // ESC could be starting something
@@ -200,21 +136,25 @@ bool Atari1027::handleEscapedCodes(const char b)
     // At this time we have seen two ESC.
     switch(b) {
         case 25: // CTRL+Y starts underline mode
+            qDebug() << "!n" << tr("Start underline mode");
             mFont.setUnderline(true);
             mFirstESC = mSecondESC = false;
             return true;
 
         case 26: // CTRL+Z ends underline mode
+            qDebug() << "!n" << tr("End underline mode");
             mFont.setUnderline(false);
             mFirstESC = mSecondESC = false;
             return true;
 
         case 23: // CTRL+W starts international mode
+            qDebug() << "!n" << tr("Switch to international charset");
             mInternational = true;
             mFirstESC = mSecondESC = false;
             return true;
 
         case 24: // CTRL+X ends international mode
+            qDebug() << "!n" << tr("Switch to Atascii charset");
             mInternational = false;
             mFirstESC = mSecondESC = false;
             return true;
@@ -225,7 +165,7 @@ bool Atari1027::handleEscapedCodes(const char b)
 bool Atari1027::handlePrintableCodes(const char b)
 {
     QChar qb = translateAtascii(b);
-
+    qDebug() << "!n Byte: " << hex << int(b) << dec << "x: "<<x<<" y: "<<y;
     if (mFontMetrics->width(qb) + x > mBoundingBox.right()) { // Char has to go on next line
         x = mBoundingBox.left();
         if (y + mFontMetrics->height() > mBoundingBox.bottom())
@@ -236,8 +176,8 @@ bool Atari1027::handlePrintableCodes(const char b)
             y += mFontMetrics->lineSpacing();
         }
     }
-    mPainter->drawRect(x,y-mFontMetrics->lineSpacing(),mFontMetrics->width(qb),mFontMetrics->lineSpacing());
-    mPainter -> drawText(x, y-mFontMetrics->height(), qb);
+    //mPainter->drawRect(x,y-mFontMetrics->lineSpacing(),mFontMetrics->width(qb),mFontMetrics->lineSpacing());
+    mPainter -> drawText(x, y+mFontMetrics->height(), qb);
     x += mFontMetrics->width(qb);
 
     return true;

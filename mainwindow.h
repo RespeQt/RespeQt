@@ -105,9 +105,6 @@ private:
     void loadTranslators();
     void autoSaveDisk(int no);                                              //
     void setUpPrinterEmulationWidgets(bool enabled);
-    void connectPrinter(qint8 no);
-    void disconnectPrinter(qint8 no);
-
 
     void createDeviceWidgets();
 

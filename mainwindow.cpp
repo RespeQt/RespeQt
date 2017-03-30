@@ -44,6 +44,7 @@
 #include <QPrintDialog>
 #include <QPrinter>
 #include <QToolButton>
+#include <QHBoxLayout>
 
 #include "atarifilesystem.h"
 #include "miscutils.h"
@@ -1544,24 +1545,6 @@ void MainWindow::revertDisk(int no)
         deviceStatusChanged(DISK_BASE_CDEVIC + no);
     }
 }
-
-void MainWindow::connectPrinter(qint8 no) {
-
-    QPrinter *printer = new QPrinter();//printerWidgets[no].printer->nativePrinter();
-    //QPrinter printer;
-    if (!printer) return;
-    //printer->setFromTo(1, 1);
-    //printer->setPaperSize(QPrinter::A4);
-
-    QPrintDialog dialog(printer, this);
-    if (dialog.exec() == QDialog::Accepted)
-    {
-        if (printer) {
-            respeqtSettings->setConnectedPrinter(no, printer);
-        }
-    }
-}
-
 
 // Slots for handling actions for devices.
 void MainWindow::on_actionMountDisk_triggered(int deviceId) {mountDiskImage(deviceId);}

@@ -30,7 +30,7 @@ public:
     };
     class PrinterSettings {
     public:
-        QPrinter *printer;
+        QString printerName;
         int printerType;
     };
 
@@ -221,8 +221,8 @@ public:
 // Methods for setting and getting the Printer emulation settings.
     void setPrinterType(int no, int printerType);
     int printerType(int no) const;
-    void setConnectedPrinter(int no, QPrinter *printerInfo);
-    QPrinter *connectedPrinter(int no) const;
+    void setConnectedPrinterName(int no, const QString &printerInfo);
+    const QString &connectedPrinterName(int no) const;
     const PrinterSettings &connectedPrinterSettings(int no) const;
 
 private:

@@ -1,5 +1,6 @@
 #include "printerwidget.h"
 #include "ui_printerwidget.h"
+#include "respeqtsettings.h"
 
 #include <QPrintDialog>
 
@@ -59,6 +60,14 @@ void PrinterWidget::on_atariPrinters_currentIndexChanged(int index)
        // Setup buttons
        ui->actionConnectPrinter->setEnabled(mPrinter->requiresNativePrinter());
        ui->actionDisconnectPrinter->setEnabled(false);
+       if (mPrinter && !mPrinter->requiresNativePrinter())
+       {
+           respeqtSettings->setConnectedPrinterName(printerNo_, QString());
+       }
+    }
+    if (mPrinter)
+    {
+        respeqtSettings->setPrinterType(index, mPrinter->typeId());
     }
 }
 
@@ -70,6 +79,7 @@ void PrinterWidget::on_buttonConnectPrinter_triggered(QAction * /*arg1*/)
         ui->actionDisconnectPrinter->setEnabled(true);
         ui->actionConnectPrinter->setEnabled(false);
         mPrinter->beginPrint();
+        respeqtSettings->setConnectedPrinterName(printerNo_, mPrinter->nativePrinter()->printerName());
     }
 }
 

@@ -34,7 +34,7 @@ void Atascii::initMapping()
         { 0x13,	QChar(0x253C) },
         { 0x14,	QChar(0x25CF) },
         { 0x15,	QChar(0x2584) },
-        { 0x16, QChar(' ') },
+        { 0x16, QChar(0x258E) },
         { 0x17,	QChar(0x252C) },
         { 0x18,	QChar(0x2534) },
         { 0x19,	QChar(0x258C) },

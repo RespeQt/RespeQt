@@ -9,7 +9,7 @@ class TextPrinter : public BasePrinter
 public:
     TextPrinter(SioWorker *worker);
 
-    virtual void handleCommand(quint8 command, quint16 aux);
+    virtual bool handleBuffer(QByteArray &buffer, int len);
 private:
     int m_lastOperation;
     static bool conversionMsgdisplayedOnce;

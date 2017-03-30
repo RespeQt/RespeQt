@@ -189,7 +189,7 @@ void RespeqtSettings::saveSessionToFile(const QString &fileName)
     for (int i = 0; i < PRINTER_COUNT; i++) {
         PrinterSettings ps = mConnectedPrinterSettings[i];
         s.setArrayIndex(i);
-        s.setValue("PrinterName", ps.printer->printerName());
+        s.setValue("PrinterName", ps.printerName);
         s.setValue("PrinterType", ps.printerType);
     }
     s.endArray();
@@ -904,13 +904,13 @@ void RespeqtSettings::writeRecentImageSettings()
     mSettings->endArray();
 }
 
-void RespeqtSettings::setConnectedPrinter(int no, QPrinter *printer)
+void RespeqtSettings::setConnectedPrinterName(int no, const QString &printerName)
 {
-    mConnectedPrinterSettings[no].printer = printer;
+    mConnectedPrinterSettings[no].printerName = printerName;
 }
 
-QPrinter *RespeqtSettings::connectedPrinter(int no) const {
-    return mConnectedPrinterSettings[no].printer;
+const QString &RespeqtSettings::connectedPrinterName(int no) const {
+    return mConnectedPrinterSettings[no].printerName;
 }
 
 void RespeqtSettings::setPrinterType(int no, int printerType) {

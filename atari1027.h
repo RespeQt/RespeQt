@@ -14,7 +14,6 @@ class Atari1027 : public BasePrinter
 public:
     Atari1027(SioWorker *worker);
 
-    virtual void handleCommand(quint8 command, quint16 aux);
     virtual void setupFont();
     virtual bool requiresNativePrinter() const { return true; }
 
@@ -23,7 +22,7 @@ private:
     bool mInternational;
     bool mFirstESC, mSecondESC;
 
-    bool handleBuffer(const QByteArray &buffer);
+    virtual bool handleBuffer(QByteArray &buffer, int len);
     bool handleEscapedCodes(const char b);
     bool handlePrintableCodes(const char b);
 };
