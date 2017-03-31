@@ -6,8 +6,7 @@
 
 Atari1027::Atari1027(SioWorker *worker)
     : BasePrinter(worker),
-      mInternational(false),
-      mFirstESC(false), mSecondESC(false)
+      mFirstESC(false)
 {
     mTypeId = ATARI1027;
     mTypeName = new QString("Atari 2017");
@@ -37,12 +36,10 @@ bool Atari1027::handleBuffer(QByteArray &buffer, int len)
         unsigned char b = buffer.at(i);
         switch(b) {
             case 15: // CTRL+O starts underline mode
-                qDebug() << "!n" << tr("Start underline mode");
                 mFont.setUnderline(true);
             break;
 
             case 14: // CTRL+N ends underline mode
-                qDebug() << "!n" << tr("End underline mode");
                 mFont.setUnderline(false);
             break;
 
@@ -50,7 +47,7 @@ bool Atari1027::handleBuffer(QByteArray &buffer, int len)
             case 24: // CTRL+X could be ESC code
             case 25: // CTRL+Y could be ESC code
             case 26: // CTRL+Z could be ESC code
-                if (mFirstESC && mSecondESC)
+                if (mFirstESC)
                 {
                     if (!handleEscapedCodes(b))
                     {
@@ -62,39 +59,26 @@ bool Atari1027::handleBuffer(QByteArray &buffer, int len)
             break;
 
             case 155: // EOL
-                mFirstESC = mSecondESC = false;
+                mFirstESC = false;
+                mFont.setUnderline(false);
                 x = mBoundingBox.left();
                 if (y + mFontMetrics->height() > mBoundingBox.bottom())
                 {
                     mNativePrinter -> newPage();
                     y = mBoundingBox.top();
                 } else {
-                    y += mFontMetrics->height();
+                    y += mFontMetrics->lineSpacing();
                 }
-                qDebug() << "!n new line (" << x << ", " << y << ")";
                 // Drop the rest of the buffer
                 return true;
             break;
 
             case 27: // ESC could be starting something
-                if (mFirstESC && !mSecondESC) { // Only first ESC from last buffer
-                    if (i + 1 < len)
-                    {
-                        mSecondESC = true;
-                        i++;
-                        b = buffer.at(i);
-                        if (i + 1 < len)
-                        {
-                            i ++;
-                            b = buffer.at(i);
-                            if (!handleEscapedCodes(b))
-                            {
-                                handlePrintableCodes(b);
-                            }
-                        }
-                    }
-                } else if (mFirstESC && mSecondESC) // We have both ESCs from last buffer
-                {
+                if (mFirstESC) { // ESC from last buffer
+                    mFirstESC = false;
+                    handlePrintableCodes(b);
+                } else { // No ESC codes from last buffer
+                    mFirstESC = true;
                     if (i + 1 < len)
                     {
                         i++;
@@ -104,25 +88,9 @@ bool Atari1027::handleBuffer(QByteArray &buffer, int len)
                             handlePrintableCodes(b);
                         }
                     }
-                } else { // No ESC codes from last buffer
-                    mFirstESC = true;
-                    if (i + 1 < len)
-                    {
-                        i++;
-                        b = buffer.at(i);
-                        if (b == 27) { // control needs second ESC
-                            mSecondESC = true;
-                            if (i + 1 < len) {
-                                i ++;
-                                b = buffer.at(i);
-                                if (!handleEscapedCodes(b))
-                                {
-                                    handlePrintableCodes(b);
-                                }
-                            }
-                        }
-                    }
                 }
+            break;
+
             default: // Everythings else
                 handlePrintableCodes(b);
             break;
@@ -136,27 +104,23 @@ bool Atari1027::handleEscapedCodes(const char b)
     // At this time we have seen two ESC.
     switch(b) {
         case 25: // CTRL+Y starts underline mode
-            qDebug() << "!n" << tr("Start underline mode");
             mFont.setUnderline(true);
-            mFirstESC = mSecondESC = false;
+            mFirstESC = false;
             return true;
 
         case 26: // CTRL+Z ends underline mode
-            qDebug() << "!n" << tr("End underline mode");
             mFont.setUnderline(false);
-            mFirstESC = mSecondESC = false;
+            mFirstESC = false;
             return true;
 
         case 23: // CTRL+W starts international mode
-            qDebug() << "!n" << tr("Switch to international charset");
-            mInternational = true;
-            mFirstESC = mSecondESC = false;
+            setInternationalMode(true);
+            mFirstESC = false;
             return true;
 
         case 24: // CTRL+X ends international mode
-            qDebug() << "!n" << tr("Switch to Atascii charset");
-            mInternational = false;
-            mFirstESC = mSecondESC = false;
+            setInternationalMode(false);
+            mFirstESC = false;
             return true;
     }
     return false;
@@ -164,8 +128,7 @@ bool Atari1027::handleEscapedCodes(const char b)
 
 bool Atari1027::handlePrintableCodes(const char b)
 {
-    QChar qb = translateAtascii(b);
-    qDebug() << "!n Byte: " << hex << int(b) << dec << "x: "<<x<<" y: "<<y;
+    QChar qb = translateAtascii(b); // Masking inverse characters.
     if (mFontMetrics->width(qb) + x > mBoundingBox.right()) { // Char has to go on next line
         x = mBoundingBox.left();
         if (y + mFontMetrics->height() > mBoundingBox.bottom())

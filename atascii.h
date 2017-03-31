@@ -10,9 +10,9 @@ public:
     Atascii();
     QChar operator() (const char atascii) const;
     char operator() (const QChar &unicode) const;
+    virtual void initMapping();
 
 protected:
-    virtual void initMapping();
     static std::map<char, QChar> mapping;
 };
 

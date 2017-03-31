@@ -3,6 +3,7 @@
 
 #include "sioworker.h"
 #include "atascii.h"
+#include "atasciiinternational.h"
 
 #include <QByteArray>
 #include <QPainter>
@@ -36,10 +37,14 @@ public:
     // create a printer object of specified type
     static BasePrinter *createPrinter(int type, SioWorker *worker);
 
+    bool internationalMode() const { return mInternational; }
+    void setInternationalMode(bool internationalMode) { mInternational = internationalMode; }
+
 protected:
     int mTypeId;
     QString *mTypeName;
     QPainter *mPainter;
+    bool mInternational;
 
     QFont mFont;
     int x, y;
@@ -51,6 +56,7 @@ protected:
     static const int ATARI1027 = 2;
 
     Atascii mAtascii;
+    AtasciiInternational mAtasciiInternational;
 
     bool mPrinting;
 

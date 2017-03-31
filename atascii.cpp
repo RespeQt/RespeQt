@@ -3,7 +3,7 @@
 std::map<char, QChar> Atascii::mapping;
 Atascii::Atascii()
 {
-    initMapping();
+    //initMapping();
 }
 
 void Atascii::initMapping()

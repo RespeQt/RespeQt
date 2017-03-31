@@ -6,9 +6,13 @@
 
 BasePrinter::BasePrinter(SioWorker *worker) : SioDevice(worker),
   mPainter(NULL),
+  mInternational(false),
   mFontMetrics(NULL),
   mPrinting(false)
-{}
+{
+    mAtascii.initMapping();
+    mAtasciiInternational.initMapping();
+}
 
 BasePrinter::~BasePrinter()
 {
@@ -25,6 +29,9 @@ BasePrinter::~BasePrinter()
 
 const QChar BasePrinter::translateAtascii(const char b)
 {
+    if (internationalMode()) {
+        return mAtasciiInternational(b);
+    }
     return mAtascii(b);
 }
 
@@ -41,9 +48,6 @@ void BasePrinter::beginPrint() {
         mBoundingBox = mNativePrinter->pageRect();
         x = mBoundingBox.left();
         y = mBoundingBox.top() + mFontMetrics->lineSpacing();
-        qDebug() << "!n Bounding box " << mBoundingBox.left() << "x" << mBoundingBox.top()
-                 << " - " << mBoundingBox.right() << "x" << mBoundingBox.bottom();
-        qDebug() << "!n " << mFontMetrics->width("M") * 80 + x;
     }
 }
 
@@ -126,7 +130,6 @@ void BasePrinter::handleCommand(quint8 command, quint16 aux)
                     sio->port()->writeDataNak();
                     return;
                 }
-                qDebug() << "!n" << data << " size: " << dec << data.size();
                 handleBuffer(data, len);
                 sio->port()->writeDataAck();
                 qDebug() << "!n" << tr("[%1] Print (%2 chars)").arg(deviceName()).arg(len);

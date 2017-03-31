@@ -19,8 +19,7 @@ public:
 
 private:
     int m_lastOperation;
-    bool mInternational;
-    bool mFirstESC, mSecondESC;
+    bool mFirstESC;
 
     virtual bool handleBuffer(QByteArray &buffer, int len);
     bool handleEscapedCodes(const char b);

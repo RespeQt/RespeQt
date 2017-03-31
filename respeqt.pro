@@ -48,7 +48,8 @@ SOURCES += main.cpp \
     drivewidget.cpp \
     infowidget.cpp \
     serialport-Qt.cpp \
-    printerwidget.cpp
+    printerwidget.cpp \
+    atasciiinternational.cpp
 win32:LIBS += -lwinmm -lz
 unix:LIBS += -lz
 win32:SOURCES += serialport-win32.cpp
@@ -83,7 +84,8 @@ HEADERS += mainwindow.h \
     drivewidget.h \
     infowidget.h \
     serialport-Qt.h \
-    printerwidget.h
+    printerwidget.h \
+    atasciiinternational.h
 win32:HEADERS += serialport-win32.h
 unix:HEADERS += serialport-unix.h
 FORMS += mainwindow.ui \
