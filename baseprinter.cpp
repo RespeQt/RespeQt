@@ -6,13 +6,9 @@
 
 BasePrinter::BasePrinter(SioWorker *worker) : SioDevice(worker),
   mPainter(NULL),
-  mInternational(false),
   mFontMetrics(NULL),
   mPrinting(false)
-{
-    mAtascii.initMapping();
-    mAtasciiInternational.initMapping();
-}
+{}
 
 BasePrinter::~BasePrinter()
 {
@@ -29,9 +25,6 @@ BasePrinter::~BasePrinter()
 
 const QChar BasePrinter::translateAtascii(const char b)
 {
-    if (internationalMode()) {
-        return mAtasciiInternational(b);
-    }
     return mAtascii(b);
 }
 
@@ -76,7 +69,7 @@ BasePrinter *BasePrinter::createPrinter(int type, SioWorker *worker)
 void BasePrinter::handleCommand(quint8 command, quint16 aux)
 {
     if (respeqtSettings->printerEmulation()) {  // Ignore printer commands  if Emulation turned OFF)    //
-        qDebug() << "!n" << hex << "command: " << command << " aux: " << aux;
+        //qDebug() << "!n" << hex << "command: " << command << " aux: " << aux;
         switch(command) {
         case 0x53:
             {
@@ -98,9 +91,10 @@ void BasePrinter::handleCommand(quint8 command, quint16 aux)
         case 0x57:
             {
                 // Write
-                //int aux2 = aux % 256;
+                int aux2 = aux % 256;
+
                 int len;
-                switch (aux) {
+                switch (aux2) {
                 case 0x4e:
                     // Normal
                     len = 40;
@@ -132,7 +126,7 @@ void BasePrinter::handleCommand(quint8 command, quint16 aux)
                 }
                 handleBuffer(data, len);
                 sio->port()->writeDataAck();
-                qDebug() << "!n" << tr("[%1] Print (%2 chars)").arg(deviceName()).arg(len);
+                //qDebug() << "!n" << tr("[%1] Print (%2 chars)").arg(deviceName()).arg(len);
                 sio->port()->writeComplete();
                 break;
             }

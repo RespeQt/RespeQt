@@ -1,6 +1,12 @@
 #include "atasciiinternational.h"
 #include "logdisplaydialog.h"
 
+AtasciiInternational::AtasciiInternational()
+    :Atascii()
+{
+    AtasciiInternational::initMapping();
+}
+
 void AtasciiInternational::initMapping()
 {
     Atascii::initMapping();

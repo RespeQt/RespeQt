@@ -1,21 +1,20 @@
 #ifndef ATARI1027_H
 #define ATARI1027_H
 
-#include "baseprinter.h"
+#include "atariprinter.h"
 
 #include <QFont>
 #include <QFontMetrics>
 #include <QPrinter>
 #include <QRect>
 
-class Atari1027 : public BasePrinter
+class Atari1027 : public AtariPrinter
 {
     Q_OBJECT
 public:
     Atari1027(SioWorker *worker);
 
     virtual void setupFont();
-    virtual bool requiresNativePrinter() const { return true; }
 
 private:
     int m_lastOperation;

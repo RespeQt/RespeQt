@@ -5,7 +5,7 @@
 #include <QtDebug>
 
 Atari1027::Atari1027(SioWorker *worker)
-    : BasePrinter(worker),
+    : AtariPrinter(worker),
       mFirstESC(false)
 {
     mTypeId = ATARI1027;
@@ -37,10 +37,14 @@ bool Atari1027::handleBuffer(QByteArray &buffer, int len)
         switch(b) {
             case 15: // CTRL+O starts underline mode
                 mFont.setUnderline(true);
+                mPainter->setFont(mFont);
+                qDebug() << "!n" << "Underline on";
             break;
 
             case 14: // CTRL+N ends underline mode
                 mFont.setUnderline(false);
+                mPainter->setFont(mFont);
+                qDebug() << "!n" << "Underline off";
             break;
 
             case 23: // CTRL+W could be ESC code
@@ -61,10 +65,12 @@ bool Atari1027::handleBuffer(QByteArray &buffer, int len)
             case 155: // EOL
                 mFirstESC = false;
                 mFont.setUnderline(false);
+                mPainter->setFont(mFont);
                 x = mBoundingBox.left();
                 if (y + mFontMetrics->height() > mBoundingBox.bottom())
                 {
                     mNativePrinter -> newPage();
+                    qDebug()<<"!n"<<"newpage";
                     y = mBoundingBox.top();
                 } else {
                     y += mFontMetrics->lineSpacing();
@@ -105,12 +111,16 @@ bool Atari1027::handleEscapedCodes(const char b)
     switch(b) {
         case 25: // CTRL+Y starts underline mode
             mFont.setUnderline(true);
+            mPainter->setFont(mFont);
             mFirstESC = false;
+            qDebug() << "!n" << "ESC Underline on";
             return true;
 
         case 26: // CTRL+Z ends underline mode
             mFont.setUnderline(false);
+            mPainter->setFont(mFont);
             mFirstESC = false;
+            qDebug() << "!n" << "ESC Underline off";
             return true;
 
         case 23: // CTRL+W starts international mode
@@ -128,12 +138,13 @@ bool Atari1027::handleEscapedCodes(const char b)
 
 bool Atari1027::handlePrintableCodes(const char b)
 {
-    QChar qb = translateAtascii(b); // Masking inverse characters.
+    QChar qb = translateAtascii(b & 127); // Masking inverse characters.
     if (mFontMetrics->width(qb) + x > mBoundingBox.right()) { // Char has to go on next line
         x = mBoundingBox.left();
         if (y + mFontMetrics->height() > mBoundingBox.bottom())
         {
             mNativePrinter -> newPage();
+            qDebug()<<"!n"<<"newPage";
             y = mBoundingBox.top();
         } else {
             y += mFontMetrics->lineSpacing();

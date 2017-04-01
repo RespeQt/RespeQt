@@ -78,6 +78,7 @@ void PrinterWidget::on_buttonConnectPrinter_triggered(QAction * /*arg1*/)
     {
         ui->actionDisconnectPrinter->setEnabled(true);
         ui->actionConnectPrinter->setEnabled(false);
+        ui->atariPrinters->setEnabled(false);
         mPrinter->beginPrint();
         respeqtSettings->setConnectedPrinterName(printerNo_, mPrinter->nativePrinter()->printerName());
     }
@@ -88,4 +89,5 @@ void PrinterWidget::on_buttonDisconnectPrinter_triggered(QAction * /*arg1*/)
     mPrinter->endPrint();
     ui->actionConnectPrinter->setEnabled(mPrinter->requiresNativePrinter());
     ui->actionDisconnectPrinter->setEnabled(false);
+    ui->atariPrinters->setEnabled(true);
 }
