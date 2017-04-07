@@ -61,14 +61,14 @@ StandardSerialPortBackend::~StandardSerialPortBackend()
 #ifdef Q_OS_LINUX
   QString StandardSerialPortBackend::defaultPortName()
   {
-      return QString("/dev/ttyS0");
+      return QString("ttyS0");
   }
 #endif
 
 #ifdef Q_OS_MAC
 QString StandardSerialPortBackend::defaultPortName()
 {
-    return QString("/dev/tty.usbserial");
+    return QString("tty.usbserial");
 }
 #endif
 
@@ -78,7 +78,8 @@ bool StandardSerialPortBackend::open()
         close();
     }
 
-    QString name = respeqtSettings->serialPortName();
+    QString name("/dev/");
+    name.append(respeqtSettings->serialPortName());
     mMethod = respeqtSettings->serialPortHandshakingMethod();
     mWriteDelay = SLEEP_FACTOR * respeqtSettings->serialPortWriteDelay();
     mCompErrDelay = respeqtSettings->serialPortCompErrDelay();
