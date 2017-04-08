@@ -34,6 +34,11 @@ RespeqtSettings::RespeqtSettings()
 
     /* Standard serial port backend */
     mSerialPortName = mSettings->value("SerialPortName", StandardSerialPortBackend::defaultPortName()).toString();
+    /* old rergistry entries contain SERIAL_PORT_LOCATION at the front of the serial port name, so we skip them now */
+    if(mSerialPortName.startsWith(SERIAL_PORT_LOCATION,Qt::CaseInsensitive))
+    {
+        mSerialPortName.remove(0,strlen(SERIAL_PORT_LOCATION));
+    }
     mSerialPortHandshakingMethod = mSettings->value("HandshakingMethod", 0).toInt();
     mSerialPortWriteDelay = mSettings->value("WriteDelay", 1).toInt();
 #ifdef Q_OS_WIN
@@ -47,6 +52,11 @@ RespeqtSettings::RespeqtSettings()
 
     /* Qt serial port backend */
     mQtSerialPortName = mSettings->value("QtSerialPortName", QtSerialPortBackend::defaultPortName()).toString();
+    /* old rergistry entries contain SERIAL_PORT_LOCATION at the front of the serial port name, so we skip them now */
+    if(mQtSerialPortName.startsWith(SERIAL_PORT_LOCATION,Qt::CaseInsensitive))
+    {
+        mQtSerialPortName.remove(0,strlen(SERIAL_PORT_LOCATION));
+    }
     mQtSerialPortHandshakingMethod = mSettings->value("QtHandshakingMethod", 0).toInt();
     mQtSerialPortWriteDelay = mSettings->value("QtWriteDelay", 1).toInt();
 #ifdef Q_OS_WIN
@@ -60,6 +70,11 @@ RespeqtSettings::RespeqtSettings()
 
     /* AtariSIO backend */
     mAtariSioDriverName = mSettings->value("AtariSioDriverName", AtariSioBackend::defaultPortName()).toString();
+    /* old rergistry entries contain SERIAL_PORT_LOCATION at the front of the serial port name, so we skip them now */
+    if(mAtariSioDriverName.startsWith(SERIAL_PORT_LOCATION,Qt::CaseInsensitive))
+    {
+        mAtariSioDriverName.remove(0,strlen(SERIAL_PORT_LOCATION));
+    }
     mAtariSioHandshakingMethod = mSettings->value("AtariSioHandshakingMethod", 0).toInt();
 
     mBackend = mSettings->value("Backend", 0).toInt();
