@@ -90,9 +90,11 @@ signals:
 };
 
 #ifdef Q_OS_WIN
+#define SERIAL_PORT_LOCATION "\\\\.\\"
 #include "serialport-win32.h"
 #endif
 #ifdef Q_OS_UNIX
+#define SERIAL_PORT_LOCATION "/dev/"
 #include "serialport-unix.h"
 #endif
 #include "serialport-Qt.h"

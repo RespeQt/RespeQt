@@ -78,7 +78,7 @@ bool StandardSerialPortBackend::open()
         close();
     }
 
-    QString name("/dev/");
+    QString name(SERIAL_PORT_LOCATION);
     name.append(respeqtSettings->serialPortName());
     mMethod = respeqtSettings->serialPortHandshakingMethod();
     mWriteDelay = SLEEP_FACTOR * respeqtSettings->serialPortWriteDelay();
@@ -704,7 +704,7 @@ AtariSioBackend::~AtariSioBackend()
 
 QString AtariSioBackend::defaultPortName()
 {
-    return QString("/dev/atarisio0");
+    return QString("atarisio0");
 }
 
 bool AtariSioBackend::open()
@@ -713,7 +713,8 @@ bool AtariSioBackend::open()
         close();
     }
 
-    QString name = respeqtSettings->atariSioDriverName();
+    QString name(SERIAL_PORT_LOCATION);
+    name.append(respeqtSettings->atariSioDriverName());
 
     mHandle = ::open(name.toLocal8Bit().constData(), O_RDWR);
 
