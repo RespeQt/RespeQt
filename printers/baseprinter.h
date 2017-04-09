@@ -20,16 +20,11 @@ public:
     virtual ~BasePrinter();
 
     int typeId() const { return mTypeId; }
-    const QString *typeName() const { return mTypeName; }
+    const QString &typeName() const { return mTypeName; }
     virtual bool requiresNativePrinter() const { return false; }
 
     virtual void handleCommand(quint8 command, quint16 aux);
     virtual bool handleBuffer(QByteArray &buffer, int len) = 0;
-
-    virtual QPrinter *nativePrinter() const { return mNativePrinter; }
-
-    virtual void beginPrint();
-    virtual void endPrint();
 
     virtual const QChar translateAtascii(const char b);
 
@@ -38,25 +33,17 @@ public:
 
 protected:
     int mTypeId;
-    QString *mTypeName;
-    QPainter *mPainter;
-
-    QFont mFont;
-    int x, y;
-    QRect mBoundingBox;
-    QFontMetrics *mFontMetrics;
-    QPrinter *mNativePrinter;
+    QString mTypeName;
 
     Atascii mAtascii;
 
     static const int TEXTPRINTER = 1;
     static const int ATARI1027 = 2;
+    static const int ATARI1020 = 3;
+    static const int NECP6 = 4;
+    static const int EPSONFX80 = 5;
 
     bool mPrinting;
-
-    void setupFont() {}
-    void setupPrinter();
-
 
 private:
     int m_lastOperation;

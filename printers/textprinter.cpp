@@ -7,9 +7,17 @@ TextPrinter::TextPrinter(SioWorker *worker)
     : BasePrinter(worker)
 {
     mTypeId = TEXTPRINTER;
-    mTypeName = new QString("Text");
+    mTypeName = QString("Text printer");
 
-    connect(this, SIGNAL(print(QString)), MainWindow::getInstance()->getTextPrinterWindow(), SLOT(print(QString)));
+    if (MainWindow::getInstance() && MainWindow::getInstance()->getTextPrinterWindow())
+    {
+        connect(this, SIGNAL(print(QString)), MainWindow::getInstance()->getTextPrinterWindow(), SLOT(print(QString)));
+    }
+}
+
+TextPrinter::~TextPrinter()
+{
+    disconnect(this, SIGNAL(print(QString)), MainWindow::getInstance()->getTextPrinterWindow(), SLOT(print(QString)));
 }
 
 bool TextPrinter::conversionMsgdisplayedOnce = false;

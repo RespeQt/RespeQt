@@ -1,54 +1,22 @@
 #include "baseprinter.h"
 #include "textprinter.h"
 #include "atari1027.h"
+#include "atari1020.h"
+#include "necp6.h"
+#include "epsonfx80.h"
 #include "respeqtsettings.h"
 #include "logdisplaydialog.h"
 
 BasePrinter::BasePrinter(SioWorker *worker) : SioDevice(worker),
-  mPainter(NULL),
-  mFontMetrics(NULL),
   mPrinting(false)
 {}
 
 BasePrinter::~BasePrinter()
-{
-    if (mTypeName != NULL)
-    {
-        delete mTypeName;
-        mTypeName = NULL;
-    }
-    if (requiresNativePrinter())
-    {
-        endPrint();
-    }
-}
+{}
 
 const QChar BasePrinter::translateAtascii(const char b)
 {
     return mAtascii(b);
-}
-
-void BasePrinter::setupPrinter() {
-    mNativePrinter = new QPrinter();
-    mPainter = new QPainter();
-}
-
-void BasePrinter::beginPrint() {
-    if (mPrinting)
-    {
-        mPainter->begin(mNativePrinter);
-        mPainter->setFont(mFont);
-        mBoundingBox = mNativePrinter->pageRect();
-        x = mBoundingBox.left();
-        y = mBoundingBox.top() + mFontMetrics->lineSpacing();
-    }
-}
-
-void BasePrinter::endPrint() {
-    if (mPainter->isActive())
-    {
-        mPainter->end();
-    }
 }
 
 BasePrinter *BasePrinter::createPrinter(int type, SioWorker *worker)
@@ -59,6 +27,12 @@ BasePrinter *BasePrinter::createPrinter(int type, SioWorker *worker)
             return new TextPrinter(worker);
         case ATARI1027:
             return new Atari1027(worker);
+        case ATARI1020:
+            return new Atari1020(worker);
+        case NECP6:
+            return new NecP6(worker);
+        case EPSONFX80:
+            return new EpsonFX80(worker);
         default:
             throw new std::invalid_argument("Unknown printer type");
     }
@@ -69,7 +43,8 @@ BasePrinter *BasePrinter::createPrinter(int type, SioWorker *worker)
 void BasePrinter::handleCommand(quint8 command, quint16 aux)
 {
     if (respeqtSettings->printerEmulation()) {  // Ignore printer commands  if Emulation turned OFF)    //
-        //qDebug() << "!n" << hex << "command: " << command << " aux: " << aux;
+        qDebug() << "!n" << "[" << deviceName() << "] "
+                 << hex << "command: " << command << " aux: " << aux;
         switch(command) {
         case 0x53:
             {
@@ -126,7 +101,7 @@ void BasePrinter::handleCommand(quint8 command, quint16 aux)
                 }
                 handleBuffer(data, len);
                 sio->port()->writeDataAck();
-                //qDebug() << "!n" << tr("[%1] Print (%2 chars)").arg(deviceName()).arg(len);
+                qDebug() << "!n" << tr("[%1] Print (%2 chars)").arg(deviceName()).arg(len);
                 sio->port()->writeComplete();
                 break;
             }

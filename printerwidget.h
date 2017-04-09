@@ -1,7 +1,7 @@
 #ifndef PRINTERWIDGET_H
 #define PRINTERWIDGET_H
 
-#include "baseprinter.h"
+#include "printers/baseprinter.h"
 #include "sioworker.h"
 
 #include <QFrame>

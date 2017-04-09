@@ -24,8 +24,6 @@
 #include "cassettedialog.h"
 #include "bootoptionsdialog.h"
 #include "logdisplaydialog.h"
-#include "textprinter.h"
-#include "atari1027.h"
 #include "infowidget.h"
 #include "printerwidget.h"
 
@@ -127,7 +125,8 @@ void MainWindow::doLogMessage(int type, const QString &msg)
 MainWindow *MainWindow::instance = NULL;
 
 MainWindow::MainWindow(QWidget *parent)
-    : QMainWindow(parent), ui(new Ui::MainWindow), isClosing(false)
+    : QMainWindow(parent), ui(new Ui::MainWindow),
+      textPrinterWindow(NULL), isClosing(false)
 {
     /* Setup the logging system */
     instance = this;

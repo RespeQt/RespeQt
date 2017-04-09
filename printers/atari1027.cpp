@@ -6,12 +6,11 @@
 
 Atari1027::Atari1027(SioWorker *worker)
     : AtariPrinter(worker),
-      mFirstESC(false)
+      mESC(false)
 {
     mTypeId = ATARI1027;
-    mTypeName = new QString("Atari 2017");
-    setupFont();
-    setupPrinter();
+    mTypeName = QString("Atari 1027");
+    Atari1027::setupFont();
 }
 
 void Atari1027::setupFont()
@@ -25,11 +24,8 @@ void Atari1027::setupFont()
 
 bool Atari1027::handleBuffer(QByteArray &buffer, int len)
 {
-    if (!mPrinting)
-    {
-        mPrinting = true;
-        beginPrint();
-    }
+    bool result = AtariPrinter::handleBuffer(buffer, len);
+    if (!result) return false;
 
     for(int i = 0; i < len; i++)
     {
@@ -51,7 +47,7 @@ bool Atari1027::handleBuffer(QByteArray &buffer, int len)
             case 24: // CTRL+X could be ESC code
             case 25: // CTRL+Y could be ESC code
             case 26: // CTRL+Z could be ESC code
-                if (mFirstESC)
+                if (mESC)
                 {
                     if (!handleEscapedCodes(b))
                     {
@@ -63,7 +59,7 @@ bool Atari1027::handleBuffer(QByteArray &buffer, int len)
             break;
 
             case 155: // EOL
-                mFirstESC = false;
+                mESC = false;
                 mFont.setUnderline(false);
                 mPainter->setFont(mFont);
                 x = mBoundingBox.left();
@@ -80,11 +76,11 @@ bool Atari1027::handleBuffer(QByteArray &buffer, int len)
             break;
 
             case 27: // ESC could be starting something
-                if (mFirstESC) { // ESC from last buffer
-                    mFirstESC = false;
+                if (mESC) { // ESC from last buffer
+                    mESC = false;
                     handlePrintableCodes(b);
                 } else { // No ESC codes from last buffer
-                    mFirstESC = true;
+                    mESC = true;
                     if (i + 1 < len)
                     {
                         i++;
@@ -102,7 +98,7 @@ bool Atari1027::handleBuffer(QByteArray &buffer, int len)
             break;
         }
     }
-    return true;
+    return result;
 }
 
 bool Atari1027::handleEscapedCodes(const char b)
@@ -112,25 +108,25 @@ bool Atari1027::handleEscapedCodes(const char b)
         case 25: // CTRL+Y starts underline mode
             mFont.setUnderline(true);
             mPainter->setFont(mFont);
-            mFirstESC = false;
+            mESC = false;
             qDebug() << "!n" << "ESC Underline on";
             return true;
 
         case 26: // CTRL+Z ends underline mode
             mFont.setUnderline(false);
             mPainter->setFont(mFont);
-            mFirstESC = false;
+            mESC = false;
             qDebug() << "!n" << "ESC Underline off";
             return true;
 
         case 23: // CTRL+W starts international mode
             setInternationalMode(true);
-            mFirstESC = false;
+            mESC = false;
             return true;
 
         case 24: // CTRL+X ends international mode
             setInternationalMode(false);
-            mFirstESC = false;
+            mESC = false;
             return true;
     }
     return false;

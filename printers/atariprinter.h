@@ -1,17 +1,15 @@
 #ifndef ATARIPRINTER_H
 #define ATARIPRINTER_H
 
-#include "baseprinter.h"
+#include "nativeprintersupport.h"
 #include "atasciiinternational.h"
 #include "sioworker.h"
 
-class AtariPrinter : public BasePrinter
+class AtariPrinter : public NativePrinterSupport
 {
     Q_OBJECT
 public:
     AtariPrinter(SioWorker *worker);
-
-    virtual bool requiresNativePrinter() const { return true; }
 
     bool internationalMode() const { return mInternational; }
     void setInternationalMode(bool internationalMode) { mInternational = internationalMode; }

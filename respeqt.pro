@@ -41,16 +41,20 @@ SOURCES += main.cpp \
     logdisplaydialog.cpp \
     respeqtsettings.cpp \
     pclink.cpp \
-    baseprinter.cpp \
-    textprinter.cpp \
-    atari1027.cpp \
+    printers/baseprinter.cpp \
+    printers/textprinter.cpp \
+    printers/atari1027.cpp \
     atascii.cpp \
     drivewidget.cpp \
     infowidget.cpp \
     serialport-Qt.cpp \
     printerwidget.cpp \
     atasciiinternational.cpp \
-    atariprinter.cpp
+    printers/atariprinter.cpp \
+    printers/nativeprintersupport.cpp \
+    printers/atari1020.cpp \
+    printers/necp6.cpp \
+    printers/epsonfx80.cpp
 win32:LIBS += -lwinmm -lz
 unix:LIBS += -lz
 win32:SOURCES += serialport-win32.cpp
@@ -78,16 +82,20 @@ HEADERS += mainwindow.h \
     logdisplaydialog.h \
     respeqtsettings.h \
     pclink.h \
-    baseprinter.h \
-    textprinter.h \
-    atari1027.h \
+    printers/baseprinter.h \
+    printers/textprinter.h \
+    printers/atari1027.h \
     atascii.h \
     drivewidget.h \
     infowidget.h \
     serialport-Qt.h \
     printerwidget.h \
     atasciiinternational.h \
-    atariprinter.h
+    printers/atariprinter.h \
+    printers/nativeprintersupport.h \
+    printers/atari1020.h \
+    printers/necp6.h \
+    printers/epsonfx80.h
 win32:HEADERS += serialport-win32.h
 unix:HEADERS += serialport-unix.h
 FORMS += mainwindow.ui \
@@ -107,7 +115,8 @@ FORMS += mainwindow.ui \
 RESOURCES += icons.qrc \
     atarifiles.qrc \
     i18n.qrc \
-    documentation.qrc
+    documentation.qrc \
+    fonts.qrc
 OTHER_FILES += \
     license.txt \
     history.txt \
@@ -116,19 +125,19 @@ OTHER_FILES += \
     about.html \
     compile.txt \
 TRANSLATIONS = \
-               i18n/respeqt_de.ts \
-               i18n/respeqt_es.ts \
-               i18n/qt_pl.ts \
-               i18n/qt_tr.ts \
-               i18n/qt_ru.ts \
-               i18n/qt_sk.ts \
-               i18n/qt_de.ts \
-               i18n/qt_es.ts \
+    i18n/respeqt_de.ts \
+    i18n/respeqt_es.ts \
+    i18n/qt_pl.ts \
+    i18n/qt_tr.ts \
+    i18n/qt_ru.ts \
+    i18n/qt_sk.ts \
+    i18n/qt_de.ts \
+    i18n/qt_es.ts \
     i18n/respeqt_de.ts \
     i18n/respeqt_es.ts \
     i18n/respeqt_pl.ts \
     i18n/respeqt_ru.ts \
     i18n/respeqt_sk.ts \
-    i18n/respeqt_tr.ts
+i18n/respeqt_tr.ts
 
-RC_FILE = RespeQt.rc \
+RC_FILE = RespeQt.rc

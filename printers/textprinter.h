@@ -8,6 +8,7 @@ class TextPrinter : public BasePrinter
     Q_OBJECT
 public:
     TextPrinter(SioWorker *worker);
+    ~TextPrinter();
 
     virtual bool handleBuffer(QByteArray &buffer, int len);
 private:
