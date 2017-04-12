@@ -198,6 +198,10 @@ public:
     bool capitalLettersInPCLINK();
     void setCapitalLettersInPCLINK(bool caps);
 
+// URL Submit feature
+    bool isURLSubmitEnabled();
+    void setURLSubmit(bool enabled);
+
 // Enable Shade Mode //
     bool enableShade();
     void setEnableShade(bool shade);
@@ -279,6 +283,7 @@ private:
     bool mMinimizeToTray;
     bool mFilterUnderscore;
     bool mUseCapitalLettersInPCLINK;
+    bool mUseURLSubmit;
     bool mUseLargeFont;
     bool mExplorerOnTop;
     bool mEnableShade;
