@@ -98,6 +98,7 @@ OptionsDialog::OptionsDialog(QWidget *parent) :
     m_ui->saveDiskVisBox->setChecked(respeqtSettings->saveDiskVis());
     m_ui->filterUscore->setChecked(respeqtSettings->filterUnderscore());
     m_ui->capitalLettersPCLINK->setChecked(respeqtSettings->capitalLettersInPCLINK());
+    m_ui->URLSubmit->setChecked(respeqtSettings->isURLSubmitEnabled());
     m_ui->useLargerFont->setChecked(respeqtSettings->useLargeFont());
     m_ui->enableShade->setChecked(respeqtSettings->enableShade());
 
@@ -341,6 +342,7 @@ void OptionsDialog::OptionsDialog_accepted()
     respeqtSettings->setsaveDiskVis(m_ui->saveDiskVisBox->isChecked());
     respeqtSettings->setfilterUnderscore(m_ui->filterUscore->isChecked());
     respeqtSettings->setCapitalLettersInPCLINK(m_ui->capitalLettersPCLINK->isChecked());
+    respeqtSettings->setURLSubmit(m_ui->URLSubmit->isChecked());
     respeqtSettings->setUseLargeFont(m_ui->useLargerFont->isChecked());
     respeqtSettings->setEnableShade(m_ui->enableShade->isChecked());
 

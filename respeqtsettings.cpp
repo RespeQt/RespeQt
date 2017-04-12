@@ -118,6 +118,7 @@ RespeqtSettings::RespeqtSettings()
     msaveWindowsPos = mSettings->value("SaveWindowsPosSize", true).toBool();
     mFilterUnderscore = mSettings->value("FilterUnderscore", true).toBool();
     mUseCapitalLettersInPCLINK = mSettings->value("CapitalLettersInPCLINK", false).toBool();
+    mUseURLSubmit = mSettings->value("URLSubmit", false).toBool();
     msaveDiskVis = mSettings->value("SaveDiskVisibility", true).toBool();
     mdVis = mSettings->value("D9DOVisible",true).toBool();
     if (mMainW < 688 && mdVis) mMainW = 688;
@@ -186,6 +187,7 @@ void RespeqtSettings::saveSessionToFile(const QString &fileName)
         s.setValue("PrtH", mPrtH);
         s.setValue("FilterUnderscore", mFilterUnderscore);
         s.setValue("CapitalLettersInPCLINK", mUseCapitalLettersInPCLINK);
+        s.setValue("URLSubmit", mUseURLSubmit);
         s.setValue("UseLargeFont", mUseLargeFont);
         s.setValue("ExplorerOnTop", mExplorerOnTop);
         s.setValue("EnableShadeByDefault", mEnableShade);
@@ -244,6 +246,7 @@ void RespeqtSettings::saveSessionToFile(const QString &fileName)
         mPrtH = s.value("PrtH", 486).toInt();
         mFilterUnderscore = s.value("FilterUnderscore", true).toBool();
         mUseCapitalLettersInPCLINK = s.value("CapitalLettersInPCLINK", false).toBool();
+        mUseURLSubmit = s.value("URLSubmit", false).toBool();
         mUseLargeFont = s.value("UseLargeFont", false).toBool();
         mExplorerOnTop = s.value("ExplorerOnTop", false).toBool();
         mEnableShade = s.value("EnableShadeByDefault", true).toBool();
@@ -890,6 +893,17 @@ void RespeqtSettings::setCapitalLettersInPCLINK(bool caps)
 {
     mUseCapitalLettersInPCLINK = caps;
     mSettings->setValue("CapitalLettersInPCLINK", mUseCapitalLettersInPCLINK);
+}
+
+bool RespeqtSettings::isURLSubmitEnabled()
+{
+    return mUseURLSubmit;
+}
+
+void RespeqtSettings::setURLSubmit(bool enabled)
+{
+    mUseURLSubmit = enabled;
+    mSettings->setValue("URLSubmit", mUseURLSubmit);
 }
 
 void RespeqtSettings::writeRecentImageSettings()
