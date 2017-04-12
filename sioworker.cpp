@@ -261,8 +261,8 @@ QString SioWorker::deviceName(int device)
         case SMART_CDEVIC:
             result = tr("Smart device (APE time + URL)");
             break;
-        case ASPEQT_CLIENT_CDEVIC:
-            result = tr("AspeQt Client");
+        case RESPEQT_CLIENT_CDEVIC:
+            result = tr("RespeQt Client");
             break;
         case RS232_BASE_CDEVIC+0:
         case RS232_BASE_CDEVIC+1:
