@@ -52,27 +52,6 @@ public:
     int serialPortCompErrDelay();
     void setSerialPortCompErrDelay(int delay);
 
-    QString QtSerialPortName();
-    void setQtSerialPortName(const QString &name);
-
-    int QtSerialPortHandshakingMethod();
-    void setQtSerialPortHandshakingMethod(int method);
-
-    int QtSerialPortMaximumSpeed();
-    void setQtSerialPortMaximumSpeed(int speed);
-
-    bool QtSerialPortUsePokeyDivisors();
-    void setQtSerialPortUsePokeyDivisors(bool use);
-
-    int QtSerialPortPokeyDivisor();
-    void setQtSerialPortPokeyDivisor(int divisor);
-
-    int QtSerialPortWriteDelay();
-    void setQtSerialPortWriteDelay(int delay);
-
-    int QtSerialPortCompErrDelay();
-    void setQtSerialPortCompErrDelay(int delay);
-
     QString atariSioDriverName();
     void setAtariSioDriverName(const QString &name);
 
@@ -247,14 +226,6 @@ private:
     int mSerialPortMaximumSpeed;
     bool mSerialPortUsePokeyDivisors;
     int mSerialPortPokeyDivisor;
-
-    QString mQtSerialPortName;
-    int mQtSerialPortHandshakingMethod;
-    int mQtSerialPortWriteDelay;
-    int mQtSerialPortCompErrDelay;
-    int mQtSerialPortMaximumSpeed;
-    bool mQtSerialPortUsePokeyDivisors;
-    int mQtSerialPortPokeyDivisor;
 
     bool mUseHighSpeedExeLoader;
     bool mPrinterEmulation;
