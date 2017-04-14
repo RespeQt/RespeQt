@@ -82,9 +82,6 @@ void SioWorker::start(Priority p)
         case SERIAL_BACKEND_STANDARD:
             mPort = new StandardSerialPortBackend(0);
             break;
-        case SERIAL_BACKEND_QT:
-            mPort = new QtSerialPortBackend(0);
-            break;
         case SERIAL_BACKEND_SIO_DRIVER:
             mPort = new AtariSioBackend(0);
             break;
@@ -461,9 +458,6 @@ void CassetteWorker::start(Priority p)
     switch (respeqtSettings->backend()) {
         case SERIAL_BACKEND_STANDARD:
             mPort = new StandardSerialPortBackend(0);
-            break;
-        case SERIAL_BACKEND_QT:
-            mPort = new QtSerialPortBackend(0);
             break;
         case SERIAL_BACKEND_SIO_DRIVER:
             mPort = new AtariSioBackend(0);

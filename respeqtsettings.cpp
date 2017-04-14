@@ -50,24 +50,6 @@ RespeqtSettings::RespeqtSettings()
     mSerialPortUsePokeyDivisors = mSettings->value("SerialPortUsePokeyDivisors", false).toBool();
     mSerialPortPokeyDivisor = mSettings->value("SerialPortPokeyDivisor", 6).toInt();
 
-    /* Qt serial port backend */
-    mQtSerialPortName = mSettings->value("QtSerialPortName", QtSerialPortBackend::defaultPortName()).toString();
-    /* old rergistry entries contain SERIAL_PORT_LOCATION at the front of the serial port name, so we skip them now */
-    if(mQtSerialPortName.startsWith(SERIAL_PORT_LOCATION,Qt::CaseInsensitive))
-    {
-        mQtSerialPortName.remove(0,strlen(SERIAL_PORT_LOCATION));
-    }
-    mQtSerialPortHandshakingMethod = mSettings->value("QtHandshakingMethod", 0).toInt();
-    mQtSerialPortWriteDelay = mSettings->value("QtWriteDelay", 1).toInt();
-#ifdef Q_OS_WIN
-    mQtSerialPortCompErrDelay = mSettings->value("QtCompErrDelay", 300).toInt(); // default is 300us for windows
-#else
-    mQtSerialPortCompErrDelay = mSettings->value("QtCompErrDelay", 800).toInt(); // default value of 800us works OK with FTDI USB on linux/OSX
-#endif
-    mQtSerialPortMaximumSpeed = mSettings->value("QtMaximumSerialPortSpeed", 2).toInt();
-    mQtSerialPortUsePokeyDivisors = mSettings->value("QtSerialPortUsePokeyDivisors", false).toBool();
-    mQtSerialPortPokeyDivisor = mSettings->value("QtSerialPortPokeyDivisor", 6).toInt();
-
     /* AtariSIO backend */
     mAtariSioDriverName = mSettings->value("AtariSioDriverName", AtariSioBackend::defaultPortName()).toString();
     /* old rergistry entries contain SERIAL_PORT_LOCATION at the front of the serial port name, so we skip them now */
@@ -157,13 +139,6 @@ void RespeqtSettings::saveSessionToFile(const QString &fileName)
         s.setValue("MaximumSerialPortSpeed", mSerialPortMaximumSpeed);
         s.setValue("SerialPortUsePokeyDivisors", mSerialPortUsePokeyDivisors);
         s.setValue("SerialPortPokeyDivisor", mSerialPortPokeyDivisor);
-        s.setValue("QtSerialPortName", mQtSerialPortName);
-        s.setValue("QtHandshakingMethod", mQtSerialPortHandshakingMethod);
-        s.setValue("QtWriteDelay", mQtSerialPortWriteDelay);
-        s.setValue("QtCompErrDelay", mQtSerialPortCompErrDelay);
-        s.setValue("QtMaximumSerialPortSpeed", mQtSerialPortMaximumSpeed);
-        s.setValue("QtSerialPortUsePokeyDivisors", mQtSerialPortUsePokeyDivisors);
-        s.setValue("QtSerialPortPokeyDivisor", mQtSerialPortPokeyDivisor);
         s.setValue("UseHighSpeedExeLoader", mUseHighSpeedExeLoader);
         s.setValue("PrinterEmulation", mPrinterEmulation);
         s.setValue("CustomCasBaud", mCustomCasBaud);
@@ -217,13 +192,6 @@ void RespeqtSettings::saveSessionToFile(const QString &fileName)
         mSerialPortMaximumSpeed = s.value("MaximumSerialPortSpeed", 2).toInt();
         mSerialPortUsePokeyDivisors = s.value("SerialPortUsePokeyDivisors", false).toBool();
         mSerialPortPokeyDivisor = s.value("SerialPortPokeyDivisor", 6).toInt();
-        mQtSerialPortName = s.value("QtSerialPortName", QtSerialPortBackend::defaultPortName()).toString();
-        mQtSerialPortHandshakingMethod = s.value("QtHandshakingMethod", 0).toInt();
-        mQtSerialPortWriteDelay = s.value("QtWriteDelay", 1).toInt();
-        mQtSerialPortCompErrDelay = s.value("QtCompErrDelay", 1).toInt();
-        mQtSerialPortMaximumSpeed = s.value("QtMaximumSerialPortSpeed", 2).toInt();
-        mQtSerialPortUsePokeyDivisors = s.value("QtSerialPortUsePokeyDivisors", false).toBool();
-        mQtSerialPortPokeyDivisor = s.value("QtSerialPortPokeyDivisor", 6).toInt();
         mUseHighSpeedExeLoader = s.value("UseHighSpeedExeLoader", false).toBool();
         mPrinterEmulation = s.value("PrinterEmulation", true).toBool();
         mCustomCasBaud = s.value("CustomCasBaud", 875).toInt();
@@ -346,84 +314,6 @@ void RespeqtSettings::setSerialPortCompErrDelay(int delay)
     mSerialPortCompErrDelay = delay;
     if(mSessionFileName == "") mSettings->setValue("CompErrDelay", mSerialPortCompErrDelay);
 }
-
-QString RespeqtSettings::QtSerialPortName()
-{
-    return mQtSerialPortName;
-}
-
-void RespeqtSettings::setQtSerialPortName(const QString &name)
-{
-    mQtSerialPortName = name;
-    if(mSessionFileName == "") mSettings->setValue("QtSerialPortName", mQtSerialPortName);
-}
-
-int RespeqtSettings::QtSerialPortMaximumSpeed()
-{
-    return mQtSerialPortMaximumSpeed;
-}
-
-void RespeqtSettings::setQtSerialPortMaximumSpeed(int speed)
-{
-    mQtSerialPortMaximumSpeed = speed;
-    if(mSessionFileName == "") mSettings->setValue("QtMaximumSerialPortSpeed", mQtSerialPortMaximumSpeed);
-}
-
-bool RespeqtSettings::QtSerialPortUsePokeyDivisors()
-{
-    return mQtSerialPortUsePokeyDivisors;
-}
-
-void RespeqtSettings::setQtSerialPortUsePokeyDivisors(bool use)
-{
-    mQtSerialPortUsePokeyDivisors = use;
-    if(mSessionFileName == "") mSettings->setValue("QtSerialPortUsePokeyDivisors", mQtSerialPortUsePokeyDivisors);
-}
-
-int RespeqtSettings::QtSerialPortPokeyDivisor()
-{
-    return mQtSerialPortPokeyDivisor;
-}
-
-void RespeqtSettings::setQtSerialPortPokeyDivisor(int divisor)
-{
-    mQtSerialPortPokeyDivisor = divisor;
-    if(mSessionFileName == "") mSettings->setValue("QtSerialPortPokeyDivisor", mQtSerialPortPokeyDivisor);
-}
-
-int RespeqtSettings::QtSerialPortHandshakingMethod()
-{
-    return mQtSerialPortHandshakingMethod;
-}
-
-void RespeqtSettings::setQtSerialPortHandshakingMethod(int method)
-{
-    mQtSerialPortHandshakingMethod = method;
-    if(mSessionFileName == "") mSettings->setValue("QtHandshakingMethod", mQtSerialPortHandshakingMethod);
-}
-
-int RespeqtSettings::QtSerialPortWriteDelay()
-{
-    return mQtSerialPortWriteDelay;
-}
-
-void RespeqtSettings::setQtSerialPortWriteDelay(int delay)
-{
-    mQtSerialPortWriteDelay = delay;
-    if(mSessionFileName == "") mSettings->setValue("QtWriteDelay", mQtSerialPortWriteDelay);
-}
-
-int RespeqtSettings::QtSerialPortCompErrDelay()
-{
-    return mQtSerialPortCompErrDelay;
-}
-
-void RespeqtSettings::setQtSerialPortCompErrDelay(int delay)
-{
-    mQtSerialPortCompErrDelay = delay;
-    if(mSessionFileName == "") mSettings->setValue("QtCompErrDelay", mQtSerialPortCompErrDelay);
-}
-
 
 QString RespeqtSettings::atariSioDriverName()
 {
