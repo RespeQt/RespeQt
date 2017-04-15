@@ -16,9 +16,10 @@ Some features
 * Folders can be mounted as simulated Dos20s disks. (read-only, now with SDX compatibility, and bootable)
 * Atari executables can be booted directly, optionally with high speed.
 * Contents of image files can be viewed / changed
-* AspeQt Client module (ASPECL.COM). Runs on the Atari and is used to get/set Date/Time on the Atari plus a variety of other remote tasks.
+* RespeQt Client module RCL.COM. Runs on the Atari and is used to get/set Date/Time on the Atari plus a variety of other remote tasks.
+* ApeTime client support.
 * Upto 6xSIO speed and more if the serial port adaptor supports it (FTDI chip based cables are recommanded).
-* Localization support
+* Localization support (Currently for English, German, Polish, Russian, Slovak, Spanish and Turkish). ***this may be broken***
 * Multi-session support
 
 License (see license.txt file for more details)
@@ -45,6 +46,19 @@ Copyright Matthias Reichl <hias@horus.com>. Used in this package under GPL 2.0 l
 Atascii Fonts by Mark Simonson (http://members.bitstream.net/~marksim/atarimac).
 Used in this package under Freeware License.
 
+RespeQt icon by djmat56. Used with permission.
+
+Support for the spanish language by AsCrNet.
+
+RespeQt Client program (rcl.com) Copyright FlashJazzCat. Used under the GPL v2.
+
+DOS files distributed with RespeQt are copyright of their respective owners. Joseph Zatarski and RespeQt distributes those files with the understanding that they are either abandonware or public domain, and are widely available for download through the internet. If you are the copyright holder of one or more of these files, and believe that distribution of these files constitutes a breach of your rights please contact Joseph Zatarski. We respect the rights of copyright holders and won't distribute copyrighted work without the rights holder's consent.
+
+Special Thanks
+==============
+Kyle22 for finding 2 instances of AspeQt, 1 reference to Ray Ataergin, 1 reference to Ray's website which needed to be changed, for finding that the about and user documentation dialogs were out of date (way out of date), contact information in readme.txt was out of date, and for pointing out that I forgot to update the documentation for r1.
+
+FlashJazzCat for writing a replacement for AspeCL.
 
 Contact
 =======

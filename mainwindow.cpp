@@ -50,10 +50,10 @@ static QFile *logFile;
 static QMutex *logMutex;
 
 QString g_exefileName;
-QString g_aspeclFileName;
+QString g_rclFileName;
 QString g_respeQtAppPath;
 QRect g_savedGeometry;
-char g_aspeclSlotNo;
+char g_rclSlotNo;
 bool g_disablePicoHiSpeed;
 bool g_D9DOVisible = true;
 bool g_miniMode = false;
@@ -287,9 +287,9 @@ MainWindow::MainWindow(QWidget *parent)
     SmartDevice *smart = new SmartDevice(sio);
     sio->installDevice(SMART_CDEVIC, smart);
 
-    // AspeQt Client  //
-    AspeCl *acl = new AspeCl(sio);
-    sio->installDevice(ASPEQT_CLIENT_CDEVIC, acl);
+    // RespeQt Client  //
+    RCl *rcl = new RCl(sio);
+    sio->installDevice(RESPEQT_CLIENT_CDEVIC, rcl);
     
     textPrinterWindow = new TextPrinterWindow();
     // Documentation Display
@@ -309,11 +309,11 @@ MainWindow::MainWindow(QWidget *parent)
     trayIcon.setIcon(windowIcon());
 
     // Connections needed for remotely mounting a disk image & Toggle Auto-Commit //
-    connect (acl, SIGNAL(findNewSlot(int,bool)), this, SLOT(firstEmptyDiskSlot(int,bool)));
-    connect (this, SIGNAL(newSlot(int)), acl, SLOT(gotNewSlot(int)));
-    connect (acl, SIGNAL(mountFile(int,QString)), this, SLOT(mountFileWithDefaultProtection(int,QString)));
-    connect (this, SIGNAL(fileMounted(bool)), acl, SLOT(fileMounted(bool)));
-    connect (acl, SIGNAL(toggleAutoCommit(int)), this, SLOT(autoCommit(int)));
+    connect (rcl, SIGNAL(findNewSlot(int,bool)), this, SLOT(firstEmptyDiskSlot(int,bool)));
+    connect (this, SIGNAL(newSlot(int)), rcl, SLOT(gotNewSlot(int)));
+    connect (rcl, SIGNAL(mountFile(int,QString)), this, SLOT(mountFileWithDefaultProtection(int,QString)));
+    connect (this, SIGNAL(fileMounted(bool)), rcl, SLOT(fileMounted(bool)));
+    connect (rcl, SIGNAL(toggleAutoCommit(int)), this, SLOT(autoCommit(int)));
 }
 
 MainWindow::~MainWindow()
@@ -1207,11 +1207,11 @@ void MainWindow::keepBootExeOpen()
 
 void MainWindow::mountFileWithDefaultProtection(int no, const QString &fileName)
 {
-    // If fileName was passed from AspeCL it is an 8.1 name, so we need to find
+    // If fileName was passed from RCL it is an 8.1 name, so we need to find
     // the full PC name in order to validate it.  //
     QString atariFileName, atariLongName, path;
 
-    g_aspeclFileName = fileName;
+    g_rclFileName = fileName;
     atariFileName = fileName;
 
     if(atariFileName.left(1) == "*") {
@@ -1238,7 +1238,7 @@ void MainWindow::mountFile(int no, const QString &fileName, bool /*prot*/)
     bool isDir = false;
 
     if (fileName.isEmpty()) {
-        if(g_aspeclFileName.left(1) == "*") emit fileMounted(false);  //
+        if(g_rclFileName.left(1) == "*") emit fileMounted(false);  //
         return;
     }
 
@@ -1259,7 +1259,7 @@ void MainWindow::mountFile(int no, const QString &fileName, bool /*prot*/)
         if (!disk->open(fileName, type) || !ejectImage(no) ) {
             respeqtSettings->unmountImage(no);
             delete disk;
-            if(g_aspeclFileName.left(1) == "*") emit fileMounted(false);  //
+            if(g_rclFileName.left(1) == "*") emit fileMounted(false);  //
             return;
         }
 
@@ -1300,7 +1300,7 @@ void MainWindow::mountFile(int no, const QString &fileName, bool /*prot*/)
                 .arg(filenamelabel)
                 .arg(disk->description());
 
-        if(g_aspeclFileName.left(1) == "*") emit fileMounted(true);  //
+        if(g_rclFileName.left(1) == "*") emit fileMounted(true);  //
     }
 }
 
