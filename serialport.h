@@ -26,7 +26,8 @@ enum eHandshake
 enum eSerialBackend
 {
     SERIAL_BACKEND_STANDARD=0,
-    SERIAL_BACKEND_SIO_DRIVER=1
+    SERIAL_BACKEND_SIO_DRIVER=1,
+    SERIAL_BACKEND_TEST = 99
 };
 
 enum eSIOConstants
@@ -95,6 +96,9 @@ signals:
 #ifdef Q_OS_UNIX
 #define SERIAL_PORT_LOCATION "/dev/"
 #include "serialport-unix.h"
+#endif
+#ifndef QT_NO_DEBUG
+#include "serialport-test.h"
 #endif
 
 #endif // SERIALPORT_H

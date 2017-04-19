@@ -31,9 +31,15 @@ OptionsDialog::OptionsDialog(QWidget *parent) :
     itemAtariSio = m_ui->treeWidget->topLevelItem(0)->child(1);
     itemEmulation = m_ui->treeWidget->topLevelItem(1);
     itemI18n = m_ui->treeWidget->topLevelItem(2);
+#ifndef Q_NO_DEBUG
+    itemTestSerialPort = m_ui->treeWidget->topLevelItem(0)->child(2);
+#endif
 
 #ifndef Q_OS_LINUX
     m_ui->treeWidget->topLevelItem(0)->removeChild(itemAtariSio);
+#endif
+#ifdef Q_NO_DEBUG
+    m_ui->treeWidget->topLevelItem(0)->removeChild(itemTestSerialPort);
 #endif
 
     connect(this, SIGNAL(accepted()), this, SLOT(OptionsDialog_accepted()));
@@ -78,14 +84,23 @@ OptionsDialog::OptionsDialog(QWidget *parent) :
     m_ui->enableShade->setChecked(respeqtSettings->enableShade());
 
     switch (respeqtSettings->backend()) {
+#ifndef Q_NO_DEBUG
+        case SERIAL_BACKEND_TEST:
+#endif
         case SERIAL_BACKEND_STANDARD:
             itemStandard->setCheckState(0, Qt::Checked);
             itemAtariSio->setCheckState(0, Qt::Unchecked);
+#ifndef Q_NO_DEBUG
+            itemTestSerialPort->setCheckState(0, Qt::Unchecked);
+#endif
             m_ui->treeWidget->setCurrentItem(itemStandard);
             break;
         case SERIAL_BACKEND_SIO_DRIVER:
             itemStandard->setCheckState(0, Qt::Unchecked);
             itemAtariSio->setCheckState(0, Qt::Checked);
+#ifndef Q_NO_DEBUG
+            itemTestSerialPort->setCheckState(0, Qt::Unchecked);
+#endif
             m_ui->treeWidget->setCurrentItem(itemAtariSio);
             break;
     }
@@ -203,6 +218,12 @@ void OptionsDialog::on_treeWidget_itemClicked(QTreeWidgetItem* item, int /*colum
         {
             itemAtariSio->setCheckState(0, Qt::Unchecked);
         }
+#ifndef Q_NO_DEBUG
+        if (item != itemTestSerialPort)
+        {
+            itemTestSerialPort->setCheckState(0, Qt::Unchecked);
+        }
+#endif
     }
     else if ((itemStandard->checkState(0) == Qt::Unchecked) &&
             (itemAtariSio->checkState(0) == Qt::Unchecked))
@@ -211,6 +232,9 @@ void OptionsDialog::on_treeWidget_itemClicked(QTreeWidgetItem* item, int /*colum
     }
     m_ui->serialPortBox->setCheckState(itemStandard->checkState(0));
     m_ui->atariSioBox->setCheckState(itemAtariSio->checkState(0));
+#ifndef Q_NO_DEBUG
+    m_ui->serialTestBox->setCheckState(itemTestSerialPort->checkState(0));
+#endif
 }
 
 void OptionsDialog::on_treeWidget_currentItemChanged(QTreeWidgetItem* current, QTreeWidgetItem* /*previous*/)
@@ -219,10 +243,12 @@ void OptionsDialog::on_treeWidget_currentItemChanged(QTreeWidgetItem* current, Q
         m_ui->stackedWidget->setCurrentIndex(0);
     } else if (current == itemAtariSio) {
         m_ui->stackedWidget->setCurrentIndex(1);
-    } else if (current == itemEmulation) {
+    } else if (current == itemTestSerialPort) {
         m_ui->stackedWidget->setCurrentIndex(2);
+    } else if (current == itemEmulation) {
+        m_ui->stackedWidget->setCurrentIndex(3);
     } else if (current == itemI18n) {
-    m_ui->stackedWidget->setCurrentIndex(3);
+        m_ui->stackedWidget->setCurrentIndex(4);
     }
 }
 
@@ -254,6 +280,12 @@ void OptionsDialog::OptionsDialog_accepted()
     {
         backend = SERIAL_BACKEND_SIO_DRIVER;
     }
+#ifndef Q_NO_DEBUG
+    else if (itemTestSerialPort->checkState(0) == Qt::Checked)
+    {
+        backend = SERIAL_BACKEND_TEST;
+    }
+#endif
 
     respeqtSettings->setBackend(backend);
 
