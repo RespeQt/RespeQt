@@ -1,7 +1,7 @@
 /*
  * miscdevices.h
  *
- * Copyright 2015 Joseph Zatarski
+ * Copyright 2015, 2017 Joseph Zatarski
  *
  * This file is copyrighted by either Fatih Aygun, Ray Ataergin, or both.
  * However, the years for these copyrights are unfortunately unknown. If you

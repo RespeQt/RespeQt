@@ -1,7 +1,7 @@
 /*
  * sioworker.cpp
  *
- * Copyright 2015 Joseph Zatarski
+ * Copyright 2015, 2017 Joseph Zatarski
  * Copyright 2016 TheMontezuma
  *
  * This file is copyrighted by either Fatih Aygun, Ray Ataergin, or both.

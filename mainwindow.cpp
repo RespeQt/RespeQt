@@ -1,8 +1,10 @@
 /*
  * mainwindow.cpp
  *
- * Copyright 2015 Joseph Zatarski
+ * Copyright 2015, 2017 Joseph Zatarski
  * Copyright 2016 TheMontezuma
+ * Copyright 2017 josch1710
+ * Copyright 2017 blind
  *
  * This file is copyrighted by either Fatih Aygun, Ray Ataergin, or both.
  * However, the years for these copyrights are unfortunately unknown. If you

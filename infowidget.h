@@ -1,3 +1,10 @@
+/*
+ * infowidget.h
+ *
+ * Copyright 2017 blind
+ *
+ */
+ 
 #ifndef INFOWIDGET_H
 #define INFOWIDGET_H
 
