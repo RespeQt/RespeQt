@@ -1,8 +1,8 @@
 /*
  * miscdevices.cpp
  *
- * Copyright 2015 Joseph Zatarski
- * Copyright 2016 TheMontezuma
+ * Copyright 2015, 2017 Joseph Zatarski
+ * Copyright 2016, 2017 TheMontezuma
  *
  * This file is copyrighted by either Fatih Aygun, Ray Ataergin, or both.
  * However, the years for these copyrights are unfortunately unknown. If you
