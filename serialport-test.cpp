@@ -1,3 +1,4 @@
+#ifndef QT_NO_DEBUG
 #include "serialport-test.h"
 #include "respeqtsettings.h"
 #include "logdisplaydialog.h"
@@ -11,7 +12,6 @@ TestSerialPortBackend::TestSerialPortBackend(QObject *parent)
     : AbstractSerialPortBackend(parent),
       mXmlReader(NULL)
 {
-    //mTestFilename = QString("/Users/jochen/work/RespeQt/test.xml");
     mTestFilename = respeqtSettings->testFile();
 }
 
@@ -242,3 +242,4 @@ bool TestSerialPortBackend::writeRawFrame(const QByteArray &/*data*/)
 
 void TestSerialPortBackend::setActiveSioDevices(const QByteArray &/*data*/)
 {}
+#endif

@@ -32,15 +32,13 @@ OptionsDialog::OptionsDialog(QWidget *parent) :
     itemAtariSio = m_ui->treeWidget->topLevelItem(0)->child(1);
     itemEmulation = m_ui->treeWidget->topLevelItem(1);
     itemI18n = m_ui->treeWidget->topLevelItem(2);
-#ifndef QT_NO_DEBUG
     itemTestSerialPort = m_ui->treeWidget->topLevelItem(0)->child(2);
-#endif
 
 #ifndef Q_OS_LINUX
     m_ui->treeWidget->topLevelItem(0)->removeChild(itemAtariSio);
 #endif
 #ifdef QT_NO_DEBUG
-    m_ui->treeWidget->topLevelItem(0)->removeChild(m_ui->treeWidget->topLevelItem(0)->child(2));
+    m_ui->treeWidget->topLevelItem(0)->removeChild(itemTestSerialPort);
 #endif
 
     connect(this, SIGNAL(accepted()), this, SLOT(OptionsDialog_accepted()));

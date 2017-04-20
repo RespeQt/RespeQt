@@ -1,9 +1,7 @@
 #ifndef SERIALPORTTEST_H
 #define SERIALPORTTEST_H
 
-#ifdef QT_NO_DEBUG
-#error "This class is not allowed in non-debug builds"
-#endif
+#ifndef QT_NO_DEBUG
 
 #include "serialport.h"
 
@@ -45,4 +43,5 @@ protected:
     void forwardXml();
 };
 
+#endif
 #endif // SERIALPORTTEST_H

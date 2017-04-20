@@ -34,9 +34,7 @@ protected:
 private:
     Ui::OptionsDialog *m_ui;
     QTreeWidgetItem *itemStandard, *itemAtariSio, *itemEmulation, *itemI18n;
-#ifndef QT_NO_DEBUG
     QTreeWidgetItem *itemTestSerialPort;
-#endif
 
 private slots:
     void on_serialPortComboBox_currentIndexChanged(int index);
