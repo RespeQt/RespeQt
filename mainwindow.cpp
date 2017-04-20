@@ -133,6 +133,8 @@ MainWindow::MainWindow(QWidget *parent)
     connect(this, SIGNAL(logMessage(int,QString)), this, SLOT(uiMessage(int,QString)), Qt::QueuedConnection);
     qInstallMessageHandler(logMessageOutput);
     qDebug() << "!d" << tr("RespeQt started at %1.").arg(QDateTime::currentDateTime().toString());
+    
+    logWindow_ = NULL;
 
     /* Remove old temporaries */
     QDir tempDir = QDir::temp();
