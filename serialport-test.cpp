@@ -1,15 +1,18 @@
 #include "serialport-test.h"
+#include "respeqtsettings.h"
+#include "logdisplaydialog.h"
 
 #include <QFile>
 #include <exception>
 #include <QDir>
-#include "logdisplaydialog.h"
+#include <QThread>
 
 TestSerialPortBackend::TestSerialPortBackend(QObject *parent)
     : AbstractSerialPortBackend(parent),
       mXmlReader(NULL)
 {
-    mTestFilename = QString("/Users/jochen/work/RespeQt/test.xml");
+    //mTestFilename = QString("/Users/jochen/work/RespeQt/test.xml");
+    mTestFilename = respeqtSettings->testFile();
 }
 
 TestSerialPortBackend::~TestSerialPortBackend()
@@ -36,9 +39,11 @@ bool TestSerialPortBackend::open()
     if (mXmlReader->readNext() != QXmlStreamReader::StartDocument) {
         return false;
     }
+
     if (mXmlReader->readNext() != QXmlStreamReader::StartElement) {
         return false;
     }
+
     if (mXmlReader->name() != "testcase")
         return false;
 
@@ -77,6 +82,45 @@ bool TestSerialPortBackend::setSpeed(int /*speed*/)
     return true;
 }
 
+bool TestSerialPortBackend::readPauseTag()
+{
+     if (!mXmlReader->isStartElement()
+             && !mXmlReader->readNextStartElement())
+         return false;
+
+     if (mXmlReader->name() == "pause")
+     {
+        QXmlStreamAttributes attr = mXmlReader->attributes();
+        bool ok;
+        if (attr.hasAttribute("sec")) {
+            int sec = attr.value("sec").toInt(&ok);
+            qDebug() << "!n" << tr("Sleeping %1 seconds").arg(sec);
+            if (ok) QThread::currentThread()->sleep(sec);
+        }
+        if (attr.hasAttribute("msec")) {
+            int msec = attr.value("msec").toInt(&ok);
+            qDebug() << "!n" << tr("Sleeping %1 milliseconds").arg(msec);
+            if (ok) QThread::currentThread()->msleep(msec);
+        }
+        forwardXml();
+    }
+    return true;
+}
+
+inline
+void TestSerialPortBackend::forwardXml()
+{
+    QXmlStreamReader::TokenType token;
+    do {
+        token = mXmlReader->readNext();
+        /*qDebug()<<"!n is start: "<<mXmlReader->isStartElement()
+               << " is end: "<<mXmlReader->isEndElement()
+               <<" Name: "<<mXmlReader->name();*/
+    } while(!mXmlReader->atEnd()
+          && token != QXmlStreamReader::EndElement
+          && token != QXmlStreamReader::StartElement);
+}
+
 QByteArray TestSerialPortBackend::readCommandFrame()
 {
     if (!mXmlReader) return NULL;
@@ -84,11 +128,13 @@ QByteArray TestSerialPortBackend::readCommandFrame()
     QByteArray data;
 
     data.resize(4);
-    do {
-    } while (mXmlReader->readNext() != QXmlStreamReader::StartElement);
 
-    if (mXmlReader->name() != "commandframe")
-        return NULL;
+    forwardXml();
+    if (!readPauseTag()) return NULL;
+
+    if (!mXmlReader->isStartElement()
+            && !mXmlReader->readNextStartElement()) return NULL;
+    if (mXmlReader->name() != "commandframe") return NULL;
 
     QXmlStreamAttributes attr = mXmlReader->attributes();
     if (!attr.hasAttribute("device")
@@ -130,8 +176,12 @@ QByteArray TestSerialPortBackend::readDataFrame(uint size, bool verbose)
 {
     if (!mXmlReader) return NULL;
 
-    do {
-    } while (mXmlReader->readNext() != QXmlStreamReader::StartElement);
+    forwardXml();
+    if (!readPauseTag()) return NULL;
+
+    if (!mXmlReader->isStartElement()
+            && !mXmlReader->readNextStartElement())
+        return NULL;
 
     if (mXmlReader->name() != "dataframe")
         return NULL;
@@ -142,7 +192,7 @@ QByteArray TestSerialPortBackend::readDataFrame(uint size, bool verbose)
         qDebug() << "!n" << tr("Data frame contents: %1").arg(QString(data));
         if (size != uint(data.size()))
         {
-            qDebug() << "!n" << tr("Read: got %1 bytes, expected %2 bytes")
+            qDebug() << "!n" << tr("Read error: got %1 bytes, expected %2 bytes")
                       .arg(data.size()).arg(size);
         }
     }

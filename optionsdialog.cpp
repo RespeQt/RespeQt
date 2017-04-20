@@ -15,6 +15,7 @@
 #include <QtSerialPort/QtSerialPort>
 #include <QTranslator>
 #include <QDir>
+#include <QFileDialog>
 
 OptionsDialog::OptionsDialog(QWidget *parent) :
     QDialog(parent),
@@ -39,7 +40,7 @@ OptionsDialog::OptionsDialog(QWidget *parent) :
     m_ui->treeWidget->topLevelItem(0)->removeChild(itemAtariSio);
 #endif
 #ifdef Q_NO_DEBUG
-    m_ui->treeWidget->topLevelItem(0)->removeChild(itemTestSerialPort);
+    m_ui->treeWidget->topLevelItem(0)->removeChild(m_ui->treeWidget->topLevelItem(0)->child(2));
 #endif
 
     connect(this, SIGNAL(accepted()), this, SLOT(OptionsDialog_accepted()));
@@ -295,4 +296,14 @@ void OptionsDialog::OptionsDialog_accepted()
 void OptionsDialog::on_useEmulationCustomCasBaudBox_toggled(bool checked)
 {
     m_ui->emulationCustomCasBaudSpin->setEnabled(checked);
+}
+
+void OptionsDialog::on_testFileButton_clicked()
+{
+#ifndef Q_NO_DEBUG
+    QString file1Name = QFileDialog::getOpenFileName(this,
+             tr("Open test XML File"), QString(), tr("XML Files (*.xml)"));
+    m_ui->testFileLabel->setText(file1Name);
+    respeqtSettings->setTestFile(file1Name);
+#endif
 }

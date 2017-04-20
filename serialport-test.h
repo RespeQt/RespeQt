@@ -40,6 +40,9 @@ public:
 protected:
     QString mTestFilename;
     QXmlStreamReader *mXmlReader;
+
+    bool readPauseTag();
+    void forwardXml();
 };
 
 #endif // SERIALPORTTEST_H
