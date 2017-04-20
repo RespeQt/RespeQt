@@ -60,7 +60,7 @@ RespeqtSettings::RespeqtSettings()
     mAtariSioHandshakingMethod = mSettings->value("AtariSioHandshakingMethod", 0).toInt();
 
     mBackend = mSettings->value("Backend", 0).toInt();
-#ifndef Q_NO_DEBUG
+#ifndef QT_NO_DEBUG
     if (mBackend == SERIAL_BACKEND_TEST) {
         mBackend = SERIAL_BACKEND_STANDARD;
     }
@@ -133,7 +133,7 @@ void RespeqtSettings::saveSessionToFile(const QString &fileName)
     extern bool g_miniMode;
     QSettings s(fileName, QSettings::IniFormat);
 
-#ifndef Q_NO_DEBUG
+#ifndef QT_NO_DEBUG
     if (mBackend == SERIAL_BACKEND_TEST) {
         mBackend = SERIAL_BACKEND_STANDARD;
     }

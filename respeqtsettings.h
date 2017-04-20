@@ -60,7 +60,7 @@ public:
 
     int backend();
     void setBackend(int backend);
-#ifndef Q_NO_DEBUG
+#ifndef QT_NO_DEBUG
     QString testFile() const { return mTestFile; }
     void setTestFile(const QString testFile) { mTestFile = testFile; }
 #endif
@@ -238,7 +238,7 @@ private:
     int mAtariSioHandshakingMethod;
 
     int mBackend;
-#ifndef Q_NO_DEBUG
+#ifndef QT_NO_DEBUG
     QString mTestFile;
 #endif
 
