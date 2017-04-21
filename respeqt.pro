@@ -42,7 +42,8 @@ SOURCES += main.cpp \
     respeqtsettings.cpp \
     drivewidget.cpp \
     pclink.cpp \
-    infowidget.cpp
+    infowidget.cpp \
+    serialport-test.cpp
 win32:LIBS += -lwinmm -lz
 unix:LIBS += -lz
 win32:SOURCES += serialport-win32.cpp
@@ -71,7 +72,8 @@ HEADERS += mainwindow.h \
     respeqtsettings.h \
     drivewidget.h \
     pclink.h \
-    infowidget.h
+    infowidget.h \
+    serialport-test.h
 
 win32:HEADERS += serialport-win32.h
 unix:HEADERS += serialport-unix.h
@@ -116,6 +118,9 @@ TRANSLATIONS = \
     i18n/respeqt_tr.ts
 
 RC_FILE = RespeQt.rc \
+
+DISTFILES += \
+    test.xml
 
 
 

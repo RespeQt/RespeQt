@@ -61,6 +61,11 @@ RespeqtSettings::RespeqtSettings()
     mAtariSioHandshakingMethod = mSettings->value("AtariSioHandshakingMethod", 0).toInt();
 
     mBackend = mSettings->value("Backend", 0).toInt();
+#ifndef QT_NO_DEBUG
+    if (mBackend == SERIAL_BACKEND_TEST) {
+        mBackend = SERIAL_BACKEND_STANDARD;
+    }
+#endif
 
     mUseHighSpeedExeLoader = mSettings->value("UseHighSpeedExeLoader", false).toBool();
     mPrinterEmulation = mSettings->value("PrinterEmulation", true).toBool();
@@ -128,6 +133,12 @@ void RespeqtSettings::saveSessionToFile(const QString &fileName)
 {
     extern bool g_miniMode;
     QSettings s(fileName, QSettings::IniFormat);
+
+#ifndef QT_NO_DEBUG
+    if (mBackend == SERIAL_BACKEND_TEST) {
+        mBackend = SERIAL_BACKEND_STANDARD;
+    }
+#endif
 
     s.beginGroup("RespeQt");
         s.setValue("Backend", mBackend);

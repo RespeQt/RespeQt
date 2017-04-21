@@ -61,6 +61,10 @@ public:
 
     int backend();
     void setBackend(int backend);
+#ifndef QT_NO_DEBUG
+    QString testFile() const { return mTestFile; }
+    void setTestFile(const QString testFile) { mTestFile = testFile; }
+#endif
 
     bool useHighSpeedExeLoader();
     void setUseHighSpeedExeLoader(bool use);
@@ -235,6 +239,9 @@ private:
     int mAtariSioHandshakingMethod;
 
     int mBackend;
+#ifndef QT_NO_DEBUG
+    QString mTestFile;
+#endif
 
     bool mUseCustomCasBaud;
     int mCustomCasBaud;
