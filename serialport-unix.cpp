@@ -3,7 +3,9 @@
  *
  * Copyright 2015 DrVenkman
  * Copyright 2015 Joseph Zatarski
- * Copyright 2016 TheMontezuma
+ * Copyright 2016, 2017 TheMontezuma
+ * Copyright 2017 josch1710
+ * Copyright 2017 blind
  *
  * This file is copyrighted by either Fatih Aygun, Ray Ataergin, or both.
  * However, the years for these copyrights are unfortunately unknown. If you
@@ -61,14 +63,14 @@ StandardSerialPortBackend::~StandardSerialPortBackend()
 #ifdef Q_OS_LINUX
   QString StandardSerialPortBackend::defaultPortName()
   {
-      return QString("/dev/ttyS0");
+      return QString("ttyS0");
   }
 #endif
 
 #ifdef Q_OS_MAC
 QString StandardSerialPortBackend::defaultPortName()
 {
-    return QString("/dev/tty.usbserial");
+    return QString("tty.usbserial");
 }
 #endif
 
@@ -78,7 +80,8 @@ bool StandardSerialPortBackend::open()
         close();
     }
 
-    QString name = respeqtSettings->serialPortName();
+    QString name(SERIAL_PORT_LOCATION);
+    name.append(respeqtSettings->serialPortName());
     mMethod = respeqtSettings->serialPortHandshakingMethod();
     mWriteDelay = SLEEP_FACTOR * respeqtSettings->serialPortWriteDelay();
     mCompErrDelay = respeqtSettings->serialPortCompErrDelay();
@@ -703,7 +706,7 @@ AtariSioBackend::~AtariSioBackend()
 
 QString AtariSioBackend::defaultPortName()
 {
-    return QString("/dev/atarisio0");
+    return QString("atarisio0");
 }
 
 bool AtariSioBackend::open()
@@ -712,7 +715,8 @@ bool AtariSioBackend::open()
         close();
     }
 
-    QString name = respeqtSettings->atariSioDriverName();
+    QString name(SERIAL_PORT_LOCATION);
+    name.append(respeqtSettings->atariSioDriverName());
 
     mHandle = ::open(name.toLocal8Bit().constData(), O_RDWR);
 

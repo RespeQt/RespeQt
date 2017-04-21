@@ -1,7 +1,7 @@
 /*
  * serialport.h
  *
- * Copyright 2016 TheMontezuma
+ * Copyright 2016, 2017 TheMontezuma
  *
  * This file is copyrighted by either Fatih Aygun, Ray Ataergin, or both.
  * However, the years for these copyrights are unfortunately unknown. If you
@@ -26,8 +26,8 @@ enum eHandshake
 enum eSerialBackend
 {
     SERIAL_BACKEND_STANDARD=0,
-    SERIAL_BACKEND_QT=1,
-    SERIAL_BACKEND_SIO_DRIVER=2
+    SERIAL_BACKEND_SIO_DRIVER=1,
+    SERIAL_BACKEND_TEST = 99
 };
 
 enum eSIOConstants
@@ -90,11 +90,15 @@ signals:
 };
 
 #ifdef Q_OS_WIN
+#define SERIAL_PORT_LOCATION "\\\\.\\"
 #include "serialport-win32.h"
 #endif
 #ifdef Q_OS_UNIX
+#define SERIAL_PORT_LOCATION "/dev/"
 #include "serialport-unix.h"
 #endif
-#include "serialport-Qt.h"
+#ifndef QT_NO_DEBUG
+#include "serialport-test.h"
+#endif
 
 #endif // SERIALPORT_H

@@ -33,17 +33,18 @@ protected:
 
 private:
     Ui::OptionsDialog *m_ui;
-    QTreeWidgetItem *itemStandard, *itemQt, *itemAtariSio, *itemEmulation, *itemI18n;
+    QTreeWidgetItem *itemStandard, *itemAtariSio, *itemEmulation, *itemI18n;
+    QTreeWidgetItem *itemTestSerialPort;
 
 private slots:
+    void on_serialPortComboBox_currentIndexChanged(int index);
     void on_serialPortHandshakeCombo_currentIndexChanged(int index);
-    void on_QtSerialPortHandshakeCombo_currentIndexChanged(int index);
-    void on_useEmulationCustomCasBaudBox_toggled(bool checked);
     void on_serialPortUseDivisorsBox_toggled(bool checked);
-    void on_QtSerialPortUseDivisorsBox_toggled(bool checked);
     void on_treeWidget_itemClicked(QTreeWidgetItem* item, int column);
     void on_treeWidget_currentItemChanged(QTreeWidgetItem* current, QTreeWidgetItem* previous);
     void OptionsDialog_accepted();
+    void on_useEmulationCustomCasBaudBox_toggled(bool checked);
+    void on_testFileButton_clicked();
 };
 
 #endif // OPTIONSDIALOG_H

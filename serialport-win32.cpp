@@ -2,16 +2,16 @@
  * serialport-win32.cpp
  *
  * Copyright 2015 Joseph Zatarski
- * Copyright 2016 TheMontezuma
+ * Copyright 2016, 2017 TheMontezuma
  *
  * This file is copyrighted by either Fatih Aygun, Ray Ataergin, or both.
  * However, the years for these copyrights are unfortunately unknown. If you
  * know the specific year(s) please let the current maintainer know.
  */
 
+#include "serialport.h"
 #include <windows.h>
 #include <string.h>
-#include "serialport-win32.h"
 #include "sioworker.h"
 #include "respeqtsettings.h"
 
@@ -55,7 +55,7 @@ bool StandardSerialPortBackend::open()
     }
 //    qDebug() << "!d" << tr("DBG -- Serial Port Open...");
 
-    QString name("\\\\.\\");
+    QString name(SERIAL_PORT_LOCATION);
     name.append(respeqtSettings->serialPortName());
 
     mMethod = respeqtSettings->serialPortHandshakingMethod();
