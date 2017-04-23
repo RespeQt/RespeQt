@@ -47,14 +47,14 @@ SOURCES += main.cpp \
     atascii.cpp \
     drivewidget.cpp \
     infowidget.cpp \
-    serialport-Qt.cpp \
-    printerwidget.cpp \
     atasciiinternational.cpp \
+    printerwidget.cpp \
     printers/atariprinter.cpp \
     printers/nativeprintersupport.cpp \
     printers/atari1020.cpp \
     printers/necp6.cpp \
-    printers/epsonfx80.cpp
+    printers/epsonfx80.cpp \
+    serialport-test.cpp 
 win32:LIBS += -lwinmm -lz
 unix:LIBS += -lz
 win32:SOURCES += serialport-win32.cpp
@@ -88,14 +88,14 @@ HEADERS += mainwindow.h \
     atascii.h \
     drivewidget.h \
     infowidget.h \
-    serialport-Qt.h \
     printerwidget.h \
     atasciiinternational.h \
     printers/atariprinter.h \
     printers/nativeprintersupport.h \
     printers/atari1020.h \
     printers/necp6.h \
-    printers/epsonfx80.h
+    printers/epsonfx80.h \
+    serialport-test.h
 win32:HEADERS += serialport-win32.h
 unix:HEADERS += serialport-unix.h
 FORMS += mainwindow.ui \

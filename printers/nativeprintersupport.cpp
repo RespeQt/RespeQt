@@ -3,7 +3,8 @@
 NativePrinterSupport::NativePrinterSupport(SioWorker *sio)
     : BasePrinter(sio),
       mPainter(NULL),
-      mFontMetrics(NULL)
+      mFontMetrics(NULL),
+      mNativePrinter(NULL)
 {
     setupPrinter();
     setupFont();
@@ -33,7 +34,7 @@ bool NativePrinterSupport::handleBuffer(QByteArray & /*buffer*/, int /*len*/)
 }
 
 void NativePrinterSupport::beginPrint() {
-    if (mPrinting)
+    if (mPrinting && mNativePrinter && mNativePrinter->isValid())
     {
         mPainter->begin(mNativePrinter);
         mPainter->setFont(mFont);

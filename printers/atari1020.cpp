@@ -3,6 +3,7 @@
 #include "math.h"
 
 #include <stdexcept>
+#include <QFontDatabase>
 
 const unsigned char Atari1020::BLACK = 0;
 const unsigned char Atari1020::BLUE = 1;
@@ -36,7 +37,13 @@ void Atari1020::setupPrinter()
 
 void Atari1020::setupFont()
 {
-    mFont = QFont(":/fonts/OCR-A");
+    QFontDatabase fonts;
+    if (!fonts.hasFamily("OCRA"))
+    {
+        QFontDatabase::addApplicationFont(":/fonts/OCR-A");
+    }
+    mFont = QFont("OCRA");
+    //mFont = QFont("Courier");
     mFontMetrics = new QFontMetrics(mFont);
 }
 
@@ -346,6 +353,7 @@ bool Atari1020::handlePrintableCodes(const char b)
 {
     QChar qb = translateAtascii(b & 127); // Masking inverse characters.
     if (mFontMetrics->width(qb) + x > mBoundingBox.right()) { // Char has to go on next line
+        qDebug()<<"!n"<<"newLine";
         x = mBoundingBox.left();
         if (y + mFontMetrics->height() > mBoundingBox.bottom())
         {
