@@ -11,6 +11,7 @@ PrinterWidget::PrinterWidget(int printerNum, QWidget *parent)
    , printerNo_(printerNum)
    , mPrinter(NULL)
    , mSio(NULL)
+   , mInitialized(false)
 {
     ui->setupUi(this);
 }
@@ -27,7 +28,7 @@ void PrinterWidget::setup()
 
     ui->atariPrinters->clear();
     std::map<QString, int> list;
-    for (int i = 1; i <= 5; i++) {
+    for (int i = 1; i <= BasePrinter::NUM_KNOWN_PRINTERS; i++) {
         BasePrinter *printer = BasePrinter::createPrinter(i, NULL);
         list[printer->typeName()] = printer->typeId();
         delete printer;
@@ -55,8 +56,21 @@ void PrinterWidget::setup()
 void PrinterWidget::setSioWorker(SioWorker *sio)
 {
     mSio = sio;
-    ui->atariPrinters->setEnabled(true);
-    on_atariPrinters_currentIndexChanged(0);
+    if (!mInitialized)
+    {
+        ui->atariPrinters->setEnabled(true);
+        int count = ui->atariPrinters->count();
+        for(int i = 0; i < count; i++)
+        {
+            if (ui->atariPrinters->itemData(i).toInt() == BasePrinter::TEXTPRINTER)
+            {
+                ui->atariPrinters->setCurrentIndex(i);
+                on_atariPrinters_currentIndexChanged(i);
+                break;
+            }
+        }
+        mInitialized = true;
+    }
 }
 
 void PrinterWidget::on_atariPrinters_currentIndexChanged(int index)

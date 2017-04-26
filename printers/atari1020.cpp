@@ -38,12 +38,14 @@ void Atari1020::setupPrinter()
 void Atari1020::setupFont()
 {
     QFontDatabase fonts;
-    if (!fonts.hasFamily("OCRA"))
+    if (!fonts.hasFamily("Lucida Console"))
     {
-        QFontDatabase::addApplicationFont(":/fonts/OCR-A");
+        QFontDatabase::addApplicationFont(":/fonts/1020");
     }
-    mFont = QFont("OCRA");
-    //mFont = QFont("Courier");
+    mFontSize = 10;
+    mFont.setFamily("Lucida Console");
+    mFont.setPointSize(mFontSize);
+    mFont.setUnderline(false);
     mFontMetrics = new QFontMetrics(mFont);
 }
 
@@ -52,6 +54,7 @@ bool Atari1020::handleBuffer(QByteArray &buffer, int len)
     bool result = AtariPrinter::handleBuffer(buffer, len);
     if (!result) return false;
 
+    len = std::min(len, buffer.count());
     for(int i = 0; i < len; i++) {
         unsigned char b = buffer.at(i);
 
@@ -79,18 +82,24 @@ bool Atari1020::handleBuffer(QByteArray &buffer, int len)
                 mEsc = false;
             } else if (mEsc && b == 16) // CTRL+P: 20 characters
             {
-                mFont.setPixelSize(20);
+                mFont.setPixelSize(mFontSize * 4);
                 mPainter->setFont(mFont);
+                delete mFontMetrics;
+                mFontMetrics = new QFontMetrics(mFont);
                 mEsc = false;
             } else if (mEsc && b == 19) // CTRL+S: 80 characters
             {
-                mFont.setPixelSize(80);
+                mFont.setPixelSize(mFontSize);
                 mPainter->setFont(mFont);
+                delete mFontMetrics;
+                mFontMetrics = new QFontMetrics(mFont);
                 mEsc = false;
             } else if (mEsc && b == 14) // CTRL+N: 40 characters
             {
-                mFont.setPixelSize(40);
+                mFont.setPixelSize(mFontSize * 2);
                 mPainter->setFont(mFont);
+                delete mFontMetrics;
+                mFontMetrics = new QFontMetrics(mFont);
                 mEsc = false;
             } else if (mEsc && b == 23) // CTRL+W: Enter international mode
             {
@@ -114,6 +123,17 @@ void Atari1020::endCommandLine()
     {
         mPrintText = false;
     } else {
+        qDebug()<<"!n"<<"newLine";
+        x = mBoundingBox.left();
+        qDebug() << "!n" << "height "<<mFontMetrics->height() << " spacing" << mFontMetrics->lineSpacing();
+        if (y + mFontMetrics->height() > mBoundingBox.bottom())
+        {
+            mNativePrinter -> newPage();
+            qDebug()<<"!n"<<"newPage";
+            y = mBoundingBox.top();
+        } else {
+            y += mFontMetrics->lineSpacing();
+        }
     }
 }
 
@@ -355,6 +375,7 @@ bool Atari1020::handlePrintableCodes(const char b)
     if (mFontMetrics->width(qb) + x > mBoundingBox.right()) { // Char has to go on next line
         qDebug()<<"!n"<<"newLine";
         x = mBoundingBox.left();
+        qDebug() << "!n" << "height "<<mFontMetrics->height() << " spacing" << mFontMetrics->lineSpacing();
         if (y + mFontMetrics->height() > mBoundingBox.bottom())
         {
             mNativePrinter -> newPage();

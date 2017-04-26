@@ -7,10 +7,13 @@
 #include <exception>
 #include <QDir>
 #include <QThread>
+#include <QRegularExpressionMatchIterator>
+#include <QRegularExpressionMatch>
 
 TestSerialPortBackend::TestSerialPortBackend(QObject *parent)
     : AbstractSerialPortBackend(parent),
-      mXmlReader(NULL)
+      mXmlReader(NULL),
+      mRegexp("&#(x?)(\\d{0,3});", QRegularExpression::CaseInsensitiveOption)
 {
     mTestFilename = respeqtSettings->testFile();
 }
@@ -186,7 +189,18 @@ QByteArray TestSerialPortBackend::readDataFrame(uint size, bool verbose)
     if (mXmlReader->name() != "dataframe")
         return NULL;
 
-    QByteArray data = mXmlReader->readElementText().toLatin1();
+    QString dataframe = mXmlReader->readElementText(QXmlStreamReader::IncludeChildElements);
+    QRegularExpressionMatchIterator i = mRegexp.globalMatch(dataframe);
+    while (i.hasNext())
+    {
+        QRegularExpressionMatch match = i.next();
+        QString hex = match.captured(1);
+        QString number = match.captured(2);
+        bool ok;
+        int code = number.toInt(&ok, hex.count() == 0 ? 10 : 16);
+        dataframe.replace(match.captured(0), QChar(code));
+    }
+    QByteArray data = dataframe.toLatin1();
     if (verbose)
     {
         qDebug() << "!n" << tr("Data frame contents: %1").arg(QString(data));

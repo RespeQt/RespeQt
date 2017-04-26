@@ -54,7 +54,7 @@ SOURCES += main.cpp \
     printers/atari1020.cpp \
     printers/necp6.cpp \
     printers/epsonfx80.cpp \
-    serialport-test.cpp 
+    serialport-test.cpp   
 win32:LIBS += -lwinmm -lz
 unix:LIBS += -lz
 win32:SOURCES += serialport-win32.cpp
@@ -141,3 +141,5 @@ TRANSLATIONS = \
 i18n/respeqt_tr.ts
 
 RC_FILE = RespeQt.rc
+
+DISTFILES +=

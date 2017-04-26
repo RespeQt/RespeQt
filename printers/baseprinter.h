@@ -31,17 +31,21 @@ public:
     // create a printer object of specified type
     static BasePrinter *createPrinter(int type, SioWorker *worker);
 
+    static const int NUM_KNOWN_PRINTERS = 3;
+
+    static const int TEXTPRINTER = 1;
+    static const int ATARI1027 = 2;
+    static const int ATARI1020 = 3;
+    static const int NECP6 = -1;
+    static const int EPSONFX80 = -2;
+    static const int ATARI1029 = -3;
+
 protected:
     int mTypeId;
     QString mTypeName;
 
     Atascii mAtascii;
 
-    static const int TEXTPRINTER = 1;
-    static const int ATARI1027 = 2;
-    static const int ATARI1020 = 3;
-    static const int NECP6 = 4;
-    static const int EPSONFX80 = 5;
 
     bool mPrinting;
 

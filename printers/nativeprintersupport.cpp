@@ -34,7 +34,7 @@ bool NativePrinterSupport::handleBuffer(QByteArray & /*buffer*/, int /*len*/)
 }
 
 void NativePrinterSupport::beginPrint() {
-    if (mPrinting && mNativePrinter && mNativePrinter->isValid())
+    if (mPrinting)
     {
         mPainter->begin(mNativePrinter);
         mPainter->setFont(mFont);

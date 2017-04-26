@@ -23,6 +23,7 @@ protected:
     QPoint mPenPoint;
     bool mPrintText;
     int mTextOrientation;
+    int mFontSize;
 
     bool handlePrintableCodes(const char b);
     bool handleGraphicsMode(QByteArray &buffer, int len, int &i);

@@ -49,6 +49,7 @@
 #include "atarifilesystem.h"
 #include "miscutils.h"
 
+#include <QFontDatabase>
 
 RespeqtSettings *respeqtSettings;
 
@@ -177,11 +178,6 @@ MainWindow::MainWindow(QWidget *parent)
 
     /* Initialize diskWidgets array and tool button actions */
     createDeviceWidgets();
-
-    /* Add info widget for symetry */
-    this->infoWidget = new InfoWidget();
-    ui->rightColumn->addWidget( infoWidget );
-
 
     /* Parse command line arguments:
       arg(1): session file (xxxxxxxx.respeqt)   */
@@ -370,6 +366,10 @@ void MainWindow::createDeviceWidgets()
 
         connect(this, SIGNAL(setFont(const QFont&)),deviceWidget, SLOT(setFont(const QFont&)));
     }
+
+    /* Add info widget for symmetry */
+    this->infoWidget = new InfoWidget();
+    ui->rightColumn->addWidget( infoWidget );
 
     for (int i = 0; i < PRINTER_COUNT; i++) {      //
         PrinterWidget* printerWidget = new PrinterWidget(i);
@@ -1041,11 +1041,14 @@ void MainWindow::on_actionOptions_triggered()
 
 void MainWindow::changeFonts()
 {
+    QFont font = QFontDatabase::systemFont(QFontDatabase::GeneralFont);
     if (respeqtSettings->useLargeFont()) {
-        QFont font("Arial Black", 9, QFont::Normal);
+        //QFont font("Arial Black", 9, QFont::Normal);
+        font.setPointSize(9);
         emit setFont(font);
     } else {
-        QFont font("MS Shell Dlg 2,8", 8, QFont::Normal);
+        font.setPointSize(8);
+        //QFont font("MS Shell Dlg 2,8", 8, QFont::Normal);
         emit setFont(font);
     }
  }

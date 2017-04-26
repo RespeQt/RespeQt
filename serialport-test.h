@@ -6,6 +6,7 @@
 #include "serialport.h"
 
 #include <QXmlStreamReader>
+#include <QRegularExpression>
 
 class TestSerialPortBackend : public AbstractSerialPortBackend
 {
@@ -38,6 +39,7 @@ public:
 protected:
     QString mTestFilename;
     QXmlStreamReader *mXmlReader;
+    QRegularExpression mRegexp;
 
     bool readPauseTag();
     void forwardXml();

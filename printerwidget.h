@@ -41,6 +41,7 @@ private:
     int printerNo_;
     BasePrinter *mPrinter;
     SioWorker *mSio;
+    bool mInitialized;
 };
 
-#endif // DRIVEWIDGET_H
+#endif // PRINTERWIDGET_H
