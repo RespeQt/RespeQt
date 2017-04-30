@@ -3,6 +3,7 @@
 
 #include "printers/baseprinter.h"
 #include "sioworker.h"
+#include "printers/nativeoutput.h"
 
 #include <QFrame>
 
@@ -32,14 +33,15 @@ signals:
 
 private slots:
     void on_atariPrinters_currentIndexChanged(int index);
-    void on_buttonConnectPrinter_triggered(QAction *arg1);
-
-    void on_buttonDisconnectPrinter_triggered(QAction *arg1);
+    void on_outputSelection_currentIndexChanged(int index);
+    void on_actionConnectPrinter_triggered();
+    void on_actionDisconnectPrinter_triggered();
 
 private:
     Ui::PrinterWidget *ui;
     int printerNo_;
     BasePrinter *mPrinter;
+    NativeOutput *mDevice;
     SioWorker *mSio;
     bool mInitialized;
 };

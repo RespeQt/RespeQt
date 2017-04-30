@@ -143,10 +143,38 @@
     </widget>
    </item>
    <item>
-    <widget class="QToolButton" name="buttonConnectPrinter">
-     <property name="enabled">
-      <bool>true</bool>
+    <widget class="QComboBox" name="atariPrinters">
+     <property name="sizePolicy">
+      <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+       <horstretch>0</horstretch>
+       <verstretch>0</verstretch>
+      </sizepolicy>
      </property>
+     <item>
+      <property name="text">
+       <string/>
+      </property>
+     </item>
+    </widget>
+   </item>
+   <item>
+    <widget class="QComboBox" name="outputSelection">
+     <property name="sizePolicy">
+      <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+       <horstretch>0</horstretch>
+       <verstretch>0</verstretch>
+      </sizepolicy>
+     </property>
+     <property name="maximumSize">
+      <size>
+       <width>16777215</width>
+       <height>16777215</height>
+      </size>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <widget class="QToolButton" name="buttonConnectPrinter">
      <property name="minimumSize">
       <size>
        <width>28</width>
@@ -159,15 +187,9 @@
        <height>28</height>
       </size>
      </property>
-    </widget>
-   </item>
-   <item>
-    <widget class="QComboBox" name="atariPrinters">
-     <item>
-      <property name="text">
-       <string/>
-      </property>
-     </item>
+     <property name="text">
+      <string/>
+     </property>
     </widget>
    </item>
    <item>
@@ -208,7 +230,7 @@
     <string>Disconnect</string>
    </property>
    <property name="toolTip">
-    <string>Disconnect</string>
+    <string>Disconnect Printer</string>
    </property>
    <property name="statusTip">
     <string>Unmount D%1</string>
@@ -220,7 +242,7 @@
      <normaloff>:/icons/oxygen-icons/16x16/devices/printer1.png</normaloff>:/icons/oxygen-icons/16x16/devices/printer1.png</iconset>
    </property>
    <property name="text">
-    <string>Connect Printer</string>
+    <string>Connect</string>
    </property>
    <property name="toolTip">
     <string>Connect Printer</string>

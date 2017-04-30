@@ -4,6 +4,7 @@
 
 #include <stdexcept>
 #include <QFontDatabase>
+#include <QPoint>
 
 const unsigned char Atari1020::BLACK = 0;
 const unsigned char Atari1020::BLUE = 1;
@@ -25,35 +26,36 @@ Atari1020::Atari1020(SioWorker *sio)
 {
     mTypeId = ATARI1020;
     mTypeName = QString("Atari 1020");
-
-    Atari1020::setupPrinter();
-    Atari1020::setupFont();
 }
 
-void Atari1020::setupPrinter()
+void Atari1020::setupOutput()
 {
-    mPainter->setWindow(QRect(0, -999, 480, 1000));
+    AtariPrinter::setupOutput();
+    if (mOutput)
+    {
+        mOutput->setWindow(QRect(0, -999, 480, 1000));
+    }
 }
 
 void Atari1020::setupFont()
 {
-    QFontDatabase fonts;
-    if (!fonts.hasFamily("Lucida Console"))
+    if (mOutput)
     {
-        QFontDatabase::addApplicationFont(":/fonts/1020");
+        QFontDatabase fonts;
+        if (!fonts.hasFamily("Lucida Console"))
+        {
+            QFontDatabase::addApplicationFont(":/fonts/1020");
+        }
+        // TODO calculate the correct font size.
+        mFontSize = 10;
+        QFont *font = new QFont("Lucida Console", mFontSize);
+        font->setUnderline(false);
+        mOutput->setFont(font);
     }
-    mFontSize = 10;
-    mFont.setFamily("Lucida Console");
-    mFont.setPointSize(mFontSize);
-    mFont.setUnderline(false);
-    mFontMetrics = new QFontMetrics(mFont);
 }
 
 bool Atari1020::handleBuffer(QByteArray &buffer, int len)
 {
-    bool result = AtariPrinter::handleBuffer(buffer, len);
-    if (!result) return false;
-
     len = std::min(len, buffer.count());
     for(int i = 0; i < len; i++) {
         unsigned char b = buffer.at(i);
@@ -82,24 +84,21 @@ bool Atari1020::handleBuffer(QByteArray &buffer, int len)
                 mEsc = false;
             } else if (mEsc && b == 16) // CTRL+P: 20 characters
             {
-                mFont.setPixelSize(mFontSize * 4);
-                mPainter->setFont(mFont);
-                delete mFontMetrics;
-                mFontMetrics = new QFontMetrics(mFont);
+                QFont *font = mOutput->font();
+                font->setPixelSize(mFontSize * 4);
+                mOutput->setFont(font);
                 mEsc = false;
             } else if (mEsc && b == 19) // CTRL+S: 80 characters
             {
-                mFont.setPixelSize(mFontSize);
-                mPainter->setFont(mFont);
-                delete mFontMetrics;
-                mFontMetrics = new QFontMetrics(mFont);
+                QFont *font = mOutput->font();
+                font->setPixelSize(mFontSize);
+                mOutput->setFont(font);
                 mEsc = false;
             } else if (mEsc && b == 14) // CTRL+N: 40 characters
             {
-                mFont.setPixelSize(mFontSize * 2);
-                mPainter->setFont(mFont);
-                delete mFontMetrics;
-                mFontMetrics = new QFontMetrics(mFont);
+                QFont *font = mOutput->font();
+                font->setPixelSize(mFontSize * 2);
+                mOutput->setFont(font);
                 mEsc = false;
             } else if (mEsc && b == 23) // CTRL+W: Enter international mode
             {
@@ -114,7 +113,7 @@ bool Atari1020::handleBuffer(QByteArray &buffer, int len)
         }
     }
 
-    return result;
+    return true;
 }
 
 void Atari1020::endCommandLine()
@@ -123,17 +122,7 @@ void Atari1020::endCommandLine()
     {
         mPrintText = false;
     } else {
-        qDebug()<<"!n"<<"newLine";
-        x = mBoundingBox.left();
-        qDebug() << "!n" << "height "<<mFontMetrics->height() << " spacing" << mFontMetrics->lineSpacing();
-        if (y + mFontMetrics->height() > mBoundingBox.bottom())
-        {
-            mNativePrinter -> newPage();
-            qDebug()<<"!n"<<"newPage";
-            y = mBoundingBox.top();
-        } else {
-            y += mFontMetrics->lineSpacing();
-        }
+        mOutput->newLine();
     }
 }
 
@@ -154,7 +143,8 @@ bool Atari1020::handleGraphicsMode(QByteArray &buffer, int len, int &i)
                 int scale = fetchIntFromBuffer(buffer, len, i, end);
                 if (scale >= 0 && scale <= 63)
                 {
-                    mFont.setPixelSize(mFont.pixelSize() * scale);
+                    QFont *font = mOutput->font();
+                    font->setPixelSize(font->pixelSize() * scale);
                     i = end;
                 } else
                     handlePrintableCodes(b);
@@ -169,7 +159,7 @@ bool Atari1020::handleGraphicsMode(QByteArray &buffer, int len, int &i)
             char next = buffer.at(i + 1);
             if (next >= '0' && next <= '3')
             {
-                mPainter->setPen(sColorMapping[next - '0']);
+                mOutput->setPen(sColorMapping[next - '0']);
                 i++;
             } else
                 handlePrintableCodes(b);
@@ -182,7 +172,7 @@ bool Atari1020::handleGraphicsMode(QByteArray &buffer, int len, int &i)
                 int line = fetchIntFromBuffer(buffer, len, i, end);
                 if (line >= 0 && line <= 15)
                 {
-                    QPen pen = mPainter->pen();
+                    QPen pen = mOutput->pen();
                     if (line == 0) {
                         pen.setStyle(Qt::SolidLine);
                     } else {
@@ -191,7 +181,7 @@ bool Atari1020::handleGraphicsMode(QByteArray &buffer, int len, int &i)
                         pattern << 1 << line;
                         pen.setDashPattern(pattern);
                     }
-                    mPainter->setPen(pen);
+                    mOutput->setPen(pen);
                     i = end;
                 } else {
                     handlePrintableCodes(b);
@@ -203,7 +193,7 @@ bool Atari1020::handleGraphicsMode(QByteArray &buffer, int len, int &i)
         break;
 
         case 'I': // Init plotter
-            mPainter->translate(mPenPoint.x(), mPenPoint.y());
+            mOutput->translate(mPenPoint);
         break;
 
         case 'D': // draw to point
@@ -228,17 +218,17 @@ bool Atari1020::handleGraphicsMode(QByteArray &buffer, int len, int &i)
 
                     i = endy;
 
-                    QPoint point(x, y);
+                    QPointF point(x, y);
 
                     switch (command) {
                         case 'D':
-                            mPainter->drawLine(mPenPoint, point);
+                            mOutput->drawLine(mPenPoint, point);
                             mPenPoint = point;
                         break;
 
                         case 'J':
                             point += mPenPoint;
-                            mPainter->drawLine(mPenPoint, point);
+                            mOutput->drawLine(mPenPoint, point);
                             mPenPoint = point;
                         break;
 
@@ -313,8 +303,8 @@ bool Atari1020::handleGraphicsMode(QByteArray &buffer, int len, int &i)
 
 bool Atari1020::drawAxis(bool xAxis, int size, int count)
 {
-    QPoint start(x, y);
-    QPoint end(start);
+    QPointF start = QPointF(mPenPoint);
+    QPointF end = QPointF(start);
 
     if (xAxis)
     {
@@ -322,17 +312,17 @@ bool Atari1020::drawAxis(bool xAxis, int size, int count)
     } else {
         end.setY(end.y() + size * count);
     }
-    mPainter->drawLine(start, end);
+    mOutput->drawLine(start, end);
 
     for (int c = 1; c <= count; c++)
     {
         if (xAxis)
         {
-            int xc = x + c * size;
-            mPainter->drawLine(xc, y - 2, xc, y + 2);
+            qreal xc = mPenPoint.x() + c * size;
+            mOutput->drawLine(QPointF(xc, mPenPoint.y() - 2), QPointF(xc, mPenPoint.y() + 2));
         } else {
-            int yc = y + c * size;
-            mPainter->drawLine(x - 2, yc, x - 2, yc);
+            qreal yc = mPenPoint.y() + c * size;
+            mOutput->drawLine(QPointF(mPenPoint.x() - 2, yc), QPointF(mPenPoint.x() + 2, yc));
         }
     }
 
@@ -372,22 +362,7 @@ int Atari1020::fetchIntFromBuffer(QByteArray &buffer, int /*len*/, int i, int &e
 bool Atari1020::handlePrintableCodes(const char b)
 {
     QChar qb = translateAtascii(b & 127); // Masking inverse characters.
-    if (mFontMetrics->width(qb) + x > mBoundingBox.right()) { // Char has to go on next line
-        qDebug()<<"!n"<<"newLine";
-        x = mBoundingBox.left();
-        qDebug() << "!n" << "height "<<mFontMetrics->height() << " spacing" << mFontMetrics->lineSpacing();
-        if (y + mFontMetrics->height() > mBoundingBox.bottom())
-        {
-            mNativePrinter -> newPage();
-            qDebug()<<"!n"<<"newPage";
-            y = mBoundingBox.top();
-        } else {
-            y += mFontMetrics->lineSpacing();
-        }
-    }
-    //mPainter->drawRect(x,y-mFontMetrics->lineSpacing(),mFontMetrics->width(qb),mFontMetrics->lineSpacing());
-    mPainter -> drawText(x, y+mFontMetrics->height(), qb);
-    x += mFontMetrics->width(qb);
+    mOutput->printChar(qb);
 
     return true;
 }

@@ -1,15 +1,20 @@
 #include "printerwidget.h"
 #include "ui_printerwidget.h"
 #include "respeqtsettings.h"
-#include "printers/nativeprintersupport.h"
+#include "printers/nativeoutput.h"
+#include "printers/nativeprinter.h"
 
 #include <QPrintDialog>
+#include <QPrinterInfo>
+#include <QStringList>
+#include <QMessageBox>
 
 PrinterWidget::PrinterWidget(int printerNum, QWidget *parent)
    : QFrame(parent)
    , ui(new Ui::PrinterWidget)
    , printerNo_(printerNum)
    , mPrinter(NULL)
+   , mDevice(NULL)
    , mSio(NULL)
    , mInitialized(false)
 {
@@ -27,6 +32,7 @@ void PrinterWidget::setup()
     ui->printerLabel->setText(printerTxt);
 
     ui->atariPrinters->clear();
+    // TODO Better solution to getting labels?
     std::map<QString, int> list;
     for (int i = 1; i <= BasePrinter::NUM_KNOWN_PRINTERS; i++) {
         BasePrinter *printer = BasePrinter::createPrinter(i, NULL);
@@ -43,14 +49,24 @@ void PrinterWidget::setup()
         }
     }
 
-    ui->atariPrinters->setEnabled(false);
+    ui->outputSelection->addItem("SVG", QVariant(false));
+    QStringList printers = QPrinterInfo::availablePrinterNames();
+    for (QStringList::const_iterator sit = printers.cbegin(); sit != printers.cend(); ++sit)
+    {
+        ui->outputSelection->addItem(*sit, QVariant(true));
+    }
 
-    ui->actionConnectPrinter->setEnabled(false);
+    ui->atariPrinters->setCurrentIndex(-1);
+    ui->outputSelection->setCurrentIndex(-1);
+
+    ui->atariPrinters->setEnabled(true);
+    ui->outputSelection->setEnabled(false);
     ui->actionDisconnectPrinter->setEnabled(false);
+    ui->actionConnectPrinter->setEnabled(false);
 
     // Connect widget actions to buttons
-    ui->buttonConnectPrinter->setDefaultAction(ui->actionConnectPrinter);
     ui->buttonDisconnectPrinter->setDefaultAction(ui->actionDisconnectPrinter);
+    ui->buttonConnectPrinter->setDefaultAction(ui->actionConnectPrinter);
 }
 
 void PrinterWidget::setSioWorker(SioWorker *sio)
@@ -58,75 +74,99 @@ void PrinterWidget::setSioWorker(SioWorker *sio)
     mSio = sio;
     if (!mInitialized)
     {
-        ui->atariPrinters->setEnabled(true);
-        int count = ui->atariPrinters->count();
-        for(int i = 0; i < count; i++)
-        {
-            if (ui->atariPrinters->itemData(i).toInt() == BasePrinter::TEXTPRINTER)
-            {
-                ui->atariPrinters->setCurrentIndex(i);
-                on_atariPrinters_currentIndexChanged(i);
-                break;
-            }
-        }
         mInitialized = true;
     }
 }
 
 void PrinterWidget::on_atariPrinters_currentIndexChanged(int index)
 {
-    // If we select a new printer, end the printing job of the old printer
-    if (mPrinter && mPrinter->requiresNativePrinter())
+    if (ui->atariPrinters->currentText() == "")
     {
-        NativePrinterSupport *nativePrinter = dynamic_cast<NativePrinterSupport*>(mPrinter);
-        nativePrinter->endPrint();
+        return;
+    }
+    // If we select a new printer, end the printing job of the old printer
+    if (mPrinter)
+    {
+        delete mPrinter;
+        mPrinter = NULL;
     }
     if (mSio) {
        // Create a new Atari printer device and install it.
        int typeId = ui->atariPrinters->itemData(index).toInt();
        BasePrinter *newPrinter = BasePrinter::createPrinter(typeId, mSio);
        mSio->installDevice(PRINTER_BASE_CDEVIC + printerNo_, newPrinter);
+       connect(newPrinter, SIGNAL(statusChanged(int)), this, SLOT(on_sio_statusChanged(int)));
        mPrinter = newPrinter;
 
-       // Setup buttons
-       ui->actionConnectPrinter->setEnabled(mPrinter->requiresNativePrinter());
-       ui->actionDisconnectPrinter->setEnabled(false);
-       if (mPrinter && !mPrinter->requiresNativePrinter())
-       {
-           respeqtSettings->setConnectedPrinterName(printerNo_, QString());
-       }
+       respeqtSettings->setPrinterType(index, mPrinter->typeId());
+       ui->outputSelection->setEnabled(true);
     }
-    if (mPrinter)
-    {
-        respeqtSettings->setPrinterType(index, mPrinter->typeId());
-    }
+
 }
 
-void PrinterWidget::on_buttonConnectPrinter_triggered(QAction * /*arg1*/)
+void PrinterWidget::on_outputSelection_currentIndexChanged(int /*index*/)
 {
-    if (mPrinter && mPrinter->requiresNativePrinter())
+    if (ui->outputSelection->currentText() == "")
     {
-        NativePrinterSupport *nativePrinter = dynamic_cast<NativePrinterSupport*>(mPrinter);
-        QPrintDialog dialog(nativePrinter->nativePrinter());
+        return;
+    }
+    if (ui->outputSelection->currentData().toBool()) // true means printer driver
+    {
+        NativePrinter *temp = new NativePrinter();
+        if (mDevice)
+        {
+            delete mDevice;
+        }
+        mDevice = temp;
+
+        QString printerName = ui->outputSelection->currentText();
+        temp->printer()->setPrinterName(printerName);
+        QPrintDialog dialog(temp->printer());
+        dialog.setOption(QAbstractPrintDialog::PrintSelection, false);
+        dialog.setOption(QAbstractPrintDialog::PrintPageRange, false);
+        dialog.setOption(QAbstractPrintDialog::PrintCurrentPage, false);
         if (dialog.exec() == QDialog::Accepted)
         {
-            ui->actionDisconnectPrinter->setEnabled(true);
-            ui->actionConnectPrinter->setEnabled(false);
-            ui->atariPrinters->setEnabled(false);
-            nativePrinter->beginPrint();
-            respeqtSettings->setConnectedPrinterName(printerNo_, nativePrinter->nativePrinter()->printerName());
+            temp->printer()->setPrinterName(printerName);
+            respeqtSettings->setConnectedPrinterName(printerNo_, printerName);
         }
+    } else if (mInitialized) {
+        // Handling the special devices.
+        QMessageBox::StandardButton reply;
+        reply = QMessageBox::information(this, tr("Output device"), tr("Not implemented yet"));
+    }
+    if (ui->atariPrinters->currentIndex() >= 0
+        && ui->outputSelection->currentIndex() >= 0
+        && !ui->actionDisconnectPrinter->isEnabled())
+    {
+        ui->actionConnectPrinter->setEnabled(true);
+        ui->atariPrinters->setEnabled(false);
     }
 }
 
-void PrinterWidget::on_buttonDisconnectPrinter_triggered(QAction * /*arg1*/)
+void PrinterWidget::on_actionConnectPrinter_triggered()
 {
-    if (mPrinter && mPrinter->requiresNativePrinter())
+    if (ui->outputSelection->currentIndex() >= 0
+            && ui->atariPrinters->currentIndex() >= 0
+            && mPrinter && mDevice)
     {
-        NativePrinterSupport *nativePrinter = dynamic_cast<NativePrinterSupport*>(mPrinter);
-        nativePrinter->endPrint();
-        ui->actionConnectPrinter->setEnabled(nativePrinter->requiresNativePrinter());
-        ui->actionDisconnectPrinter->setEnabled(false);
-        ui->atariPrinters->setEnabled(true);
+        mPrinter->setOutput(mDevice);
+        mPrinter->output()->beginOutput();
+        ui->outputSelection->setEnabled(false);
+        ui->atariPrinters->setEnabled(false);
+        ui->actionDisconnectPrinter->setEnabled(true);
+        ui->actionConnectPrinter->setEnabled(false);
     }
+}
+
+void PrinterWidget::on_actionDisconnectPrinter_triggered()
+{
+    if (mPrinter)
+    {
+        mPrinter->setOutput(NULL);
+    }
+    ui->outputSelection->setEnabled(true);
+    ui->atariPrinters->setEnabled(true);
+    ui->actionDisconnectPrinter->setEnabled(false);
+    ui->actionConnectPrinter->setEnabled(true);
 }

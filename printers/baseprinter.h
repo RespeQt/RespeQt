@@ -3,6 +3,7 @@
 
 #include "sioworker.h"
 #include "atascii.h"
+#include "nativeoutput.h"
 
 #include <QByteArray>
 #include <QPainter>
@@ -21,12 +22,14 @@ public:
 
     int typeId() const { return mTypeId; }
     const QString &typeName() const { return mTypeName; }
-    virtual bool requiresNativePrinter() const { return false; }
 
     virtual void handleCommand(quint8 command, quint16 aux);
     virtual bool handleBuffer(QByteArray &buffer, int len) = 0;
 
     virtual const QChar translateAtascii(const char b);
+
+    NativeOutput *output() const { return mOutput; }
+    void setOutput(NativeOutput *output);
 
     // create a printer object of specified type
     static BasePrinter *createPrinter(int type, SioWorker *worker);
@@ -36,21 +39,23 @@ public:
     static const int TEXTPRINTER = 1;
     static const int ATARI1027 = 2;
     static const int ATARI1020 = 3;
-    static const int NECP6 = -1;
-    static const int EPSONFX80 = -2;
-    static const int ATARI1029 = -3;
+    static const int ESCP = -1;
+    static const int ATARI1029 = -2;
 
 protected:
+    // This should be static methods, because they are called
+    // from the constructor
+    virtual void setupFont() {}
+    virtual void setupOutput();
+
     int mTypeId;
     QString mTypeName;
-
     Atascii mAtascii;
-
-
-    bool mPrinting;
+    NativeOutput *mOutput;
 
 private:
     int m_lastOperation;
+
 };
 
 #endif // BASEPRINTER_H

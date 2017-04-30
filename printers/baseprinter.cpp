@@ -2,13 +2,13 @@
 #include "textprinter.h"
 #include "atari1027.h"
 #include "atari1020.h"
-#include "necp6.h"
-#include "epsonfx80.h"
+#include "escp.h"
 #include "respeqtsettings.h"
 #include "logdisplaydialog.h"
 
-BasePrinter::BasePrinter(SioWorker *worker) : SioDevice(worker),
-  mPrinting(false)
+BasePrinter::BasePrinter(SioWorker *worker)
+    : SioDevice(worker),
+      mOutput(NULL)
 {}
 
 BasePrinter::~BasePrinter()
@@ -29,10 +29,8 @@ BasePrinter *BasePrinter::createPrinter(int type, SioWorker *worker)
             return new Atari1027(worker);
         case ATARI1020:
             return new Atari1020(worker);
-        case NECP6:
-            return new NecP6(worker);
-        case EPSONFX80:
-            return new EpsonFX80(worker);
+        case ESCP:
+            return new Escp(worker);
         default:
             throw new std::invalid_argument("Unknown printer type");
     }
@@ -42,7 +40,7 @@ BasePrinter *BasePrinter::createPrinter(int type, SioWorker *worker)
 
 void BasePrinter::handleCommand(quint8 command, quint16 aux)
 {
-    if (respeqtSettings->printerEmulation()) {  // Ignore printer commands  if Emulation turned OFF)    //
+    if (respeqtSettings->printerEmulation() && mOutput) {  // Ignore printer commands  if Emulation turned OFF)    //
         qDebug() << "!n" << "[" << deviceName() << "] "
                  << hex << "command: " << command << " aux: " << aux;
         switch(command) {
@@ -99,6 +97,7 @@ void BasePrinter::handleCommand(quint8 command, quint16 aux)
                     sio->port()->writeDataNak();
                     return;
                 }
+
                 handleBuffer(data, len);
                 sio->port()->writeDataAck();
                 qDebug() << "!n" << tr("[%1] Print (%2 chars)").arg(deviceName()).arg(len);
@@ -116,3 +115,21 @@ void BasePrinter::handleCommand(quint8 command, quint16 aux)
         qDebug() << "!u" << tr("[%1] ignored").arg(deviceName());
     }
 }
+
+void BasePrinter::setOutput(NativeOutput *output)
+{
+    if (mOutput != output)
+    {
+        if (mOutput)
+        {
+            mOutput->endOutput();
+        }
+        delete mOutput;
+    }
+    mOutput = output;
+    setupOutput();
+    setupFont();
+}
+
+void BasePrinter::setupOutput()
+{}

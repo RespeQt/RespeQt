@@ -8,9 +8,9 @@ class Atari1020 : public AtariPrinter
 public:
     Atari1020(SioWorker *sio);
 
-    bool handleBuffer(QByteArray &buffer, int len);
+    virtual bool handleBuffer(QByteArray &buffer, int len);
     virtual void setupFont();
-    virtual void setupPrinter();
+    virtual void setupOutput();
 
 protected:
     static const unsigned char BLACK;
@@ -20,7 +20,7 @@ protected:
 
     static std::map<unsigned char, QColor> sColorMapping;
     bool mGraphicsMode, mEsc;
-    QPoint mPenPoint;
+    QPointF mPenPoint;
     bool mPrintText;
     int mTextOrientation;
     int mFontSize;

@@ -10,37 +10,41 @@ Atari1027::Atari1027(SioWorker *worker)
 {
     mTypeId = ATARI1027;
     mTypeName = QString("Atari 1027");
-    Atari1027::setupFont();
 }
 
 void Atari1027::setupFont()
 {
-    mFont.setStyleHint(QFont::TypeWriter);
-    mFont.setFamily("Courier");
-    mFont.setPointSize(12);
-    mFont.setUnderline(false);
-    mFontMetrics = new QFontMetrics(mFont);
+    if (mOutput)
+    {
+        QFont *font = new QFont("Courier", 12);
+        font->setStyleHint(QFont::TypeWriter);
+        font->setUnderline(false);
+        mOutput->setFont(font);
+    }
 }
 
 bool Atari1027::handleBuffer(QByteArray &buffer, int len)
 {
-    bool result = AtariPrinter::handleBuffer(buffer, len);
-    if (!result) return false;
-
     for(int i = 0; i < len; i++)
     {
         unsigned char b = buffer.at(i);
         switch(b) {
             case 15: // CTRL+O starts underline mode
-                mFont.setUnderline(true);
-                mPainter->setFont(mFont);
+            {
+                QFont *font = mOutput->font();
+                font->setUnderline(true);
+                mOutput->setFont(font);
                 qDebug() << "!n" << "Underline on";
+            }
             break;
 
             case 14: // CTRL+N ends underline mode
-                mFont.setUnderline(false);
-                mPainter->setFont(mFont);
+            {
+                QFont *font = mOutput->font();
+                font->setUnderline(false);
+                mOutput->setFont(font);
                 qDebug() << "!n" << "Underline off";
+            }
             break;
 
             case 23: // CTRL+W could be ESC code
@@ -59,20 +63,15 @@ bool Atari1027::handleBuffer(QByteArray &buffer, int len)
             break;
 
             case 155: // EOL
+            {
                 mESC = false;
-                mFont.setUnderline(false);
-                mPainter->setFont(mFont);
-                x = mBoundingBox.left();
-                if (y + mFontMetrics->height() > mBoundingBox.bottom())
-                {
-                    mNativePrinter -> newPage();
-                    qDebug()<<"!n"<<"newpage";
-                    y = mBoundingBox.top();
-                } else {
-                    y += mFontMetrics->lineSpacing();
-                }
+                QFont *font = mOutput->font();
+                font->setUnderline(false);
+                mOutput->setFont(font);
+                mOutput->newLine();
                 // Drop the rest of the buffer
                 return true;
+            }
             break;
 
             case 27: // ESC could be starting something
@@ -98,7 +97,7 @@ bool Atari1027::handleBuffer(QByteArray &buffer, int len)
             break;
         }
     }
-    return result;
+    return true;
 }
 
 bool Atari1027::handleEscapedCodes(const char b)
@@ -106,19 +105,23 @@ bool Atari1027::handleEscapedCodes(const char b)
     // At this time we have seen two ESC.
     switch(b) {
         case 25: // CTRL+Y starts underline mode
-            mFont.setUnderline(true);
-            mPainter->setFont(mFont);
+        {
+            QFont *font = mOutput->font();
+            font->setUnderline(true);
+            mOutput->setFont(font);
             mESC = false;
             qDebug() << "!n" << "ESC Underline on";
             return true;
-
+        }
         case 26: // CTRL+Z ends underline mode
-            mFont.setUnderline(false);
-            mPainter->setFont(mFont);
+        {
+            QFont *font = mOutput->font();
+            font->setUnderline(false);
+            mOutput->setFont(font);
             mESC = false;
             qDebug() << "!n" << "ESC Underline off";
             return true;
-
+        }
         case 23: // CTRL+W starts international mode
             setInternationalMode(true);
             mESC = false;
@@ -135,20 +138,6 @@ bool Atari1027::handleEscapedCodes(const char b)
 bool Atari1027::handlePrintableCodes(const char b)
 {
     QChar qb = translateAtascii(b & 127); // Masking inverse characters.
-    if (mFontMetrics->width(qb) + x > mBoundingBox.right()) { // Char has to go on next line
-        x = mBoundingBox.left();
-        if (y + mFontMetrics->height() > mBoundingBox.bottom())
-        {
-            mNativePrinter -> newPage();
-            qDebug()<<"!n"<<"newPage";
-            y = mBoundingBox.top();
-        } else {
-            y += mFontMetrics->lineSpacing();
-        }
-    }
-    //mPainter->drawRect(x,y-mFontMetrics->lineSpacing(),mFontMetrics->width(qb),mFontMetrics->lineSpacing());
-    mPainter -> drawText(x, y+mFontMetrics->height(), qb);
-    x += mFontMetrics->width(qb);
-
+    mOutput->printChar(qb);
     return true;
 }

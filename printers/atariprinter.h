@@ -1,11 +1,11 @@
 #ifndef ATARIPRINTER_H
 #define ATARIPRINTER_H
 
-#include "nativeprintersupport.h"
+#include "baseprinter.h"
 #include "atasciiinternational.h"
 #include "sioworker.h"
 
-class AtariPrinter : public NativePrinterSupport
+class AtariPrinter : public BasePrinter
 {
     Q_OBJECT
 public:

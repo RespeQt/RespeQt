@@ -14,7 +14,7 @@ DEFINES += VERSION=\\\"R4-RC2\\\"
 TARGET = RespeQt
 TEMPLATE = app
 CONFIG += qt
-QT += core gui network widgets printsupport serialport
+QT += core gui network widgets printsupport serialport svg
 CONFIG += mobility
 MOBILITY = bearer
 INCLUDEPATH += $$[QT_INSTALL_HEADERS]/QtZlib
@@ -50,11 +50,12 @@ SOURCES += main.cpp \
     atasciiinternational.cpp \
     printerwidget.cpp \
     printers/atariprinter.cpp \
-    printers/nativeprintersupport.cpp \
     printers/atari1020.cpp \
-    printers/necp6.cpp \
-    printers/epsonfx80.cpp \
-    serialport-test.cpp   
+    serialport-test.cpp \    
+    printers/nativeoutput.cpp \
+    printers/centronics.cpp \
+    printers/escp.cpp \
+    printers/nativeprinter.cpp
 win32:LIBS += -lwinmm -lz
 unix:LIBS += -lz
 win32:SOURCES += serialport-win32.cpp
@@ -83,7 +84,6 @@ HEADERS += mainwindow.h \
     respeqtsettings.h \
     pclink.h \
     printers/baseprinter.h \
-    printers/textprinter.h \
     printers/atari1027.h \
     atascii.h \
     drivewidget.h \
@@ -91,11 +91,13 @@ HEADERS += mainwindow.h \
     printerwidget.h \
     atasciiinternational.h \
     printers/atariprinter.h \
-    printers/nativeprintersupport.h \
     printers/atari1020.h \
-    printers/necp6.h \
-    printers/epsonfx80.h \
-    serialport-test.h
+    serialport-test.h \
+    printers/nativeoutput.h \
+    printers/textprinter.h \
+    printers/centronics.h \
+    printers/escp.h \
+    printers/nativeprinter.h
 win32:HEADERS += serialport-win32.h
 unix:HEADERS += serialport-unix.h
 FORMS += mainwindow.ui \
