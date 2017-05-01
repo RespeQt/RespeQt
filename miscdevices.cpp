@@ -1,8 +1,8 @@
 /*
  * miscdevices.cpp
  *
- * Copyright 2015 Joseph Zatarski
- * Copyright 2016 TheMontezuma
+ * Copyright 2015, 2017 Joseph Zatarski
+ * Copyright 2016, 2017 TheMontezuma
  *
  * This file is copyrighted by either Fatih Aygun, Ray Ataergin, or both.
  * However, the years for these copyrights are unfortunately unknown. If you
@@ -23,7 +23,7 @@
 #include <QDesktopServices>
 #include <QUrl>
 
-extern char g_aspeclSlotNo;
+extern char g_rclSlotNo;
 
 // 
 bool conversionMsgdisplayedOnce;
@@ -153,7 +153,7 @@ void SmartDevice::handleCommand(quint8 command, quint16 aux)
     // Submit URL
     case 0x55:
     {
-        if(aux!=0 && aux<=2000)
+        if(respeqtSettings->isURLSubmitEnabled() && aux!=0 && aux<=2000)
         {
             if (!sio->port()->writeCommandAck())
             {
@@ -202,9 +202,9 @@ void SmartDevice::handleCommand(quint8 command, quint16 aux)
     }
 }
 
-// AspeQt Client ()
+// RespeQt Client ()
 
-void AspeCl::handleCommand(quint8 command, quint16 aux)
+void RCl::handleCommand(quint8 command, quint16 aux)
 {
     QByteArray data(5, 0);
     QDateTime dateTime = QDateTime::currentDateTime();
@@ -475,7 +475,7 @@ void AspeCl::handleCommand(quint8 command, quint16 aux)
 
               // Return the last mounted drive number
               QByteArray data(1,0);
-              data[0] = g_aspeclSlotNo;
+              data[0] = g_rclSlotNo;
               sio->port()->writeComplete();
               sio->port()->writeDataFrame(data);
           }
@@ -519,15 +519,15 @@ void AspeCl::handleCommand(quint8 command, quint16 aux)
 }
 
 // Get the next slot number available for mounting a disk image
-void AspeCl::gotNewSlot(int slot)
+void RCl::gotNewSlot(int slot)
 {
-   g_aspeclSlotNo = slot;
+   g_rclSlotNo = slot;
 
    // Ask the MainWindow to mount the file
    emit mountFile(slot, imageFileName);
 }
 
-void AspeCl::fileMounted(bool mounted)
+void RCl::fileMounted(bool mounted)
 {
     if (mounted) {
         sio->port()->writeComplete();

@@ -1,3 +1,10 @@
+/*
+ * drivewidget.cpp
+ *
+ * Copyright 2017 blind
+ *
+ */
+ 
 #include "drivewidget.h"
 #include "ui_drivewidget.h"
 #include "diskimage.h"

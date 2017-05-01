@@ -13,7 +13,7 @@ p    { font-size: medium; text-align: justify; }
 <body>
 
 	<!-- Head Section -->
-	<a name="home"><h1 class="Title" align="center">RespeQt User Manual<br />Release 3</h1></a>
+	<a name="home"><h1 class="Title" align="center">RespeQt User Manual<br />Release 4</h1></a>
 	<div align="center"><a href="#intro">Introduction</a>&nbsp;|&nbsp;<a href="#system">System Requirements</a>&nbsp;|&nbsp;<a href="#install">Installation</a>&nbsp;|&nbsp;<a href="#config">Configuration</a>&nbsp;|&nbsp;<a href="#usage">Usage</a></div>
 	<hr>
 	
@@ -97,7 +97,7 @@ p    { font-size: medium; text-align: justify; }
 		<li>Right dicking on a slot and selecting the “Mount disk image” menu item</li>
 		<li>Selecting a recently used disk image from the “Disk” menu</li>
 		<li>By pressing Alt + 1 through Alt + O <em>(letter O)</em></li>
-		<li>Using AspeCL remote module on the Atari computer <em>(See AspeCL section of the this user manual for more details)</em></li>
+		<li>Using RCL remote module on the Atari computer <em>(See RCL section of the this user manual for more details)</em></li>
 	</ul>
 	<p>You can see the result of your operation in the log display which is below the disk slots, if the operation is completed successfully, your Atari should be able to see the mounted disk image just like a real disk in a real drive.</p>
 	<p>You can use the tool buttons and context menu items to perform other operations like saving the disk image, enabling write protection for the image, reverting the image to its last saved state, ejecting (unmounting) the image, creating a new image and so on. You can also swap images using drag and drop.</p>
@@ -116,9 +116,6 @@ p    { font-size: medium; text-align: justify; }
 		<li><strong>MyPicoDOS 4.05</strong> This game DOS is provided to support Folder Images which hold Atari games. 	You can quickly boot and start your games conveniently from a PC Folder. Only standard version of MyPicoDOS is provided and supported. When selecting MyPicoDos as your boot DOS there is an extra option on the menu to <em>disable high speed SIO</em> code built into this DOS. If checked, this option will instruct MyPicoDOS to run in normal speed. This may be necessary under certain configurations. One example is if you are using an Ultimate 1MB board or a PBI device like IDE Plus 2 on your Atari with high-speed OS enabled. MyPicoDOS used in high-speed mode will conflict with the high-speed OS on the Atari, so checking this option and booting and running MyPicoDOS in normal speed will solve this problem.<br /><br />
 		RespeQt will also automatically generate a <em>piconame.txt</em> file during the Folder Image boot process. So if you have game files with long file names they will be displayed with their full names when MyPicoDOS menu appears. <em>piconame.txt</em> file will only be created/updated when you boot, so if you add more game files to your PC folder during your MyPicoDOS session they will not show with long names until you reboot.<br /><br />
 		Boot files folder for MyPicoDOS is <strong><em>$bootpic</em></strong>. it is not recommended to modify this folder, unlike AtariDOS and MyDOS there are no customizations you can make for MyPicoDOS.</li>
-		<li><strong>MyPicoDOS 4.05</strong>	This game DOS is provided to support Folder Images which hold Atari games. You can quickly boot and start your games conveniently from a PC Folder. Only standard version of MyPicoDOS is provided and supported. When selecting MyPicoDos as your boot DOS there is an extra option on the menu to <em>disable high speed SIO</em> code built into this DOS. If checked, this option will instruct MyPicoDOS to run in normal speed. This may be necessary under certain configurations. One example is if you are using an Ultimate 1MB board or a PBI device like IDE Plus 2 on your Atari with high-speed OS enabled. MyPicoDOS used in high-speed mode will conflict with the high-speed OS on the Atari, so checking this option and booting and running MyPicoDOS in normal speed will solve this problem.<br /><br />
-		RespeQt will also automatically generate a <em>piconame.txt</em> file during the Folder Image boot process. So if you have game files with long file names they will be displayed with their full names when MyPicoDOS menu appears. <em>piconame.txt</em> file will only be created/updated when you boot, so if you add more game files to your PC folder during your MyPicoDOS session they will not show with long names until you reboot.<br /><br />
-		Boot files folder for MyPicoDOS is <strong><em>$bootpic</em></strong>. it is not recommended to modify this folder, unlike AtariDOS and MyDOS there	are no customizations you can make for MyPicoDOS.</li>
 		<li><strong>SpartaDOS 3.2G</strong> SpartaDOS is not compatible with AtariDOS. Its disk/file structure and boot scheme is completely different. So this DOS is only partly <em>(and I would say rather crudely)</em> supported. You will be able to boot SpartaDOS version 3.2G from a Folder Image with the following limitations:<br />
 		<ul type="square">
 			<li>To boot SpartaDOS from an AtariDOS structured Folder Image is an impossible task. So RespeQt uses some <em>(not so elegant) </em>tricks to coerce SpartaDOS into booting from an AtariDOS compatible Folder Image by giving it the impression that it's booting from a SpartaDOS formatted disk. Once the boot is completed RespeQt forces SpartaDOS to re-detect the Folder Image as an AtariDOS formatted disk so that it can display and manipulate the files within the folder. The mechanics of this scheme necessarily limits the boot proccess in the following ways:<br />
@@ -189,8 +186,9 @@ p    { font-size: medium; text-align: justify; }
 	An example of a shortcut for Windows would be:<br /><br />
 	"C:\Program Files\RespeQt\RespeQt.exe"&nbsp; C:\Program Files\RespeQt\session.RespeQt</p>
 	
-	<h5>RespeQt client software for the Atari <em>(AspeCl)</em></h5>
-	<p>RespeQt also implements a client server device <em>($46)</em> which communicates with the client module AspeCl that runs on the Atari computer. AspeCl is a general purpose client module and incorporates the following functionalities:</p>
+	<h5>RespeQt client software for the Atari <em>(RCL)</em></h5>
+	<p>Maintainer's note: The following portion of the user manual pertains to the old AspeCL software. This documentation is out of date now that AspeCL has been replaced with RCL written by FlashJazzCat. Nevertheless, it will remain here until a suitable replacement is written because the reference may still be useful.<br />
+	<p>RespeQt also implements a client server device <em>($46)</em> which communicates with the client module AspeCL that runs on the Atari computer. AspeCL is a general purpose client module and incorporates the following functionalities:</p>
 	<ul type="square">
 		<li>Downloading the Date/Time from the PC and setting it on the Atari computer <em>(SpartaDos v2.5 and up only)</em></li>
 		<li>Turning the Date/Time line ON or OFF on the Atari computer <em>(SpartaDos v2.5 and up only)</em></li>
@@ -199,7 +197,7 @@ p    { font-size: medium; text-align: justify; }
 		<li>Remotely Mounting an existing disk image. Image must reside in the "Last Folder Image Directory" of RespeQt</li>
 		<li>Remotely creating and mounting a new disk image in RespeQt in Single, Enhanced, DD, DSDD and Harddisk formats. The new disk image will reside in the "Last Folder Image Directory"</li>
 		<li>Remotely toggling auto-save feature of a mounted disk image</li>
-		<li>AspeCl keeps you updated with a plenty of on-screen status/info/error messages, when and If this verbosity is a concern <em>(i.e. the screen must be left undisturbed)</em>, you can run it with I/O redirection, sending the screen output to the NULL device <em>(or to another actual device like a printer or a disk file)</em>, effectively eliminating screen interaction but still being able to keep a log of AspeCl activities.<br /><br />
+		<li>AspeCL keeps you updated with a plenty of on-screen status/info/error messages, when and If this verbosity is a concern <em>(i.e. the screen must be left undisturbed)</em>, you can run it with I/O redirection, sending the screen output to the NULL device <em>(or to another actual device like a printer or a disk file)</em>, effectively eliminating screen interaction but still being able to keep a log of AspeCL activities.<br /><br />
 		For example:<br /><br />
 		ASPECL&nbsp; DMGAMES01.ATR &gt;&gt;NULL <br /><br />
 		will mount the image file GAMES01.ATR to the first available disk slot  without any info/error messages displayed on the screen. The disk slot number used for mounting the image file will not be displayed back either.<br /><br />
@@ -207,7 +205,7 @@ p    { font-size: medium; text-align: justify; }
 		ASPECL DMGAMES01.ATR &gt;&gt;PRN:<br /><br />
 		will mount the image file GAMES01.ATR to the first available disk slot and will log all info/error messages to the printer.</li>
 	</ul>	
-	<p>Aspecl&nbsp;&nbsp;TS | TO | TF | DA | DS | DU | DM | DN<br /><br />
+	<p>ASPECL&nbsp;&nbsp;TS | TO | TF | DA | DS | DU | DM | DN<br /><br />
 	TS =&gt; Set Date/Time on Atari<br /><br />
 	TO =&gt; Set Date/Time on Atari and turn TD Line ON<br /><br />
 	TF =&gt; Set Date/Time on Atari and turn TD Line OFF</p>
@@ -226,16 +224,16 @@ p    { font-size: medium; text-align: justify; }
 		<li>Quad density Harddisk <em>(512 bytes/sec, 65535 sectors, 32MB)</em></li>
 	</ol>
 	<p>Example: ASPECL DNmyhd.atr.6 =&gt; will create and mount a quad density harddisk .atr image with the name myhd<br /><br />
-	And here's an example of invoking AspeCl with multiple command line switches:<br /><br />
+	And here's an example of invoking AspeCL with multiple command line switches:<br /><br />
 	ASPECL TF DS18 DMBASICXE.ATR =&gt; will set the date/time and turn TD line OFF, will swap disks 1-8, and will mount basicxe.atr disk image to the first available disk slot, returning back the slot number to Atari.</p>
-	<h5>AspeCl compatibility</h5>
-	<p>AspeCl is currently a command line based client which is fully compatible with and runs only under SpartaDos <em>(v2.5 and up)</em> and SpartaDos X versions. A seperate menu driven client for menu based DOS <em>(like AtariDOS and MyDos versions)</em> will be available in the future. Some of the functionality in AspeCl also depend on the underlying DOSes capabilities. For example setting the Date/Time from the PC is a DOS dependent feature as it requires specific Date/Time drivers from the DOS. Other functionality like mounting/unmounting/swapping disk or folder images are DOS independent and therefore are available under different DOSes.</p>
+	<h5>AspeCL compatibility</h5>
+	<p>AspeCL is currently a command line based client which is fully compatible with and runs only under SpartaDos <em>(v2.5 and up)</em> and SpartaDos X versions. A seperate menu driven client for menu based DOS <em>(like AtariDOS and MyDos versions)</em> will be available in the future. Some of the functionality in AspeCL also depend on the underlying DOSes capabilities. For example setting the Date/Time from the PC is a DOS dependent feature as it requires specific Date/Time drivers from the DOS. Other functionality like mounting/unmounting/swapping disk or folder images are DOS independent and therefore are available under different DOSes.</p>
 	<h5>Apetime</h5>
 	<p>RespeQt supports ApeTime <em>(Date/Time downloader utility)</em> from the AtariMax APE package. The support code has been added back in from older versions of AspeQt.</p>
 	<div align="right"><a href="#home">Up</a></div>
 	
 	<!-- foot Section -->
 	<hr>
-	<div align="center">RespeQt is copyright 2015,2016 Joseph Zatarski, Copyright 2015 DrVenkman, and Copyright 2016 TheMontezuma<br />RespeQt is based on AspeQt 1.0.0-preview7 which has its own copyrights</div>	
+	<div align="center">RespeQt is copyright 2015-2017 Joseph Zatarski, Copyright 2015 DrVenkman, Copyright 2016, 2017 TheMontezuma, Copyright 2016, 2017 josch1710, and Copyright 2017 blind.<br />RespeQt is based on AspeQt 1.0.0-preview7 which has its own copyrights</div>	
 </body>
 </html>

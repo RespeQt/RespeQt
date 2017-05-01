@@ -2,6 +2,7 @@
  * sioworker.h
  *
  * Copyright 2016 TheMontezuma
+ * Copyright 2017 Joseph Zatarski
  *
  * This file is copyrighted by either Fatih Aygun, Ray Ataergin, or both.
  * However, the years for these copyrights are unfortunately unknown. If you
@@ -21,7 +22,7 @@ enum SIO_CDEVIC
     DISK_BASE_CDEVIC = 0x31,
     PRINTER_BASE_CDEVIC = 0x40,
     SMART_CDEVIC = 0x45,
-    ASPEQT_CLIENT_CDEVIC = 0x46,
+    RESPEQT_CLIENT_CDEVIC = 0x46,
     RS232_BASE_CDEVIC = 0x50,
     PCLINK_CDEVIC = 0x6F
 };

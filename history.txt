@@ -1,5 +1,20 @@
-release 4 (WIP)
+release 4
+	* fixed uninitialized pointer to log window instance causing a crash
+	* replaced AspeCl with FJCs RCL (#54)
+	* added enable/disable checkbox for URL submit (#52) (TheMontezuma)
+	* simplified serial port selection (#51) (TheMontezuma)
+	* code cleanup, UI code reorganization, misc bugs (#48) (blind)
+	* code cleanup (#47) (josch1710)
+	* Fix crash from double call to closeEvent (#46) (josch1710)
+	* CPU load reduction for software handshake (#45) (TheMontezuma)
+	* added URL submit functionality (#43) (TheMontezuma)
+	* further PCLINK work (#37, #38, #41, #42, #44) (TheMontezuma and josch1710)
+	* add PCLINK swap + PCLINK eject + code refactoring (#31) (TheMontezuma)
+	* printer emulation status now persists (#30) (TheMontezuma)
+	* added PCLINK support (#29) (TheMontezuma)
+	* trigger options menu on speedlabel click (#28) (TheMontezuma)
 	* added timing adjustment to close #2
+	* diskeditdialog now closes on program exit
 	* upgraded SpartaDOS boot files to 3.2G
 
 release 3

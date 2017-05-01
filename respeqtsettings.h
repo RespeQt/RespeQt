@@ -2,7 +2,8 @@
  * respeqtsettings.h
  *
  * Copyright 2015 Joseph Zatarski
- * Copyright 2016 TheMontezuma
+ * Copyright 2016, 2017 TheMontezuma
+ * Copyright 2017 blind
  *
  * This file is copyrighted by either Fatih Aygun, Ray Ataergin, or both.
  * However, the years for these copyrights are unfortunately unknown. If you
@@ -51,27 +52,6 @@ public:
 
     int serialPortCompErrDelay();
     void setSerialPortCompErrDelay(int delay);
-
-    QString QtSerialPortName();
-    void setQtSerialPortName(const QString &name);
-
-    int QtSerialPortHandshakingMethod();
-    void setQtSerialPortHandshakingMethod(int method);
-
-    int QtSerialPortMaximumSpeed();
-    void setQtSerialPortMaximumSpeed(int speed);
-
-    bool QtSerialPortUsePokeyDivisors();
-    void setQtSerialPortUsePokeyDivisors(bool use);
-
-    int QtSerialPortPokeyDivisor();
-    void setQtSerialPortPokeyDivisor(int divisor);
-
-    int QtSerialPortWriteDelay();
-    void setQtSerialPortWriteDelay(int delay);
-
-    int QtSerialPortCompErrDelay();
-    void setQtSerialPortCompErrDelay(int delay);
 
     QString atariSioDriverName();
     void setAtariSioDriverName(const QString &name);
@@ -198,6 +178,10 @@ public:
     bool capitalLettersInPCLINK();
     void setCapitalLettersInPCLINK(bool caps);
 
+// URL Submit feature
+    bool isURLSubmitEnabled();
+    void setURLSubmit(bool enabled);
+
 // Enable Shade Mode //
     bool enableShade();
     void setEnableShade(bool shade);
@@ -244,14 +228,6 @@ private:
     bool mSerialPortUsePokeyDivisors;
     int mSerialPortPokeyDivisor;
 
-    QString mQtSerialPortName;
-    int mQtSerialPortHandshakingMethod;
-    int mQtSerialPortWriteDelay;
-    int mQtSerialPortCompErrDelay;
-    int mQtSerialPortMaximumSpeed;
-    bool mQtSerialPortUsePokeyDivisors;
-    int mQtSerialPortPokeyDivisor;
-
     bool mUseHighSpeedExeLoader;
     bool mPrinterEmulation;
 
@@ -279,6 +255,7 @@ private:
     bool mMinimizeToTray;
     bool mFilterUnderscore;
     bool mUseCapitalLettersInPCLINK;
+    bool mUseURLSubmit;
     bool mUseLargeFont;
     bool mExplorerOnTop;
     bool mEnableShade;

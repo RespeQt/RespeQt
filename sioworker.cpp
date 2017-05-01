@@ -1,7 +1,7 @@
 /*
  * sioworker.cpp
  *
- * Copyright 2015 Joseph Zatarski
+ * Copyright 2015, 2017 Joseph Zatarski
  * Copyright 2016 TheMontezuma
  *
  * This file is copyrighted by either Fatih Aygun, Ray Ataergin, or both.
@@ -81,9 +81,6 @@ void SioWorker::start(Priority p)
     switch (respeqtSettings->backend()) {
         case SERIAL_BACKEND_STANDARD:
             mPort = new StandardSerialPortBackend(0);
-            break;
-        case SERIAL_BACKEND_QT:
-            mPort = new QtSerialPortBackend(0);
             break;
         case SERIAL_BACKEND_SIO_DRIVER:
             mPort = new AtariSioBackend(0);
@@ -261,8 +258,8 @@ QString SioWorker::deviceName(int device)
         case SMART_CDEVIC:
             result = tr("Smart device (APE time + URL)");
             break;
-        case ASPEQT_CLIENT_CDEVIC:
-            result = tr("AspeQt Client");
+        case RESPEQT_CLIENT_CDEVIC:
+            result = tr("RespeQt Client");
             break;
         case RS232_BASE_CDEVIC+0:
         case RS232_BASE_CDEVIC+1:
@@ -461,9 +458,6 @@ void CassetteWorker::start(Priority p)
     switch (respeqtSettings->backend()) {
         case SERIAL_BACKEND_STANDARD:
             mPort = new StandardSerialPortBackend(0);
-            break;
-        case SERIAL_BACKEND_QT:
-            mPort = new QtSerialPortBackend(0);
             break;
         case SERIAL_BACKEND_SIO_DRIVER:
             mPort = new AtariSioBackend(0);

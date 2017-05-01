@@ -2,7 +2,8 @@
  * respeqtsettings.cpp
  *
  * Copyright 2015 Joseph Zatarski
- * Copyright 2016 TheMontezuma
+ * Copyright 2016, 2017 TheMontezuma
+ * Copyright 2017 blind
  *
  * This file is copyrighted by either Fatih Aygun, Ray Ataergin, or both.
  * However, the years for these copyrights are unfortunately unknown. If you
@@ -49,24 +50,6 @@ RespeqtSettings::RespeqtSettings()
     mSerialPortMaximumSpeed = mSettings->value("MaximumSerialPortSpeed", 2).toInt();
     mSerialPortUsePokeyDivisors = mSettings->value("SerialPortUsePokeyDivisors", false).toBool();
     mSerialPortPokeyDivisor = mSettings->value("SerialPortPokeyDivisor", 6).toInt();
-
-    /* Qt serial port backend */
-    mQtSerialPortName = mSettings->value("QtSerialPortName", QtSerialPortBackend::defaultPortName()).toString();
-    /* old rergistry entries contain SERIAL_PORT_LOCATION at the front of the serial port name, so we skip them now */
-    if(mQtSerialPortName.startsWith(SERIAL_PORT_LOCATION,Qt::CaseInsensitive))
-    {
-        mQtSerialPortName.remove(0,strlen(SERIAL_PORT_LOCATION));
-    }
-    mQtSerialPortHandshakingMethod = mSettings->value("QtHandshakingMethod", 0).toInt();
-    mQtSerialPortWriteDelay = mSettings->value("QtWriteDelay", 1).toInt();
-#ifdef Q_OS_WIN
-    mQtSerialPortCompErrDelay = mSettings->value("QtCompErrDelay", 300).toInt(); // default is 300us for windows
-#else
-    mQtSerialPortCompErrDelay = mSettings->value("QtCompErrDelay", 800).toInt(); // default value of 800us works OK with FTDI USB on linux/OSX
-#endif
-    mQtSerialPortMaximumSpeed = mSettings->value("QtMaximumSerialPortSpeed", 2).toInt();
-    mQtSerialPortUsePokeyDivisors = mSettings->value("QtSerialPortUsePokeyDivisors", false).toBool();
-    mQtSerialPortPokeyDivisor = mSettings->value("QtSerialPortPokeyDivisor", 6).toInt();
 
     /* AtariSIO backend */
     mAtariSioDriverName = mSettings->value("AtariSioDriverName", AtariSioBackend::defaultPortName()).toString();
@@ -118,6 +101,7 @@ RespeqtSettings::RespeqtSettings()
     msaveWindowsPos = mSettings->value("SaveWindowsPosSize", true).toBool();
     mFilterUnderscore = mSettings->value("FilterUnderscore", true).toBool();
     mUseCapitalLettersInPCLINK = mSettings->value("CapitalLettersInPCLINK", false).toBool();
+    mUseURLSubmit = mSettings->value("URLSubmit", false).toBool();
     msaveDiskVis = mSettings->value("SaveDiskVisibility", true).toBool();
     mdVis = mSettings->value("D9DOVisible",true).toBool();
     if (mMainW < 688 && mdVis) mMainW = 688;
@@ -156,13 +140,6 @@ void RespeqtSettings::saveSessionToFile(const QString &fileName)
         s.setValue("MaximumSerialPortSpeed", mSerialPortMaximumSpeed);
         s.setValue("SerialPortUsePokeyDivisors", mSerialPortUsePokeyDivisors);
         s.setValue("SerialPortPokeyDivisor", mSerialPortPokeyDivisor);
-        s.setValue("QtSerialPortName", mQtSerialPortName);
-        s.setValue("QtHandshakingMethod", mQtSerialPortHandshakingMethod);
-        s.setValue("QtWriteDelay", mQtSerialPortWriteDelay);
-        s.setValue("QtCompErrDelay", mQtSerialPortCompErrDelay);
-        s.setValue("QtMaximumSerialPortSpeed", mQtSerialPortMaximumSpeed);
-        s.setValue("QtSerialPortUsePokeyDivisors", mQtSerialPortUsePokeyDivisors);
-        s.setValue("QtSerialPortPokeyDivisor", mQtSerialPortPokeyDivisor);
         s.setValue("UseHighSpeedExeLoader", mUseHighSpeedExeLoader);
         s.setValue("PrinterEmulation", mPrinterEmulation);
         s.setValue("CustomCasBaud", mCustomCasBaud);
@@ -186,6 +163,7 @@ void RespeqtSettings::saveSessionToFile(const QString &fileName)
         s.setValue("PrtH", mPrtH);
         s.setValue("FilterUnderscore", mFilterUnderscore);
         s.setValue("CapitalLettersInPCLINK", mUseCapitalLettersInPCLINK);
+        s.setValue("URLSubmit", mUseURLSubmit);
         s.setValue("UseLargeFont", mUseLargeFont);
         s.setValue("ExplorerOnTop", mExplorerOnTop);
         s.setValue("EnableShadeByDefault", mEnableShade);
@@ -215,13 +193,6 @@ void RespeqtSettings::saveSessionToFile(const QString &fileName)
         mSerialPortMaximumSpeed = s.value("MaximumSerialPortSpeed", 2).toInt();
         mSerialPortUsePokeyDivisors = s.value("SerialPortUsePokeyDivisors", false).toBool();
         mSerialPortPokeyDivisor = s.value("SerialPortPokeyDivisor", 6).toInt();
-        mQtSerialPortName = s.value("QtSerialPortName", QtSerialPortBackend::defaultPortName()).toString();
-        mQtSerialPortHandshakingMethod = s.value("QtHandshakingMethod", 0).toInt();
-        mQtSerialPortWriteDelay = s.value("QtWriteDelay", 1).toInt();
-        mQtSerialPortCompErrDelay = s.value("QtCompErrDelay", 1).toInt();
-        mQtSerialPortMaximumSpeed = s.value("QtMaximumSerialPortSpeed", 2).toInt();
-        mQtSerialPortUsePokeyDivisors = s.value("QtSerialPortUsePokeyDivisors", false).toBool();
-        mQtSerialPortPokeyDivisor = s.value("QtSerialPortPokeyDivisor", 6).toInt();
         mUseHighSpeedExeLoader = s.value("UseHighSpeedExeLoader", false).toBool();
         mPrinterEmulation = s.value("PrinterEmulation", true).toBool();
         mCustomCasBaud = s.value("CustomCasBaud", 875).toInt();
@@ -244,6 +215,7 @@ void RespeqtSettings::saveSessionToFile(const QString &fileName)
         mPrtH = s.value("PrtH", 486).toInt();
         mFilterUnderscore = s.value("FilterUnderscore", true).toBool();
         mUseCapitalLettersInPCLINK = s.value("CapitalLettersInPCLINK", false).toBool();
+        mUseURLSubmit = s.value("URLSubmit", false).toBool();
         mUseLargeFont = s.value("UseLargeFont", false).toBool();
         mExplorerOnTop = s.value("ExplorerOnTop", false).toBool();
         mEnableShade = s.value("EnableShadeByDefault", true).toBool();
@@ -343,84 +315,6 @@ void RespeqtSettings::setSerialPortCompErrDelay(int delay)
     mSerialPortCompErrDelay = delay;
     if(mSessionFileName == "") mSettings->setValue("CompErrDelay", mSerialPortCompErrDelay);
 }
-
-QString RespeqtSettings::QtSerialPortName()
-{
-    return mQtSerialPortName;
-}
-
-void RespeqtSettings::setQtSerialPortName(const QString &name)
-{
-    mQtSerialPortName = name;
-    if(mSessionFileName == "") mSettings->setValue("QtSerialPortName", mQtSerialPortName);
-}
-
-int RespeqtSettings::QtSerialPortMaximumSpeed()
-{
-    return mQtSerialPortMaximumSpeed;
-}
-
-void RespeqtSettings::setQtSerialPortMaximumSpeed(int speed)
-{
-    mQtSerialPortMaximumSpeed = speed;
-    if(mSessionFileName == "") mSettings->setValue("QtMaximumSerialPortSpeed", mQtSerialPortMaximumSpeed);
-}
-
-bool RespeqtSettings::QtSerialPortUsePokeyDivisors()
-{
-    return mQtSerialPortUsePokeyDivisors;
-}
-
-void RespeqtSettings::setQtSerialPortUsePokeyDivisors(bool use)
-{
-    mQtSerialPortUsePokeyDivisors = use;
-    if(mSessionFileName == "") mSettings->setValue("QtSerialPortUsePokeyDivisors", mQtSerialPortUsePokeyDivisors);
-}
-
-int RespeqtSettings::QtSerialPortPokeyDivisor()
-{
-    return mQtSerialPortPokeyDivisor;
-}
-
-void RespeqtSettings::setQtSerialPortPokeyDivisor(int divisor)
-{
-    mQtSerialPortPokeyDivisor = divisor;
-    if(mSessionFileName == "") mSettings->setValue("QtSerialPortPokeyDivisor", mQtSerialPortPokeyDivisor);
-}
-
-int RespeqtSettings::QtSerialPortHandshakingMethod()
-{
-    return mQtSerialPortHandshakingMethod;
-}
-
-void RespeqtSettings::setQtSerialPortHandshakingMethod(int method)
-{
-    mQtSerialPortHandshakingMethod = method;
-    if(mSessionFileName == "") mSettings->setValue("QtHandshakingMethod", mQtSerialPortHandshakingMethod);
-}
-
-int RespeqtSettings::QtSerialPortWriteDelay()
-{
-    return mQtSerialPortWriteDelay;
-}
-
-void RespeqtSettings::setQtSerialPortWriteDelay(int delay)
-{
-    mQtSerialPortWriteDelay = delay;
-    if(mSessionFileName == "") mSettings->setValue("QtWriteDelay", mQtSerialPortWriteDelay);
-}
-
-int RespeqtSettings::QtSerialPortCompErrDelay()
-{
-    return mQtSerialPortCompErrDelay;
-}
-
-void RespeqtSettings::setQtSerialPortCompErrDelay(int delay)
-{
-    mQtSerialPortCompErrDelay = delay;
-    if(mSessionFileName == "") mSettings->setValue("QtCompErrDelay", mQtSerialPortCompErrDelay);
-}
-
 
 QString RespeqtSettings::atariSioDriverName()
 {
@@ -890,6 +784,17 @@ void RespeqtSettings::setCapitalLettersInPCLINK(bool caps)
 {
     mUseCapitalLettersInPCLINK = caps;
     mSettings->setValue("CapitalLettersInPCLINK", mUseCapitalLettersInPCLINK);
+}
+
+bool RespeqtSettings::isURLSubmitEnabled()
+{
+    return mUseURLSubmit;
+}
+
+void RespeqtSettings::setURLSubmit(bool enabled)
+{
+    mUseURLSubmit = enabled;
+    mSettings->setValue("URLSubmit", mUseURLSubmit);
 }
 
 void RespeqtSettings::writeRecentImageSettings()

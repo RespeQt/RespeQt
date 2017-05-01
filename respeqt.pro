@@ -10,7 +10,7 @@
 # know the specific year(s) please let the current maintainer know.
 #
 #CONFIG(release, debug|release):DEFINES += QT_NO_DEBUG_OUTPUT
-DEFINES += VERSION=\\\"R4-RC2\\\"
+DEFINES += VERSION=\\\"r4\\\"
 TARGET = RespeQt
 TEMPLATE = app
 CONFIG += qt
@@ -42,8 +42,7 @@ SOURCES += main.cpp \
     respeqtsettings.cpp \
     drivewidget.cpp \
     pclink.cpp \
-    infowidget.cpp \
-    serialport-Qt.cpp
+    infowidget.cpp
 win32:LIBS += -lwinmm -lz
 unix:LIBS += -lz
 win32:SOURCES += serialport-win32.cpp
@@ -72,8 +71,7 @@ HEADERS += mainwindow.h \
     respeqtsettings.h \
     drivewidget.h \
     pclink.h \
-    infowidget.h \
-    serialport-Qt.h
+    infowidget.h
 
 win32:HEADERS += serialport-win32.h
 unix:HEADERS += serialport-unix.h
