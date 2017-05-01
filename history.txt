@@ -1,4 +1,5 @@
-release 4 (beta)
+release 4
+	* fixed uninitialized pointer to log window instance causing a crash
 	* replaced AspeCl with FJCs RCL (#54)
 	* added enable/disable checkbox for URL submit (#52) (TheMontezuma)
 	* simplified serial port selection (#51) (TheMontezuma)
