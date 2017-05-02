@@ -27,7 +27,7 @@ namespace Printers
     void NativeOutput::updateBoundingBox()
     {
         QFontMetrics metrics(*mFont);
-        mBoundingBox = QRect(0, 0, mDevice->width(), mDevice->height());
+        mBoundingBox = QRectF(0, 0, mDevice->width(), mDevice->height());
         x = mBoundingBox.left();
         y = mBoundingBox.top() + metrics.lineSpacing();
     }

@@ -3,6 +3,7 @@
 #include "respeqtsettings.h"
 #include "printers/nativeoutput.h"
 #include "printers/nativeprinter.h"
+#include "printers/svgoutput.h"
 
 #include <QPrintDialog>
 #include <QPrinterInfo>
@@ -132,8 +133,16 @@ void PrinterWidget::on_outputSelection_currentIndexChanged(int /*index*/)
         }
     } else if (mInitialized) {
         // Handling the special devices.
+        if (ui->outputSelection->currentText() == "SVG")
+        {
+            Printers::SVGOutput *svg = new Printers::SVGOutput();
+            mDevice = svg;
+            QString fileName = QFileDialog::getSaveFileName(this, tr("Save SVG"), "", tr("SVG (*.svg)"));
+            svg->setFileName(fileName);
+        } else {
         QMessageBox::StandardButton reply;
         reply = QMessageBox::information(this, tr("Output device"), tr("Not implemented yet"));
+        }
     }
     if (ui->atariPrinters->currentIndex() >= 0
         && ui->outputSelection->currentIndex() >= 0

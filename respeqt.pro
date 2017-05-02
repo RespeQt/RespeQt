@@ -55,7 +55,8 @@ SOURCES += main.cpp \
     printers/nativeoutput.cpp \
     printers/centronics.cpp \
     printers/escp.cpp \
-    printers/nativeprinter.cpp
+    printers/nativeprinter.cpp \
+    printers/svgoutput.cpp
 win32:LIBS += -lwinmm -lz
 unix:LIBS += -lz
 win32:SOURCES += serialport-win32.cpp
@@ -97,7 +98,8 @@ HEADERS += mainwindow.h \
     printers/textprinter.h \
     printers/centronics.h \
     printers/escp.h \
-    printers/nativeprinter.h
+    printers/nativeprinter.h \
+    printers/svgoutput.h
 win32:HEADERS += serialport-win32.h
 unix:HEADERS += serialport-unix.h
 FORMS += mainwindow.ui \

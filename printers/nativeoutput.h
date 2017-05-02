@@ -37,7 +37,7 @@ namespace Printers
         QPaintDevice *mDevice;
         QFont *mFont;
         int x, y;
-        QRect mBoundingBox;
+        QRectF mBoundingBox;
 
         virtual void updateBoundingBox();
     };
