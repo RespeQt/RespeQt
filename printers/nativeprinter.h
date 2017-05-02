@@ -5,16 +5,18 @@
 
 #include <QPrinter>
 
-class NativePrinter : public NativeOutput
+namespace Printers
 {
-public:
-    NativePrinter();
-    inline QPrinter *printer() const {
-        return dynamic_cast<QPrinter*>(mDevice);
-    }
+    class NativePrinter : public NativeOutput
+    {
+    public:
+        NativePrinter();
+        inline QPrinter *printer() const {
+            return dynamic_cast<QPrinter*>(mDevice);
+        }
 
-protected:
-    virtual void updateBoundingBox();
-};
-
+    protected:
+        virtual void updateBoundingBox();
+    };
+}
 #endif // NATIVEPRINTER_H

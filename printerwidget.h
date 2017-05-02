@@ -22,8 +22,8 @@ public:
     int getPrinterNumber() const { return printerNo_; }
     void setup();
 
-    BasePrinter *printer() const { return mPrinter; }
-    void setPrinter(BasePrinter *printer) { mPrinter = printer; }
+    Printers::BasePrinter *printer() const { return mPrinter; }
+    void setPrinter(Printers::BasePrinter *printer) { mPrinter = printer; }
 
     void setSioWorker(SioWorker *sio);
 
@@ -40,8 +40,8 @@ private slots:
 private:
     Ui::PrinterWidget *ui;
     int printerNo_;
-    BasePrinter *mPrinter;
-    NativeOutput *mDevice;
+    Printers::BasePrinter *mPrinter;
+    Printers::NativeOutput *mDevice;
     SioWorker *mSio;
     bool mInitialized;
 };

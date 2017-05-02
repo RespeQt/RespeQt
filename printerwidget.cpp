@@ -34,8 +34,8 @@ void PrinterWidget::setup()
     ui->atariPrinters->clear();
     // TODO Better solution to getting labels?
     std::map<QString, int> list;
-    for (int i = 1; i <= BasePrinter::NUM_KNOWN_PRINTERS; i++) {
-        BasePrinter *printer = BasePrinter::createPrinter(i, NULL);
+    for (int i = 1; i <= Printers::BasePrinter::NUM_KNOWN_PRINTERS; i++) {
+        Printers::BasePrinter *printer = Printers::BasePrinter::createPrinter(i, NULL);
         list[printer->typeName()] = printer->typeId();
         delete printer;
     }
@@ -93,7 +93,7 @@ void PrinterWidget::on_atariPrinters_currentIndexChanged(int index)
     if (mSio) {
        // Create a new Atari printer device and install it.
        int typeId = ui->atariPrinters->itemData(index).toInt();
-       BasePrinter *newPrinter = BasePrinter::createPrinter(typeId, mSio);
+       Printers::BasePrinter *newPrinter = Printers::BasePrinter::createPrinter(typeId, mSio);
        mSio->installDevice(PRINTER_BASE_CDEVIC + printerNo_, newPrinter);
        connect(newPrinter, SIGNAL(statusChanged(int)), this, SLOT(on_sio_statusChanged(int)));
        mPrinter = newPrinter;
@@ -112,7 +112,7 @@ void PrinterWidget::on_outputSelection_currentIndexChanged(int /*index*/)
     }
     if (ui->outputSelection->currentData().toBool()) // true means printer driver
     {
-        NativePrinter *temp = new NativePrinter();
+        Printers::NativePrinter *temp = new Printers::NativePrinter();
         if (mDevice)
         {
             delete mDevice;

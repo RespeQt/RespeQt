@@ -3,12 +3,14 @@
 
 #include "baseprinter.h"
 
-class Centronics : public BasePrinter
+namespace Printers
 {
-public:
-    Centronics(SioWorker *sio);
+    class Centronics : public BasePrinter
+    {
+    public:
+        Centronics(SioWorker *sio);
 
-    virtual const QChar translateAtascii(const char b);
-};
-
+        virtual const QChar translateAtascii(const char b);
+    };
+}
 #endif // CENTRONICS_H

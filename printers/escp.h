@@ -3,12 +3,14 @@
 
 #include "centronics.h"
 
-class Escp : public Centronics
+namespace Printers
 {
-public:
-    Escp(SioWorker *sio);
+    class Escp : public Centronics
+    {
+    public:
+        Escp(SioWorker *sio);
 
-    virtual bool handleBuffer(QByteArray &buffer, int len);
-};
-
+        virtual bool handleBuffer(QByteArray &buffer, int len);
+    };
+}
 #endif // ESCP_H

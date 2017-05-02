@@ -1,19 +1,22 @@
 #include "nativeprinter.h"
 
-NativePrinter::NativePrinter()
+namespace Printers
 {
-    QPrinter *printer = new QPrinter();
-    mDevice = printer;
-    mBoundingBox = printer->pageRect();
-}
-
-void NativePrinter::updateBoundingBox()
-{
-    if (mFont)
+    NativePrinter::NativePrinter()
     {
-        QFontMetrics metrics(*mFont);
-        mBoundingBox = printer()->pageRect();
-        x = mBoundingBox.left();
-        y = mBoundingBox.top() + metrics.lineSpacing();
+        QPrinter *printer = new QPrinter();
+        mDevice = printer;
+        mBoundingBox = printer->pageRect();
+    }
+
+    void NativePrinter::updateBoundingBox()
+    {
+        if (mFont)
+        {
+            QFontMetrics metrics(*mFont);
+            mBoundingBox = printer()->pageRect();
+            x = mBoundingBox.left();
+            y = mBoundingBox.top() + metrics.lineSpacing();
+        }
     }
 }

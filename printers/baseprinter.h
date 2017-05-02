@@ -13,49 +13,51 @@
 #include <QFont>
 #include <QFontMetrics>
 
-class BasePrinter : public SioDevice
+namespace Printers
 {
-    Q_OBJECT
-public:
-    BasePrinter(SioWorker *worker);
-    virtual ~BasePrinter();
+    class BasePrinter : public SioDevice
+    {
+        Q_OBJECT
+    public:
+        BasePrinter(SioWorker *worker);
+        virtual ~BasePrinter();
 
-    int typeId() const { return mTypeId; }
-    const QString &typeName() const { return mTypeName; }
+        int typeId() const { return mTypeId; }
+        const QString &typeName() const { return mTypeName; }
 
-    virtual void handleCommand(quint8 command, quint16 aux);
-    virtual bool handleBuffer(QByteArray &buffer, int len) = 0;
+        virtual void handleCommand(quint8 command, quint16 aux);
+        virtual bool handleBuffer(QByteArray &buffer, int len) = 0;
 
-    virtual const QChar translateAtascii(const char b);
+        virtual const QChar translateAtascii(const char b);
 
-    NativeOutput *output() const { return mOutput; }
-    void setOutput(NativeOutput *output);
+        NativeOutput *output() const { return mOutput; }
+        void setOutput(NativeOutput *output);
 
-    // create a printer object of specified type
-    static BasePrinter *createPrinter(int type, SioWorker *worker);
+        // create a printer object of specified type
+        static BasePrinter *createPrinter(int type, SioWorker *worker);
 
-    static const int NUM_KNOWN_PRINTERS = 3;
+        static const int NUM_KNOWN_PRINTERS = 3;
 
-    static const int TEXTPRINTER = 1;
-    static const int ATARI1027 = 2;
-    static const int ATARI1020 = 3;
-    static const int ESCP = -1;
-    static const int ATARI1029 = -2;
+        static const int TEXTPRINTER = 1;
+        static const int ATARI1027 = 2;
+        static const int ATARI1020 = 3;
+        static const int ESCP = -1;
+        static const int ATARI1029 = -2;
 
-protected:
-    // This should be static methods, because they are called
-    // from the constructor
-    virtual void setupFont() {}
-    virtual void setupOutput();
+    protected:
+        // This should be static methods, because they are called
+        // from the constructor
+        virtual void setupFont() {}
+        virtual void setupOutput();
 
-    int mTypeId;
-    QString mTypeName;
-    Atascii mAtascii;
-    NativeOutput *mOutput;
+        int mTypeId;
+        QString mTypeName;
+        Atascii mAtascii;
+        NativeOutput *mOutput;
 
-private:
-    int m_lastOperation;
+    private:
+        int m_lastOperation;
 
-};
-
+    };
+}
 #endif // BASEPRINTER_H
