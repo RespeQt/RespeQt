@@ -38,6 +38,9 @@ public:
     int serialPortHandshakingMethod();
     void setSerialPortHandshakingMethod(int method);
 
+    bool serialPortTriggerOnFallingEdge();
+    void setSerialPortTriggerOnFallingEdge(bool use);
+
     int serialPortMaximumSpeed();
     void setSerialPortMaximumSpeed(int speed);
 
@@ -222,6 +225,7 @@ private:
 //
     QString mSerialPortName;
     int mSerialPortHandshakingMethod;
+    bool mSerialPortTriggerOnFallingEdge;
     int mSerialPortWriteDelay;
     int mSerialPortCompErrDelay;
     int mSerialPortMaximumSpeed;
