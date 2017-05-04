@@ -19,6 +19,7 @@ namespace Printers
 
     void NativeOutput::beginOutput() {
         mPainter = new QPainter();
+        mPainter->setRenderHint(QPainter::Antialiasing);
         mPainter->begin(mDevice);
         setFont(mFont);
         updateBoundingBox();
@@ -55,7 +56,8 @@ namespace Printers
     void NativeOutput::printChar(const QChar &c)
     {
         QFontMetrics metrics(*mFont);
-        if (metrics.width(c) + x > mBoundingBox.right()) { // Char has to go on next line
+        if (metrics.width(c) + x > mBoundingBox.right()) {
+            // Char has to go on next line
             newLine();
         }
         mPainter->drawText(x, y + metrics.height(), c);
@@ -104,9 +106,6 @@ namespace Printers
             y += metrics.lineSpacing();
         }
     }
-
-    void NativeOutput::newPage()
-    {}
 
     void NativeOutput::translate(const QPointF &offset)
     {

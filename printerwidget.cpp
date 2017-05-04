@@ -4,6 +4,7 @@
 #include "printers/nativeoutput.h"
 #include "printers/nativeprinter.h"
 #include "printers/svgoutput.h"
+#include "printers/windowoutput.h"
 
 #include <QPrintDialog>
 #include <QPrinterInfo>
@@ -51,6 +52,7 @@ void PrinterWidget::setup()
     }
 
     ui->outputSelection->addItem("SVG", QVariant(false));
+    ui->outputSelection->addItem("Window", QVariant(false));
     QStringList printers = QPrinterInfo::availablePrinterNames();
     for (QStringList::const_iterator sit = printers.cbegin(); sit != printers.cend(); ++sit)
     {
@@ -139,6 +141,11 @@ void PrinterWidget::on_outputSelection_currentIndexChanged(int /*index*/)
             mDevice = svg;
             QString fileName = QFileDialog::getSaveFileName(this, tr("Save SVG"), "", tr("SVG (*.svg)"));
             svg->setFileName(fileName);
+        } else if (ui->outputSelection->currentText() == "Window")
+        {
+            Printers::WindowOutput *window = new Printers::WindowOutput();
+            mDevice = window;
+            window->show();
         } else {
         QMessageBox::StandardButton reply;
         reply = QMessageBox::information(this, tr("Output device"), tr("Not implemented yet"));

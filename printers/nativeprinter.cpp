@@ -3,6 +3,7 @@
 namespace Printers
 {
     NativePrinter::NativePrinter()
+        :NativeOutput()
     {
         QPrinter *printer = new QPrinter();
         mDevice = printer;
@@ -19,4 +20,9 @@ namespace Printers
             y = mBoundingBox.top() + metrics.lineSpacing();
         }
     }
+
+
+    void NativePrinter::newPage()
+    {}
+
 }

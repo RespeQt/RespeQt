@@ -16,7 +16,7 @@ namespace Printers
 
         virtual void beginOutput();
         virtual void endOutput();
-        virtual void newPage();
+        virtual void newPage() = 0;
         virtual void newLine();
         virtual void printChar(const QChar &c);
         virtual void printString(const QString &s);

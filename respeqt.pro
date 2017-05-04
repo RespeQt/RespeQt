@@ -56,7 +56,8 @@ SOURCES += main.cpp \
     printers/centronics.cpp \
     printers/escp.cpp \
     printers/nativeprinter.cpp \
-    printers/svgoutput.cpp
+    printers/svgoutput.cpp \
+    printers/windowoutput.cpp
 win32:LIBS += -lwinmm -lz
 unix:LIBS += -lz
 win32:SOURCES += serialport-win32.cpp
@@ -99,7 +100,8 @@ HEADERS += mainwindow.h \
     printers/centronics.h \
     printers/escp.h \
     printers/nativeprinter.h \
-    printers/svgoutput.h
+    printers/svgoutput.h \
+    printers/windowoutput.h
 win32:HEADERS += serialport-win32.h
 unix:HEADERS += serialport-unix.h
 FORMS += mainwindow.ui \
@@ -115,7 +117,8 @@ FORMS += mainwindow.ui \
     logdisplaydialog.ui \
     drivewidget.ui \
     infowidget.ui \
-    printerwidget.ui
+    printerwidget.ui \
+    printers/windowoutput.ui
 RESOURCES += icons.qrc \
     atarifiles.qrc \
     i18n.qrc \
