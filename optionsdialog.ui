@@ -210,6 +210,13 @@
          </widget>
         </item>
         <item>
+         <widget class="QCheckBox" name="serialPortFallingEdge">
+          <property name="text">
+           <string>Trigger on falling edge</string>
+          </property>
+         </widget>
+        </item>
+        <item>
          <widget class="QLabel" name="serialPortWriteDelayLabel">
           <property name="enabled">
            <bool>true</bool>
