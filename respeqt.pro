@@ -57,7 +57,8 @@ SOURCES += main.cpp \
     printers/escp.cpp \
     printers/nativeprinter.cpp \
     printers/svgoutput.cpp \
-    printers/windowoutput.cpp
+    printers/windowoutput.cpp \
+    printers/bufferedpaintwidget.cpp
 win32:LIBS += -lwinmm -lz
 unix:LIBS += -lz
 win32:SOURCES += serialport-win32.cpp
@@ -101,7 +102,8 @@ HEADERS += mainwindow.h \
     printers/escp.h \
     printers/nativeprinter.h \
     printers/svgoutput.h \
-    printers/windowoutput.h
+    printers/windowoutput.h \
+    printers/bufferedpaintwidget.h
 win32:HEADERS += serialport-win32.h
 unix:HEADERS += serialport-unix.h
 FORMS += mainwindow.ui \

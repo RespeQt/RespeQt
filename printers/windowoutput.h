@@ -19,13 +19,12 @@ namespace Printers {
     public:
         explicit WindowOutput(QWidget *parent = 0);
         ~WindowOutput();
-        virtual void paintEvent(QPaintEvent *event);
         virtual void newLine();
-        virtual void newPage();
+        virtual void newPage() {}
+        virtual void printChar(const QChar &c);
 
     private:
         Ui::WindowOutput *ui;
-        QPicture *mPicture;
     };
 }
 #endif // WINDOWOUTPUT_H

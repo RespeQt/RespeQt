@@ -53,6 +53,7 @@ namespace Printers
             QFont *font = new QFont("Lucida Console", mFontSize);
             font->setUnderline(false);
             mOutput->setFont(font);
+            mOutput->setPen(sColorMapping.at(0));
         }
     }
 

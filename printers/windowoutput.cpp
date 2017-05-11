@@ -6,13 +6,10 @@ namespace Printers {
     WindowOutput::WindowOutput(QWidget *parent) :
         QFrame(parent),
         NativeOutput(),
-        ui(new Ui::WindowOutput),
-        mPicture(NULL)
+        ui(new Ui::WindowOutput)
     {
         ui->setupUi(this);
-        mPicture = new QPicture();
-        mPicture->setBoundingRect(ui->page->geometry());
-        mDevice = mPicture;
+        mDevice = ui->page->canvas();
     }
 
     WindowOutput::~WindowOutput()
@@ -21,28 +18,23 @@ namespace Printers {
         delete ui;
     }
 
-    void WindowOutput::paintEvent(QPaintEvent *)
-    {
-        if (mPicture && mPainter)
-        {
-            mPainter->drawPicture(0, 0, *mPicture);
-            mPainter->drawText(0, 0, "TEST");
-        }
-    }
-
     void WindowOutput::newLine()
     {
-        NativeOutput::newLine();
-        qDebug() << "!n"<<"newLine";
-        update();
+        QFontMetrics metrics(*mFont);
+        NativeOutput::x = mBoundingBox.left();
+        if (NativeOutput::y + metrics.height() > mBoundingBox.bottom())
+        {
+            NativeOutput::y += metrics.lineSpacing();
+            NativeOutput::x = 0;
+        }
+        ui->page->resize(width(), NativeOutput::y);
     }
 
-    void WindowOutput::newPage()
+    void WindowOutput::printChar(const QChar &c)
     {
-        QRect rect = mPicture->boundingRect();
-        QFontMetricsF metrics(*mFont);
-        rect.moveBottom(rect.bottom() + metrics.lineSpacing());
-        mPicture->setBoundingRect(rect);
-        ui->page->resize(rect.width(), rect.height());
+        //NativeOutput::printChar(c);
+        QFontMetrics metrics(*mFont);
+        mPainter->setPen(QColor("red"));
+        mPainter->fillRect(QRect(NativeOutput::x, NativeOutput::y, NativeOutput::x + metrics.width(c), NativeOutput::y+metrics.lineSpacing()), QColor("white"));
     }
 }

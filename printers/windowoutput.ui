@@ -55,16 +55,22 @@
      <verstretch>0</verstretch>
     </sizepolicy>
    </property>
+   <property name="verticalScrollBarPolicy">
+    <enum>Qt::ScrollBarAsNeeded</enum>
+   </property>
+   <property name="horizontalScrollBarPolicy">
+    <enum>Qt::ScrollBarAlwaysOn</enum>
+   </property>
    <property name="widgetResizable">
     <bool>false</bool>
    </property>
-   <widget class="QWidget" name="page">
+   <widget class="Printers::BufferedPaintWidget" name="page">
     <property name="geometry">
      <rect>
       <x>0</x>
       <y>0</y>
       <width>478</width>
-      <height>638</height>
+      <height>30</height>
      </rect>
     </property>
     <property name="sizePolicy">
@@ -138,11 +144,19 @@
      </palette>
     </property>
     <property name="autoFillBackground">
-     <bool>false</bool>
+     <bool>true</bool>
     </property>
    </widget>
   </widget>
  </widget>
+ <customwidgets>
+  <customwidget>
+   <class>Printers::BufferedPaintWidget</class>
+   <extends>QWidget</extends>
+   <header location="global">printers/bufferedpaintwidget.h</header>
+   <container>1</container>
+  </customwidget>
+ </customwidgets>
  <resources/>
  <connections/>
 </ui>

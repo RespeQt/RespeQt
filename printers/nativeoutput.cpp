@@ -80,7 +80,10 @@ namespace Printers
 
     void NativeOutput::setPen(const QColor &color)
     {
-        mPainter->setPen(color);
+        if (mPainter)
+        {
+            mPainter->setPen(color);
+        }
     }
 
     void NativeOutput::setPen(const QPen &pen)
@@ -100,7 +103,6 @@ namespace Printers
         if (y + metrics.height() > mBoundingBox.bottom())
         {
             newPage();
-            qDebug()<<"!n"<<"newPage";
             y = mBoundingBox.top();
         } else {
             y += metrics.lineSpacing();
