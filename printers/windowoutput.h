@@ -21,7 +21,6 @@ namespace Printers {
         ~WindowOutput();
         virtual void newLine();
         virtual void newPage() {}
-        virtual void printChar(const QChar &c);
 
     private:
         Ui::WindowOutput *ui;

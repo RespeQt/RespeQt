@@ -29,12 +29,4 @@ namespace Printers {
         }
         ui->page->resize(width(), NativeOutput::y);
     }
-
-    void WindowOutput::printChar(const QChar &c)
-    {
-        //NativeOutput::printChar(c);
-        QFontMetrics metrics(*mFont);
-        mPainter->setPen(QColor("red"));
-        mPainter->fillRect(QRect(NativeOutput::x, NativeOutput::y, NativeOutput::x + metrics.width(c), NativeOutput::y+metrics.lineSpacing()), QColor("white"));
-    }
 }

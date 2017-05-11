@@ -52,7 +52,7 @@ void PrinterWidget::setup()
     }
 
     ui->outputSelection->addItem("SVG", QVariant(false));
-    ui->outputSelection->addItem("Window", QVariant(false));
+    //ui->outputSelection->addItem("Window", QVariant(false));
     QStringList printers = QPrinterInfo::availablePrinterNames();
     for (QStringList::const_iterator sit = printers.cbegin(); sit != printers.cend(); ++sit)
     {
