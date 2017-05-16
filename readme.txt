@@ -46,7 +46,7 @@ Copyright Matthias Reichl <hias@horus.com>. Used in this package under GPL 2.0 l
 Atascii Fonts by Mark Simonson (http://members.bitstream.net/~marksim/atarimac).
 Used in this package under Freeware License.
 
-1020 emu font by UNIXcoffee928. All rights reserved. Used with permission under GPL 2.0 license.<br/>
+1020 emu font by UNIXcoffee928. Used with permission under GPL 2.0 license.
 
 RespeQt icon by djmat56. Used with permission.
 
