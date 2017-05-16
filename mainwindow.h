@@ -71,6 +71,9 @@ private:
     InfoWidget* infoWidget;
 
     QLabel *speedLabel, *onOffLabel, *prtOnOffLabel, *netLabel, *clearMessagesLabel;  //
+#ifndef Q_NO_DEBUG
+    QLabel *snapshot;
+#endif
     TextPrinterWindow *textPrinterWindow;
     DocDisplayWindow *docDisplayWindow;    //
     QTranslator respeqt_translator, respeqt_qt_translator;

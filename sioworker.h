@@ -14,6 +14,9 @@
 
 #include <QThread>
 #include <QMutex>
+#ifndef QT_NO_DEBUG
+#include <QFile>
+#endif
 
 #include "serialport.h"
 
@@ -68,6 +71,11 @@ private:
     SioDevice* devices[256];
     AbstractSerialPortBackend *mPort;
     bool mustTerminate;
+#ifndef QT_NO_DEBUG
+    bool mSnapshotRunning;
+    QXmlStreamWriter *mSnapshotWriter;
+    void writeSnapshotCommandFrame(qint8 no, qint8 command, qint8 aux1, qint8 aux2);
+#endif
 public:
     AbstractSerialPortBackend* port() {return mPort;}
     int maxSpeed;
@@ -86,6 +94,14 @@ public:
 
     QString deviceName(int device);
     static void usleep(unsigned long time) {QThread::usleep(time);}
+
+#ifndef QT_NO_DEBUG
+    void startSIOSnapshot();
+    void stopSIOSnapshot();
+    bool isSnapshotRunning() { return mSnapshotRunning; }
+    void writeSnapshotDataFrame(QByteArray &data);
+#endif
+
 signals:
     void statusChanged(QString status);
 public slots:

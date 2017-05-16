@@ -82,6 +82,9 @@ void SmartDevice::handleCommand(quint8 command, quint16 aux)
             }
             sio->port()->writeDataAck();
             sio->port()->writeComplete();
+#ifndef QT_NO_DEBUG
+            sio->writeSnapshotDataFrame(data);
+#endif
 
             QString urlstr(data);
             QDesktopServices::openUrl(QUrl(urlstr));
@@ -269,7 +272,9 @@ void RCl::handleCommand(quint8 command, quint16 aux)
                   sio->port()->writeError();
                   return;
                }
-
+#ifndef QT_NO_DEBUG
+              sio->writeSnapshotDataFrame(data);
+#endif
               imageFileName = data;
               if (command == 0x97) {     // Create new image file first
                   int i, type;

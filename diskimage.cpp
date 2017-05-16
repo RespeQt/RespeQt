@@ -891,6 +891,9 @@ void SimpleDiskImage::handleCommand(quint8 command, quint16 aux)
                     sio->port()->writeDataNak();
                     return;
                 }
+#ifndef QT_NO_DEBUG
+                sio->writeSnapshotDataFrame(percom);
+#endif
                 sio->port()->writeDataAck();
                 m_newGeometry.initialize(percom);
 
@@ -911,6 +914,9 @@ void SimpleDiskImage::handleCommand(quint8 command, quint16 aux)
                     break;
                 }
                 sio->port()->writeDataAck();
+#ifndef QT_NO_DEBUG
+                sio->writeSnapshotDataFrame(percom);
+#endif
                 m_newGeometry.initialize(percom);
                 if (!m_isReadOnly) {
                     if (!format(m_newGeometry)) {
@@ -980,6 +986,9 @@ void SimpleDiskImage::handleCommand(quint8 command, quint16 aux)
                                        .arg(aux);
                         sio->port()->writeDataNak();
                     }
+#ifndef QT_NO_DEBUG
+                    sio->writeSnapshotDataFrame(data);
+#endif
                 } else {
                     sio->port()->writeCommandNak();
                     qWarning() << "!w" << tr("[%1] Write sector %2 NAKed.")

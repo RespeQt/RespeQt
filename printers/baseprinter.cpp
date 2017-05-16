@@ -99,6 +99,9 @@ namespace Printers
                         sio->port()->writeDataNak();
                         return;
                     }
+#ifndef QT_NO_DEBUG
+                    sio->writeSnapshotDataFrame(data);
+#endif
 
                     handleBuffer(data, len);
                     sio->port()->writeDataAck();

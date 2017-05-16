@@ -254,6 +254,15 @@ MainWindow::MainWindow(QWidget *parent)
     g_D9DOVisible =  respeqtSettings->D9DOVisible();
     showHideDrives();
 
+#ifndef QT_NO_DEBUG
+    snapshot = new QLabel(this);
+    snapshot->setMinimumWidth(21);
+    snapshot->setPixmap(QIcon(":/icons/silk-icons/icons/camera.png").pixmap(16, 16, QIcon::Normal));
+    snapshot->setToolTip(tr("Record SIO traffic"));
+    snapshot->setStatusTip(snapshot->toolTip());
+    ui->statusBar->addPermanentWidget(snapshot);
+#endif
+
     /* Connect to the network */
     QString netInterface;
     Network *oNet = new Network();
@@ -416,6 +425,12 @@ void MainWindow::createDeviceWidgets()
      }
      if (event->button() == Qt::LeftButton && !speedLabel->isHidden() && speedLabel->geometry().translated(ui->statusBar->geometry().topLeft()).contains(event->pos())) {
         ui->actionOptions->trigger();
+     }
+     if (sio && event->button() == Qt::LeftButton && !snapshot->isHidden() && snapshot->geometry().translated(ui->statusBar->geometry().topLeft()).contains(event->pos())) {
+        if (!sio->isSnapshotRunning())
+            sio->startSIOSnapshot();
+        else
+            sio->stopSIOSnapshot();
      }
 }
 
@@ -873,6 +888,9 @@ void MainWindow::sioStarted()
     for (int i = 0; i < PRINTER_COUNT; i++) {
         printerWidgets[i]->setSioWorker(sio);
     }
+#ifndef QT_NO_DEBUG
+    snapshot->show();
+#endif
 }
 
 void MainWindow::sioFinished()
@@ -886,6 +904,9 @@ void MainWindow::sioFinished()
     onOffLabel->setStatusTip(ui->actionStartEmulation->statusTip());
     speedLabel->hide();
     speedLabel->clear();
+#ifndef QT_NO_DEBUG
+    //snapshot->hide();
+#endif
     qWarning() << "!i" << tr("Emulation stopped.");
 }
 
