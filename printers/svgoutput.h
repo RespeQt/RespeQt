@@ -18,7 +18,7 @@ namespace Printers
 
         void setFileName(const QString &filename) { svg()->setFileName(filename); }
         virtual void updateBoundingBox();
-        virtual void newPage();
+        virtual void newPage(bool linefeed = false);
 
     };
 }

@@ -14,7 +14,7 @@ namespace Printers
         inline QPrinter *printer() const {
             return dynamic_cast<QPrinter*>(mDevice);
         }
-        virtual void newPage();
+        virtual void newPage(bool linefeed = false);
 
     protected:
         virtual void updateBoundingBox();

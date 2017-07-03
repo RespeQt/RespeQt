@@ -1,6 +1,7 @@
 #include "atari1020.h"
 #include "logdisplaydialog.h"
 #include "math.h"
+#include "respeqtsettings.h"
 
 #include <stdexcept>
 #include <QFontDatabase>
@@ -70,7 +71,7 @@ namespace Printers
             }
 
             if (mGraphicsMode) {
-                if (b == 65) // A
+                if (b == 65) // A; Leave graphics mode
                 {
                     mGraphicsMode = false;
                 } else if (mPrintText)

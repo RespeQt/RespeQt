@@ -14,11 +14,11 @@ namespace Printers {
     void SVGOutput::updateBoundingBox()
     {
         QFontMetrics metrics(*mFont);
-        x = mBoundingBox.left();
-        y = mBoundingBox.top() + metrics.lineSpacing();
+        mX = mBoundingBox.left();
+        mY = mBoundingBox.top() + metrics.lineSpacing();
     }
 
-    void SVGOutput::newPage()
+    void SVGOutput::newPage(bool linefeed)
     {}
 
 }

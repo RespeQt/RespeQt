@@ -18,15 +18,28 @@ namespace Printers {
         delete ui;
     }
 
-    void WindowOutput::newLine()
+    void WindowOutput::newLine(bool linefeed)
     {
         QFontMetrics metrics(*mFont);
-        NativeOutput::x = mBoundingBox.left();
-        if (NativeOutput::y + metrics.height() > mBoundingBox.bottom())
+        if (!linefeed)
+            mX = mBoundingBox.left();
+        if (mY + metrics.height() > mBoundingBox.bottom())
         {
-            NativeOutput::y += metrics.lineSpacing();
-            NativeOutput::x = 0;
+            mY += metrics.lineSpacing();
+            mX = 0;
         }
-        ui->page->resize(width(), NativeOutput::y);
+        ui->page->resize(QFrame::width(), mY);
     }
+
+    void WindowOutput::newPage(bool /*linefeed*/)
+    {}
+
+    void WindowOutput::updateBoundingBox()
+    {
+        QFontMetrics metrics(*mFont);
+        mBoundingBox = QRectF(0, 0, mDevice->width(), mDevice->height());
+        mX = mBoundingBox.left();
+        mY = mBoundingBox.top() + metrics.lineSpacing();
+    }
+
 }

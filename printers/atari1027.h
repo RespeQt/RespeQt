@@ -19,7 +19,6 @@ namespace Printers
         virtual void setupFont();
 
     private:
-        int m_lastOperation;
         bool mESC;
 
         virtual bool handleBuffer(QByteArray &buffer, int len);

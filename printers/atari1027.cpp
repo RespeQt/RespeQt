@@ -2,8 +2,6 @@
 #include "respeqtsettings.h"
 #include <stdlib.h>
 
-#include <QtDebug>
-
 namespace Printers
 {
     Atari1027::Atari1027(SioWorker *worker)
@@ -18,8 +16,7 @@ namespace Printers
     {
         if (mOutput)
         {
-            QFont *font = new QFont("Courier", 12);
-            font->setStyleHint(QFont::TypeWriter);
+            QFont *font = new QFont(respeqtSettings->Atari1027FontFamily(), 12);
             font->setUnderline(false);
             mOutput->setFont(font);
         }
@@ -104,7 +101,7 @@ namespace Printers
 
     bool Atari1027::handleEscapedCodes(const char b)
     {
-        // At this time we have seen two ESC.
+        // At this time we have seen an ESC.
         switch(b) {
             case 25: // CTRL+Y starts underline mode
             {

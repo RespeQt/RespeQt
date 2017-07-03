@@ -16,6 +16,7 @@
 #include <QTranslator>
 #include <QDir>
 #include <QFileDialog>
+#include <QFontDialog>
 
 OptionsDialog::OptionsDialog(QWidget *parent) :
     QDialog(parent),
@@ -33,6 +34,8 @@ OptionsDialog::OptionsDialog(QWidget *parent) :
     itemEmulation = m_ui->treeWidget->topLevelItem(1);
     itemI18n = m_ui->treeWidget->topLevelItem(2);
     itemTestSerialPort = m_ui->treeWidget->topLevelItem(0)->child(2);
+    itemAtari1020 = m_ui->treeWidget->topLevelItem(3)->child(0);
+    itemAtari1027 = m_ui->treeWidget->topLevelItem(3)->child(1);
 
 #ifndef Q_OS_LINUX
     m_ui->treeWidget->topLevelItem(0)->removeChild(itemAtariSio);
@@ -146,6 +149,12 @@ OptionsDialog::OptionsDialog(QWidget *parent) :
     {
         m_ui->emulationHighSpeedExeLoaderBox->setVisible(true);
     }
+
+    m_ui->label_1027font->setText(respeqtSettings->Atari1027FontFamily());
+    QFont font;
+    font.setPointSize(12);
+    font.setFamily(m_ui->label_1027font->text());
+    m_ui->fontSample->setFont(font);
 }
 
 OptionsDialog::~OptionsDialog()
@@ -248,6 +257,10 @@ void OptionsDialog::on_treeWidget_currentItemChanged(QTreeWidgetItem* current, Q
         m_ui->stackedWidget->setCurrentIndex(3);
     } else if (current == itemI18n) {
         m_ui->stackedWidget->setCurrentIndex(4);
+    } else if (current == itemAtari1020) {
+        m_ui->stackedWidget->setCurrentIndex(5);
+    } else if (current == itemAtari1027) {
+        m_ui->stackedWidget->setCurrentIndex(6);
     }
 }
 
@@ -304,4 +317,19 @@ void OptionsDialog::on_testFileButton_clicked()
     m_ui->testFileLabel->setText(file1Name);
     respeqtSettings->setTestFile(file1Name);
 #endif
+}
+
+void OptionsDialog::on_button_1027font_clicked()
+{
+    bool ok;
+    QFont font;
+    font.setFamily(m_ui->label_1027font->text());
+    QFontDialog::FontDialogOption options = QFontDialog::MonospacedFonts;
+    QFont newFont = QFontDialog::getFont(&ok, font, this, tr("Select Atari 1027 font"), options);
+    if (ok) {
+        newFont.setPointSize(12);
+        m_ui->label_1027font->setText(newFont.family());
+        m_ui->fontSample->setFont(newFont);
+        respeqtSettings->setAtari1027FontFamily(newFont.family());
+    }
 }

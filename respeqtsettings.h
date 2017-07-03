@@ -213,6 +213,9 @@ public:
     const QString &connectedPrinterName(int no) const;
     const PrinterSettings &connectedPrinterSettings(int no) const;
 
+    QString Atari1027FontFamily();
+    void setAtari1027FontFamily(QString fontFamily);
+
 private:
     QSettings *mSettings;
 
@@ -274,6 +277,8 @@ private:
     QString mLastCasDir;
     
     QString mI18nLanguage;
+
+    QString mAtari1027FontName;
 
     bool mMinimizeToTray;
     bool mFilterUnderscore;

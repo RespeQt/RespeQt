@@ -1,4 +1,4 @@
-
+#include "math.h"
 #include "nativeoutput.h"
 #include "logdisplaydialog.h"
 
@@ -8,8 +8,9 @@ namespace Printers
         mPainter(NULL),
         mDevice(NULL),
         mFont(NULL),
-        x(0), y(0)
+        mX(0), mY(0)
     {
+
     }
 
     NativeOutput::~NativeOutput()
@@ -23,14 +24,6 @@ namespace Printers
         mPainter->begin(mDevice);
         setFont(mFont);
         updateBoundingBox();
-    }
-
-    void NativeOutput::updateBoundingBox()
-    {
-        QFontMetrics metrics(*mFont);
-        mBoundingBox = QRectF(0, 0, mDevice->width(), mDevice->height());
-        x = mBoundingBox.left();
-        y = mBoundingBox.top() + metrics.lineSpacing();
     }
 
     void NativeOutput::endOutput() {
@@ -56,12 +49,13 @@ namespace Printers
     void NativeOutput::printChar(const QChar &c)
     {
         QFontMetrics metrics(*mFont);
-        if (metrics.width(c) + x > mBoundingBox.right()) {
+        qDebug() << "!n" << mBoundingBox.right();
+        if (metrics.width(c) + mX > mBoundingBox.right()) {
             // Char has to go on next line
             newLine();
         }
-        mPainter->drawText(x, y + metrics.height(), c);
-        x += metrics.width(c);
+        mPainter->drawText(mX, mY + metrics.height(), c);
+        mX += metrics.width(c);
     }
 
     void NativeOutput::printString(const QString &s)
@@ -96,16 +90,17 @@ namespace Printers
         mPainter->setPen(style);
     }
 
-    void NativeOutput::newLine()
+    void NativeOutput::newLine(bool linefeed)
     {
         QFontMetrics metrics(*mFont);
-        x = mBoundingBox.left();
-        if (y + metrics.height() > mBoundingBox.bottom())
+        if (!linefeed)
+            mX = mBoundingBox.left();
+        if (mY + metrics.height() > mBoundingBox.bottom())
         {
-            newPage();
-            y = mBoundingBox.top();
+            newPage(linefeed);
+            mY = mBoundingBox.top();
         } else {
-            y += metrics.lineSpacing();
+            mY += metrics.lineSpacing();
         }
     }
 

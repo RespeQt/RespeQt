@@ -16,13 +16,13 @@ namespace Printers
         {
             QFontMetrics metrics(*mFont);
             mBoundingBox = printer()->pageRect();
-            x = mBoundingBox.left();
-            y = mBoundingBox.top() + metrics.lineSpacing();
+            mX = mBoundingBox.left();
+            mY = mBoundingBox.top() + metrics.lineSpacing();
         }
     }
 
 
-    void NativePrinter::newPage()
+    void NativePrinter::newPage(bool linefeed)
     {}
 
 }

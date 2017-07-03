@@ -19,8 +19,11 @@ namespace Printers {
     public:
         explicit WindowOutput(QWidget *parent = 0);
         ~WindowOutput();
-        virtual void newLine();
-        virtual void newPage() {}
+        virtual void newLine(bool linefeed = false);
+        virtual void newPage(bool linefeed = false);
+
+    protected:
+        virtual void updateBoundingBox();
 
     private:
         Ui::WindowOutput *ui;

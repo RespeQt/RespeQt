@@ -34,7 +34,7 @@ protected:
 private:
     Ui::OptionsDialog *m_ui;
     QTreeWidgetItem *itemStandard, *itemAtariSio, *itemEmulation, *itemI18n;
-    QTreeWidgetItem *itemTestSerialPort;
+    QTreeWidgetItem *itemTestSerialPort, *itemAtari1020, *itemAtari1027;
 
 private slots:
     void on_serialPortComboBox_currentIndexChanged(int index);
@@ -45,6 +45,7 @@ private slots:
     void OptionsDialog_accepted();
     void on_useEmulationCustomCasBaudBox_toggled(bool checked);
     void on_testFileButton_clicked();
+    void on_button_1027font_clicked();
 };
 
 #endif // OPTIONSDIALOG_H

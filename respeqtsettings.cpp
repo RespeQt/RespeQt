@@ -115,6 +115,9 @@ RespeqtSettings::RespeqtSettings()
     mExplorerOnTop = mSettings->value("ExplorerOnTop", false).toBool();
     mEnableShade = mSettings->value("EnableShadeByDefault", true).toBool();
 
+    // Printer specific settings
+    mAtari1027FontName = mSettings->value("Atari1027FontFamily", "Courier").toString();
+
 }
 
 RespeqtSettings::~RespeqtSettings()
@@ -854,4 +857,13 @@ int RespeqtSettings::printerType(int no) const {
 
 const RespeqtSettings::PrinterSettings &RespeqtSettings::connectedPrinterSettings(int no) const {
     return mConnectedPrinterSettings[no];
+}
+
+QString RespeqtSettings::Atari1027FontFamily() {
+    return mAtari1027FontName;
+}
+
+void RespeqtSettings::setAtari1027FontFamily(QString fontFamily) {
+    mAtari1027FontName = fontFamily;
+    mSettings->setValue("Atari1027FontFamily", fontFamily);
 }

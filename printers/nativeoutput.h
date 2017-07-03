@@ -16,14 +16,17 @@ namespace Printers
 
         virtual void beginOutput();
         virtual void endOutput();
-        virtual void newPage() = 0;
-        virtual void newLine();
+        virtual void newPage(bool linefeed = false) = 0;
+        virtual void newLine(bool linefeed = false);
         virtual void printChar(const QChar &c);
         virtual void printString(const QString &s);
         virtual void setWindow(const QRect &rectangle);
         virtual void setPen(const QColor &color);
         virtual void setPen(Qt::PenStyle style);
         virtual void setPen(const QPen &pen);
+        virtual int width() { return mBoundingBox.width(); }
+        virtual int height() { return mBoundingBox.height(); }
+        virtual int dpiX() { return mDevice->logicalDpiX(); }
         virtual const QPen &pen() const { return mPainter->pen(); }
         void setFont(QFont *font);
         QFont *font() const { return mFont; }
@@ -36,10 +39,10 @@ namespace Printers
         QPainter *mPainter;
         QPaintDevice *mDevice;
         QFont *mFont;
-        int x, y;
+        int mX, mY;
         QRectF mBoundingBox;
 
-        virtual void updateBoundingBox();
+        virtual void updateBoundingBox() = 0;
     };
 }
 #endif // NATIVEOUTPUT_H
