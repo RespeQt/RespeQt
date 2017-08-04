@@ -37,6 +37,7 @@ OptionsDialog::OptionsDialog(QWidget *parent) :
     itemAtari1020 = m_ui->treeWidget->topLevelItem(3)->child(0);
     itemAtari1027 = m_ui->treeWidget->topLevelItem(3)->child(1);
 
+
 #ifndef Q_OS_LINUX
     m_ui->treeWidget->topLevelItem(0)->removeChild(itemAtariSio);
 #endif
@@ -66,6 +67,7 @@ OptionsDialog::OptionsDialog(QWidget *parent) :
         m_ui->serialPortComboBox->addItem(tr("Custom"));
     }
     m_ui->serialPortHandshakeCombo->setCurrentIndex(respeqtSettings->serialPortHandshakingMethod());
+    m_ui->serialPortFallingEdge->setChecked(respeqtSettings->serialPortTriggerOnFallingEdge());
     m_ui->serialPortWriteDelayCombo->setCurrentIndex(respeqtSettings->serialPortWriteDelay());
     m_ui->serialPortBaudCombo->setCurrentIndex(respeqtSettings->serialPortMaximumSpeed());
     m_ui->serialPortUseDivisorsBox->setChecked(respeqtSettings->serialPortUsePokeyDivisors());
@@ -130,6 +132,7 @@ OptionsDialog::OptionsDialog(QWidget *parent) :
         }
     }
 
+    bool no_handshake = (respeqtSettings->serialPortHandshakingMethod()==HANDSHAKE_NO_HANDSHAKE);
     bool software_handshake = (respeqtSettings->serialPortHandshakingMethod()==HANDSHAKE_SOFTWARE);
     m_ui->serialPortWriteDelayLabel->setVisible(software_handshake);
     m_ui->serialPortWriteDelayCombo->setVisible(software_handshake);
@@ -140,6 +143,11 @@ OptionsDialog::OptionsDialog(QWidget *parent) :
     m_ui->serialPortDivisorEdit->setVisible(!software_handshake);
     m_ui->serialPortCompErrDelayLabel->setVisible(!software_handshake);
     m_ui->serialPortCompErrDelayBox->setVisible(!software_handshake);
+#ifdef Q_OS_WIN
+    m_ui->serialPortFallingEdge->setVisible(!no_handshake && !software_handshake);
+#else
+    m_ui->serialPortFallingEdge->setVisible(false);
+#endif
 
     if((SERIAL_BACKEND_STANDARD == respeqtSettings->backend()) && software_handshake)
     {
@@ -182,6 +190,7 @@ void OptionsDialog::on_serialPortComboBox_currentIndexChanged(int index)
 
 void OptionsDialog::on_serialPortHandshakeCombo_currentIndexChanged(int index)
 {
+    bool no_handshake = (index==HANDSHAKE_NO_HANDSHAKE);
     bool software_handshake = (index==HANDSHAKE_SOFTWARE);
     m_ui->serialPortWriteDelayLabel->setVisible(software_handshake);
     m_ui->serialPortWriteDelayCombo->setVisible(software_handshake);
@@ -192,6 +201,9 @@ void OptionsDialog::on_serialPortHandshakeCombo_currentIndexChanged(int index)
     m_ui->serialPortDivisorEdit->setVisible(!software_handshake);
     m_ui->serialPortCompErrDelayLabel->setVisible(!software_handshake);
     m_ui->serialPortCompErrDelayBox->setVisible(!software_handshake);
+#ifdef Q_OS_WIN
+    m_ui->serialPortFallingEdge->setVisible(!no_handshake && !software_handshake);
+#endif
     if(itemStandard->checkState((0)) == Qt::Checked)
     {
         m_ui->emulationHighSpeedExeLoaderBox->setVisible(!software_handshake);
@@ -268,6 +280,7 @@ void OptionsDialog::OptionsDialog_accepted()
 {
     respeqtSettings->setSerialPortName(m_ui->serialPortComboBox->currentText());
     respeqtSettings->setSerialPortHandshakingMethod(m_ui->serialPortHandshakeCombo->currentIndex());
+    respeqtSettings->setSerialPortTriggerOnFallingEdge(m_ui->serialPortFallingEdge->isChecked());
     respeqtSettings->setSerialPortWriteDelay(m_ui->serialPortWriteDelayCombo->currentIndex());
     respeqtSettings->setSerialPortCompErrDelay(m_ui->serialPortCompErrDelayBox->value());
     respeqtSettings->setSerialPortMaximumSpeed(m_ui->serialPortBaudCombo->currentIndex());

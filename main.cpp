@@ -24,7 +24,7 @@ int main(int argc, char *argv[])
 #endif
 
     QApplication a(argc, argv);
-//    QTextCodec::setCodecForTr(QTextCodec::codecForName("utf8"));
+    QTextCodec::setCodecForLocale(QTextCodec::codecForName("UTF-8"));
     MainWindow w;
     w.show();
     ret = a.exec();
