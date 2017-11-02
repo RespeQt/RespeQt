@@ -231,7 +231,15 @@ bool StandardSerialPortBackend::setSpeed(int speed)
 
     dcb.fOutxCtsFlow = FALSE;
     dcb.fOutxDsrFlow = FALSE;
-    dcb.fDtrControl = respeqtSettings->serialPortDTRControlEnable()?DTR_CONTROL_ENABLE:DTR_CONTROL_DISABLE;
+    if((mMethod==HANDSHAKE_NO_HANDSHAKE || mMethod==HANDSHAKE_SOFTWARE) &&
+       respeqtSettings->serialPortDTRControlEnable())
+    {
+        dcb.fDtrControl = DTR_CONTROL_ENABLE;
+    }
+    else
+    {
+        dcb.fDtrControl = DTR_CONTROL_DISABLE;
+    }
     dcb.fDsrSensitivity = FALSE;
     dcb.fTXContinueOnXoff = FALSE;
     dcb.fOutX = FALSE;
