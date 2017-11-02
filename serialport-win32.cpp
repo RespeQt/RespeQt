@@ -93,12 +93,12 @@ bool StandardSerialPortBackend::open()
             qCritical() << "!e" << tr("Cannot open serial port '%1': %2").arg(respeqtSettings->serialPortName(), lastErrorMessage());
             return false;
         }
-        if (!EscapeCommFunction(mHandle, SETDTR)) {
-            qCritical() << "!e" << tr("Cannot set DTR line in serial port '%1': %2").arg(respeqtSettings->serialPortName(), lastErrorMessage());
+        if (!EscapeCommFunction(mHandle, CLRDTR)) {
+            qCritical() << "!e" << tr("Cannot clear DTR line in serial port '%1': %2").arg(respeqtSettings->serialPortName(), lastErrorMessage());
             return false;
         }
-        if (!EscapeCommFunction(mHandle, SETRTS)) {
-            qCritical() << "!e" << tr("Cannot set RTS line in serial port '%1': %2").arg(respeqtSettings->serialPortName(), lastErrorMessage());
+        if (!EscapeCommFunction(mHandle, CLRRTS)) {
+            qCritical() << "!e" << tr("Cannot clear RTS line in serial port '%1': %2").arg(respeqtSettings->serialPortName(), lastErrorMessage());
             return false;
         }
     }
@@ -231,14 +231,14 @@ bool StandardSerialPortBackend::setSpeed(int speed)
 
     dcb.fOutxCtsFlow = FALSE;
     dcb.fOutxDsrFlow = FALSE;
-    dcb.fDtrControl = DTR_CONTROL_ENABLE;
+    dcb.fDtrControl = respeqtSettings->serialPortDTRControlEnable()?DTR_CONTROL_ENABLE:DTR_CONTROL_DISABLE;
     dcb.fDsrSensitivity = FALSE;
     dcb.fTXContinueOnXoff = FALSE;
     dcb.fOutX = FALSE;
     dcb.fInX = FALSE;
     dcb.fErrorChar = FALSE;
     dcb.fNull = FALSE;
-    dcb.fRtsControl = RTS_CONTROL_ENABLE;
+    dcb.fRtsControl = RTS_CONTROL_DISABLE;
     dcb.fAbortOnError = FALSE;
     dcb.fDummy2 = 0;
     dcb.wReserved = 0;

@@ -41,6 +41,9 @@ public:
     bool serialPortTriggerOnFallingEdge();
     void setSerialPortTriggerOnFallingEdge(bool use);
 
+    bool serialPortDTRControlEnable();
+    void setSerialPortDTRControlEnable(bool use);
+
     int serialPortMaximumSpeed();
     void setSerialPortMaximumSpeed(int speed);
 
@@ -230,6 +233,7 @@ private:
     QString mSerialPortName;
     int mSerialPortHandshakingMethod;
     bool mSerialPortTriggerOnFallingEdge;
+    bool mSerialPortDTRControlEnable;
     int mSerialPortWriteDelay;
     int mSerialPortCompErrDelay;
     int mSerialPortMaximumSpeed;
