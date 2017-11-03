@@ -217,6 +217,13 @@
          </widget>
         </item>
         <item>
+         <widget class="QCheckBox" name="serialPortDTRControlEnable">
+          <property name="text">
+           <string>DTR Control Enable</string>
+          </property>
+         </widget>
+        </item>
+        <item>
          <widget class="QLabel" name="serialPortWriteDelayLabel">
           <property name="enabled">
            <bool>true</bool>
