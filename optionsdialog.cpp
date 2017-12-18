@@ -68,6 +68,7 @@ OptionsDialog::OptionsDialog(QWidget *parent) :
     }
     m_ui->serialPortHandshakeCombo->setCurrentIndex(respeqtSettings->serialPortHandshakingMethod());
     m_ui->serialPortFallingEdge->setChecked(respeqtSettings->serialPortTriggerOnFallingEdge());
+    m_ui->serialPortDTRControlEnable->setChecked(respeqtSettings->serialPortDTRControlEnable());
     m_ui->serialPortWriteDelayCombo->setCurrentIndex(respeqtSettings->serialPortWriteDelay());
     m_ui->serialPortBaudCombo->setCurrentIndex(respeqtSettings->serialPortMaximumSpeed());
     m_ui->serialPortUseDivisorsBox->setChecked(respeqtSettings->serialPortUsePokeyDivisors());
@@ -145,6 +146,7 @@ OptionsDialog::OptionsDialog(QWidget *parent) :
     m_ui->serialPortCompErrDelayBox->setVisible(!software_handshake);
 #ifdef Q_OS_WIN
     m_ui->serialPortFallingEdge->setVisible(!no_handshake && !software_handshake);
+    m_ui->serialPortDTRControlEnable->setVisible(no_handshake || software_handshake);
 #else
     m_ui->serialPortFallingEdge->setVisible(false);
 #endif
@@ -203,6 +205,7 @@ void OptionsDialog::on_serialPortHandshakeCombo_currentIndexChanged(int index)
     m_ui->serialPortCompErrDelayBox->setVisible(!software_handshake);
 #ifdef Q_OS_WIN
     m_ui->serialPortFallingEdge->setVisible(!no_handshake && !software_handshake);
+    m_ui->serialPortDTRControlEnable->setVisible(no_handshake || software_handshake);
 #endif
     if(itemStandard->checkState((0)) == Qt::Checked)
     {
@@ -281,6 +284,7 @@ void OptionsDialog::OptionsDialog_accepted()
     respeqtSettings->setSerialPortName(m_ui->serialPortComboBox->currentText());
     respeqtSettings->setSerialPortHandshakingMethod(m_ui->serialPortHandshakeCombo->currentIndex());
     respeqtSettings->setSerialPortTriggerOnFallingEdge(m_ui->serialPortFallingEdge->isChecked());
+    respeqtSettings->setSerialPortDTRControlEnable(m_ui->serialPortDTRControlEnable->isChecked());
     respeqtSettings->setSerialPortWriteDelay(m_ui->serialPortWriteDelayCombo->currentIndex());
     respeqtSettings->setSerialPortCompErrDelay(m_ui->serialPortCompErrDelayBox->value());
     respeqtSettings->setSerialPortMaximumSpeed(m_ui->serialPortBaudCombo->currentIndex());
