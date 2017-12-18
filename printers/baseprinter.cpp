@@ -14,7 +14,9 @@ namespace Printers
     {}
 
     BasePrinter::~BasePrinter()
-    {}
+    {
+
+    }
 
     const QChar BasePrinter::translateAtascii(const char b)
     {

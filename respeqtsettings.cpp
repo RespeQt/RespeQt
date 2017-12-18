@@ -41,6 +41,7 @@ RespeqtSettings::RespeqtSettings()
         mSerialPortName.remove(0,strlen(SERIAL_PORT_LOCATION));
     }
     mSerialPortHandshakingMethod = mSettings->value("HandshakingMethod", 0).toInt();
+    mSerialPortTriggerOnFallingEdge = mSettings->value("FallingEdge", false).toBool();
     mSerialPortWriteDelay = mSettings->value("WriteDelay", 1).toInt();
 #ifdef Q_OS_WIN
     mSerialPortCompErrDelay = mSettings->value("CompErrDelay", 300).toInt(); // default is 300us for windows
@@ -149,6 +150,7 @@ void RespeqtSettings::saveSessionToFile(const QString &fileName)
         s.setValue("AtariSioHandshakingMethod", mAtariSioHandshakingMethod);
         s.setValue("SerialPortName", mSerialPortName);
         s.setValue("HandshakingMethod", mSerialPortHandshakingMethod);
+        s.setValue("FallingEdge", mSerialPortTriggerOnFallingEdge);
         s.setValue("WriteDelay", mSerialPortWriteDelay);
         s.setValue("CompErrDelay", mSerialPortCompErrDelay);
         s.setValue("MaximumSerialPortSpeed", mSerialPortMaximumSpeed);
@@ -211,6 +213,7 @@ void RespeqtSettings::saveSessionToFile(const QString &fileName)
         mAtariSioHandshakingMethod = s.value("AtariSioHandshakingMethod", 0).toInt();
         mSerialPortName = s.value("SerialPortName", StandardSerialPortBackend::defaultPortName()).toString();
         mSerialPortHandshakingMethod = s.value("HandshakingMethod", 0).toInt();
+        mSerialPortTriggerOnFallingEdge = s.value("FallingEdge", false).toBool();
         mSerialPortWriteDelay = s.value("WriteDelay", 1).toInt();
         mSerialPortCompErrDelay = s.value("CompErrDelay", 1).toInt();
         mSerialPortMaximumSpeed = s.value("MaximumSerialPortSpeed", 2).toInt();
@@ -322,6 +325,17 @@ void RespeqtSettings::setSerialPortHandshakingMethod(int method)
 {
     mSerialPortHandshakingMethod = method;
     if(mSessionFileName == "") mSettings->setValue("HandshakingMethod", mSerialPortHandshakingMethod);
+}
+
+bool RespeqtSettings::serialPortTriggerOnFallingEdge()
+{
+    return mSerialPortTriggerOnFallingEdge;
+}
+
+void RespeqtSettings::setSerialPortTriggerOnFallingEdge(bool use)
+{
+    mSerialPortTriggerOnFallingEdge = use;
+    if(mSessionFileName == "") mSettings->setValue("FallingEdge", mSerialPortTriggerOnFallingEdge);
 }
 
 int RespeqtSettings::serialPortWriteDelay()

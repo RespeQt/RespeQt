@@ -10,7 +10,7 @@
 # know the specific year(s) please let the current maintainer know.
 #
 #CONFIG(release, debug|release):DEFINES += QT_NO_DEBUG_OUTPUT
-DEFINES += VERSION=\\\"R4-RC2\\\"
+DEFINES += VERSION=\\\"r4\\\"
 TARGET = RespeQt
 TEMPLATE = app
 CONFIG += qt

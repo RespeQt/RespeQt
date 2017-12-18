@@ -32,8 +32,8 @@ signals:
     void actionConnectPrinter(int deviceId);
 
 private slots:
-    void on_atariPrinters_currentIndexChanged(int index);
-    void on_outputSelection_currentIndexChanged(int index);
+    void selectPrinter();
+    void selectOutput();
     void on_actionConnectPrinter_triggered();
     void on_actionDisconnectPrinter_triggered();
 

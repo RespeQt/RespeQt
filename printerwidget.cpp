@@ -63,9 +63,9 @@ void PrinterWidget::setup()
     ui->outputSelection->setCurrentIndex(-1);
 
     ui->atariPrinters->setEnabled(true);
-    ui->outputSelection->setEnabled(false);
+    ui->outputSelection->setEnabled(true);
     ui->actionDisconnectPrinter->setEnabled(false);
-    ui->actionConnectPrinter->setEnabled(false);
+    ui->actionConnectPrinter->setEnabled(true);
 
     // Connect widget actions to buttons
     ui->buttonDisconnectPrinter->setDefaultAction(ui->actionDisconnectPrinter);
@@ -81,7 +81,7 @@ void PrinterWidget::setSioWorker(SioWorker *sio)
     }
 }
 
-void PrinterWidget::on_atariPrinters_currentIndexChanged(int index)
+void PrinterWidget::selectPrinter()
 {
     if (ui->atariPrinters->currentText() == "")
     {
@@ -95,19 +95,17 @@ void PrinterWidget::on_atariPrinters_currentIndexChanged(int index)
     }
     if (mSio) {
        // Create a new Atari printer device and install it.
-       int typeId = ui->atariPrinters->itemData(index).toInt();
+       int typeId = ui->atariPrinters->itemData(ui->atariPrinters->currentIndex()).toInt();
        Printers::BasePrinter *newPrinter = Printers::BasePrinter::createPrinter(typeId, mSio);
        mSio->installDevice(PRINTER_BASE_CDEVIC + printerNo_, newPrinter);
-       connect(newPrinter, SIGNAL(statusChanged(int)), this, SLOT(on_sio_statusChanged(int)));
        mPrinter = newPrinter;
-
-       respeqtSettings->setPrinterType(index, mPrinter->typeId());
+       respeqtSettings->setPrinterType(printerNo_, mPrinter->typeId());
        ui->outputSelection->setEnabled(true);
     }
 
 }
 
-void PrinterWidget::on_outputSelection_currentIndexChanged(int /*index*/)
+void PrinterWidget::selectOutput()
 {
     if (ui->outputSelection->currentText() == "")
     {
@@ -147,8 +145,8 @@ void PrinterWidget::on_outputSelection_currentIndexChanged(int /*index*/)
             mDevice = window;
             window->show();
         } else {
-        QMessageBox::StandardButton reply;
-        reply = QMessageBox::information(this, tr("Output device"), tr("Not implemented yet"));
+            QMessageBox::StandardButton reply;
+            reply = QMessageBox::information(this, tr("Output device"), tr("Not implemented yet"));
         }
     }
     if (ui->atariPrinters->currentIndex() >= 0
@@ -162,17 +160,23 @@ void PrinterWidget::on_outputSelection_currentIndexChanged(int /*index*/)
 
 void PrinterWidget::on_actionConnectPrinter_triggered()
 {
-    if (ui->outputSelection->currentIndex() >= 0
-            && ui->atariPrinters->currentIndex() >= 0
-            && mPrinter && mDevice)
+    if (ui->outputSelection->currentIndex() == 0
+            || ui->atariPrinters->currentIndex() == 0)
     {
-        mPrinter->setOutput(mDevice);
-        mPrinter->output()->beginOutput();
-        ui->outputSelection->setEnabled(false);
-        ui->atariPrinters->setEnabled(false);
-        ui->actionDisconnectPrinter->setEnabled(true);
-        ui->actionConnectPrinter->setEnabled(false);
+        QMessageBox::StandardButton reply;
+        reply = QMessageBox::warning(this, tr("Printers"), tr("Please select an output device as well as a printer emulation."));
+        return;
     }
+
+    selectPrinter();
+    selectOutput();
+
+    mPrinter->setOutput(mDevice);
+    mPrinter->output()->beginOutput();
+    ui->outputSelection->setEnabled(false);
+    ui->atariPrinters->setEnabled(false);
+    ui->actionDisconnectPrinter->setEnabled(true);
+    ui->actionConnectPrinter->setEnabled(false);
 }
 
 void PrinterWidget::on_actionDisconnectPrinter_triggered()
@@ -181,6 +185,9 @@ void PrinterWidget::on_actionDisconnectPrinter_triggered()
     {
         mPrinter->setOutput(NULL);
     }
+    delete mDevice;
+    mDevice = NULL;
+
     ui->outputSelection->setEnabled(true);
     ui->atariPrinters->setEnabled(true);
     ui->actionDisconnectPrinter->setEnabled(false);

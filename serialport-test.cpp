@@ -49,7 +49,6 @@ bool TestSerialPortBackend::open()
 
     if (mXmlReader->name() != "testcase")
         return false;
-
     return true;
 }
 

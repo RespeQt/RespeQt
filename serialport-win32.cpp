@@ -136,7 +136,6 @@ bool StandardSerialPortBackend::open()
     qWarning() << "!i" << tr("Emulation started through standard serial port backend on '%1' with %2 handshaking")
                   .arg(respeqtSettings->serialPortName())
                   .arg(m);
-
     return true;
 }
 
@@ -420,8 +419,20 @@ QByteArray StandardSerialPortBackend::readCommandFrame()
                 }
             }
 
-            // for hardware handshake methods check if the command line status is ON
-            if( (MODEM_STAT != 0) && (!GetCommModemStatus(mHandle, &tmp) || !(tmp & MODEM_STAT)) )continue;
+            // if we use hardware handshake and the command line status was succesfully retrieved
+            if( (MODEM_STAT != 0) && GetCommModemStatus(mHandle, &tmp) )
+            {
+                if(respeqtSettings->serialPortTriggerOnFallingEdge())
+                {
+                    // ignore the trigger is the command line status is ON (we're waiting for a falling edge)
+                    if( tmp & MODEM_STAT )continue;
+                }
+                else
+                {
+                    // ignore the trigger is the command line status is OFF (we're waiting for a rising edge)
+                    if( !(tmp & MODEM_STAT) )continue;
+                }
+            }
 
             if(MASK != EV_RXCHAR)
             {            
