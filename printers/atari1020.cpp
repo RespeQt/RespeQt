@@ -54,6 +54,7 @@ namespace Printers
             QFont *font = new QFont("Lucida Console", mFontSize);
             font->setUnderline(false);
             mOutput->setFont(font);
+            mOutput->calculateFixedFontSize(80);
             mOutput->setPen(sColorMapping.at(0));
         }
     }
@@ -88,21 +89,24 @@ namespace Printers
                     mEsc = false;
                 } else if (mEsc && b == 16) // CTRL+P: 20 characters
                 {
-                    QFont *font = mOutput->font();
+                    mOutput->calculateFixedFontSize(20);
+                    /*QFont *font = mOutput->font();
                     font->setPixelSize(mFontSize * 4);
-                    mOutput->setFont(font);
+                    mOutput->setFont(font);*/
                     mEsc = false;
                 } else if (mEsc && b == 19) // CTRL+S: 80 characters
                 {
-                    QFont *font = mOutput->font();
+                    mOutput->calculateFixedFontSize(80);
+                    /*QFont *font = mOutput->font();
                     font->setPixelSize(mFontSize);
-                    mOutput->setFont(font);
+                    mOutput->setFont(font);*/
                     mEsc = false;
                 } else if (mEsc && b == 14) // CTRL+N: 40 characters
                 {
-                    QFont *font = mOutput->font();
+                    mOutput->calculateFixedFontSize(40);
+                    /*QFont *font = mOutput->font();
                     font->setPixelSize(mFontSize * 2);
-                    mOutput->setFont(font);
+                    mOutput->setFont(font);*/
                     mEsc = false;
                 } else if (mEsc && b == 23) // CTRL+W: Enter international mode
                 {

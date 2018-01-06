@@ -18,7 +18,7 @@ namespace Printers {
         mY = mBoundingBox.top() + metrics.lineSpacing();
     }
 
-    void SVGOutput::newPage(bool linefeed)
+    void SVGOutput::newPage(bool /*linefeed*/)
     {}
 
 }

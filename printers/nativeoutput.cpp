@@ -8,7 +8,9 @@ namespace Printers
         mPainter(NULL),
         mDevice(NULL),
         mFont(NULL),
-        mX(0), mY(0)
+        mX(0), mY(0),
+        mCharsPerLine(80),
+        mCharCount(0)
     {
 
     }
@@ -50,12 +52,14 @@ namespace Printers
     {
         QFontMetrics metrics(*mFont);
         qDebug() << "!n" << mBoundingBox.right();
-        if (metrics.width(c) + mX > mBoundingBox.right()) {
+        if (metrics.width(c) + mX > mBoundingBox.right()
+            || mCharCount + 1 > mCharsPerLine) {
             // Char has to go on next line
             newLine();
         }
         mPainter->drawText(mX, mY + metrics.height(), c);
         mX += metrics.width(c);
+        mCharCount++;
     }
 
     void NativeOutput::printString(const QString &s)
@@ -94,7 +98,10 @@ namespace Printers
     {
         QFontMetrics metrics(*mFont);
         if (!linefeed)
+        {
             mX = mBoundingBox.left();
+            mCharCount = 0;
+        }
         if (mY + metrics.height() > mBoundingBox.bottom())
         {
             newPage(linefeed);
@@ -118,5 +125,29 @@ namespace Printers
         {
             mPainter->setWindow(window);
         }
+    }
+
+    void NativeOutput::calculateFixedFontSize(uint8_t charsPerLine)
+    {
+        float painterWidth = mBoundingBox.right() - mBoundingBox.left();
+        float oldFontSize = font()->pointSizeF();
+        int oldWidth;
+
+        // Loop
+        for (int i=0 ; i<3 ; i++)
+        {
+            QFontMetrics metrics(*mFont);
+            QRect bounds = metrics.boundingRect('M');
+            oldWidth = bounds.width();
+            float scale = painterWidth / (oldWidth * charsPerLine);
+            mFont->setPointSizeF(bounds.height() * scale);
+            setFont(mFont);
+            oldFontSize = bounds.height() * scale;
+        }
+
+        // End
+        mFont->setPointSizeF(oldFontSize);
+        setFont(mFont);
+        mCharsPerLine = charsPerLine;
     }
 }

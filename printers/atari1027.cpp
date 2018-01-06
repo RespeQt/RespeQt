@@ -19,6 +19,7 @@ namespace Printers
             QFont *font = new QFont(respeqtSettings->Atari1027FontFamily(), 12);
             font->setUnderline(false);
             mOutput->setFont(font);
+            mOutput->calculateFixedFontSize(80);
         }
     }
 

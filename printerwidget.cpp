@@ -41,6 +41,7 @@ void PrinterWidget::setup()
         list[printer->typeName()] = printer->typeId();
         delete printer;
     }
+    ui->atariPrinters->addItem(tr("None"), -1);
     std::map<QString, int>::const_iterator cit;
     for(cit = list.cbegin(); cit != list.cend(); ++cit)
     {
@@ -50,17 +51,17 @@ void PrinterWidget::setup()
             ui->atariPrinters->setCurrentText(cit->first);
         }
     }
+    ui->atariPrinters->setCurrentIndex(0);
 
+    ui->outputSelection->addItem(tr("None"), -1);
     ui->outputSelection->addItem("SVG", QVariant(false));
-    //ui->outputSelection->addItem("Window", QVariant(false));
+    ui->outputSelection->addItem("Window", QVariant(false));
     QStringList printers = QPrinterInfo::availablePrinterNames();
     for (QStringList::const_iterator sit = printers.cbegin(); sit != printers.cend(); ++sit)
     {
         ui->outputSelection->addItem(*sit, QVariant(true));
     }
-
-    ui->atariPrinters->setCurrentIndex(-1);
-    ui->outputSelection->setCurrentIndex(-1);
+    ui->outputSelection->setCurrentIndex(0);
 
     ui->atariPrinters->setEnabled(true);
     ui->outputSelection->setEnabled(true);
@@ -83,7 +84,7 @@ void PrinterWidget::setSioWorker(SioWorker *sio)
 
 void PrinterWidget::selectPrinter()
 {
-    if (ui->atariPrinters->currentText() == "")
+    if (ui->atariPrinters->currentText() == tr("None"))
     {
         return;
     }
@@ -100,14 +101,13 @@ void PrinterWidget::selectPrinter()
        mSio->installDevice(PRINTER_BASE_CDEVIC + printerNo_, newPrinter);
        mPrinter = newPrinter;
        respeqtSettings->setPrinterType(printerNo_, mPrinter->typeId());
-       ui->outputSelection->setEnabled(true);
     }
 
 }
 
 void PrinterWidget::selectOutput()
 {
-    if (ui->outputSelection->currentText() == "")
+    if (ui->outputSelection->currentText() == tr("None"))
     {
         return;
     }
@@ -160,6 +160,7 @@ void PrinterWidget::selectOutput()
 
 void PrinterWidget::on_actionConnectPrinter_triggered()
 {
+    qDebug() << "!n" << ui->atariPrinters->currentIndex();
     if (ui->outputSelection->currentIndex() == 0
             || ui->atariPrinters->currentIndex() == 0)
     {
@@ -171,21 +172,28 @@ void PrinterWidget::on_actionConnectPrinter_triggered()
     selectPrinter();
     selectOutput();
 
-    mPrinter->setOutput(mDevice);
-    mPrinter->output()->beginOutput();
-    ui->outputSelection->setEnabled(false);
-    ui->atariPrinters->setEnabled(false);
-    ui->actionDisconnectPrinter->setEnabled(true);
-    ui->actionConnectPrinter->setEnabled(false);
+    if (mPrinter)
+    {
+        mPrinter->setOutput(mDevice);
+        mPrinter->output()->beginOutput();
+        ui->outputSelection->setEnabled(false);
+        ui->atariPrinters->setEnabled(false);
+        ui->actionDisconnectPrinter->setEnabled(true);
+        ui->actionConnectPrinter->setEnabled(false);
+    }
 }
 
 void PrinterWidget::on_actionDisconnectPrinter_triggered()
 {
     if (mPrinter)
     {
+        // mPrinter->setOutput delete the output device,
+        // so we don't need an explicit delete
         mPrinter->setOutput(NULL);
+    } else {
+        // Here we do need a delete
+        delete mDevice;
     }
-    delete mDevice;
     mDevice = NULL;
 
     ui->outputSelection->setEnabled(true);

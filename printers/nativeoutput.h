@@ -34,6 +34,7 @@ namespace Printers
         void drawLine(const QPointF &p1, const QPointF &p2);
         QPaintDevice *device() { return mDevice; }
         QPainter *painter() { return mPainter; }
+        virtual void calculateFixedFontSize(uint8_t line_char_count);
 
     protected:
         QPainter *mPainter;
@@ -41,6 +42,8 @@ namespace Printers
         QFont *mFont;
         int mX, mY;
         QRectF mBoundingBox;
+        uint8_t mCharsPerLine;
+        uint8_t mCharCount;
 
         virtual void updateBoundingBox() = 0;
     };

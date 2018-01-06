@@ -21,8 +21,7 @@ namespace Printers
         }
     }
 
-
-    void NativePrinter::newPage(bool linefeed)
+    void NativePrinter::newPage(bool)
     {}
 
 }
