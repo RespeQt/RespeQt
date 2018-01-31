@@ -13,13 +13,15 @@ namespace Printers
         Q_OBJECT
     public:
         explicit BufferedPaintWidget(QWidget *parent = 0);
-        virtual ~BufferedPaintWidget();
         virtual void paintEvent(QPaintEvent *event);
         virtual void resizeEvent(QResizeEvent *event);
-        QPicture *canvas() { return mCanvas; }
+        QPicture &canvas() { return mCanvas; }
+
+    public slots:
+        void updateCanvas(QPicture &newCanvas);
 
     private:
-        QPicture *mCanvas;
+        QPicture mCanvas;
 
     };
 }

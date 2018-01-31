@@ -129,7 +129,7 @@ MainWindow *MainWindow::instance = NULL;
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent), ui(new Ui::MainWindow),
-      textPrinterWindow(NULL), isClosing(false)
+      isClosing(false)
 {
     /* Setup the logging system */
     instance = this;
@@ -306,11 +306,9 @@ MainWindow::MainWindow(QWidget *parent)
     RCl *rcl = new RCl(sio);
     sio->installDevice(RESPEQT_CLIENT_CDEVIC, rcl);
     
-    textPrinterWindow = new TextPrinterWindow();
     // Documentation Display
     docDisplayWindow = new DocDisplayWindow();
 
-    connect(textPrinterWindow, SIGNAL(closed()), this, SLOT(textPrinterWindowClosed()));
     connect(docDisplayWindow, SIGNAL(closed()), this, SLOT(docDisplayWindowClosed()));
 
     setUpPrinterEmulationWidgets(respeqtSettings->printerEmulation());
@@ -616,8 +614,6 @@ void MainWindow::closeEvent(QCloseEvent *event)
         if (img && img->editDialog()) img->editDialog()->close();
     }
 
-    delete textPrinterWindow;
-    textPrinterWindow = NULL;
     //
     delete docDisplayWindow;
     docDisplayWindow = NULL;
@@ -1762,16 +1758,6 @@ void MainWindow::on_actionBootExe_triggered()
     if (!g_exefileName.isEmpty()) {
         respeqtSettings->setLastExeDir(QFileInfo(g_exefileName).absolutePath());
         bootExe(g_exefileName);
-    }
-}
-
-void MainWindow::on_actionShowPrinterTextOutput_triggered()
-{
-    if (ui->actionShowPrinterTextOutput->isChecked()) {
-        textPrinterWindow->setGeometry(respeqtSettings->lastPrtHorizontalPos() ,respeqtSettings->lastPrtVerticalPos(),respeqtSettings->lastPrtWidth(),respeqtSettings->lastPrtHeight());
-        textPrinterWindow->show();
-    } else {
-        textPrinterWindow->hide();
     }
 }
 

@@ -25,6 +25,9 @@ namespace Printers {
     protected:
         virtual void updateBoundingBox();
 
+    signals:
+        void newCanvas(QPicture &newCanvas);
+
     private:
         Ui::WindowOutput *ui;
     };

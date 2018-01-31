@@ -9,7 +9,11 @@ namespace Printers {
         ui(new Ui::WindowOutput)
     {
         ui->setupUi(this);
-        mDevice = ui->page->canvas();
+        QPicture *temp = new QPicture();
+        temp->setBoundingRect(ui->page->geometry());
+        mDevice = temp;
+        QObject::connect(this, &WindowOutput::newCanvas,
+                ui->page, &BufferedPaintWidget::updateCanvas);
     }
 
     WindowOutput::~WindowOutput()
@@ -28,7 +32,13 @@ namespace Printers {
             mY += metrics.lineSpacing();
             mX = 0;
         }
-        ui->page->resize(QFrame::width(), mY);
+        mPainter->drawRect(QRect(0, 0, mX, mY));
+        mPainter->end();
+        QPicture *temp = dynamic_cast<QPicture*>(mDevice);
+        temp-> setBoundingRect(QRect(0, 0, mBoundingBox.left(), mY));
+        emit newCanvas(*temp);
+        mPainter->begin(mDevice);
+        mPainter->setFont(*mFont);
     }
 
     void WindowOutput::newPage(bool /*linefeed*/)

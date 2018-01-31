@@ -5,6 +5,7 @@
 #include "printers/nativeprinter.h"
 #include "printers/svgoutput.h"
 #include "printers/windowoutput.h"
+#include "printers/textprinterwindow.h"
 
 #include <QPrintDialog>
 #include <QPrinterInfo>
@@ -55,7 +56,8 @@ void PrinterWidget::setup()
 
     ui->outputSelection->addItem(tr("None"), -1);
     ui->outputSelection->addItem("SVG", QVariant(false));
-    ui->outputSelection->addItem("Window", QVariant(false));
+    //ui->outputSelection->addItem("Window", QVariant(false));
+    ui->outputSelection->addItem("Text window", QVariant(false));
     QStringList printers = QPrinterInfo::availablePrinterNames();
     for (QStringList::const_iterator sit = printers.cbegin(); sit != printers.cend(); ++sit)
     {
@@ -142,6 +144,12 @@ void PrinterWidget::selectOutput()
         } else if (ui->outputSelection->currentText() == "Window")
         {
             Printers::WindowOutput *window = new Printers::WindowOutput();
+            mDevice = window;
+            window->show();
+        } else if (ui->outputSelection->currentText() == "Text window")
+        {
+            Printers::TextPrinterWindow *window = new Printers::TextPrinterWindow();
+            window->setGeometry(respeqtSettings->lastPrtHorizontalPos(), respeqtSettings->lastPrtVerticalPos(), respeqtSettings->lastPrtWidth(), respeqtSettings->lastPrtHeight());
             mDevice = window;
             window->show();
         } else {

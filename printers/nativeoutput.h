@@ -28,10 +28,10 @@ namespace Printers
         virtual int height() { return mBoundingBox.height(); }
         virtual int dpiX() { return mDevice->logicalDpiX(); }
         virtual const QPen &pen() const { return mPainter->pen(); }
-        void setFont(QFont *font);
+        virtual void setFont(QFont *font);
         QFont *font() const { return mFont; }
-        void translate(const QPointF &offset);
-        void drawLine(const QPointF &p1, const QPointF &p2);
+        virtual void translate(const QPointF &offset);
+        virtual void drawLine(const QPointF &p1, const QPointF &p2);
         QPaintDevice *device() { return mDevice; }
         QPainter *painter() { return mPainter; }
         virtual void calculateFixedFontSize(uint8_t line_char_count);

@@ -309,7 +309,7 @@ bool FolderImage::readSector(quint16 sector, QByteArray &data)
         for (int i = 11; i < 100; i++) {
             data[i] = 0xff;
         }
-        return true;
+        return true; 
     }
 
     /* Directory sectors */

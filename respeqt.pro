@@ -33,7 +33,7 @@ SOURCES += main.cpp \
     autobootdialog.cpp \
     atarifilesystem.cpp \
     miscutils.cpp \
-    textprinterwindow.cpp \
+    printers/textprinterwindow.cpp \
     cassettedialog.cpp \
     docdisplaywindow.cpp \
     bootoptionsdialog.cpp \
@@ -78,7 +78,7 @@ HEADERS += mainwindow.h \
     autobootdialog.h \
     atarifilesystem.h \
     miscutils.h \
-    textprinterwindow.h \
+    printers/textprinterwindow.h \
     cassettedialog.h \
     docdisplaywindow.h \
     bootoptionsdialog.h \
@@ -112,7 +112,7 @@ FORMS += mainwindow.ui \
     createimagedialog.ui \
     diskeditdialog.ui \
     autobootdialog.ui \
-    textprinterwindow.ui \
+    printers/textprinterwindow.ui \
     cassettedialog.ui \
     docdisplaywindow.ui \
     bootoptionsdialog.ui \

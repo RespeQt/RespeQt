@@ -10,16 +10,10 @@ namespace Printers
     {
         mTypeId = TEXTPRINTER;
         mTypeName = QString("Text printer");
-
-        if (MainWindow::getInstance() && MainWindow::getInstance()->getTextPrinterWindow())
-        {
-            connect(this, SIGNAL(print(QString)), MainWindow::getInstance()->getTextPrinterWindow(), SLOT(print(QString)));
-        }
     }
 
     TextPrinter::~TextPrinter()
     {
-        disconnect(this, SIGNAL(print(QString)), MainWindow::getInstance()->getTextPrinterWindow(), SLOT(print(QString)));
     }
 
     bool TextPrinter::conversionMsgdisplayedOnce = false;

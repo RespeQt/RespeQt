@@ -29,7 +29,6 @@
 #include "diskeditdialog.h"
 #include "serialport.h"
 #include "sioworker.h"
-#include "textprinterwindow.h"
 #include "docdisplaywindow.h"
 #include "network.h"
 #include "drivewidget.h"
@@ -52,7 +51,6 @@ public:
     QString g_sessionFilePath;
     QString g_mainWindowTitle;
     static MainWindow *getInstance() { return instance; }
-    TextPrinterWindow *getTextPrinterWindow() { return textPrinterWindow; }
 
 public slots:
     void show();
@@ -74,7 +72,6 @@ private:
 #ifndef Q_NO_DEBUG
     QLabel *snapshot;
 #endif
-    TextPrinterWindow *textPrinterWindow;
     DocDisplayWindow *docDisplayWindow;    //
     QTranslator respeqt_translator, respeqt_qt_translator;
     QSystemTrayIcon trayIcon;
@@ -137,7 +134,6 @@ public:
 
 private slots:
     void on_actionPlaybackCassette_triggered();
-    void on_actionShowPrinterTextOutput_triggered();
     void on_actionBootExe_triggered();
     void on_actionSaveSession_triggered();
     void on_actionOpenSession_triggered();
