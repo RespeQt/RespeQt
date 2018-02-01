@@ -36,7 +36,7 @@ public:
     virtual void setPen(Qt::PenStyle) {}
     virtual void setPen(const QPen &) {}
     virtual int dpiX() { return 1; }
-    virtual const QPen &pen() const { return QPen(); }
+    virtual const QPen &pen() const { return mPen; }
     virtual void setFont(QFont *) {}
     virtual void translate(const QPointF &) {}
     virtual void drawLine(const QPointF &, const QPointF &) {}
@@ -54,6 +54,7 @@ protected:
 
 private:
     Ui::TextPrinterWindow *ui;
+    QPen mPen;
 
 private slots:
     void on_actionSave_triggered();
