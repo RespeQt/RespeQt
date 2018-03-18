@@ -40,7 +40,8 @@ public:
     bool isStandardSD() const;
     bool isStandardED() const;
     bool isStandardDD() const;
-    bool isStandardQD() const;
+    bool isStandardDSDD() const;
+    bool isStandardDSQD() const;
     inline bool isDoubleSided() const {return m_isDoubleSided;}
     inline quint8 tracksPerSide() const {return m_tracksPerSide;}
     inline quint16 sectorsPerTrack() const {return m_sectorsPerTrack;}
