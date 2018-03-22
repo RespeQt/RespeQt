@@ -238,7 +238,7 @@ QString DiskGeometry::humanReadable() const
     } else if (isStandardDSDD()) {
         result = tr("DS/DD Diskette");
     } else if (isStandardDSQD()) {
-        result = tr("DS/QD Diskette");
+        result = tr("DS/DD Diskette");
     } else if (m_tracksPerSide == 1) {
         if (m_bytesPerSector == 128) {
             result = tr("%1 sector SD hard disk").arg(m_sectorCount);
