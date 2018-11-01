@@ -10,7 +10,7 @@
     <x>0</x>
     <y>0</y>
     <width>556</width>
-    <height>252</height>
+    <height>273</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -41,6 +41,34 @@ When you hear the beep sound, push the OK button below and press a key on your A
      </property>
      <property name="wordWrap">
       <bool>true</bool>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <widget class="QLabel" name="imgCass">
+     <property name="enabled">
+      <bool>true</bool>
+     </property>
+     <property name="layoutDirection">
+      <enum>Qt::LeftToRight</enum>
+     </property>
+     <property name="autoFillBackground">
+      <bool>true</bool>
+     </property>
+     <property name="text">
+      <string/>
+     </property>
+     <property name="scaledContents">
+      <bool>false</bool>
+     </property>
+     <property name="alignment">
+      <set>Qt::AlignCenter</set>
+     </property>
+     <property name="wordWrap">
+      <bool>true</bool>
+     </property>
+     <property name="openExternalLinks">
+      <bool>false</bool>
      </property>
     </widget>
    </item>
