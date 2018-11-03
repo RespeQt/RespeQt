@@ -392,6 +392,81 @@
     </layout>
    </item>
    <item>
+    <widget class="QToolButton" name="buttonToggleChip">
+     <property name="enabled">
+      <bool>true</bool>
+     </property>
+     <property name="minimumSize">
+      <size>
+       <width>21</width>
+       <height>25</height>
+      </size>
+     </property>
+     <property name="maximumSize">
+      <size>
+       <width>21</width>
+       <height>25</height>
+      </size>
+     </property>
+     <property name="popupMode">
+      <enum>QToolButton::DelayedPopup</enum>
+     </property>
+     <property name="autoRaise">
+      <bool>false</bool>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <widget class="QToolButton" name="buttonToggleHappy">
+     <property name="enabled">
+      <bool>true</bool>
+     </property>
+     <property name="minimumSize">
+      <size>
+       <width>21</width>
+       <height>25</height>
+      </size>
+     </property>
+     <property name="maximumSize">
+      <size>
+       <width>21</width>
+       <height>25</height>
+      </size>
+     </property>
+     <property name="popupMode">
+      <enum>QToolButton::DelayedPopup</enum>
+     </property>
+     <property name="autoRaise">
+      <bool>false</bool>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <widget class="QToolButton" name="buttonToggleLever">
+     <property name="enabled">
+      <bool>true</bool>
+     </property>
+     <property name="minimumSize">
+      <size>
+       <width>21</width>
+       <height>25</height>
+      </size>
+     </property>
+     <property name="maximumSize">
+      <size>
+       <width>21</width>
+       <height>25</height>
+      </size>
+     </property>
+     <property name="popupMode">
+      <enum>QToolButton::DelayedPopup</enum>
+     </property>
+     <property name="autoRaise">
+      <bool>false</bool>
+     </property>
+    </widget>
+   </item>
+   <item>
     <widget class="QToolButton" name="buttonEject">
      <property name="enabled">
       <bool>true</bool>
@@ -514,7 +589,7 @@
    </property>
    <property name="icon">
     <iconset resource="icons.qrc">
-     <normaloff>:/icons/silk-icons/icons/drive_disk.png</normaloff>:/icons/silk-icons/icons/drive_disk.png</iconset>
+     <normaloff>:/icons/silk-icons/icons/drive_save.png</normaloff>:/icons/silk-icons/icons/drive_save.png</iconset>
    </property>
    <property name="text">
     <string>Save</string>
@@ -599,6 +674,63 @@
    </property>
    <property name="toolTip">
     <string>Change Boot Options</string>
+   </property>
+  </action>
+  <action name="actionToggleChip">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="icons.qrc">
+     <normaloff>:/icons/silk-icons/icons/package_delete.png</normaloff>
+     <normalon>:/icons/silk-icons/icons/package_go.png</normalon>:/icons/silk-icons/icons/package_delete.png</iconset>
+   </property>
+   <property name="text">
+    <string>Toggle Chip/Super Archiver compatibility</string>
+   </property>
+   <property name="toolTip">
+    <string>Enable or disable Chip/Super Archiver compatibility. When enabled, the Chip is open</string>
+   </property>
+  </action>
+  <action name="actionToggleHappy">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="icons.qrc">
+     <normaloff>:/icons/silk-icons/icons/emoticon_unhappy.png</normaloff>
+     <normalon>:/icons/silk-icons/icons/emoticon_happy.png</normalon>:/icons/silk-icons/icons/emoticon_unhappy.png</iconset>
+   </property>
+   <property name="text">
+    <string>Toggle Happy compatibility</string>
+   </property>
+   <property name="toolTip">
+    <string>Enable or disable Happy compatibility. When enabled, the drive is in Happy mode</string>
+   </property>
+  </action>
+  <action name="actionToggleLever">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="icons.qrc">
+     <normaloff>:/icons/silk-icons/icons/drive_close.png</normaloff>
+     <normalon>:/icons/silk-icons/icons/drive_open.png</normalon>:/icons/silk-icons/icons/drive_close.png</iconset>
+   </property>
+   <property name="text">
+    <string>Toggle drive door lever</string>
+   </property>
+   <property name="toolTip">
+    <string>Open or close drive door lever. For Speedy 1050 or Turbo 1050</string>
    </property>
   </action>
  </widget>

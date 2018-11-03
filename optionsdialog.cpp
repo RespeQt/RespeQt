@@ -31,9 +31,9 @@ OptionsDialog::OptionsDialog(QWidget *parent) :
     itemStandard = m_ui->treeWidget->topLevelItem(0)->child(0);
     itemAtariSio = m_ui->treeWidget->topLevelItem(0)->child(1);
     itemEmulation = m_ui->treeWidget->topLevelItem(1);
-    itemI18n = m_ui->treeWidget->topLevelItem(2);
+    itemDiskOptions = m_ui->treeWidget->topLevelItem(2);
+    itemI18n = m_ui->treeWidget->topLevelItem(3);
     itemTestSerialPort = m_ui->treeWidget->topLevelItem(0)->child(2);
-
 
 #ifndef Q_OS_LINUX
     m_ui->treeWidget->topLevelItem(0)->removeChild(itemAtariSio);
@@ -82,6 +82,9 @@ OptionsDialog::OptionsDialog(QWidget *parent) :
     m_ui->filterUscore->setChecked(respeqtSettings->filterUnderscore());
     m_ui->capitalLettersPCLINK->setChecked(respeqtSettings->capitalLettersInPCLINK());
     m_ui->URLSubmit->setChecked(respeqtSettings->isURLSubmitEnabled());
+    m_ui->spyMode->setChecked(respeqtSettings->isSpyMode());
+    m_ui->commandName->setChecked(respeqtSettings->isCommandName());
+    m_ui->trackLayout->setChecked(respeqtSettings->isTrackLayout());
     m_ui->useLargerFont->setChecked(respeqtSettings->useLargeFont());
     m_ui->enableShade->setChecked(respeqtSettings->enableShade());
 
@@ -261,8 +264,10 @@ void OptionsDialog::on_treeWidget_currentItemChanged(QTreeWidgetItem* current, Q
         m_ui->stackedWidget->setCurrentIndex(2);
     } else if (current == itemEmulation) {
         m_ui->stackedWidget->setCurrentIndex(3);
-    } else if (current == itemI18n) {
+    } else if (current == itemDiskOptions) {
         m_ui->stackedWidget->setCurrentIndex(4);
+    } else if (current == itemI18n) {
+        m_ui->stackedWidget->setCurrentIndex(5);
     }
 }
 
@@ -288,6 +293,9 @@ void OptionsDialog::OptionsDialog_accepted()
     respeqtSettings->setfilterUnderscore(m_ui->filterUscore->isChecked());
     respeqtSettings->setCapitalLettersInPCLINK(m_ui->capitalLettersPCLINK->isChecked());
     respeqtSettings->setURLSubmit(m_ui->URLSubmit->isChecked());
+    respeqtSettings->setSpyMode(m_ui->spyMode->isChecked());
+    respeqtSettings->setCommandName(m_ui->commandName->isChecked());
+    respeqtSettings->setTrackLayout(m_ui->trackLayout->isChecked());
     respeqtSettings->setUseLargeFont(m_ui->useLargerFont->isChecked());
     respeqtSettings->setEnableShade(m_ui->enableShade->isChecked());
 
@@ -311,6 +319,72 @@ void OptionsDialog::OptionsDialog_accepted()
 void OptionsDialog::on_useEmulationCustomCasBaudBox_toggled(bool checked)
 {
     m_ui->emulationCustomCasBaudSpin->setEnabled(checked);
+}
+
+void OptionsDialog::selectFirmware(QLineEdit *edit, QString title, QString filters)
+{
+    QString dir = edit->text();
+    int lastSlash = dir.lastIndexOf("/");
+    int lastBackslash = dir.lastIndexOf("\\");
+    if ((lastSlash != -1) || (lastBackslash != -1))
+    {
+        int lastIndex = lastSlash > lastBackslash ? lastSlash : lastBackslash;
+        dir = dir.left(lastIndex);
+    }
+    else
+    {
+        dir = "";
+    }
+    QString fileName = QFileDialog::getOpenFileName(this, title, dir, filters);
+    if (fileName.isEmpty()) {
+        return;
+    }
+    edit->setText(fileName);
+}
+
+void OptionsDialog::on_actionSelect810Firmware_triggered()
+{
+    selectFirmware(m_ui->atari810FirmwarePath, tr("Select Atari 810 firmware"), tr("Atari drive firmware (*.rom);;All files (*)"));
+}
+
+void OptionsDialog::on_actionSelect810ChipFirmware_triggered()
+{
+    selectFirmware(m_ui->atari810ChipFirmwarePath, tr("Select Atari 810 Chip firmware"), tr("Atari drive firmware (*.rom);;All files (*)"));
+}
+
+void OptionsDialog::on_actionSelect810HappyFirmware_triggered()
+{
+    selectFirmware(m_ui->atari810HappyFirmwarePath, tr("Select Atari 810 Happy firmware"), tr("Atari drive firmware (*.rom);;All files (*)"));
+}
+
+void OptionsDialog::on_actionSelect1050Firmware_triggered()
+{
+    selectFirmware(m_ui->atari1050FirmwarePath, tr("Select Atari 1050 firmware"), tr("Atari drive firmware (*.rom);;All files (*)"));
+}
+
+void OptionsDialog::on_actionSelect1050ArchiverFirmware_triggered()
+{
+    selectFirmware(m_ui->atari1050ArchiverFirmwarePath, tr("Select Atari 1050 Archiver firmware"), tr("Atari drive firmware (*.rom);;All files (*)"));
+}
+
+void OptionsDialog::on_actionSelect1050HappyFirmware_triggered()
+{
+    selectFirmware(m_ui->atari1050HappyFirmwarePath, tr("Select Atari 1050 Happy firmware"), tr("Atari drive firmware (*.rom);;All files (*)"));
+}
+
+void OptionsDialog::on_actionSelect1050SpeedyFirmware_triggered()
+{
+    selectFirmware(m_ui->atari1050SpeedyFirmwarePath, tr("Select Atari 1050 Speedy firmware"), tr("Atari drive firmware (*.rom);;All files (*)"));
+}
+
+void OptionsDialog::on_actionSelect1050TurboFirmware_triggered()
+{
+    selectFirmware(m_ui->atari1050TurboFirmwarePath, tr("Select Atari 1050 Turbo firmware"), tr("Atari drive firmware (*.rom);;All files (*)"));
+}
+
+void OptionsDialog::on_actionSelect1050DuplicatorFirmware_triggered()
+{
+    selectFirmware(m_ui->atari1050DuplicatorFirmwarePath, tr("Select Atari 1050 Duplicator firmware"), tr("Atari drive firmware (*.rom);;All files (*)"));
 }
 
 void OptionsDialog::on_testFileButton_clicked()

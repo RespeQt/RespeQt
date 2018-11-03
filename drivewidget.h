@@ -43,6 +43,9 @@ signals:
     void actionMountDisk(int deviceId);
     void actionMountFolder(int deviceId);
     void actionEject(int deviceId);
+    void actionToggleLever(int deviceId, bool open);
+    void actionToggleHappy(int deviceId, bool enabled);
+    void actionToggleChip(int deviceId, bool open);
     void actionWriteProtect(int deviceId,bool state);
     void actionMountRecent(int deviceId, const QString &fileName);
     void actionEditDisk(int deviceId);
@@ -58,6 +61,9 @@ private slots:
     void on_actionMountDisk_triggered();
 
     void on_actionEject_triggered();
+    void on_actionToggleLever_triggered(bool open);
+    void on_actionToggleHappy_triggered(bool enabled);
+    void on_actionToggleChip_triggered(bool open);
 
     void on_actionWriteProtect_toggled(bool state);
 

@@ -14,8 +14,7 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 
-#include "diskimage.h"
-#include "diskimagepro.h"
+#include "FirmwareDiskImage.hpp"
 #include "drivewidget.h"
 #include "folderimage.h"
 #include "pclink.h"
@@ -43,7 +42,6 @@
 
 #include "atarifilesystem.h"
 #include "miscutils.h"
-
 
 RespeqtSettings *respeqtSettings;
 static MainWindow *mainWindow;
@@ -251,6 +249,8 @@ MainWindow::MainWindow(QWidget *parent)
     g_D9DOVisible =  respeqtSettings->D9DOVisible();
     showHideDrives();
 
+    m_romProvider = new RomProvider();
+
     /* Connect to the network */
     QString netInterface;
     Network *oNet = new Network();
@@ -357,6 +357,9 @@ void MainWindow::createDeviceWidgets()
         connect(deviceWidget, SIGNAL(actionMountFolder(int)),this, SLOT(on_actionMountFolder_triggered(int)));
         connect(deviceWidget, SIGNAL(actionAutoSave(int)),this, SLOT(on_actionAutoSave_triggered(int)));
         connect(deviceWidget, SIGNAL(actionEject(int)),this, SLOT(on_actionEject_triggered(int)));
+        connect(deviceWidget, SIGNAL(actionToggleLever(int,bool)),this, SLOT(on_actionToggleLever_triggered(int,bool)));
+        connect(deviceWidget, SIGNAL(actionToggleHappy(int,bool)),this, SLOT(on_actionToggleHappy_triggered(int,bool)));
+        connect(deviceWidget, SIGNAL(actionToggleChip(int,bool)),this, SLOT(on_actionToggleChip_triggered(int,bool)));
         connect(deviceWidget, SIGNAL(actionWriteProtect(int,bool)),this, SLOT(on_actionWriteProtect_triggered(int,bool)));
         connect(deviceWidget, SIGNAL(actionEditDisk(int)),this, SLOT(on_actionEditDisk_triggered(int)));
         connect(deviceWidget, SIGNAL(actionSave(int)),this, SLOT(on_actionSave_triggered(int)));
@@ -874,6 +877,7 @@ void MainWindow::sioStatusChanged(QString status)
 {
     speedLabel->setText(status);
     speedLabel->show();
+    sio->setDisplayCommandName(respeqtSettings->isCommandName());
 }
 
 void MainWindow::deviceStatusChanged(int deviceNo)
@@ -933,6 +937,21 @@ void MainWindow::deviceStatusChanged(int deviceNo)
                 }
                 diskWidget->showAsImageMounted(filenamelabel, img->description(), enableEdit, enableSave);
             }
+
+            img->setDisplayTransmission(respeqtSettings->displayTransmission());
+            img->setSpyMode(respeqtSettings->isSpyMode());
+            img->setDisassembleUploadedCode(respeqtSettings->disassembleUploadedCode());
+            FirmwareDiskImage *fimg = qobject_cast <FirmwareDiskImage*> (sio->getDevice(deviceNo));
+            if (fimg) {
+                fimg->SetDisplayDriveHead(respeqtSettings->displayDriveHead());
+                fimg->SetDisplayFdcCommands(respeqtSettings->displayFdcCommands());
+                fimg->SetDisplayIndexPulse(respeqtSettings->displayIndexPulse());
+                fimg->SetDisplayMotorOnOff(respeqtSettings->displayMotorOnOff());
+                fimg->SetDisplayIDAddressMarks(respeqtSettings->displayIDAddressMarks());
+                fimg->SetDisplayTrackInformation(respeqtSettings->displayTrackInformation());
+                fimg->SetDisplayCpuInstructions(respeqtSettings->displayCpuInstructions());
+                fimg->SetTraceFilename(respeqtSettings->traceFilename());
+            }
         } else {
             diskWidget->showAsEmpty();
         }
@@ -946,6 +965,15 @@ void MainWindow::uiMessage(int t, QString message)
     }
     if (message.at(message.count() - 1) == '"') {
         message.resize(message.count() - 1);
+    }
+    if (message.at(message.count() - 1) == '"') {
+        message.resize(message.count() - 1);
+    }
+
+    // paragraph symbol is used to display the next characters, up to the end of line, with a fixed font
+    int indexParagraph = message.indexOf("§");
+    if (indexParagraph != -1) {
+        message.remove(indexParagraph, 1);
     }
 
     if (message == lastMessage) {
@@ -967,7 +995,14 @@ void MainWindow::uiMessage(int t, QString message)
             message = QString("<span style='color:green'>%1</span>").arg(message);
             break;
         case 'u':
-            message = QString("<span style='color:gray'>%1</span>").arg(message);
+            if (indexParagraph != -1) {
+                QString header = message.left(indexParagraph);
+                QString fixed = message.right(message.count() - indexParagraph);
+                message = QString("<span style='color:gray'>%1 <span style='font-family:courier,monospace'>%2</span></span>").arg(header).arg(fixed);
+            }
+            else {
+                message = QString("<span style='color:gray'>%1</span>").arg(message);
+            }
             break;
         case 'n':
             message = QString("<span style='color:black'>%1</span>").arg(message);
@@ -1198,8 +1233,7 @@ void MainWindow::bootExe(const QString &fileName)
     sio->uninstallDevice(DISK_BASE_CDEVIC);
     if (old) {
         sio->installDevice(DISK_BASE_CDEVIC, old);
-        SimpleDiskImage *d = qobject_cast <SimpleDiskImage*> (old);
-        d = qobject_cast <SimpleDiskImage*> (sio->getDevice(DISK_BASE_CDEVIC));
+        sio->getDevice(DISK_BASE_CDEVIC);
     }
     if(!g_exefileName.isEmpty()) bootExe(g_exefileName);
 }
@@ -1238,11 +1272,11 @@ void MainWindow::mountFileWithDefaultProtection(int no, const QString &fileName)
 
 void MainWindow::mountFile(int no, const QString &fileName, bool /*prot*/)
 {
-    SimpleDiskImage *disk;
+    SimpleDiskImage *disk = NULL;
     bool isDir = false;
 
     if (fileName.isEmpty()) {
-        if(g_rclFileName.left(1) == "*") emit fileMounted(false);  //
+        if(g_rclFileName.left(1) == "*") emit fileMounted(false);
         return;
     }
 
@@ -1251,12 +1285,8 @@ void MainWindow::mountFile(int no, const QString &fileName, bool /*prot*/)
     if (type == FileTypes::Dir) {
         disk = new FolderImage(sio);
         isDir = true;
-    } else if (type == FileTypes::Pro || type == FileTypes::ProGz) {
-        disk = new DiskImagePro(sio);
-//    } else if (type == FileTypes::Atx || type == FileTypes::AtxGz) {
-
     } else {
-        disk = new SimpleDiskImage(sio);
+        disk = installDiskImage(no);
     }
 
     if (disk) {
@@ -1308,6 +1338,63 @@ void MainWindow::mountFile(int no, const QString &fileName, bool /*prot*/)
     }
 }
 
+SimpleDiskImage *MainWindow::installDiskImage(int no)
+{
+    eHARDWARE emulationLevel = respeqtSettings->firmwareType(no);
+    QString name = respeqtSettings->firmwareName(emulationLevel);
+    QString path = respeqtSettings->firmwarePath(emulationLevel);
+    if ((emulationLevel != SIO_EMULATION) && (!firmwareAvailable(no, name, path))) {
+        emulationLevel = SIO_EMULATION;
+    }
+    if (emulationLevel != SIO_EMULATION) {
+        Rom *rom = m_romProvider->RegisterRom(name, path);
+        FirmwareDiskImage *disk = new FirmwareDiskImage(sio, emulationLevel, name, rom, 288, respeqtSettings->firmwarePowerOnWithDisk(no));
+        disk->setDisplayTransmission(respeqtSettings->displayTransmission());
+        disk->setSpyMode(respeqtSettings->isSpyMode());
+        disk->setTrackLayout(respeqtSettings->isTrackLayout());
+        disk->setDisassembleUploadedCode(respeqtSettings->disassembleUploadedCode());
+        disk->SetDisplayDriveHead(respeqtSettings->displayDriveHead());
+        disk->SetDisplayFdcCommands(respeqtSettings->displayFdcCommands());
+        disk->SetDisplayIndexPulse(respeqtSettings->displayIndexPulse());
+        disk->SetDisplayMotorOnOff(respeqtSettings->displayMotorOnOff());
+        disk->SetDisplayIDAddressMarks(respeqtSettings->displayIDAddressMarks());
+        disk->SetDisplayTrackInformation(respeqtSettings->displayTrackInformation());
+        disk->SetDisplayCpuInstructions(respeqtSettings->displayCpuInstructions());
+        disk->SetTraceFilename(respeqtSettings->traceFilename());
+        return disk;
+    } else {
+        SimpleDiskImage *disk = new SimpleDiskImage(sio);
+        disk->setDisplayTransmission(respeqtSettings->displayTransmission());
+        disk->setSpyMode(respeqtSettings->isSpyMode());
+        disk->setTrackLayout(respeqtSettings->isTrackLayout());
+        disk->setDisassembleUploadedCode(respeqtSettings->disassembleUploadedCode());
+        return disk;
+    }
+}
+
+bool MainWindow::firmwareAvailable(int no, QString &name, QString path)
+{
+    QString diskName = tr("Disk %1").arg(++no & 0x0F);
+    if (path.isEmpty()) {
+        qWarning() << "!w" << tr("[%1] No firmware ROM file selected for '%2' emulation. Please, check settings in menu Tools>Options>Firmware emulation. Using SIO emulation.")
+                      .arg(diskName)
+                      .arg(name);
+        return false;
+    }
+    QFile *firmwareFile = new QFile(path);
+    if (!firmwareFile->open(QFile::ReadOnly)) {
+        delete firmwareFile;
+        qWarning() << "!w" << tr("[%1] Firmware '%2' not found for '%3' emulation. Please, check settings in menu Tools>Options>Firmware emulation. Using SIO emulation.")
+                      .arg(diskName)
+                      .arg(path)
+                      .arg(name);
+        return false;
+    }
+    firmwareFile->close();
+    delete firmwareFile;
+    return true;
+}
+
 void MainWindow::mountDiskImage(int no)
 {
     QString dir;
@@ -1321,12 +1408,12 @@ void MainWindow::mountDiskImage(int no)
                                                     tr("Open a disk image"),
                                                     dir,
                                                     tr(
-//                                                    "All Atari disk images (*.atr *.xfd *.atx *.pro);;"
-                                                    "All Atari disk images (*.atr *.xfd *.pro);;"
+                                                    "All Atari disk images (*.atr *.xfd *.atx *.pro *.scp);;"
                                                     "SIO2PC ATR images (*.atr);;"
                                                     "XFormer XFD images (*.xfd);;"
-//                                                    "ATX images (*.atx);;"
+                                                    "ATX images (*.atx);;"
                                                     "Pro images (*.pro);;"
+                                                    "SuperCard Pro images (*.scp);;"
                                                     "All files (*)"));
     if (fileName.isEmpty()) {
         return;
@@ -1347,6 +1434,24 @@ void MainWindow::mountFolderImage(int no)
     }
     respeqtSettings->setLastFolderImageDir(fileName);
     mountFileWithDefaultProtection(no, fileName);
+}
+
+void MainWindow::toggleLever(int no, bool open)
+{
+    SimpleDiskImage *img = qobject_cast <SimpleDiskImage*> (sio->getDevice(no + DISK_BASE_CDEVIC));
+    img->setLeverOpen(open);
+}
+
+void MainWindow::toggleHappy(int no, bool enabled)
+{
+    SimpleDiskImage *img = qobject_cast <SimpleDiskImage*> (sio->getDevice(no + DISK_BASE_CDEVIC));
+    img->setHappyMode(enabled);
+}
+
+void MainWindow::toggleChip(int no, bool open)
+{
+    SimpleDiskImage *img = qobject_cast <SimpleDiskImage*> (sio->getDevice(no + DISK_BASE_CDEVIC));
+    img->setChipMode(open);
 }
 
 void MainWindow::toggleWriteProtection(int no, bool protectionEnabled)
@@ -1486,12 +1591,12 @@ void MainWindow::saveDiskAs(int no)
         fileName = QFileDialog::getSaveFileName(this, tr("Save image as"),
                                  dir,
                                  tr(
-//                                                    "All Atari disk images (*.atr *.xfd *.atx *.pro);;"
-                                                    "All Atari disk images (*.atr *.xfd *.pro);;"
+                                                    "All Atari disk images (*.atr *.xfd *.atx *.pro *.scp);;"
                                                     "SIO2PC ATR images (*.atr);;"
                                                     "XFormer XFD images (*.xfd);;"
-//                                                    "ATX images (*.atx);;"
+                                                    "ATX images (*.atx);;"
                                                     "Pro images (*.pro);;"
+                                                    "SuperCard Pro images (*.scp);;"
                                                     "All files (*)"));
         if (fileName.isEmpty()) {
             return;
@@ -1535,6 +1640,9 @@ void MainWindow::revertDisk(int no)
 void MainWindow::on_actionMountDisk_triggered(int deviceId) {mountDiskImage(deviceId);}
 void MainWindow::on_actionMountFolder_triggered(int deviceId) {mountFolderImage(deviceId);}
 void MainWindow::on_actionEject_triggered(int deviceId) {ejectImage(deviceId);}
+void MainWindow::on_actionToggleLever_triggered(int deviceId, bool open) {toggleLever(deviceId, open);}
+void MainWindow::on_actionToggleHappy_triggered(int deviceId, bool open) {toggleHappy(deviceId, open);}
+void MainWindow::on_actionToggleChip_triggered(int deviceId, bool open) {toggleChip(deviceId, open);}
 void MainWindow::on_actionWriteProtect_triggered(int deviceId, bool writeProtectEnabled) {toggleWriteProtection(deviceId, writeProtectEnabled);}
 void MainWindow::on_actionEditDisk_triggered(int deviceId) {openEditor(deviceId);}
 void MainWindow::on_actionSave_triggered(int deviceId) {saveDisk(deviceId);}
@@ -1612,7 +1720,9 @@ void MainWindow::on_actionNewImage_triggered()
         return;
     };
 
-    SimpleDiskImage *disk = new SimpleDiskImage(sio);
+    int no = firstEmptyDiskSlot(0, true);
+
+    SimpleDiskImage *disk = installDiskImage(no);
     connect(disk, SIGNAL(statusChanged(int)), this, SLOT(deviceStatusChanged(int)), Qt::QueuedConnection);
 
     if (!disk->create(++untitledName)) {
@@ -1635,8 +1745,6 @@ void MainWindow::on_actionNewImage_triggered()
         delete disk;
         return;
     }
-
-    int no = firstEmptyDiskSlot(0, true);
 
     if (!ejectImage(no)) {
         delete disk;

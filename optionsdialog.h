@@ -12,6 +12,7 @@
 #define OPTIONSDIALOG_H
 
 #include <QtWidgets/QDialog>
+#include <QFileDialog>
 #include <QTreeWidget>
 #include <QtDebug>
 
@@ -33,8 +34,10 @@ protected:
 
 private:
     Ui::OptionsDialog *m_ui;
-    QTreeWidgetItem *itemStandard, *itemAtariSio, *itemEmulation, *itemI18n;
+    QTreeWidgetItem *itemStandard, *itemAtariSio, *itemEmulation, *itemDiskOptions, *itemI18n, *itemFirmware810Path, *itemFirmware1050Path, *itemFirmwareEmulation, *itemTraceOptions;
     QTreeWidgetItem *itemTestSerialPort;
+
+    void selectFirmware(QLineEdit *edit, QString title, QString filters);
 
 private slots:
     void on_serialPortComboBox_currentIndexChanged(int index);
@@ -45,6 +48,15 @@ private slots:
     void OptionsDialog_accepted();
     void on_useEmulationCustomCasBaudBox_toggled(bool checked);
     void on_testFileButton_clicked();
+    void on_actionSelect810Firmware_triggered();
+    void on_actionSelect810ChipFirmware_triggered();
+    void on_actionSelect810HappyFirmware_triggered();
+    void on_actionSelect1050Firmware_triggered();
+    void on_actionSelect1050ArchiverFirmware_triggered();
+    void on_actionSelect1050HappyFirmware_triggered();
+    void on_actionSelect1050SpeedyFirmware_triggered();
+    void on_actionSelect1050TurboFirmware_triggered();
+    void on_actionSelect1050DuplicatorFirmware_triggered();
 };
 
 #endif // OPTIONSDIALOG_H

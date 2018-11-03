@@ -10,7 +10,7 @@
 # know the specific year(s) please let the current maintainer know.
 #
 #CONFIG(release, debug|release):DEFINES += QT_NO_DEBUG_OUTPUT
-DEFINES += VERSION=\\\"r4\\\"
+DEFINES += VERSION=\\\"r4.2.1\\\"
 TARGET = RespeQt
 TEMPLATE = app
 CONFIG += qt
@@ -24,7 +24,6 @@ SOURCES += main.cpp \
     optionsdialog.cpp \
     aboutdialog.cpp \
     diskimage.cpp \
-    diskimagepro.cpp \
     folderimage.cpp \
     miscdevices.cpp \
     createimagedialog.cpp \
@@ -43,6 +42,36 @@ SOURCES += main.cpp \
     drivewidget.cpp \
     pclink.cpp \
     infowidget.cpp \
+    Cpu6502.cpp \
+    Crc16.cpp \
+    Fdc.cpp \
+    Motor.cpp \
+    Ram.cpp \
+    Riot810.cpp \
+    Riot1050.cpp \
+    Riot6532.cpp \
+    RiotDevices.cpp \
+    Rom.cpp \
+    RomProvider.cpp \
+    Sio.cpp \
+    Track.cpp \
+    Atari810.cpp \
+    Atari1050.cpp \
+    AtariDrive.cpp \
+    FirmwareDiskImage.cpp \
+    Atari810Happy.cpp \
+    RamUnderRomArchiver.cpp \
+    Atari1050Happy.cpp \
+    Atari1050Speedy.cpp \
+    Atari1050Turbo.cpp \
+    Atari1050Duplicator.cpp \
+    RomBankSwitchTurbo.cpp \
+    diskimagepro.cpp \
+    diskimageatx.cpp \
+    diskimageatr.cpp \
+    diskimagescp.cpp \
+    disassembly810.cpp \
+    disassembly1050.cpp \
     serialport-test.cpp
 win32:LIBS += -lwinmm -lz
 unix:LIBS += -lz
@@ -54,7 +83,6 @@ HEADERS += mainwindow.h \
     optionsdialog.h \
     aboutdialog.h \
     diskimage.h \
-    diskimagepro.h \
     folderimage.h \
     miscdevices.h \
     createimagedialog.h \
@@ -72,6 +100,35 @@ HEADERS += mainwindow.h \
     respeqtsettings.h \
     drivewidget.h \
     pclink.h \
+    infowidget.h \
+    Chip.hpp \
+    Cpu6502.hpp \
+    Crc16.hpp \
+    Fdc.hpp \
+    Motor.hpp \
+    Ram.hpp \
+    Riot810.hpp \
+    Riot1050.hpp \
+    Riot6532.hpp \
+    RiotDevices.hpp \
+    Rom.hpp \
+    RomProvider.hpp \
+    Sio.hpp \
+    Track.hpp \
+    Emulator.h \
+    Atari810.hpp \
+    Atari1050.hpp \
+    AtariDrive.hpp \
+    FirmwareDiskImage.hpp \
+    Atari810Happy.hpp \
+    RamUnderRomArchiver.hpp \
+    Atari1050Happy.hpp \
+    Atari1050Speedy.hpp \
+    Atari1050Turbo.hpp \
+    Atari1050Duplicator.hpp \
+    RomBankSwitchTurbo.hpp \
+    disassembly810.h \
+    disassembly1050.h \
     infowidget.h \
     serialport-test.h
 

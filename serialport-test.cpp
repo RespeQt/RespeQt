@@ -77,6 +77,11 @@ int TestSerialPortBackend::speedByte()
     return 0x28; // standard speed (19200)
 }
 
+int TestSerialPortBackend::speed()
+{
+    return 19200;
+}
+
 bool TestSerialPortBackend::setSpeed(int /*speed*/)
 {
     return true;

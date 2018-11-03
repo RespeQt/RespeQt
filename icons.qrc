@@ -28,7 +28,7 @@
         <file>silk-icons/icons/font.png</file>
         <file>silk-icons/icons/font_go.png</file>
         <file>main-icon/RespeQt.ico</file>
-		<file>main-icon/RespeQt.png</file>
+        <file>main-icon/RespeQt.png</file>
         <file>silk-icons/icons/cut_red.png</file>
         <file>silk-icons/icons/drive_go.png</file>
         <file>silk-icons/icons/drive.png</file>
@@ -59,5 +59,12 @@
         <file>other-icons/run.ico</file>
 	<file>other-icons/casette.gif</file>
         <file>silk-icons/icons/arrow_right.png</file>
+        <file>silk-icons/icons/drive_close.png</file>
+        <file>silk-icons/icons/drive_open.png</file>
+        <file>silk-icons/icons/emoticon_happy.png</file>
+        <file>silk-icons/icons/emoticon_unhappy.png</file>
+        <file>silk-icons/icons/package_delete.png</file>
+        <file>silk-icons/icons/package_go.png</file>
+        <file>silk-icons/icons/drive_save.png</file>
     </qresource>
 </RCC>

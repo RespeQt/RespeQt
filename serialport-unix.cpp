@@ -893,6 +893,11 @@ int AtariSioBackend::speedByte()
     return 0x08;
 }
 
+int AtariSioBackend::speed()
+{
+    return mSpeed;
+}
+
 QByteArray AtariSioBackend::readDataFrame(uint size, bool verbose)
 {
     QByteArray data;

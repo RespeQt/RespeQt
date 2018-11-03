@@ -15,6 +15,7 @@
 
 #include <QSettings>
 
+#include "Emulator.h"
 
 #define NUM_RECENT_FILES 10
 
@@ -192,6 +193,18 @@ public:
     bool isURLSubmitEnabled();
     void setURLSubmit(bool enabled);
 
+// Spy Mode
+    bool isSpyMode();
+    void setSpyMode(bool enabled);
+
+// Command Name
+    bool isCommandName();
+    void setCommandName(bool enabled);
+
+// Track Layout
+    bool isTrackLayout();
+    void setTrackLayout(bool enabled);
+
 // Enable Shade Mode //
     bool enableShade();
     void setEnableShade(bool shade);
@@ -203,6 +216,68 @@ public:
 // Explorer Window On Top
     bool explorerOnTop();
     void setExplorerOnTop(bool expOnTop);
+
+// Atari drive firmware
+    QString atari810Firmware();
+    void setAtari810Firmware(const QString &firmware);
+    QString atari810ChipFirmware();
+    void setAtari810ChipFirmware(const QString &firmware);
+    QString atari810HappyFirmware();
+    void setAtari810HappyFirmware(const QString &firmware);
+    QString atari1050Firmware();
+    void setAtari1050Firmware(const QString &firmware);
+    QString atari1050ArchiverFirmware();
+    void setAtari1050ArchiverFirmware(const QString &firmware);
+    QString atari1050HappyFirmware();
+    void setAtari1050HappyFirmware(const QString &firmware);
+    QString atari1050SpeedyFirmware();
+    void setAtari1050SpeedyFirmware(const QString &firmware);
+    QString atari1050TurboFirmware();
+    void setAtari1050TurboFirmware(const QString &firmware);
+    QString atari1050DuplicatorFirmware();
+    void setAtari1050DuplicatorFirmware(const QString &firmware);
+    QString firmwarePath(eHARDWARE eHardware);
+    QString firmwareName(eHARDWARE eHardware);
+
+// Drive emulation (SIO or firmware)
+    eHARDWARE d1EmulationType();
+    void setD1EmulationType(eHARDWARE type);
+    eHARDWARE d2EmulationType();
+    void setD2EmulationType(eHARDWARE type);
+    eHARDWARE d3EmulationType();
+    void setD3EmulationType(eHARDWARE type);
+    eHARDWARE d4EmulationType();
+    void setD4EmulationType(eHARDWARE type);
+    eHARDWARE firmwareType(int drive);
+    bool displayTransmission();
+    void setDisplayTransmission(bool displayTransmission);
+    bool displayDriveHead();
+    void setDisplayDriveHead(bool displayDriveHead);
+    bool displayFdcCommands();
+    void setDisplayFdcCommands(bool displayFdcCommands);
+    bool displayIndexPulse();
+    void setDisplayIndexPulse(bool displayIndexPulse);
+    bool displayMotorOnOff();
+    void setDisplayMotorOnOff(bool displayMotorOnOff);
+    bool displayIDAddressMarks();
+    void setDisplayIDAddressMarks(bool displayIDAddressMarks);
+    bool displayTrackInformation();
+    void setDisplayTrackInformation(bool displayTrackInformation);
+    bool disassembleUploadedCode();
+    void setDisassembleUploadedCode(bool disassembleUploadedCode);
+    bool displayCpuInstructions();
+    void setDisplayCpuInstructions(bool displayCpuInstructions);
+	QString traceFilename();
+    void setTraceFilename(const QString &filename);
+    bool d1PowerOnWithDiskInserted();
+    void setD1PowerOnWithDiskInserted(bool d1PowerOnWithDiskInserted);
+    bool d2PowerOnWithDiskInserted();
+    void setD2PowerOnWithDiskInserted(bool d2PowerOnWithDiskInserted);
+    bool d3PowerOnWithDiskInserted();
+    void setD3PowerOnWithDiskInserted(bool d3PowerOnWithDiskInserted);
+    bool d4PowerOnWithDiskInserted();
+    void setD4PowerOnWithDiskInserted(bool d4PowerOnWithDiskInserted);
+    bool firmwarePowerOnWithDisk(int drive);
 
 private:
     QSettings *mSettings;
@@ -271,9 +346,41 @@ private:
     bool mFilterUnderscore;
     bool mUseCapitalLettersInPCLINK;
     bool mUseURLSubmit;
+    bool mSpyMode;
+    bool mCommandName;
+    bool mTrackLayout;
     bool mUseLargeFont;
     bool mExplorerOnTop;
     bool mEnableShade;
+
+    QString m810Firmware;
+    QString m810ChipFirmware;
+    QString m810HappyFirmware;
+    QString m1050Firmware;
+    QString m1050ArchiverFirmware;
+    QString m1050HappyFirmware;
+    QString m1050SpeedyFirmware;
+    QString m1050TurboFirmware;
+    QString m1050DuplicatorFirmware;
+
+    eHARDWARE mD1EmulationType;
+    eHARDWARE mD2EmulationType;
+    eHARDWARE mD3EmulationType;
+    eHARDWARE mD4EmulationType;
+    bool mDisplayTransmission;
+    bool mDisplayDriveHead;
+    bool mDisplayFdcCommands;
+    bool mDisplayIndexPulse;
+    bool mDisplayMotorOnOff;
+    bool mDisplayIDAddressMarks;
+    bool mDisplayTrackInformation;
+    bool mDisassembleUploadedCode;
+    bool mDisplayCpuInstructions;
+	QString mTraceFilename;
+    bool mD1PowerOnWithDiskInserted;
+    bool mD2PowerOnWithDiskInserted;
+    bool mD3PowerOnWithDiskInserted;
+    bool mD4PowerOnWithDiskInserted;
 };
 
 extern RespeqtSettings *respeqtSettings;

@@ -225,7 +225,7 @@ bool StandardSerialPortBackend::setSpeed(int speed)
 
     /* Adjust parameters */
     dcb.DCBlength = sizeof dcb;
-    dcb.BaudRate = speed;
+    dcb.BaudRate = speed & ~1;
     dcb.fBinary = TRUE;
     dcb.fParity = FALSE;
 
@@ -254,9 +254,10 @@ bool StandardSerialPortBackend::setSpeed(int speed)
     dcb.XoffLim = 0;
     dcb.ByteSize = 8;
     dcb.Parity = NOPARITY;
-/*    if (speed > 100000) {
+    if (speed & 1) {
+        speed &= ~1;
         dcb.StopBits = TWOSTOPBITS;
-    } else*/ {
+    } else {
         dcb.StopBits = ONESTOPBIT;
     }
     dcb.XonChar = 0;
@@ -441,6 +442,11 @@ QByteArray StandardSerialPortBackend::readCommandFrame()
                     // ignore the trigger is the command line status is OFF (we're waiting for a rising edge)
                     if( !(tmp & MODEM_STAT) )continue;
                 }
+            }
+
+            // restore normal speed if speed was changed just for the previous data frame (Happy 810 Warp Speed for example)
+            if ((! mHighSpeed) && (speed() != 19200)) {
+                setNormalSpeed();
             }
 
             if(MASK != EV_RXCHAR)
@@ -750,3 +756,4 @@ bool AtariSioBackend::writeError() {return false;}
 bool AtariSioBackend::setSpeed(int ) {return false;}
 bool AtariSioBackend::writeRawFrame(const QByteArray &) {return false;}
 void AtariSioBackend::setActiveSioDevices(const QByteArray &){}
+int AtariSioBackend::speed() { return 0; }
