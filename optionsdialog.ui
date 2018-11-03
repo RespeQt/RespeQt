@@ -10,7 +10,7 @@
     <x>0</x>
     <y>0</y>
     <width>638</width>
-    <height>443</height>
+    <height>527</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -331,7 +331,7 @@
           <item>
            <widget class="QLabel" name="serialPortCompErrDelayLabel">
             <property name="text">
-             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;Complete/Error response delay (μs)&lt;br&gt;See manual for more information&lt;/body&gt;&lt;/html&gt;</string>
+             <string>Complete/Error response delay (μs)&lt;br&gt;See manual for more information</string>
             </property>
            </widget>
           </item>
