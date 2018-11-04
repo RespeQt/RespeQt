@@ -11,6 +11,7 @@
 
 #include "sioworker.h"
 #include <QDialog>
+#include <QMovie>
 
 namespace Ui {
     class CassetteDialog;
@@ -32,6 +33,7 @@ private:
     int mTotalDuration;
     int mRemainingTime;
     QString mFileName;
+    QMovie *mCassMovie;
 
 public slots:
     int exec();

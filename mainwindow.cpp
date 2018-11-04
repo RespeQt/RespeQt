@@ -944,8 +944,8 @@ void MainWindow::uiMessage(int t, QString message)
     if (message.at(0) == '"') {
         message.remove(0, 1);
     }
-    if (message.at(message.count() - 1) == ' ' && message.at(message.count() - 2) == '"') {
-        message.resize(message.count() - 2);
+    if (message.at(message.count() - 1) == '"') {
+        message.resize(message.count() - 1);
     }
 
     if (message == lastMessage) {
