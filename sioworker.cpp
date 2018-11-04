@@ -79,12 +79,20 @@ bool SioWorker::wait(unsigned long time)
 void SioWorker::start(Priority p)
 {
     switch (respeqtSettings->backend()) {
+#ifdef QT_NO_DEBUG
+        case SERIAL_BACKEND_TEST:
+#endif
         case SERIAL_BACKEND_STANDARD:
             mPort = new StandardSerialPortBackend(0);
             break;
         case SERIAL_BACKEND_SIO_DRIVER:
             mPort = new AtariSioBackend(0);
             break;
+#ifndef QT_NO_DEBUG
+        case SERIAL_BACKEND_TEST:
+            mPort = new TestSerialPortBackend(0);
+            break;
+#endif
     }
 
     QByteArray data;

@@ -41,6 +41,9 @@ public:
     bool serialPortTriggerOnFallingEdge();
     void setSerialPortTriggerOnFallingEdge(bool use);
 
+    bool serialPortDTRControlEnable();
+    void setSerialPortDTRControlEnable(bool use);
+
     int serialPortMaximumSpeed();
     void setSerialPortMaximumSpeed(int speed);
 
@@ -64,6 +67,10 @@ public:
 
     int backend();
     void setBackend(int backend);
+#ifndef QT_NO_DEBUG
+    QString testFile() const { return mTestFile; }
+    void setTestFile(const QString testFile) { mTestFile = testFile; }
+#endif
 
     bool useHighSpeedExeLoader();
     void setUseHighSpeedExeLoader(bool use);
@@ -226,6 +233,7 @@ private:
     QString mSerialPortName;
     int mSerialPortHandshakingMethod;
     bool mSerialPortTriggerOnFallingEdge;
+    bool mSerialPortDTRControlEnable;
     int mSerialPortWriteDelay;
     int mSerialPortCompErrDelay;
     int mSerialPortMaximumSpeed;
@@ -239,6 +247,9 @@ private:
     int mAtariSioHandshakingMethod;
 
     int mBackend;
+#ifndef QT_NO_DEBUG
+    QString mTestFile;
+#endif
 
     bool mUseCustomCasBaud;
     int mCustomCasBaud;

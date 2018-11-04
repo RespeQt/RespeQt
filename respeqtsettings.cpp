@@ -42,6 +42,7 @@ RespeqtSettings::RespeqtSettings()
     }
     mSerialPortHandshakingMethod = mSettings->value("HandshakingMethod", 0).toInt();
     mSerialPortTriggerOnFallingEdge = mSettings->value("FallingEdge", false).toBool();
+    mSerialPortDTRControlEnable = mSettings->value("DTRControlEnable", false).toBool();
     mSerialPortWriteDelay = mSettings->value("WriteDelay", 1).toInt();
 #ifdef Q_OS_WIN
     mSerialPortCompErrDelay = mSettings->value("CompErrDelay", 300).toInt(); // default is 300us for windows
@@ -62,6 +63,11 @@ RespeqtSettings::RespeqtSettings()
     mAtariSioHandshakingMethod = mSettings->value("AtariSioHandshakingMethod", 0).toInt();
 
     mBackend = mSettings->value("Backend", 0).toInt();
+#ifndef QT_NO_DEBUG
+    if (mBackend == SERIAL_BACKEND_TEST) {
+        mBackend = SERIAL_BACKEND_STANDARD;
+    }
+#endif
 
     mUseHighSpeedExeLoader = mSettings->value("UseHighSpeedExeLoader", false).toBool();
     mPrinterEmulation = mSettings->value("PrinterEmulation", true).toBool();
@@ -130,6 +136,12 @@ void RespeqtSettings::saveSessionToFile(const QString &fileName)
     extern bool g_miniMode;
     QSettings s(fileName, QSettings::IniFormat);
 
+#ifndef QT_NO_DEBUG
+    if (mBackend == SERIAL_BACKEND_TEST) {
+        mBackend = SERIAL_BACKEND_STANDARD;
+    }
+#endif
+
     s.beginGroup("RespeQt");
         s.setValue("Backend", mBackend);
         s.setValue("AtariSioDriverName", mAtariSioDriverName);
@@ -137,6 +149,7 @@ void RespeqtSettings::saveSessionToFile(const QString &fileName)
         s.setValue("SerialPortName", mSerialPortName);
         s.setValue("HandshakingMethod", mSerialPortHandshakingMethod);
         s.setValue("FallingEdge", mSerialPortTriggerOnFallingEdge);
+        s.setValue("DTRControlEnable", mSerialPortDTRControlEnable);
         s.setValue("WriteDelay", mSerialPortWriteDelay);
         s.setValue("CompErrDelay", mSerialPortCompErrDelay);
         s.setValue("MaximumSerialPortSpeed", mSerialPortMaximumSpeed);
@@ -191,6 +204,7 @@ void RespeqtSettings::saveSessionToFile(const QString &fileName)
         mSerialPortName = s.value("SerialPortName", StandardSerialPortBackend::defaultPortName()).toString();
         mSerialPortHandshakingMethod = s.value("HandshakingMethod", 0).toInt();
         mSerialPortTriggerOnFallingEdge = s.value("FallingEdge", false).toBool();
+        mSerialPortDTRControlEnable = s.value("DTRControlEnable", false).toBool();
         mSerialPortWriteDelay = s.value("WriteDelay", 1).toInt();
         mSerialPortCompErrDelay = s.value("CompErrDelay", 1).toInt();
         mSerialPortMaximumSpeed = s.value("MaximumSerialPortSpeed", 2).toInt();
@@ -306,6 +320,17 @@ void RespeqtSettings::setSerialPortTriggerOnFallingEdge(bool use)
 {
     mSerialPortTriggerOnFallingEdge = use;
     if(mSessionFileName == "") mSettings->setValue("FallingEdge", mSerialPortTriggerOnFallingEdge);
+}
+
+bool RespeqtSettings::serialPortDTRControlEnable()
+{
+    return mSerialPortDTRControlEnable;
+}
+
+void RespeqtSettings::setSerialPortDTRControlEnable(bool use)
+{
+    mSerialPortDTRControlEnable = use;
+    if(mSessionFileName == "") mSettings->setValue("DTRControlEnable", mSerialPortDTRControlEnable);
 }
 
 int RespeqtSettings::serialPortWriteDelay()

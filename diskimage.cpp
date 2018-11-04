@@ -88,6 +88,10 @@ void DiskGeometry::initialize(uint aTotalSize, quint16 aBytesPerSector)
         ds = true;
         tps = 40;
         spt = 18;
+    } else if (aTotalSize == 736896 && aBytesPerSector == 256) {
+        ds = true;
+        tps = 80;
+        spt = 18;
     } else {
         if (aBytesPerSector == 256) {
             if (aTotalSize <= 384) {
@@ -130,6 +134,11 @@ void DiskGeometry::initialize(uint aTotalSize)
     } else if (aTotalSize == 368256) {
         ds = true;
         tps = 40;
+        spt = 18;
+        bps = 256;
+    } else if (aTotalSize == 736896) {
+        ds = true;
+        tps = 80;
         spt = 18;
         bps = 256;
     } else {
@@ -180,9 +189,14 @@ bool DiskGeometry::isStandardDD() const
     return (!m_isDoubleSided) && m_tracksPerSide == 40 && m_sectorsPerTrack == 18 && m_bytesPerSector == 256;
 }
 
-bool DiskGeometry::isStandardQD() const
+bool DiskGeometry::isStandardDSDD() const
 {
     return m_isDoubleSided && m_tracksPerSide == 40 && m_sectorsPerTrack == 18 && m_bytesPerSector == 256;
+}
+
+bool DiskGeometry::isStandardDSQD() const
+{
+    return m_isDoubleSided && m_tracksPerSide == 80 && m_sectorsPerTrack == 18 && m_bytesPerSector == 256;
 }
 
 quint16 DiskGeometry::bytesPerSector(quint16 sector)
@@ -221,15 +235,17 @@ QString DiskGeometry::humanReadable() const
         result = tr("ED Diskette");
     } else if (isStandardDD()) {
         result = tr("DD Diskette");
-    } else if (isStandardQD()) {
-        result = tr("QD Diskette");
+    } else if (isStandardDSDD()) {
+        result = tr("DS/DD Diskette");
+    } else if (isStandardDSQD()) {
+        result = tr("DS/DD Diskette");
     } else if (m_tracksPerSide == 1) {
         if (m_bytesPerSector == 128) {
-            result = tr("%1 sector SD HardDrive").arg(m_sectorCount);
+            result = tr("%1 sector SD hard disk").arg(m_sectorCount);
         } else if (m_bytesPerSector == 256) {
-            result = tr("%1 sector DD HardDrive").arg(m_sectorCount);
+            result = tr("%1 sector DD hard disk").arg(m_sectorCount);
         } else {
-            result = tr("%1 sector, %2 bytes/sector HardDrive").arg(m_sectorCount).arg(m_bytesPerSector);
+            result = tr("%1 sector, %2 bytes/sector hard disk").arg(m_sectorCount).arg(m_bytesPerSector);
         }
     } else {
         result = tr("%1 %2 tracks/side, %3 sectors/track, %4 bytes/sector diskette")
