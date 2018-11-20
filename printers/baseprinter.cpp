@@ -1,5 +1,4 @@
 #include "baseprinter.h"
-#include "textprinter.h"
 #include "atari1027.h"
 #include "atari1020.h"
 #include "escp.h"
@@ -25,8 +24,6 @@ namespace Printers
     {
         switch (type)
         {
-            case TEXTPRINTER:
-                return new TextPrinter(worker);
             case ATARI1027:
                 return new Atari1027(worker);
             case ATARI1020:

@@ -20,6 +20,7 @@ namespace Printers
         virtual void newLine(bool linefeed = false);
         virtual void printChar(const QChar &c);
         virtual void printString(const QString &s);
+        virtual void plot(QPoint p, uint8_t dot);
         virtual void setWindow(const QRect &rectangle);
         virtual void setPen(const QColor &color);
         virtual void setPen(Qt::PenStyle style);
@@ -35,6 +36,10 @@ namespace Printers
         QPaintDevice *device() { return mDevice; }
         QPainter *painter() { return mPainter; }
         virtual void calculateFixedFontSize(uint8_t line_char_count);
+        int x() { return mX; }
+        int y() { return mY; }
+        void setX(int x) { mX = x; }
+        void setY(int y) { mY = y; }
 
     protected:
         QPainter *mPainter;

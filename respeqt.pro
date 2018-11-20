@@ -42,7 +42,6 @@ SOURCES += main.cpp \
     respeqtsettings.cpp \
     pclink.cpp \
     printers/baseprinter.cpp \
-    printers/textprinter.cpp \
     printers/atari1027.cpp \
     atascii.cpp \
     drivewidget.cpp \
@@ -58,7 +57,8 @@ SOURCES += main.cpp \
     printers/nativeprinter.cpp \
     printers/svgoutput.cpp \
     printers/windowoutput.cpp \
-    printers/bufferedpaintwidget.cpp
+    printers/bufferedpaintwidget.cpp \
+    printers/atari1029.cpp
 win32:LIBS += -lwinmm -lz
 unix:LIBS += -lz
 win32:SOURCES += serialport-win32.cpp
@@ -97,13 +97,13 @@ HEADERS += mainwindow.h \
     printers/atari1020.h \
     serialport-test.h \
     printers/nativeoutput.h \
-    printers/textprinter.h \
     printers/centronics.h \
     printers/escp.h \
     printers/nativeprinter.h \
     printers/svgoutput.h \
     printers/windowoutput.h \
-    printers/bufferedpaintwidget.h
+    printers/bufferedpaintwidget.h \
+    printers/atari1029.h
 win32:HEADERS += serialport-win32.h
 unix:HEADERS += serialport-unix.h
 FORMS += mainwindow.ui \

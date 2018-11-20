@@ -150,4 +150,13 @@ namespace Printers
         setFont(mFont);
         mCharsPerLine = charsPerLine;
     }
+
+    void NativeOutput::plot(QPoint p, uint8_t dot)
+    {
+        if (dot > 0)
+            mPainter->setPen(QColor("black"));
+        else
+            mPainter->setPen(QColor("white"));
+        mPainter->drawPoint(p);
+    }
 }
