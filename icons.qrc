@@ -57,14 +57,13 @@
         <file>other-icons/fuji.png</file>
         <file>other-icons/fade.png</file>
         <file>other-icons/run.ico</file>
-	<file>other-icons/casette.gif</file>
+        <file>other-icons/casette.gif</file>
         <file>silk-icons/icons/arrow_right.png</file>
-        <file>silk-icons/icons/drive_close.png</file>
-        <file>silk-icons/icons/drive_open.png</file>
         <file>silk-icons/icons/emoticon_happy.png</file>
         <file>silk-icons/icons/emoticon_unhappy.png</file>
         <file>silk-icons/icons/package_delete.png</file>
         <file>silk-icons/icons/package_go.png</file>
         <file>silk-icons/icons/drive_save.png</file>
+        <file>oxygen-icons/16x16/actions/2rightarrow.png</file>
     </qresource>
 </RCC>

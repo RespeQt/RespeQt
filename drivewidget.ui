@@ -442,7 +442,7 @@
     </widget>
    </item>
    <item>
-    <widget class="QToolButton" name="buttonToggleLever">
+    <widget class="QToolButton" name="buttonNextSide">
      <property name="enabled">
       <bool>true</bool>
      </property>
@@ -714,7 +714,7 @@
     <string>Enable or disable Happy compatibility. When enabled, the drive is in Happy mode</string>
    </property>
   </action>
-  <action name="actionToggleLever">
+  <action name="actionNextSide">
    <property name="checkable">
     <bool>true</bool>
    </property>
@@ -723,14 +723,13 @@
    </property>
    <property name="icon">
     <iconset resource="icons.qrc">
-     <normaloff>:/icons/silk-icons/icons/drive_close.png</normaloff>
-     <normalon>:/icons/silk-icons/icons/drive_open.png</normalon>:/icons/silk-icons/icons/drive_close.png</iconset>
+     <normaloff>:/icons/oxygen-icons/16x16/actions/2rightarrow.png</normaloff>:/icons/oxygen-icons/16x16/actions/2rightarrow.png</iconset>
    </property>
    <property name="text">
-    <string>Toggle drive door lever</string>
+    <string>Load next software disk or side</string>
    </property>
    <property name="toolTip">
-    <string>Open or close drive door lever. For Speedy 1050 or Turbo 1050</string>
+    <string>Load next software disk or side</string>
    </property>
   </action>
  </widget>

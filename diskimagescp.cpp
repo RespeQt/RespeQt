@@ -446,8 +446,8 @@ bool SimpleDiskImage::readScpSector(quint16 aux, QByteArray &data)
 
 bool SimpleDiskImage::readScpSkewAlignment(quint16 aux, QByteArray &data, bool timingOnly)
 {
-	m_trackData.clear();
-	m_trackData.append(data);
+    m_board.m_trackData.clear();
+    m_board.m_trackData.append(data);
     return true;
 }
 

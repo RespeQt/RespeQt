@@ -156,7 +156,7 @@ bool FirmwareDiskImage::open(const QString &fileName, FileTypes::FileType type)
         if (m_powerOnWithDiskInserted) {
             m_atariDrive->PowerOn();
         }
-        if (m_chipOpen) {
+        if (m_board.isChipOpen()) {
             sendChipCode();
         }
 #if STANDALONE
@@ -220,7 +220,7 @@ void FirmwareDiskImage::setReady(bool bReady)
 
 void FirmwareDiskImage::setChipMode(bool enable)
 {
-    bool oldChipMode = m_chipOpen;
+    bool oldChipMode = m_board.isChipOpen();
     eHARDWARE hardware = m_atariDrive->GetHardware();
 	bool open = enable && ((hardware == HARDWARE_810_WITH_THE_CHIP) || (hardware == HARDWARE_1050_WITH_THE_ARCHIVER));
     SimpleDiskImage::setChipMode(open);
@@ -247,7 +247,7 @@ unsigned char FirmwareDiskImage::computeChksum(unsigned char *commandBuf, int le
 QString FirmwareDiskImage::description()
 {
     QString desc = QString(m_geometry.humanReadable()).append(" - ").append(hardwareName());
-    if (m_chipOpen) {
+    if (m_board.isChipOpen()) {
         eHARDWARE hardware = m_atariDrive->GetHardware();
         if ((hardware == HARDWARE_810_WITH_THE_CHIP) || (hardware == HARDWARE_1050_WITH_THE_ARCHIVER)) {
             desc = desc.append(" - ").append(tr("CHIP mode"));
@@ -841,7 +841,7 @@ void FirmwareDiskImage::disassembleBuffer(unsigned char *data, int len, unsigned
                 .arg(crc.GetCrc(), 4, 16, QChar('0'));
     char buf[256];
 	int offset = 0;
-    if ((address == 0x0800) && (hasHappySignature())) {
+    if ((address == 0x0800) && (m_board.hasHappySignature())) {
         while (offset < 9) {
             qDebug() << "!u" << tr("[%1] §%2:%3 %4 %5 ; Happy signature")
                         .arg(deviceName())
@@ -1185,28 +1185,28 @@ int FirmwareDiskImage::getUploadCodeStartAddress(quint8 command, quint16 aux, QB
     else if (hardware == HARDWARE_810_WITH_HAPPY) {
         if ((command == 0x57) && (aux >= 0x800) && (aux < 0x1380)) {
             if (aux == 0x0800) {
-                if (m_happyRam.size() == 0) {
-                    m_happyRam.reserve(sizeof(HAPPY_SIGNATURE));
+                if (m_board.m_happyRam.size() == 0) {
+                    m_board.m_happyRam.reserve(sizeof(HAPPY_SIGNATURE));
                 }
                 for (unsigned int i = 0; i < sizeof(HAPPY_SIGNATURE); i++) {
-                    m_happyRam[aux - 0x800 + i] = data[i];
+                    m_board.m_happyRam[aux - 0x800 + i] = data[i];
                 }
             }
-            if (hasHappySignature()) {
+            if (m_board.hasHappySignature()) {
                 return (int) aux;
             }
 		}
         if (m_atariDrive->GetRom()->GetLength() > 5000) { // Happy rev 7 only
             if ((command == 0x77) && (aux >= 0x800) && (aux < 0x1380)) {
                 if (aux == 0x0800) {
-                    if (m_happyRam.size() == 0) {
-                        m_happyRam.reserve(sizeof(HAPPY_SIGNATURE));
+                    if (m_board.m_happyRam.size() == 0) {
+                        m_board.m_happyRam.reserve(sizeof(HAPPY_SIGNATURE));
                     }
                     for (unsigned int i = 0; i < sizeof(HAPPY_SIGNATURE); i++) {
-                        m_happyRam[aux - 0x800 + i] = data[i];
+                        m_board.m_happyRam[aux - 0x800 + i] = data[i];
                     }
                 }
-                if (hasHappySignature()) {
+                if (m_board.hasHappySignature()) {
                     return (int) aux;
                 }
 			}
@@ -1347,7 +1347,7 @@ void FirmwareDiskImage::handleCommand(quint8 command, quint16 aux)
                 m_initializing = true;
                 // restart the firmware and open Chip if option is on
                 m_atariDrive->PowerOn();
-                if (m_chipOpen) {
+                if (m_board.isChipOpen()) {
                     sendChipCode();
                 }
                 // retry the command with m_initializing still set to true to avoid stack overflow if firmware is definitely stuck
@@ -1438,14 +1438,14 @@ void FirmwareDiskImage::handleCommand(quint8 command, quint16 aux)
                 // Chip can be open by configuration or by SIO command. But it can not be closed by configuration.
                 // So we monitor SIO commands to reflect Chip status (SIO Close command exists only in CHIP 810)
                 if ((m_atariDrive->GetHardware() == HARDWARE_810_WITH_THE_CHIP) && (command == 0x3F) && (aux == 0x0000) && (status == STATUS_COMPLETE)) {
-                    m_chipOpen = false;
+                    m_board.setChipOpen(false);
                     emit statusChanged(m_deviceNo);
                 }
                 else if ((command == 0x3F) && (aux != 0x0000) && (status == STATUS_COMPLETE)) {
-                    m_chipOpen = true;
+                    m_board.setChipOpen(true);
                     emit statusChanged(m_deviceNo);
                 }
-                isArchiver = m_chipOpen;
+                isArchiver = m_board.isChipOpen();
             }
             bool isHappy = (m_atariDrive->GetHardware() == HARDWARE_810_WITH_HAPPY) || (m_atariDrive->GetHardware() == HARDWARE_1050_WITH_HAPPY);
             if ((! isArchiver) && (! isHappy)) {

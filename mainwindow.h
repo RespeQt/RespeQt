@@ -110,7 +110,7 @@ private:
     void mountDiskImage(int no);
     void mountFolderImage(int no);
     bool ejectImage(int no, bool ask = true);
-    void toggleLever(int no, bool open);
+    void loadNextSide(int no);
     void toggleHappy(int no, bool enabled);
     void toggleChip(int no, bool open);
     void toggleWriteProtection(int no, bool protectionEnabled);
@@ -174,7 +174,7 @@ private slots:
     void on_actionMountDisk_triggered(int deviceId);
     void on_actionMountFolder_triggered(int deviceId);
     void on_actionEject_triggered(int deviceId);
-    void on_actionToggleLever_triggered(int deviceId, bool open);
+    void on_actionNextSide_triggered(int deviceId);
     void on_actionToggleHappy_triggered(int deviceId, bool enabled);
     void on_actionToggleChip_triggered(int deviceId, bool open);
     void on_actionWriteProtect_triggered(int deviceId, bool writeProtectEnabled);

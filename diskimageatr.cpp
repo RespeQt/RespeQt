@@ -600,7 +600,7 @@ bool SimpleDiskImage::readHappyAtrSectorAtPosition(int trackNumber, int sectorNu
 
 bool SimpleDiskImage::readHappyAtrSkewAlignment(bool happy1050)
 {
-    quint8 previousTrack = 0xFF - m_happyRam[0x3C9];
+    quint8 previousTrack = 0xFF - m_board.m_happyRam[0x3C9];
     if (previousTrack > 39) {
         qWarning() << "!w" << tr("[%1] Invalid previous track number %2 ($%3) for skew alignment")
                       .arg(deviceName())
@@ -608,7 +608,7 @@ bool SimpleDiskImage::readHappyAtrSkewAlignment(bool happy1050)
                       .arg(previousTrack, 2, 16, QChar('0'));
         return false;
     }
-    quint8 currentTrack = 0xFF - m_happyRam[0x3CB];
+    quint8 currentTrack = 0xFF - m_board.m_happyRam[0x3CB];
     if (currentTrack > 39) {
         qWarning() << "!w" << tr("[%1] Invalid current track number %2 ($%3) for skew alignment")
                       .arg(deviceName())
@@ -619,7 +619,7 @@ bool SimpleDiskImage::readHappyAtrSkewAlignment(bool happy1050)
 
     // compute sector index for the sector number
     quint16 *sectorPositions = m_geometry.sectorsPerTrack() == 26 ? ATX_SECTOR_POSITIONS_ED : ATX_SECTOR_POSITIONS_SD;
-    quint8 previousSector = 0xFF - m_happyRam[0x3CA];
+    quint8 previousSector = 0xFF - m_board.m_happyRam[0x3CA];
     if ((previousSector < 1) || (previousSector > m_geometry.sectorsPerTrack())) {
         qWarning() << "!w" << tr("[%1] Sector %2 ($%3) not found in track %4 ($%5)")
                       .arg(deviceName())
@@ -633,7 +633,7 @@ bool SimpleDiskImage::readHappyAtrSkewAlignment(bool happy1050)
     int indexInHalf = ((previousSector - 1) >> 1);
     int previousIndex = startHalf + indexInHalf;
     int previousPosition = sectorPositions[previousIndex];
-    quint8 currentSector = 0xFF - m_happyRam[0x3CC];
+    quint8 currentSector = 0xFF - m_board.m_happyRam[0x3CC];
     if ((currentSector < 1) || (currentSector > m_geometry.sectorsPerTrack())) {
         qWarning() << "!w" << tr("[%1] Sector %2 ($%3) not found in track %4 ($%5)")
                       .arg(deviceName())
@@ -666,24 +666,24 @@ bool SimpleDiskImage::readHappyAtrSkewAlignment(bool happy1050)
     gap = 0x210D - gap + seekDiff;
 
     // fill output buffer
-    m_happyRam[0x380] = (quint8)(timingNoStep & 0xFF);
-    m_happyRam[0x381] = (quint8)((timingNoStep >> 8) & 0xFF);
-    m_happyRam[0x382] = (quint8)(timingNoStep & 0xFF);
-    m_happyRam[0x383] = (quint8)((timingNoStep >> 8) & 0xFF);
-    m_happyRam[0x384] = (quint8)(timingNoStep & 0xFF);
-    m_happyRam[0x385] = (quint8)((timingNoStep >> 8) & 0xFF);
-    m_happyRam[0x386] = (quint8)(gap & 0xFF);
-    m_happyRam[0x387] = (quint8)((gap >> 8) & 0xFF);
-    m_happyRam[0x388] = 0x01;
-    m_happyRam[0x389] = 0x00;
+    m_board.m_happyRam[0x380] = (quint8)(timingNoStep & 0xFF);
+    m_board.m_happyRam[0x381] = (quint8)((timingNoStep >> 8) & 0xFF);
+    m_board.m_happyRam[0x382] = (quint8)(timingNoStep & 0xFF);
+    m_board.m_happyRam[0x383] = (quint8)((timingNoStep >> 8) & 0xFF);
+    m_board.m_happyRam[0x384] = (quint8)(timingNoStep & 0xFF);
+    m_board.m_happyRam[0x385] = (quint8)((timingNoStep >> 8) & 0xFF);
+    m_board.m_happyRam[0x386] = (quint8)(gap & 0xFF);
+    m_board.m_happyRam[0x387] = (quint8)((gap >> 8) & 0xFF);
+    m_board.m_happyRam[0x388] = 0x01;
+    m_board.m_happyRam[0x389] = 0x00;
     if (happy1050) {
-        m_happyRam[0x3B0] = 0x23;
-        m_happyRam[0x3B2] = 0x9A;
-        m_happyRam[0x3B3] = 0x8D;
+        m_board.m_happyRam[0x3B0] = 0x23;
+        m_board.m_happyRam[0x3B2] = 0x9A;
+        m_board.m_happyRam[0x3B3] = 0x8D;
     }
     else {
-        m_happyRam[0x38A] = 0x08;
-        m_happyRam[0x390] = 0x05;
+        m_board.m_happyRam[0x38A] = 0x08;
+        m_board.m_happyRam[0x390] = 0x05;
     }
     return true;
 }
@@ -701,29 +701,29 @@ bool SimpleDiskImage::writeHappyAtrTrack(int trackNumber, bool happy1050)
     int offset = startOffset;
     quint8 invertedTrack = (quint8)(0xFF - trackNumber);
     while (offset < (startOffset + 0x100)) {
-        quint8 code = m_happyRam[offset++];
+        quint8 code = m_board.m_happyRam[offset++];
         if (code == 0) {
             break;
         }
         if (code < 128) {
             nbSectors++;
-            if ((quint8)m_happyRam[offset++] != invertedTrack) {
+            if ((quint8)m_board.m_happyRam[offset++] != invertedTrack) {
                 notNormal = true;
                 break;
             }
-            if ((quint8)m_happyRam[offset++] != (quint8)0xFF) {
+            if ((quint8)m_board.m_happyRam[offset++] != (quint8)0xFF) {
                 notNormal = true;
                 break;
             }
-            if ((quint8)m_happyRam[offset++] < 0xED) {
+            if ((quint8)m_board.m_happyRam[offset++] < 0xED) {
                 notNormal = true;
                 break;
             }
-            if ((quint8)m_happyRam[offset++] != (quint8)0xFF) {
+            if ((quint8)m_board.m_happyRam[offset++] != (quint8)0xFF) {
                 notNormal = true;
                 break;
             }
-            if ((quint8)m_happyRam[offset++] != (quint8)0x08) {
+            if ((quint8)m_board.m_happyRam[offset++] != (quint8)0x08) {
                 notNormal = true;
                 break;
             }
@@ -746,19 +746,19 @@ bool SimpleDiskImage::writeHappyAtrSectors(int trackNumber, int, bool happy1050)
 {
     int startOffset = happy1050 ? 0xC80 : 0x280;
     int startData = startOffset + 128;
-    int lastIndex = (int) (quint8) m_happyRam[startOffset + 0x0F];
+    int lastIndex = (int) (quint8)m_board.m_happyRam[startOffset + 0x0F];
     int index = 17;
     while (index >= lastIndex) {
-        quint8 sectorNumber = 0xFF - (quint8)m_happyRam[startOffset + 0x38 + index];
-        m_happyRam[startOffset + 0x14 + index] = 0xFF;
+        quint8 sectorNumber = 0xFF - (quint8)m_board.m_happyRam[startOffset + 0x38 + index];
+        m_board.m_happyRam[startOffset + 0x14 + index] = 0xFF;
         if ((sectorNumber > 0) && (sectorNumber <= m_geometry.sectorsPerTrack())) {
             int dataOffset = startData + (index * 128);
             int absoluteSector = (trackNumber * m_geometry.sectorsPerTrack()) + sectorNumber;
-            bool result = writeAtrSector(absoluteSector, m_happyRam.mid(dataOffset,128));
+            bool result = writeAtrSector(absoluteSector, m_board.m_happyRam.mid(dataOffset,128));
             if (! result) {
                 return false;
             }
-            quint8 writeCommand = m_happyRam[startOffset + 0x4A + index];
+            quint8 writeCommand = m_board.m_happyRam[startOffset + 0x4A + index];
             if (writeCommand != 0x57) {
                 qWarning() << "!w" << tr("[%1] command $%2 not supported for sector %3 ($%4) with this kind of image. Ignored.")
                               .arg(deviceName())
@@ -777,14 +777,14 @@ bool SimpleDiskImage::writeHappyAtrSectors(int trackNumber, int, bool happy1050)
     }
     if (! happy1050) {
         for (int i = 0; i < 5; i++) {
-            m_happyRam[startOffset + 0x05 + i] = 0x80;
+            m_board.m_happyRam[startOffset + 0x05 + i] = 0x80;
         }
-        m_happyRam[startOffset + 0x0A] = 0x00;
-        m_happyRam[startOffset + 0x0B] = 0x08;
-        m_happyRam[startOffset + 0x0C] = 0x08;
-        m_happyRam[startOffset + 0x0D] = 0x43;
-        m_happyRam[startOffset + 0x10] = 0xFF;
-        m_happyRam[startOffset + 0x13] = 0xEE;
+        m_board.m_happyRam[startOffset + 0x0A] = 0x00;
+        m_board.m_happyRam[startOffset + 0x0B] = 0x08;
+        m_board.m_happyRam[startOffset + 0x0C] = 0x08;
+        m_board.m_happyRam[startOffset + 0x0D] = 0x43;
+        m_board.m_happyRam[startOffset + 0x10] = 0xFF;
+        m_board.m_happyRam[startOffset + 0x13] = 0xEE;
     }
     return true;
 }
@@ -902,11 +902,11 @@ void SimpleDiskImage::readAtrTrack(quint16 aux, QByteArray &data, int length)
 bool SimpleDiskImage::readAtrSectorStatuses(QByteArray &data)
 {
     data.resize(128);
-    int nbSectors = m_chipRam[0];
+    int nbSectors = m_board.m_chipRam[0];
     if (nbSectors > 31) {
         nbSectors = 31;
     }
-    int currentIndexInTrack = m_chipRam[1];
+    int currentIndexInTrack = m_board.m_chipRam[1];
     if (currentIndexInTrack == -1) {
         qWarning() << "!w" << tr("[%1] readSectorStatuses return -1").arg(deviceName());
         for (int i = 0; i < 128; i++) {
@@ -937,13 +937,13 @@ bool SimpleDiskImage::readAtrSectorUsingIndex(quint16 aux, QByteArray &data)
 {
     quint16 index = aux & 0x1F;
     int indexInTrack = index % m_geometry.sectorsPerTrack();
-    int absoluteSector = (m_trackNumber * m_geometry.sectorsPerTrack()) + m_chipRam[indexInTrack + 1];
+    int absoluteSector = (m_trackNumber * m_geometry.sectorsPerTrack()) + m_board.m_chipRam[indexInTrack + 1];
     return readSector(absoluteSector, data);
 }
 
 bool SimpleDiskImage::readAtrSector(quint16 aux, QByteArray &data)
 {
-    quint16 sector = m_chipOpen ? aux & 0x3FF : aux;
+    quint16 sector = m_board.isChipOpen() ? aux & 0x3FF : aux;
     if (!seekToSector(sector)) {
         return false;
     }
@@ -961,8 +961,8 @@ bool SimpleDiskImage::readAtrSector(quint16 aux, QByteArray &data)
 bool SimpleDiskImage::readAtrSkewAlignment(quint16 aux, QByteArray &data, bool timingOnly)
 {
 	// skew alignment is not useful for ATR. Return default values
-	m_trackData.clear();
-	m_trackData.append(data);
+    m_board.m_trackData.clear();
+    m_board.m_trackData.append(data);
     quint8 track = (quint8)((aux >> 8) & 0xFF);
     if (!timingOnly) {
         quint16 *sectorPositions = m_geometry.sectorsPerTrack() == 26 ? ATX_SECTOR_POSITIONS_ED : ATX_SECTOR_POSITIONS_SD;
@@ -976,14 +976,14 @@ bool SimpleDiskImage::readAtrSkewAlignment(quint16 aux, QByteArray &data, bool t
             }
             quint8 sectorNumber = sectorIndex - 1;
             quint16 sectorPosition = (quint16)(sectorPositions[i] >> 3);
-            m_trackData[0x08 + i] = sectorNumber;
-            m_trackData[0x28 + i] = (sectorPosition >> 8) & 0xFF;
-            m_trackData[0x48 + i] = sectorPosition & 0xFF;
+            m_board.m_trackData[0x08 + i] = sectorNumber;
+            m_board.m_trackData[0x28 + i] = (sectorPosition >> 8) & 0xFF;
+            m_board.m_trackData[0x48 + i] = sectorPosition & 0xFF;
         }
         for (int i = nbSectors; i < 0x20; i++) {
-            m_trackData[0x08 + i] = 0;
-            m_trackData[0x28 + i] = 0;
-            m_trackData[0x48 + i] = 0;
+            m_board.m_trackData[0x08 + i] = 0;
+            m_board.m_trackData[0x28 + i] = 0;
+            m_board.m_trackData[0x48 + i] = 0;
         }
     }
     else {
@@ -1005,18 +1005,18 @@ bool SimpleDiskImage::readAtrSkewAlignment(quint16 aux, QByteArray &data, bool t
         };
 		if (track == 0) {
 			// should not happen
-			m_trackData[0xF4] = m_trackData[0xF5] = 0xE8;
+            m_board.m_trackData[0xF4] = m_board.m_trackData[0xF5] = 0xE8;
 		}
 		else {
 			quint16 timing = timings[(track - 1) % 14];
-			m_trackData[0xF4] = (quint8)(timing & 0xFF);
-            m_trackData[0xF5] = (quint8)((timing >> 8) & 0xFF);
+            m_board.m_trackData[0xF4] = (quint8)(timing & 0xFF);
+            m_board.m_trackData[0xF5] = (quint8)((timing >> 8) & 0xFF);
 		}
     }
-    m_trackData[0] = m_deviceNo;
-    m_trackData[1] = 0x74;
-	m_trackData[2] = (quint8)(aux & 0xFF);
-	m_trackData[3] = track;
+    m_board.m_trackData[0] = m_deviceNo;
+    m_board.m_trackData[1] = 0x74;
+    m_board.m_trackData[2] = (quint8)(aux & 0xFF);
+    m_board.m_trackData[3] = track;
     return true;
 }
 
@@ -1037,7 +1037,7 @@ bool SimpleDiskImage::writeAtrTrack(quint16 aux, const QByteArray &data)
 {
     m_trackNumber = aux & 0x3F;
     for (int i = 0; i < 32; i++) {
-        m_chipRam[i] = data[i];
+        m_board.m_chipRam[i] = data[i];
     }
     int absoluteSector = m_trackNumber * m_geometry.sectorsPerTrack();
     for (int i = 0; i < m_geometry.sectorsPerTrack(); i++) {
@@ -1081,7 +1081,7 @@ bool SimpleDiskImage::writeAtrTrack(quint16 aux, const QByteArray &data)
 
 bool SimpleDiskImage::writeAtrTrackWithSkew(quint16 aux, const QByteArray &) {
     // skew alignment not supported
-    return writeAtrTrack((aux & 0x3F) | 0xF000, m_trackData);
+    return writeAtrTrack((aux & 0x3F) | 0xF000, m_board.m_trackData);
 }
 
 bool SimpleDiskImage::writeAtrSectorUsingIndex(quint16 aux, const QByteArray &data, bool)
@@ -1090,7 +1090,7 @@ bool SimpleDiskImage::writeAtrSectorUsingIndex(quint16 aux, const QByteArray &da
     int indexInTrack = index % m_geometry.sectorsPerTrack();
 
     // write the sector
-    int absoluteSector = (m_trackNumber * m_geometry.sectorsPerTrack()) + m_chipRam[indexInTrack + 1];
+    int absoluteSector = (m_trackNumber * m_geometry.sectorsPerTrack()) + m_board.m_chipRam[indexInTrack + 1];
     return writeAtrSector(absoluteSector, data);
 }
 
@@ -1103,7 +1103,7 @@ bool SimpleDiskImage::writeFuzzyAtrSector(quint16 aux, const QByteArray &data)
 
 bool SimpleDiskImage::writeAtrSector(quint16 aux, const QByteArray &data)
 {
-    quint16 sector = m_chipOpen ? aux & 0x3FF : aux;
+    quint16 sector = m_board.isChipOpen() ? aux & 0x3FF : aux;
     if (!seekToSector(sector)) {
         return false;
     }
