@@ -112,8 +112,8 @@ struct ROM_SYMBOLS *Rom::LoadSymbolFile(QString filename)
                         }
                         addr++;
                     }
-					if ((stricmp(name, "#skip") == 0) || (stricmp(name, "#command") == 0) || (stricmp(name, "#frame") == 0)) {
-						if (stricmp(name, "#command") != 0) {
+					if ((qstricmp(name, "#skip") == 0) || (qstricmp(name, "#command") == 0) || (qstricmp(name, "#frame") == 0)) {
+						if (qstricmp(name, "#command") != 0) {
 							char *minus = addr;
 							while ((*minus == ' ') || (*minus == '\t')) {
 								minus++;
@@ -155,7 +155,7 @@ struct ROM_SYMBOLS *Rom::LoadSymbolFile(QString filename)
 					strncpy(sym->name, name, sizeof(sym->name));
 					sym->address = (unsigned short)address;
                     sym->address2 = (unsigned short)address2;
-                    if ((stricmp(name, "#skip") == 0) && (address2 != 0)) {
+                    if ((qstricmp(name, "#skip") == 0) && (address2 != 0)) {
                         int size = address2 - address + 1;
                         sym->displayed = (unsigned char *)malloc(size);
                         memset(sym->displayed, 0, size);
