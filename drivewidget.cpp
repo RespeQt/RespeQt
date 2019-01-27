@@ -50,6 +50,9 @@ void DriveWidget::setup()
     FormatStatusTip(ui->actionMountDisk, driveTxt);
     FormatStatusTip(ui->actionMountFolder, driveTxt);
     FormatStatusTip(ui->actionEject, driveTxt);
+    FormatStatusTip(ui->actionToggleLever, driveTxt);
+    FormatStatusTip(ui->actionToggleHappy, driveTxt);
+    FormatStatusTip(ui->actionToggleChip, driveTxt);
     FormatStatusTip(ui->actionWriteProtect, driveTxt);
     FormatStatusTip(ui->actionEditDisk, driveTxt);
 
@@ -62,6 +65,9 @@ void DriveWidget::setup()
     insertAction(0, ui->actionMountDisk);
     insertAction(0, ui->actionMountFolder);
     insertAction(0, ui->actionEject);
+    insertAction(0, ui->actionToggleLever);
+    insertAction(0, ui->actionToggleHappy);
+    insertAction(0, ui->actionToggleChip);
     insertAction(0, ui->actionWriteProtect);
     insertAction(0, ui->actionEditDisk);
 
@@ -69,6 +75,9 @@ void DriveWidget::setup()
     ui->buttonMountDisk->setDefaultAction(ui->actionMountDisk);
     ui->buttonMountFolder->setDefaultAction(ui->actionMountFolder);
     ui->buttonEject->setDefaultAction(ui->actionEject);
+    ui->buttonToggleLever->setDefaultAction(ui->actionToggleLever);
+    ui->buttonToggleHappy->setDefaultAction(ui->actionToggleHappy);
+    ui->buttonToggleChip->setDefaultAction(ui->actionToggleChip);
     ui->buttonSave->setDefaultAction(ui->actionSave);
     ui->autoSave->setDefaultAction(ui->actionAutoSave);
     ui->buttonEditDisk->setDefaultAction(ui->actionEditDisk);
@@ -87,6 +96,9 @@ void DriveWidget::updateFromImage(SimpleDiskImage *diskImage)
     ui->labelFileName->setText(fileName);
     ui->labelImageProperties->setText(diskImage->description());
     ui->actionEject->setEnabled(true);
+    ui->actionToggleLever->setEnabled(true);
+    ui->actionToggleHappy->setEnabled(true);
+    ui->actionToggleChip->setEnabled(true);
 
     bool enableEdit = diskImage->editDialog() != NULL;
     ui->actionEditDisk->setChecked(enableEdit);
@@ -115,6 +127,12 @@ void DriveWidget::showAsEmpty()
     ui->labelFileName->clear();
     ui->labelImageProperties->clear();
     ui->actionEject->setEnabled(false);
+    ui->actionToggleLever->setChecked(false);
+    ui->actionToggleLever->setEnabled(false);
+    ui->actionToggleHappy->setChecked(false);
+    ui->actionToggleHappy->setEnabled(false);
+    ui->actionToggleChip->setChecked(false);
+    ui->actionToggleChip->setEnabled(false);
     ui->actionRevert->setEnabled(false);
     ui->actionSaveAs->setEnabled(false);
     ui->actionEditDisk->setEnabled(false);
@@ -134,6 +152,9 @@ void DriveWidget::showAsFolderMounted(const QString &fileName, const QString &de
     ui->labelFileName->setText(fileName);
     ui->labelImageProperties->setText(description);
     ui->actionEject->setEnabled(true);
+    ui->actionToggleLever->setEnabled(false);
+    ui->actionToggleHappy->setEnabled(false);
+    ui->actionToggleChip->setEnabled(false);
     ui->actionEditDisk->setChecked(editEnabled);
 
     ui->labelFileName->setStyleSheet("color: rgb(54, 168, 164); font-weight: bold");
@@ -152,6 +173,9 @@ void DriveWidget::showAsImageMounted(const QString &fileName, const QString &des
     ui->labelFileName->setText(fileName);
     ui->labelImageProperties->setText(description);
     ui->actionEject->setEnabled(true);
+    ui->actionToggleLever->setEnabled(true);
+    ui->actionToggleHappy->setEnabled(true);
+    ui->actionToggleChip->setEnabled(true);
     ui->actionEditDisk->setChecked(editEnabled);
 
 
@@ -194,6 +218,9 @@ void DriveWidget::setFont(const QFont& font) {
 void DriveWidget::on_actionMountFolder_triggered()  { emit actionMountFolder(driveNo_); }
 void DriveWidget::on_actionMountDisk_triggered()    { emit actionMountDisk(driveNo_); }
 void DriveWidget::on_actionEject_triggered()        { emit actionEject(driveNo_); }
+void DriveWidget::on_actionToggleLever_triggered(bool open) { emit actionToggleLever(driveNo_, open); }
+void DriveWidget::on_actionToggleHappy_triggered(bool open) { emit actionToggleHappy(driveNo_, open); }
+void DriveWidget::on_actionToggleChip_triggered(bool open) { emit actionToggleChip(driveNo_, open); }
 void DriveWidget::on_actionWriteProtect_toggled(bool state) { emit actionWriteProtect(driveNo_, state); }
 void DriveWidget::on_actionEditDisk_triggered()     { emit actionEditDisk(driveNo_); }
 void DriveWidget::on_actionSave_triggered()         { emit actionSave(driveNo_); }

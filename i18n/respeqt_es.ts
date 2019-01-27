@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE TS>
-<TS version="2.0" language="es_ES">
+<TS version="2.1" language="es_ES">
 <context>
     <name>AboutDialog</name>
     <message>
@@ -15,6 +15,7 @@
     </message>
     <message>
         <location filename="../aboutdialog.ui" line="56"/>
+        <location filename="../aboutdialog.cpp" line="23"/>
         <source>qrc:/documentation/about.html</source>
         <translation>qrc:/documentation/about_spanish.html</translation>
     </message>
@@ -22,102 +23,6 @@
         <location filename="../aboutdialog.cpp" line="22"/>
         <source>version %1</source>
         <translation>versión %1</translation>
-    </message>
-</context>
-<context>
-    <name>ApeTime</name>
-    <message>
-        <location filename="../miscdevices.cpp" line="140"/>
-        <source>[%1] Read date/time (%2).</source>
-        <translation>[%1] Lectura de la fecha/hora (%2).</translation>
-    </message>
-    <message>
-        <location filename="../miscdevices.cpp" line="145"/>
-        <source>[%1] command: $%2, aux: $%3 NAKed.</source>
-        <translation>[%1] comando: $%2, aux: $%3 NAKed.</translation>
-    </message>
-</context>
-<context>
-    <name>AspeCl</name>
-    <message>
-        <location filename="../miscdevices.cpp" line="172"/>
-        <source>[%1] Date/time sent to client (%2).</source>
-        <translation>[%1] Fecha/hora de envío al cliente (%2).</translation>
-    </message>
-    <message>
-        <location filename="../miscdevices.cpp" line="194"/>
-        <source>[%1] Swapped disk %2 with disk %3.</source>
-        <translation>[%1] Intercambio disco %2 con el disco %3.</translation>
-    </message>
-    <message>
-        <location filename="../miscdevices.cpp" line="200"/>
-        <source>[%1] Invalid swap request for drives: (%2)-(%3).</source>
-        <translation>[%1] Solicitud invalida de intercambio para las unidades: (%2)-(%3).</translation>
-    </message>
-    <message>
-        <location filename="../miscdevices.cpp" line="234"/>
-        <source>[%1] Unmounted disk %2</source>
-        <translation>[%1] Desmontar disco %2</translation>
-    </message>
-    <message>
-        <location filename="../miscdevices.cpp" line="238"/>
-        <source>[%1] ALL images were remotely unmounted</source>
-        <translation>[%1] Todas las imágenes fueron sin montar remotamente</translation>
-    </message>
-    <message>
-        <location filename="../miscdevices.cpp" line="242"/>
-        <source>[%1] Can not remotely unmount ALL images due to pending changes.</source>
-        <translation>[%1] No se puede desmontar todas las imágenes a distancia, debido a los cambios pendientes.</translation>
-    </message>
-    <message>
-        <location filename="../miscdevices.cpp" line="251"/>
-        <source>[%1] Can not remotely unmount disk %2 due to pending changes.</source>
-        <translation>[%1] No se puede desmontar el disco de forma remota, un %2 debido a los cambios pendientes.</translation>
-    </message>
-    <message>
-        <location filename="../miscdevices.cpp" line="258"/>
-        <source>[%1] Remotely unmounted disk %2</source>
-        <translation>[%1] Disco remoto sin montar %2</translation>
-    </message>
-    <message>
-        <location filename="../miscdevices.cpp" line="266"/>
-        <source>[%1] Invalid drive number: %2 for remote unmount</source>
-        <translation>[%1] Número de unidad no válida: %2 para desmontar remoto</translation>
-    </message>
-    <message>
-        <location filename="../miscdevices.cpp" line="283"/>
-        <source>[%1] RespeQt can&apos;t determine the folder where the image file must be created/mounted!</source>
-        <translation>[%1] RespeQt no puede determinar la carpeta en que debe existir el archivo de imagen creado o montado!</translation>
-    </message>
-    <message>
-        <location filename="../miscdevices.cpp" line="285"/>
-        <source>[%1] Mount a Folder Image at least once before issuing a remote mount command.</source>
-        <translation>[%1] Montar una imagen de carpeta por lo menos una vez antes de emitir un comando de montaje remoto.</translation>
-    </message>
-    <message>
-        <location filename="../miscdevices.cpp" line="302"/>
-        <source>[%1] Read data frame failed</source>
-        <translation>[%1] Fallo al leer trama de datos</translation>
-    </message>
-    <message>
-        <location filename="../miscdevices.cpp" line="317"/>
-        <source>[%1] Invalid image file attribute: %2</source>
-        <translation>[%1] Atributo no válido de archivo de imagen: %2</translation>
-    </message>
-    <message>
-        <location filename="../miscdevices.cpp" line="327"/>
-        <source>[%1] Can not create PC File: %2</source>
-        <translation>[%1] No se puede crear el archivo de PC %2</translation>
-    </message>
-    <message>
-        <location filename="../miscdevices.cpp" line="461"/>
-        <source>[%1] command: $%2, aux: $%3 NAKed.</source>
-        <translation>[%1] comando: $%2, aux: $%3 NAKed.</translation>
-    </message>
-    <message>
-        <location filename="../miscdevices.cpp" line="481"/>
-        <source>[%1] Image %2 mounted</source>
-        <translation>[%1] Imagen %2 Montado</translation>
     </message>
 </context>
 <context>
@@ -136,150 +41,150 @@
 <context>
     <name>AtariSioBackend</name>
     <message>
-        <location filename="../serialport-unix.cpp" line="613"/>
+        <location filename="../serialport-unix.cpp" line="724"/>
         <source>Cannot open serial port &apos;%1&apos;: %2</source>
         <translation>No se puede abrir el puerto serial &apos;%1&apos;: %2</translation>
     </message>
     <message>
-        <location filename="../serialport-unix.cpp" line="622"/>
-        <location filename="../serialport-unix.cpp" line="630"/>
+        <location filename="../serialport-unix.cpp" line="733"/>
+        <location filename="../serialport-unix.cpp" line="741"/>
         <source>Cannot open AtariSio driver &apos;%1&apos;: %2</source>
         <translation>No se puede abrir el controlador AtariSio &apos;%1&apos;: %2</translation>
     </message>
     <message>
-        <location filename="../serialport-unix.cpp" line="654"/>
+        <location filename="../serialport-unix.cpp" line="765"/>
         <source>Cannot set AtariSio driver mode: %1</source>
         <translation>No se puede establecer conexión con AtariSio: %1</translation>
     </message>
     <message>
-        <location filename="../serialport-unix.cpp" line="661"/>
+        <location filename="../serialport-unix.cpp" line="772"/>
         <source>Cannot set AtariSio to autobaud mode: %1</source>
         <translation>No se puede establecer conexión con AtariSio para modo autobaudio %1</translation>
     </message>
     <message>
-        <location filename="../serialport-unix.cpp" line="668"/>
+        <location filename="../serialport-unix.cpp" line="779"/>
         <source>Cannot create the cancel pipe</source>
         <translation>No se puede crear la tubería</translation>
     </message>
     <message>
-        <location filename="../serialport-unix.cpp" line="686"/>
+        <location filename="../serialport-unix.cpp" line="797"/>
         <source>Emulation started through AtariSIO backend on &apos;%1&apos; with %2 handshaking.</source>
         <translation>Emulación inicia a través de backend en AtariSIO &apos;%1&apos; con el %2 handshaking.</translation>
     </message>
     <message>
-        <location filename="../serialport-unix.cpp" line="702"/>
+        <location filename="../serialport-unix.cpp" line="813"/>
         <source>Cannot close serial port: %1</source>
         <translation>No se puede cerrar el puerto serial: %1</translation>
     </message>
     <message>
-        <location filename="../serialport-unix.cpp" line="713"/>
+        <location filename="../serialport-unix.cpp" line="824"/>
         <source>Cannot stop AtariSio backend.</source>
         <translation>No se puede dejar de backend AtariSio.</translation>
     </message>
     <message>
-        <location filename="../serialport-unix.cpp" line="720"/>
+        <location filename="../serialport-unix.cpp" line="831"/>
         <source>Cannot set AtariSio speed to %1: %2</source>
         <translation>No se puede establecer la velocidad de AtariSio %1: %2</translation>
     </message>
     <message>
-        <location filename="../serialport-unix.cpp" line="723"/>
-        <location filename="../serialport-unix.cpp" line="769"/>
+        <location filename="../serialport-unix.cpp" line="834"/>
+        <location filename="../serialport-unix.cpp" line="880"/>
         <source>%1 bits/sec</source>
         <translation>%1 bits/sec</translation>
     </message>
     <message>
-        <location filename="../serialport-unix.cpp" line="724"/>
-        <location filename="../serialport-unix.cpp" line="770"/>
+        <location filename="../serialport-unix.cpp" line="835"/>
+        <location filename="../serialport-unix.cpp" line="881"/>
         <source>Serial port speed set to %1.</source>
         <translation>Velocidad del puerto serial configurado para %1.</translation>
     </message>
     <message>
-        <location filename="../serialport-unix.cpp" line="776"/>
+        <location filename="../serialport-unix.cpp" line="887"/>
         <source>Illegal condition using select!</source>
         <translation>Condición ilegal usando select!</translation>
     </message>
     <message>
-        <location filename="../serialport-unix.cpp" line="796"/>
+        <location filename="../serialport-unix.cpp" line="907"/>
         <source>Cannot read data frame: %1</source>
         <translation>No se puede leer trama de datos: %1</translation>
     </message>
     <message>
-        <location filename="../serialport-unix.cpp" line="812"/>
+        <location filename="../serialport-unix.cpp" line="923"/>
         <source>Cannot write data frame: %1</source>
         <translation>No se puede escribir trama de datos: %1</translation>
     </message>
     <message>
-        <location filename="../serialport-unix.cpp" line="823"/>
+        <location filename="../serialport-unix.cpp" line="934"/>
         <source>Cannot write command ACK: %1</source>
         <translation>No se puede escribir el comando ACK: %1</translation>
     </message>
     <message>
-        <location filename="../serialport-unix.cpp" line="833"/>
+        <location filename="../serialport-unix.cpp" line="944"/>
         <source>Cannot write command NAK: %1</source>
         <translation>No se puede escribir el comando NAK: %1</translation>
     </message>
     <message>
-        <location filename="../serialport-unix.cpp" line="842"/>
+        <location filename="../serialport-unix.cpp" line="953"/>
         <source>Cannot write data ACK: %1</source>
         <translation>No se puede escribir datos ACK: %1</translation>
     </message>
     <message>
-        <location filename="../serialport-unix.cpp" line="851"/>
+        <location filename="../serialport-unix.cpp" line="962"/>
         <source>Cannot write data NAK: %1</source>
         <translation>No se puede escribir datos de NAK: %1</translation>
     </message>
     <message>
-        <location filename="../serialport-unix.cpp" line="860"/>
+        <location filename="../serialport-unix.cpp" line="971"/>
         <source>Cannot write COMPLETE byte: %1</source>
         <translation>No se puede escribir, byte COMPLETO: %1</translation>
     </message>
     <message>
-        <location filename="../serialport-unix.cpp" line="869"/>
+        <location filename="../serialport-unix.cpp" line="980"/>
         <source>Cannot write ERROR byte: %1</source>
         <translation>No se puede escribir, byte ERROR : %1</translation>
     </message>
     <message>
-        <location filename="../serialport-unix.cpp" line="883"/>
+        <location filename="../serialport-unix.cpp" line="994"/>
         <source>Cannot write raw frame: %1</source>
         <translation>No se puede escribir a marco bruto: %1</translation>
     </message>
     <message>
-        <location filename="../serialport-unix.cpp" line="894"/>
+        <location filename="../serialport-unix.cpp" line="1005"/>
         <source>Block too long.</source>
         <translation>Bloque demasiado largo.</translation>
     </message>
     <message>
-        <location filename="../serialport-unix.cpp" line="897"/>
+        <location filename="../serialport-unix.cpp" line="1008"/>
         <source>Command not acknowledged.</source>
         <translation>Comando no reconocido.</translation>
     </message>
     <message>
-        <location filename="../serialport-unix.cpp" line="900"/>
+        <location filename="../serialport-unix.cpp" line="1011"/>
         <source>Command timeout.</source>
         <translation>Tiempo de espera de comando.</translation>
     </message>
     <message>
-        <location filename="../serialport-unix.cpp" line="903"/>
+        <location filename="../serialport-unix.cpp" line="1014"/>
         <source>Checksum error.</source>
         <translation>Checksum error.</translation>
     </message>
     <message>
-        <location filename="../serialport-unix.cpp" line="906"/>
+        <location filename="../serialport-unix.cpp" line="1017"/>
         <source>Device error.</source>
         <translation>Error en dispositivo.</translation>
     </message>
     <message>
-        <location filename="../serialport-unix.cpp" line="909"/>
+        <location filename="../serialport-unix.cpp" line="1020"/>
         <source>Data frame not acknowledged.</source>
         <translation>No reconoció trama de datos.</translation>
     </message>
     <message>
-        <location filename="../serialport-unix.cpp" line="912"/>
+        <location filename="../serialport-unix.cpp" line="1023"/>
         <source>Unknown AtariSio driver error.</source>
         <translation>Error desconocido con AtariSio.</translation>
     </message>
     <message>
-        <location filename="../serialport-win32.cpp" line="555"/>
+        <location filename="../serialport-win32.cpp" line="718"/>
         <source>AtariSIO is only available under Linux.</source>
         <translation>AtariSIO sólo está disponible en Linux.</translation>
     </message>
@@ -287,86 +192,96 @@
 <context>
     <name>AutoBoot</name>
     <message>
-        <location filename="../autoboot.cpp" line="27"/>
+        <location filename="../autoboot.cpp" line="28"/>
         <source>[%1] command: $%2, aux: $%3 NAKed.</source>
         <translation>[%1] comando: $%2, aux: $%3 NAKed.</translation>
     </message>
     <message>
-        <location filename="../autoboot.cpp" line="47"/>
+        <location filename="../autoboot.cpp" line="48"/>
         <source>[%1] Speed poll.</source>
         <translation>[%1] Velocidad de sondeo.</translation>
     </message>
     <message>
-        <location filename="../autoboot.cpp" line="68"/>
+        <location filename="../autoboot.cpp" line="69"/>
         <source>[%1] Read sector %2 (%3 bytes).</source>
         <translation>[%1] Leyendo sector %2 (%3 bytes).</translation>
     </message>
     <message>
-        <location filename="../autoboot.cpp" line="74"/>
+        <location filename="../autoboot.cpp" line="75"/>
         <source>[%1] Read sector %2 failed.</source>
         <translation>[%1] Leyendo sector %2 malo.</translation>
     </message>
     <message>
-        <location filename="../autoboot.cpp" line="98"/>
+        <location filename="../autoboot.cpp" line="99"/>
         <source>[%1] Get status.</source>
         <translation>[%1] Obtener el estado.</translation>
     </message>
     <message>
-        <location filename="../autoboot.cpp" line="107"/>
+        <location filename="../autoboot.cpp" line="108"/>
         <source>[%1] Atari is jumping to %2.</source>
         <translation>[%1] Atari está saltando a %2.</translation>
     </message>
     <message>
-        <location filename="../autoboot.cpp" line="119"/>
+        <location filename="../autoboot.cpp" line="118"/>
+        <source>[%1] Invalid chunk in get chunk: aux = %2</source>
+        <translation>[%1] Parte inválida en obtener: aux = %2</translation>
+    </message>
+    <message>
+        <location filename="../autoboot.cpp" line="127"/>
         <source>[%1] Get chunk %2 (%3 bytes).</source>
         <translation>[%1] Obtener trozo %2 (%3 bytes).</translation>
     </message>
     <message>
-        <location filename="../autoboot.cpp" line="144"/>
+        <location filename="../autoboot.cpp" line="139"/>
+        <source>[%1] Invalid chunk in get chunk info: aux = %2</source>
+        <translation>[%1] Información no válida en obtener información de la parte:  aux = %2</translation>
+    </message>
+    <message>
+        <location filename="../autoboot.cpp" line="159"/>
         <source>[%1] Get chunk info %2 (%3 bytes at %4).</source>
         <translation>[%1] Obtén información del trozo %2 (%3 bytes en %4).</translation>
     </message>
     <message>
-        <location filename="../autoboot.cpp" line="165"/>
+        <location filename="../autoboot.cpp" line="180"/>
         <source>Cannot open file &apos;%1&apos;: %2</source>
         <translation>No se puede abrir el archivo &apos;%1&apos;: %2</translation>
     </message>
     <message>
-        <location filename="../autoboot.cpp" line="180"/>
-        <location filename="../autoboot.cpp" line="203"/>
+        <location filename="../autoboot.cpp" line="195"/>
+        <location filename="../autoboot.cpp" line="218"/>
         <source>Unexpected end of file, needed %1 more</source>
         <translation>Fin de archivo inesperado, necesitaba un %1 más</translation>
     </message>
     <message>
-        <location filename="../autoboot.cpp" line="184"/>
-        <location filename="../autoboot.cpp" line="207"/>
-        <location filename="../autoboot.cpp" line="228"/>
-        <location filename="../autoboot.cpp" line="253"/>
-        <location filename="../autoboot.cpp" line="283"/>
-        <location filename="../autoboot.cpp" line="301"/>
+        <location filename="../autoboot.cpp" line="199"/>
+        <location filename="../autoboot.cpp" line="222"/>
+        <location filename="../autoboot.cpp" line="243"/>
+        <location filename="../autoboot.cpp" line="268"/>
+        <location filename="../autoboot.cpp" line="298"/>
+        <location filename="../autoboot.cpp" line="316"/>
         <source>Cannot read from file &apos;%1&apos;: %2.</source>
         <translation>No se puede leer el archivo &apos;%1&apos;: %2.</translation>
     </message>
     <message>
-        <location filename="../autoboot.cpp" line="192"/>
+        <location filename="../autoboot.cpp" line="207"/>
         <source>Cannot load file &apos;%1&apos;: The file doesn&apos;t seem to be an Atari DOS executable.</source>
         <translation>No se puede cargar el archivo &apos;%1&apos;: El archivo no parece ser un archivo ejecutable de Atari DOS.</translation>
     </message>
     <message>
-        <location filename="../autoboot.cpp" line="219"/>
-        <location filename="../autoboot.cpp" line="249"/>
-        <location filename="../autoboot.cpp" line="278"/>
-        <location filename="../autoboot.cpp" line="296"/>
+        <location filename="../autoboot.cpp" line="234"/>
+        <location filename="../autoboot.cpp" line="264"/>
+        <location filename="../autoboot.cpp" line="293"/>
+        <location filename="../autoboot.cpp" line="311"/>
         <source>The executable &apos;%1&apos; is broken: Unexpected end of file, needed %2 more.</source>
         <translation>El ejecutable &apos;%1&apos; está roto: fin de archivo inesperado, necesitaba un %2 más.</translation>
     </message>
     <message>
-        <location filename="../autoboot.cpp" line="239"/>
+        <location filename="../autoboot.cpp" line="254"/>
         <source>The executable &apos;%1&apos; is broken: The end address is less than the start address.</source>
         <translation>El ejecutable &apos;%1&apos; está roto: La dirección final es menor que la dirección de inicio.</translation>
     </message>
     <message>
-        <location filename="../autoboot.cpp" line="325"/>
+        <location filename="../autoboot.cpp" line="340"/>
         <source>Cannot open the boot loader: %1</source>
         <translation>No se puede abrir el gestor de arranque: %1</translation>
     </message>
@@ -377,6 +292,15 @@
         <location filename="../autobootdialog.ui" line="26"/>
         <source>Boot executable</source>
         <translation>Inicio archivo ejecutable</translation>
+    </message>
+    <message>
+        <location filename="../autobootdialog.ui" line="87"/>
+        <source>Please reboot your Atari.
+
+Don&apos;t forget to remove any cartridges and disable BASIC by holding down the Atari Option button if necessary.</source>
+        <translation>Por favor reinicie su Atari.
+
+No olvide retirar los cartuchos y deshabilitar BASIC manteniendo presionado el botón de Opción Atari si es necesario.</translation>
     </message>
     <message>
         <location filename="../autobootdialog.ui" line="117"/>
@@ -391,15 +315,6 @@ si se ha cambiado desde el último reinicio del ordenador Atari
         <location filename="../autobootdialog.ui" line="122"/>
         <source>Reload</source>
         <translation>Recargar</translation>
-    </message>
-    <message>
-        <location filename="../autobootdialog.ui" line="87"/>
-        <source>Please reboot your Atari.
-
-Don&apos;t forget to remove any cartridges and disable BASIC by holding down the Atari Option button if necessary.</source>
-        <translation>Por favor, reinicie el Atari.
-
-No se olvide de retirar los cartuchos y desactivar el BASIC, mantenga pulsada la tecla OPTION del Atari si es necesario.</translation>
     </message>
     <message>
         <location filename="../autobootdialog.cpp" line="56"/>
@@ -434,49 +349,44 @@ En algunos programas es posible que tenga que cerrar este diálogo manualmente c
         <translation>Seleccione algun DOS que desea arrancar con el ATARI</translation>
     </message>
     <message>
-        <location filename="../bootoptionsdialog.ui" line="91"/>
-        <source>AtariDOS 2.x</source>
-        <translation></translation>
-    </message>
-    <message>
-        <location filename="../bootoptionsdialog.ui" line="110"/>
-        <source>MyDOS 4.x</source>
-        <translation></translation>
-    </message>
-    <message>
-        <location filename="../bootoptionsdialog.ui" line="120"/>
-        <source>DosXL 2.x</source>
-        <translation></translation>
-    </message>
-    <message>
-        <location filename="../bootoptionsdialog.ui" line="130"/>
+        <location filename="../bootoptionsdialog.ui" line="85"/>
         <source>SmartDOS 6.1D</source>
-        <translation></translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../bootoptionsdialog.ui" line="146"/>
-        <source>SpartaDOS 3.2F</source>
-        <translation></translation>
+        <location filename="../bootoptionsdialog.ui" line="101"/>
+        <source>SpartaDOS 3.2G</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../bootoptionsdialog.ui" line="117"/>
+        <source>MyPicoDOS 4.05 (Standard)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../bootoptionsdialog.ui" line="133"/>
+        <source>MyDOS 4.x</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../bootoptionsdialog.ui" line="149"/>
+        <source>AtariDOS 2.x</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../bootoptionsdialog.ui" line="162"/>
-        <source>MyPicoDOS 4.05 (Standard)</source>
-        <translation>MyPicoDOS 4.05 (Estándar)</translation>
+        <source>DosXL 2.x</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../bootoptionsdialog.ui" line="191"/>
-        <source>Disable high speed SIO</source>
-        <translation>Desactivar alta velocidad del SIO</translation>
-    </message>
-    <message>
-        <location filename="../bootoptionsdialog.ui" line="218"/>
+        <location filename="../bootoptionsdialog.ui" line="176"/>
         <source>(Check if you&apos;re already using a high-speed OS)</source>
         <translation>(Marque si usted ya está usando un sistema operativo de alta velocidad)</translation>
     </message>
     <message>
-        <location filename="../bootoptionsdialog.cpp" line="56"/>
-        <source>Apply</source>
-        <translation>Aplicar</translation>
+        <location filename="../bootoptionsdialog.ui" line="192"/>
+        <source>Disable high speed SIO</source>
+        <translation>Desactivar SIO de alta velocidad</translation>
     </message>
 </context>
 <context>
@@ -524,35 +434,35 @@ Tiempo restante estimado: %1:%2</translation>
 <context>
     <name>CassetteWorker</name>
     <message>
-        <location filename="../sioworker.cpp" line="262"/>
+        <location filename="../sioworker.cpp" line="300"/>
         <source>Cannot open &apos;%1&apos;: %2</source>
         <translation>No se puede abrir &apos;%1&apos;: %2</translation>
     </message>
     <message>
-        <location filename="../sioworker.cpp" line="273"/>
-        <location filename="../sioworker.cpp" line="284"/>
-        <location filename="../sioworker.cpp" line="306"/>
-        <location filename="../sioworker.cpp" line="316"/>
+        <location filename="../sioworker.cpp" line="311"/>
+        <location filename="../sioworker.cpp" line="322"/>
+        <location filename="../sioworker.cpp" line="344"/>
+        <location filename="../sioworker.cpp" line="354"/>
         <source>Cannot read &apos;%1&apos;: %2</source>
         <translation>No se puede leer &apos;%1&apos;: %2</translation>
     </message>
     <message>
-        <location filename="../sioworker.cpp" line="290"/>
+        <location filename="../sioworker.cpp" line="328"/>
         <source>Cannot open &apos;%1&apos;: The header does not match.</source>
         <translation>No se puede abrir &apos;%1&apos;: El encabezado no coincide.</translation>
     </message>
     <message>
-        <location filename="../sioworker.cpp" line="295"/>
+        <location filename="../sioworker.cpp" line="333"/>
         <source>[Cassette]: File description &apos;%2&apos;.</source>
         <translation>[Casete]: Descripción del archivo &apos;%2&apos;.</translation>
     </message>
     <message>
-        <location filename="../sioworker.cpp" line="336"/>
+        <location filename="../sioworker.cpp" line="374"/>
         <source>Cannot open &apos;%1&apos;: Unknown chunk header %2.</source>
         <translation>No se puede abrir &apos;%1&apos;: Encabezado mal formado %2.</translation>
     </message>
     <message>
-        <location filename="../sioworker.cpp" line="385"/>
+        <location filename="../sioworker.cpp" line="423"/>
         <source>[Cassette] Playing record %1 of %2 (%3 ms of gap + %4 bytes of data)</source>
         <translation>[Casete] Reproducción de registro %1 de %2 (%3 ms de gap + %4 bytes de datos)</translation>
     </message>
@@ -728,27 +638,27 @@ Tiempo restante estimado: %1:%2</translation>
     <message>
         <location filename="../diskeditdialog.cpp" line="463"/>
         <source>Atari Dos 1.0</source>
-        <translation></translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../diskeditdialog.cpp" line="464"/>
         <source>Atari Dos 2.0</source>
-        <translation></translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../diskeditdialog.cpp" line="465"/>
         <source>Atari Dos 2.5</source>
-        <translation></translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../diskeditdialog.cpp" line="466"/>
         <source>MyDos</source>
-        <translation></translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../diskeditdialog.cpp" line="467"/>
         <source>SpartaDos</source>
-        <translation></translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../diskeditdialog.cpp" line="559"/>
@@ -776,7 +686,7 @@ Tiempo restante estimado: %1:%2</translation>
     <message>
         <location filename="../diskeditdialog.cpp" line="642"/>
         <source>Are you sure you want to delete selected files?</source>
-        <translation>¿Está seguro que desea eliminar los archivos seleccionados?</translation>
+        <translation type="unfinished">¿Está seguro que desea eliminar los archivos seleccionados?</translation>
     </message>
     <message>
         <location filename="../diskeditdialog.cpp" line="652"/>
@@ -787,114 +697,114 @@ Tiempo restante estimado: %1:%2</translation>
 <context>
     <name>DiskGeometry</name>
     <message>
-        <location filename="../diskimage.cpp" line="218"/>
+        <location filename="../diskimage.cpp" line="219"/>
         <source>SD Diskette</source>
         <translation>Diskette SD</translation>
     </message>
     <message>
-        <location filename="../diskimage.cpp" line="220"/>
+        <location filename="../diskimage.cpp" line="221"/>
         <source>ED Diskette</source>
         <translation>Diskette ED</translation>
     </message>
     <message>
-        <location filename="../diskimage.cpp" line="222"/>
+        <location filename="../diskimage.cpp" line="223"/>
         <source>DD Diskette</source>
         <translation>Diskette DD</translation>
     </message>
     <message>
-        <location filename="../diskimage.cpp" line="224"/>
+        <location filename="../diskimage.cpp" line="225"/>
         <source>QD Diskette</source>
         <translation>Diskette QD</translation>
     </message>
     <message>
-        <location filename="../diskimage.cpp" line="227"/>
+        <location filename="../diskimage.cpp" line="228"/>
         <source>%1 sector SD HardDrive</source>
         <translation>%1 sector SD HardDrive</translation>
     </message>
     <message>
-        <location filename="../diskimage.cpp" line="229"/>
+        <location filename="../diskimage.cpp" line="230"/>
         <source>%1 sector DD HardDrive</source>
-        <translation>%1 sector DD HardDrive</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../diskimage.cpp" line="231"/>
+        <location filename="../diskimage.cpp" line="232"/>
         <source>%1 sector, %2 bytes/sector HardDrive</source>
-        <translation>%1 sector, %2 bytes/sector HardDrive</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../diskimage.cpp" line="234"/>
+        <location filename="../diskimage.cpp" line="235"/>
         <source>%1 %2 tracks/side, %3 sectors/track, %4 bytes/sector diskette</source>
-        <translation>%1 %2 tracks/side, %3 sectors/track, %4 bytes/sector diskette</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../diskimage.cpp" line="235"/>
+        <location filename="../diskimage.cpp" line="236"/>
         <source>DS</source>
-        <translation>DS</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../diskimage.cpp" line="235"/>
+        <location filename="../diskimage.cpp" line="236"/>
         <source>SS</source>
-        <translation>SS</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../diskimage.cpp" line="241"/>
+        <location filename="../diskimage.cpp" line="242"/>
         <source>%1 (%2k)</source>
-        <translation>%1 (%2k)</translation>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
     <name>DiskImagePro</name>
     <message>
-        <location filename="../diskimagepro.cpp" line="37"/>
-        <location filename="../diskimagepro.cpp" line="46"/>
-        <location filename="../diskimagepro.cpp" line="56"/>
-        <location filename="../diskimagepro.cpp" line="65"/>
+        <location filename="../diskimagepro.cpp" line="40"/>
+        <location filename="../diskimagepro.cpp" line="49"/>
+        <location filename="../diskimagepro.cpp" line="59"/>
+        <location filename="../diskimagepro.cpp" line="68"/>
         <source>Cannot open &apos;%1&apos;: %2</source>
         <translation>No se puede abrir &apos;%1&apos;:%2</translation>
     </message>
     <message>
-        <location filename="../diskimagepro.cpp" line="48"/>
+        <location filename="../diskimagepro.cpp" line="51"/>
         <source>Cannot read the header: %1.</source>
         <translation>No se puede leer la cabecera: %1.</translation>
     </message>
     <message>
-        <location filename="../diskimagepro.cpp" line="56"/>
+        <location filename="../diskimagepro.cpp" line="59"/>
         <source>Not a valid PRO file.</source>
         <translation>No es un archivo válido PRO.</translation>
     </message>
     <message>
-        <location filename="../diskimagepro.cpp" line="67"/>
+        <location filename="../diskimagepro.cpp" line="70"/>
         <source>Too many sectors in the image (%1).</source>
         <translation>Demasiado sectores de la imagen (%1).</translation>
     </message>
     <message>
-        <location filename="../diskimagepro.cpp" line="89"/>
-        <location filename="../diskimagepro.cpp" line="103"/>
+        <location filename="../diskimagepro.cpp" line="92"/>
+        <location filename="../diskimagepro.cpp" line="106"/>
         <source>[%1] Cannot seek to sector %2: %3</source>
         <translation>[%1] No puede buscar el sector %2: %3</translation>
     </message>
     <message>
-        <location filename="../diskimagepro.cpp" line="92"/>
+        <location filename="../diskimagepro.cpp" line="95"/>
         <source>Sector number is out of bounds.</source>
         <translation>Número de sector está fuera de los límites.</translation>
     </message>
     <message>
-        <location filename="../diskimagepro.cpp" line="125"/>
+        <location filename="../diskimagepro.cpp" line="128"/>
         <source>Duplicate sector: %1 dupnum: %2</source>
         <translation>Sector duplicado: %1 dupnum: %2</translation>
     </message>
     <message>
-        <location filename="../diskimagepro.cpp" line="133"/>
+        <location filename="../diskimagepro.cpp" line="136"/>
         <source>Error in .pro image: sector: %1 dupnum: %2</source>
-        <translation>Error en la imagen .PRO: sector: %1 dupnum: %2</translation>
+        <translation>Error en la imagen .pro: sector: %1 dupnum: %2</translation>
     </message>
     <message>
-        <location filename="../diskimagepro.cpp" line="145"/>
+        <location filename="../diskimagepro.cpp" line="148"/>
         <source>Bad sector</source>
         <translation>Sector defectuoso</translation>
     </message>
     <message>
-        <location filename="../diskimagepro.cpp" line="151"/>
+        <location filename="../diskimagepro.cpp" line="154"/>
         <source>[%1] Cannot read from sector %2: %3.</source>
         <translation>[%1] No se puede leer el sector %2: %3.</translation>
     </message>
@@ -930,7 +840,7 @@ Tiempo restante estimado: %1:%2</translation>
     <message>
         <location filename="../docdisplaywindow.ui" line="85"/>
         <source>Ctrl+P</source>
-        <translation>Ctrl+P</translation>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -1081,6 +991,160 @@ Tiempo restante estimado: %1:%2</translation>
     </message>
 </context>
 <context>
+    <name>DriveWidget</name>
+    <message>
+        <location filename="../drivewidget.ui" line="29"/>
+        <source>Frame</source>
+        <translation>Cuadro</translation>
+    </message>
+    <message>
+        <location filename="../drivewidget.ui" line="138"/>
+        <source>1:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../drivewidget.ui" line="426"/>
+        <source>Mount disk image...</source>
+        <translation>Montar imagen de disco...</translation>
+    </message>
+    <message>
+        <location filename="../drivewidget.ui" line="429"/>
+        <source>Mount a disk image</source>
+        <translation>Montar una imagen de disco</translation>
+    </message>
+    <message>
+        <location filename="../drivewidget.ui" line="432"/>
+        <source>Mount a disk image to D%1</source>
+        <translation>Montar una imagen de disco en D%1</translation>
+    </message>
+    <message>
+        <location filename="../drivewidget.ui" line="441"/>
+        <source>Mount folder image...</source>
+        <translation>Montar carpeta de imagen ...</translation>
+    </message>
+    <message>
+        <location filename="../drivewidget.ui" line="444"/>
+        <source>Mount a folder image</source>
+        <translation>Montar una imagen de carpeta</translation>
+    </message>
+    <message>
+        <location filename="../drivewidget.ui" line="447"/>
+        <source>Mount a folder image to D%1</source>
+        <translation>Montar una imagen de carpeta para D%1</translation>
+    </message>
+    <message>
+        <location filename="../drivewidget.ui" line="459"/>
+        <location filename="../drivewidget.ui" line="462"/>
+        <source>Unmount</source>
+        <translation>Desmontar</translation>
+    </message>
+    <message>
+        <location filename="../drivewidget.ui" line="465"/>
+        <source>Unmount D%1</source>
+        <translation>Desmontar D%1</translation>
+    </message>
+    <message>
+        <location filename="../drivewidget.ui" line="481"/>
+        <source>Write protected</source>
+        <translation>Escritura protegida</translation>
+    </message>
+    <message>
+        <location filename="../drivewidget.ui" line="484"/>
+        <source>Toggle write protection</source>
+        <translation>Alternar protección contra escritura</translation>
+    </message>
+    <message>
+        <location filename="../drivewidget.ui" line="487"/>
+        <source>Toggle write protection for D%1</source>
+        <translation>Alternar protección de escritura para D%1</translation>
+    </message>
+    <message>
+        <location filename="../drivewidget.ui" line="502"/>
+        <source>Explore...</source>
+        <translation>Explorar...</translation>
+    </message>
+    <message>
+        <location filename="../drivewidget.ui" line="505"/>
+        <source>Show properties</source>
+        <translation>Mostrar propiedades</translation>
+    </message>
+    <message>
+        <location filename="../drivewidget.ui" line="508"/>
+        <source>Show D%1&apos;s properties</source>
+        <translation>Mostrar las propiedades de D%1&apos;s</translation>
+    </message>
+    <message>
+        <location filename="../drivewidget.ui" line="520"/>
+        <source>Save</source>
+        <translation>Guardar</translation>
+    </message>
+    <message>
+        <location filename="../drivewidget.ui" line="523"/>
+        <source>Save image</source>
+        <translation>Guardar imagen</translation>
+    </message>
+    <message>
+        <location filename="../drivewidget.ui" line="526"/>
+        <source>Save D%1</source>
+        <translation>Guardar D%1</translation>
+    </message>
+    <message>
+        <location filename="../drivewidget.ui" line="538"/>
+        <source>Revert to original</source>
+        <translation>Volver al original</translation>
+    </message>
+    <message>
+        <location filename="../drivewidget.ui" line="541"/>
+        <source>Revert image to its last saved state</source>
+        <translation>Revertir imagen a su último estado guardado</translation>
+    </message>
+    <message>
+        <location filename="../drivewidget.ui" line="544"/>
+        <source>Revert D%1 to its last saved state</source>
+        <translation>Revertir D%1 a su último estado guardado</translation>
+    </message>
+    <message>
+        <location filename="../drivewidget.ui" line="556"/>
+        <source>Save as...</source>
+        <translation>Guardar como...</translation>
+    </message>
+    <message>
+        <location filename="../drivewidget.ui" line="559"/>
+        <source>Save to a file</source>
+        <translation>Guardar en un archivo</translation>
+    </message>
+    <message>
+        <location filename="../drivewidget.ui" line="562"/>
+        <source>Save D%1 to a file</source>
+        <translation>Guardar D%1 en un archivo</translation>
+    </message>
+    <message>
+        <location filename="../drivewidget.ui" line="580"/>
+        <source>Auto save</source>
+        <translation>Guardar automáticamente</translation>
+    </message>
+    <message>
+        <location filename="../drivewidget.ui" line="583"/>
+        <source>Commit changes to this disk automatically</source>
+        <translation>Confirmar cambios en este disco automáticamente</translation>
+    </message>
+    <message>
+        <location filename="../drivewidget.ui" line="586"/>
+        <source>Toggle Auto Commit ON/OFF</source>
+        <translation>Activar/Desactivar la activación automática</translation>
+    </message>
+    <message>
+        <location filename="../drivewidget.ui" line="598"/>
+        <source>Folder Boot Options</source>
+        <translation>Opciones de arranque de carpeta</translation>
+    </message>
+    <message>
+        <location filename="../drivewidget.ui" line="601"/>
+        <source>Change Boot Options</source>
+        <translation>Cambiar las opciones de arranque</translation>
+    </message>
+</context>
+<context>
     <name>FileTypes</name>
     <message>
         <location filename="../miscutils.cpp" line="113"/>
@@ -1181,17 +1245,17 @@ Tiempo restante estimado: %1:%2</translation>
 <context>
     <name>FolderImage</name>
     <message>
-        <location filename="../folderimage.cpp" line="117"/>
+        <location filename="../folderimage.cpp" line="119"/>
         <source>Cannot mirror &apos;%1&apos; in &apos;%2&apos;: No suitable Atari name can be found.</source>
         <translation>No se puede &apos;%1&apos; espejo de &apos;%2&apos;: No existe el nombre.</translation>
     </message>
     <message>
-        <location filename="../folderimage.cpp" line="139"/>
+        <location filename="../folderimage.cpp" line="141"/>
         <source>Cannot mirror %1 of %2 files in &apos;%3&apos;: Atari directory is full.</source>
         <translation>No se puede reflejar %1 de %2 archivos en &apos;%3&apos;: Directorio está lleno.</translation>
     </message>
     <message>
-        <location filename="../folderimage.h" line="49"/>
+        <location filename="../folderimage.h" line="52"/>
         <source>Folder image</source>
         <translation>Carpeta de imágenes</translation>
     </message>
@@ -1210,6 +1274,14 @@ Tiempo restante estimado: %1:%2</translation>
     </message>
 </context>
 <context>
+    <name>InfoWidget</name>
+    <message>
+        <location filename="../infowidget.ui" line="26"/>
+        <source>Form</source>
+        <translation>Información</translation>
+    </message>
+</context>
+<context>
     <name>LogDisplayDialog</name>
     <message>
         <location filename="../logdisplaydialog.ui" line="14"/>
@@ -1224,7 +1296,7 @@ Tiempo restante estimado: %1:%2</translation>
     <message>
         <location filename="../logdisplaydialog.ui" line="58"/>
         <source>ALL</source>
-        <translation>todos</translation>
+        <translation>Todos</translation>
     </message>
     <message>
         <location filename="../logdisplaydialog.ui" line="63"/>
@@ -1305,1909 +1377,579 @@ Tiempo restante estimado: %1:%2</translation>
 <context>
     <name>MainWindow</name>
     <message>
-        <location filename="../mainwindow.ui" line="5541"/>
+        <location filename="../mainwindow.ui" line="94"/>
         <source>&amp;Disk</source>
         <translation>&amp;Disco</translation>
     </message>
     <message>
-        <location filename="../mainwindow.ui" line="5562"/>
+        <location filename="../mainwindow.ui" line="105"/>
         <source>&amp;File</source>
         <translation>&amp;Archivo</translation>
     </message>
     <message>
-        <location filename="../mainwindow.ui" line="5578"/>
+        <location filename="../mainwindow.ui" line="121"/>
         <source>&amp;Tools</source>
         <translation>&amp;Herramientas</translation>
     </message>
     <message>
-        <location filename="../mainwindow.ui" line="5584"/>
+        <location filename="../mainwindow.ui" line="127"/>
         <source>&amp;Help</source>
         <translation>A&amp;yuda</translation>
     </message>
     <message>
-        <location filename="../mainwindow.ui" line="5619"/>
+        <location filename="../mainwindow.ui" line="137"/>
+        <source>Window</source>
+        <translation type="unfinished">Ventana</translation>
+    </message>
+    <message>
+        <location filename="../mainwindow.ui" line="162"/>
         <source>Unmount &amp;all</source>
         <translation>Desmontar &amp;todos</translation>
     </message>
     <message>
-        <location filename="../mainwindow.ui" line="5622"/>
+        <location filename="../mainwindow.ui" line="165"/>
         <source>Unmount all</source>
         <translation>Desmontar todos</translation>
     </message>
     <message>
-        <location filename="../mainwindow.ui" line="5637"/>
-        <location filename="../mainwindow.ui" line="5655"/>
-        <location filename="../mainwindow.ui" line="5673"/>
-        <location filename="../mainwindow.ui" line="5691"/>
-        <location filename="../mainwindow.ui" line="5709"/>
-        <location filename="../mainwindow.ui" line="5727"/>
-        <location filename="../mainwindow.ui" line="5745"/>
-        <location filename="../mainwindow.ui" line="5763"/>
-        <location filename="../mainwindow.ui" line="5781"/>
-        <location filename="../mainwindow.ui" line="5799"/>
-        <location filename="../mainwindow.ui" line="5817"/>
-        <location filename="../mainwindow.ui" line="5835"/>
-        <location filename="../mainwindow.ui" line="5853"/>
-        <location filename="../mainwindow.ui" line="5871"/>
-        <location filename="../mainwindow.ui" line="5889"/>
-        <source>Mount disk image...</source>
-        <translation>Montar imagen de disco ...</translation>
+        <location filename="../mainwindow.ui" line="168"/>
+        <source>Ctrl+U</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../mainwindow.ui" line="5640"/>
-        <location filename="../mainwindow.ui" line="5643"/>
-        <source>Mount a disk image to D1</source>
-        <translation>Montar la imagen de disco en D1</translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.ui" line="5646"/>
-        <source>Alt+1</source>
-        <translation></translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.ui" line="5658"/>
-        <location filename="../mainwindow.ui" line="5661"/>
-        <source>Mount a disk image to D2</source>
-        <translation>Montar la imagen de disco en D2</translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.ui" line="5664"/>
-        <source>Alt+2</source>
-        <translation></translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.ui" line="5676"/>
-        <location filename="../mainwindow.ui" line="5679"/>
-        <source>Mount a disk image to D3</source>
-        <translation>Montar la imagen de disco en D3</translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.ui" line="5682"/>
-        <source>Alt+3</source>
-        <translation></translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.ui" line="5694"/>
-        <location filename="../mainwindow.ui" line="5697"/>
-        <source>Mount a disk image to D4</source>
-        <translation>Montar la imagen de disco en D4</translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.ui" line="5700"/>
-        <source>Alt+4</source>
-        <translation></translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.ui" line="5712"/>
-        <location filename="../mainwindow.ui" line="5715"/>
-        <source>Mount a disk image to D5</source>
-        <translation>Montar la imagen de disco en D5</translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.ui" line="5718"/>
-        <source>Alt+5</source>
-        <translation></translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.ui" line="5730"/>
-        <location filename="../mainwindow.ui" line="5733"/>
-        <source>Mount a disk image to D6</source>
-        <translation>Montar la imagen de disco en D6</translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.ui" line="5736"/>
-        <source>Alt+6</source>
-        <translation></translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.ui" line="5748"/>
-        <location filename="../mainwindow.ui" line="5751"/>
-        <source>Mount a disk image to D7</source>
-        <translation>Montar la imagen de disco en D7</translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.ui" line="5754"/>
-        <source>Alt+7</source>
-        <translation></translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.ui" line="5766"/>
-        <location filename="../mainwindow.ui" line="5769"/>
-        <source>Mount a disk image to D8</source>
-        <translation>Montar la imagen de disco en D8</translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.ui" line="5772"/>
-        <source>Alt+8</source>
-        <translation></translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.ui" line="5784"/>
-        <location filename="../mainwindow.ui" line="5787"/>
-        <source>Mount a disk image to D9</source>
-        <translation>Montar la imagen de disco en D9</translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.ui" line="5790"/>
-        <source>Alt+9</source>
-        <translation></translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.ui" line="5802"/>
-        <location filename="../mainwindow.ui" line="5805"/>
-        <source>Mount a disk image to D10</source>
-        <translation>Montar la imagen de disco en D10</translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.ui" line="5820"/>
-        <location filename="../mainwindow.ui" line="5823"/>
-        <source>Mount a disk image to D11</source>
-        <translation>Montar la imagen de disco en D11</translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.ui" line="5838"/>
-        <location filename="../mainwindow.ui" line="5841"/>
-        <source>Mount a disk image to D12</source>
-        <translation>Montar la imagen de disco en D12</translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.ui" line="5856"/>
-        <location filename="../mainwindow.ui" line="5859"/>
-        <source>Mount a disk image to D13</source>
-        <translation>Montar la imagen de disco en D13</translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.ui" line="5874"/>
-        <location filename="../mainwindow.ui" line="5877"/>
-        <source>Mount a disk image to D14</source>
-        <translation>Montar la imagen de disco en D14</translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.ui" line="5892"/>
-        <location filename="../mainwindow.ui" line="5895"/>
-        <source>Mount a disk image to D15</source>
-        <translation>Montar la imagen de disco en D15</translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.ui" line="7335"/>
-        <source>Alt+O</source>
-        <translation></translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.ui" line="5907"/>
-        <location filename="../mainwindow.ui" line="5925"/>
-        <location filename="../mainwindow.ui" line="5943"/>
-        <location filename="../mainwindow.ui" line="5961"/>
-        <location filename="../mainwindow.ui" line="5979"/>
-        <location filename="../mainwindow.ui" line="5997"/>
-        <location filename="../mainwindow.ui" line="6015"/>
-        <location filename="../mainwindow.ui" line="6033"/>
-        <location filename="../mainwindow.ui" line="6051"/>
-        <location filename="../mainwindow.ui" line="6069"/>
-        <location filename="../mainwindow.ui" line="6087"/>
-        <location filename="../mainwindow.ui" line="6105"/>
-        <location filename="../mainwindow.ui" line="6123"/>
-        <location filename="../mainwindow.ui" line="6141"/>
-        <location filename="../mainwindow.ui" line="6159"/>
-        <source>Mount folder image...</source>
-        <translation>Montar carpeta como imagen...</translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.ui" line="5910"/>
-        <location filename="../mainwindow.ui" line="5913"/>
-        <source>Mount a folder image to D1</source>
-        <translation>Montar una carpeta como imagen en D1</translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.ui" line="5916"/>
-        <source>Ctrl+1</source>
-        <translation></translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.ui" line="5928"/>
-        <location filename="../mainwindow.ui" line="5931"/>
-        <source>Mount a folder image to D2</source>
-        <translation>Montar una carpeta como imagen en D2</translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.ui" line="5934"/>
-        <source>Ctrl+2</source>
-        <translation></translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.ui" line="5946"/>
-        <location filename="../mainwindow.ui" line="5949"/>
-        <source>Mount a folder image to D3</source>
-        <translation>Montar una carpeta como imagen en D3</translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.ui" line="5952"/>
-        <source>Ctrl+3</source>
-        <translation></translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.ui" line="5964"/>
-        <location filename="../mainwindow.ui" line="5967"/>
-        <source>Mount a folder image to D4</source>
-        <translation>Montar una carpeta como imagen en D4</translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.ui" line="5970"/>
-        <source>Ctrl+4</source>
-        <translation></translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.ui" line="5982"/>
-        <location filename="../mainwindow.ui" line="5985"/>
-        <source>Mount a folder image to D5</source>
-        <translation>Montar una carpeta como imagen en D5</translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.ui" line="5988"/>
-        <source>Ctrl+5</source>
-        <translation></translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.ui" line="6000"/>
-        <location filename="../mainwindow.ui" line="6003"/>
-        <source>Mount a folder image to D6</source>
-        <translation>Montar una carpeta como imagen en D6</translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.ui" line="6006"/>
-        <source>Ctrl+6</source>
-        <translation></translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.ui" line="6018"/>
-        <location filename="../mainwindow.ui" line="6021"/>
-        <source>Mount a folder image to D7</source>
-        <translation>Montar una carpeta como imagen en D7</translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.ui" line="6024"/>
-        <source>Ctrl+7</source>
-        <translation></translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.ui" line="6036"/>
-        <location filename="../mainwindow.ui" line="6039"/>
-        <source>Mount a folder image to D8</source>
-        <translation>Montar una carpeta como imagen en D8</translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.ui" line="6042"/>
-        <source>Ctrl+8</source>
-        <translation></translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.ui" line="6054"/>
-        <location filename="../mainwindow.ui" line="6057"/>
-        <source>Mount a folder image to D9</source>
-        <translation>Montar una carpeta como imagen en D9</translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.ui" line="6060"/>
-        <source>Ctrl+9</source>
-        <translation></translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.ui" line="6072"/>
-        <location filename="../mainwindow.ui" line="6075"/>
-        <source>Mount a folder image to D10</source>
-        <translation>Montar una carpeta como imagen en D10</translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.ui" line="6090"/>
-        <location filename="../mainwindow.ui" line="6093"/>
-        <source>Mount a folder image to D11</source>
-        <translation>Montar una carpeta como imagen en D11</translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.ui" line="6108"/>
-        <location filename="../mainwindow.ui" line="6111"/>
-        <source>Mount a folder image to D12</source>
-        <translation>Montar una carpeta como imagen en D12</translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.ui" line="8682"/>
-        <location filename="../mainwindow.ui" line="8685"/>
-        <location filename="../mainwindow.ui" line="8688"/>
-        <source>Open log window</source>
-        <translation>Abrir ventana de registro</translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.ui" line="8691"/>
-        <source>Ctrl+L</source>
-        <translation></translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.ui" line="6126"/>
-        <location filename="../mainwindow.ui" line="6129"/>
-        <source>Mount a folder image to D13</source>
-        <translation>Montar una carpeta como imagen en D13</translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.ui" line="8658"/>
-        <source>Ctrl+M</source>
-        <translation></translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.ui" line="6144"/>
-        <location filename="../mainwindow.ui" line="6147"/>
-        <source>Mount a folder image to D14</source>
-        <translation>Montar una carpeta como imagen en D14</translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.ui" line="6981"/>
-        <source>Ctrl+N</source>
-        <translation>Ctrl+N</translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.ui" line="6162"/>
-        <location filename="../mainwindow.ui" line="6165"/>
-        <source>Mount a folder image to D15</source>
-        <translation>Montar una carpeta como imagen en D15</translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.ui" line="6789"/>
-        <source>Ctrl+O</source>
-        <translation></translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.ui" line="6180"/>
-        <location filename="../mainwindow.ui" line="6198"/>
-        <location filename="../mainwindow.ui" line="6216"/>
-        <location filename="../mainwindow.ui" line="6234"/>
-        <location filename="../mainwindow.ui" line="6252"/>
-        <location filename="../mainwindow.ui" line="6270"/>
-        <location filename="../mainwindow.ui" line="6288"/>
-        <location filename="../mainwindow.ui" line="6306"/>
-        <location filename="../mainwindow.ui" line="6324"/>
-        <location filename="../mainwindow.ui" line="6342"/>
-        <location filename="../mainwindow.ui" line="6360"/>
-        <location filename="../mainwindow.ui" line="6378"/>
-        <location filename="../mainwindow.ui" line="6396"/>
-        <location filename="../mainwindow.ui" line="6414"/>
-        <location filename="../mainwindow.ui" line="6432"/>
-        <source>Unmount</source>
-        <translation>Desmontar</translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.ui" line="6183"/>
-        <location filename="../mainwindow.ui" line="6186"/>
-        <source>Unmount D1</source>
-        <translation>Desmontar D1</translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.ui" line="6201"/>
-        <location filename="../mainwindow.ui" line="6204"/>
-        <source>Unmount D2</source>
-        <translation>Desmontar D2</translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.ui" line="6219"/>
-        <location filename="../mainwindow.ui" line="6222"/>
-        <source>Unmount D3</source>
-        <translation>Desmontar D3</translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.ui" line="6237"/>
-        <location filename="../mainwindow.ui" line="6240"/>
-        <source>Unmount D4</source>
-        <translation>Desmontar D4</translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.ui" line="6255"/>
-        <location filename="../mainwindow.ui" line="6258"/>
-        <source>Unmount D5</source>
-        <translation>Desmontar D5</translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.ui" line="6273"/>
-        <location filename="../mainwindow.ui" line="6276"/>
-        <source>Unmount D6</source>
-        <translation>Desmontar D6</translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.ui" line="6291"/>
-        <location filename="../mainwindow.ui" line="6294"/>
-        <source>Unmount D7</source>
-        <translation>Desmontar D7</translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.ui" line="6309"/>
-        <location filename="../mainwindow.ui" line="6312"/>
-        <source>Unmount D8</source>
-        <translation>Desmontar D8</translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.ui" line="6327"/>
-        <location filename="../mainwindow.ui" line="6330"/>
-        <source>Unmount D9</source>
-        <translation>Desmontar D9</translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.ui" line="6345"/>
-        <location filename="../mainwindow.ui" line="6348"/>
-        <source>Unmount D10</source>
-        <translation>Desmontar D10</translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.ui" line="6363"/>
-        <location filename="../mainwindow.ui" line="6366"/>
-        <source>Unmount D11</source>
-        <translation>Desmontar D11</translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.ui" line="6381"/>
-        <location filename="../mainwindow.ui" line="6384"/>
-        <source>Unmount D12</source>
-        <translation>Desmontar D12</translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.ui" line="6399"/>
-        <location filename="../mainwindow.ui" line="6402"/>
-        <source>Unmount D13</source>
-        <translation>Desmontar D13</translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.ui" line="6417"/>
-        <location filename="../mainwindow.ui" line="6420"/>
-        <source>Unmount D14</source>
-        <translation>Desmontar D14</translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.ui" line="6435"/>
-        <location filename="../mainwindow.ui" line="6438"/>
-        <source>Unmount D15</source>
-        <translation>Desmontar D15</translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.ui" line="6454"/>
-        <location filename="../mainwindow.ui" line="6476"/>
-        <location filename="../mainwindow.ui" line="6498"/>
-        <location filename="../mainwindow.ui" line="6520"/>
-        <location filename="../mainwindow.ui" line="6542"/>
-        <location filename="../mainwindow.ui" line="6564"/>
-        <location filename="../mainwindow.ui" line="6586"/>
-        <location filename="../mainwindow.ui" line="6611"/>
-        <location filename="../mainwindow.ui" line="6633"/>
-        <location filename="../mainwindow.ui" line="6655"/>
-        <location filename="../mainwindow.ui" line="6677"/>
-        <location filename="../mainwindow.ui" line="6699"/>
-        <location filename="../mainwindow.ui" line="6721"/>
-        <location filename="../mainwindow.ui" line="6743"/>
-        <location filename="../mainwindow.ui" line="6765"/>
-        <source>Write protected</source>
-        <translation>Protegido contra escritura</translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.ui" line="6457"/>
-        <location filename="../mainwindow.ui" line="6460"/>
-        <source>Toggle write protection for D1</source>
-        <translation>Activar la protección de escritura para D1</translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.ui" line="6479"/>
-        <location filename="../mainwindow.ui" line="6482"/>
-        <source>Toggle write protection for D2</source>
-        <translation>Activar la protección de escritura para D2</translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.ui" line="6501"/>
-        <location filename="../mainwindow.ui" line="6504"/>
-        <source>Toggle write protection for D3</source>
-        <translation>Activar la protección de escritura para D3</translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.ui" line="6523"/>
-        <location filename="../mainwindow.ui" line="6526"/>
-        <source>Toggle write protection for D4</source>
-        <translation>Activar la protección de escritura para D4</translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.ui" line="6545"/>
-        <location filename="../mainwindow.ui" line="6548"/>
-        <source>Toggle write protection for D5</source>
-        <translation>Activar la protección de escritura para D5</translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.ui" line="6567"/>
-        <location filename="../mainwindow.ui" line="6570"/>
-        <source>Toggle write protection for D6</source>
-        <translation>Activar la protección de escritura para D6</translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.ui" line="6589"/>
-        <location filename="../mainwindow.ui" line="6592"/>
-        <source>Toggle write protection for D7</source>
-        <translation>Activar la protección de escritura para D7</translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.ui" line="6614"/>
-        <location filename="../mainwindow.ui" line="6617"/>
-        <source>Toggle write protection for D8</source>
-        <translation>Activar la protección de escritura para D8</translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.ui" line="6636"/>
-        <location filename="../mainwindow.ui" line="6639"/>
-        <source>Toggle write protection for D9</source>
-        <translation>Activar la protección de escritura para D9</translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.ui" line="6658"/>
-        <location filename="../mainwindow.ui" line="6661"/>
-        <source>Toggle write protection for D10</source>
-        <translation>Activar la protección de escritura para D10</translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.ui" line="6680"/>
-        <location filename="../mainwindow.ui" line="6683"/>
-        <source>Toggle write protection for D11</source>
-        <translation>Activar la protección de escritura para D11</translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.ui" line="6702"/>
-        <location filename="../mainwindow.ui" line="6705"/>
-        <source>Toggle write protection for D12</source>
-        <translation>Activar la protección de escritura para D12</translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.ui" line="6724"/>
-        <location filename="../mainwindow.ui" line="6727"/>
-        <source>Toggle write protection for D13</source>
-        <translation>Activar la protección de escritura para D13</translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.ui" line="6746"/>
-        <location filename="../mainwindow.ui" line="6749"/>
-        <source>Toggle write protection for D14</source>
-        <translation>Activar la protección de escritura para D14</translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.ui" line="6768"/>
-        <location filename="../mainwindow.ui" line="6771"/>
-        <source>Toggle write protection for D15</source>
-        <translation>Activar la protección de escritura para D15</translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.ui" line="6780"/>
+        <location filename="../mainwindow.ui" line="180"/>
         <source>&amp;Options...</source>
         <translation>&amp;Opciones...</translation>
     </message>
     <message>
-        <location filename="../mainwindow.ui" line="6783"/>
-        <location filename="../mainwindow.ui" line="6786"/>
+        <location filename="../mainwindow.ui" line="183"/>
+        <location filename="../mainwindow.ui" line="186"/>
         <source>Open options dialog</source>
-        <translation>Abrir opciones de diálogo</translation>
+        <translation>Abrir diálogo de opciones</translation>
     </message>
     <message>
-        <location filename="../mainwindow.ui" line="6805"/>
-        <location filename="../mainwindow.cpp" line="867"/>
+        <location filename="../mainwindow.ui" line="189"/>
+        <source>Ctrl+O</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../mainwindow.ui" line="205"/>
+        <location filename="../mainwindow.cpp" line="861"/>
         <source>&amp;Start emulation</source>
-        <translation>&amp;Comience emulación</translation>
+        <translation>&amp;Iniciar emulación</translation>
     </message>
     <message>
-        <location filename="../mainwindow.ui" line="6808"/>
-        <location filename="../mainwindow.ui" line="6811"/>
-        <location filename="../mainwindow.cpp" line="868"/>
-        <location filename="../mainwindow.cpp" line="869"/>
+        <location filename="../mainwindow.ui" line="208"/>
+        <location filename="../mainwindow.ui" line="211"/>
+        <location filename="../mainwindow.cpp" line="862"/>
+        <location filename="../mainwindow.cpp" line="863"/>
         <source>Start SIO peripheral emulation</source>
-        <translation>Comience emulación periférico SIO</translation>
+        <translation>Iniciar emulación periférica SIO</translation>
     </message>
     <message>
-        <location filename="../mainwindow.ui" line="7317"/>
-        <source>Alt+S</source>
-        <translation></translation>
+        <location filename="../mainwindow.ui" line="214"/>
+        <source>Alt+E</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../mainwindow.ui" line="6825"/>
-        <location filename="../mainwindow.ui" line="6828"/>
-        <location filename="../mainwindow.ui" line="6836"/>
-        <location filename="../mainwindow.ui" line="6839"/>
-        <location filename="../mainwindow.ui" line="6847"/>
-        <location filename="../mainwindow.ui" line="6850"/>
-        <location filename="../mainwindow.ui" line="6858"/>
-        <location filename="../mainwindow.ui" line="6861"/>
-        <location filename="../mainwindow.ui" line="6869"/>
-        <location filename="../mainwindow.ui" line="6872"/>
-        <location filename="../mainwindow.ui" line="6880"/>
-        <location filename="../mainwindow.ui" line="6883"/>
-        <location filename="../mainwindow.ui" line="6891"/>
-        <location filename="../mainwindow.ui" line="6894"/>
-        <location filename="../mainwindow.ui" line="6902"/>
-        <location filename="../mainwindow.ui" line="6905"/>
-        <location filename="../mainwindow.ui" line="6913"/>
-        <location filename="../mainwindow.ui" line="6916"/>
-        <location filename="../mainwindow.ui" line="6924"/>
-        <location filename="../mainwindow.ui" line="6927"/>
+        <location filename="../mainwindow.ui" line="225"/>
+        <location filename="../mainwindow.ui" line="228"/>
         <source>Mount to the first available slot</source>
-        <translation>Puede montarse en la primera ranura disponible</translation>
+        <translation>Monte en la primera ranura disponible</translation>
     </message>
     <message>
-        <location filename="../mainwindow.ui" line="6936"/>
+        <location filename="../mainwindow.ui" line="237"/>
         <source>Mount &amp;disk image...</source>
-        <translation>Montar imagen de &amp;disco ...</translation>
+        <translation>Montaje &amp;imagen de disco...</translation>
     </message>
     <message>
-        <location filename="../mainwindow.ui" line="6939"/>
-        <location filename="../mainwindow.ui" line="6942"/>
+        <location filename="../mainwindow.ui" line="240"/>
+        <location filename="../mainwindow.ui" line="243"/>
         <source>Mount a disk image to the first available slot</source>
-        <translation>Montar una imagen de disco en la primera ranura disponible</translation>
+        <translation>Monte una imagen de disco en la primera ranura disponible</translation>
     </message>
     <message>
-        <location filename="../mainwindow.ui" line="6945"/>
+        <location filename="../mainwindow.ui" line="246"/>
         <source>Ctrl+D</source>
-        <translation></translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../mainwindow.ui" line="6954"/>
+        <location filename="../mainwindow.ui" line="255"/>
         <source>Mount &amp;folder image...</source>
-        <translation>Montar &amp;carpeta como imagen...</translation>
+        <translation>Montar &amp;imagen de carpeta...</translation>
     </message>
     <message>
-        <location filename="../mainwindow.ui" line="6957"/>
-        <location filename="../mainwindow.ui" line="6960"/>
+        <location filename="../mainwindow.ui" line="258"/>
+        <location filename="../mainwindow.ui" line="261"/>
         <source>Mount a folder image to the first available slot</source>
-        <translation>Montar una imagen de carpeta a la primera ranura disponible</translation>
+        <translation>Monte una imagen de carpeta en la primera ranura disponible</translation>
     </message>
     <message>
-        <location filename="../mainwindow.ui" line="6963"/>
+        <location filename="../mainwindow.ui" line="264"/>
         <source>Ctrl+F</source>
-        <translation></translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../mainwindow.ui" line="6972"/>
+        <location filename="../mainwindow.ui" line="273"/>
         <source>New disk image...</source>
         <translation>Nueva imagen de disco...</translation>
     </message>
     <message>
-        <location filename="../mainwindow.ui" line="6975"/>
-        <location filename="../mainwindow.ui" line="6978"/>
+        <location filename="../mainwindow.ui" line="276"/>
+        <location filename="../mainwindow.ui" line="279"/>
         <source>Create a new disk image file and mount it to the first available slot</source>
-        <translation>Crear un archivo de imagen de disco nuevo y montarlo en la primera ranura disponible</translation>
+        <translation>Cree un nuevo archivo de imagen de disco y móntelo en la primera ranura disponible</translation>
     </message>
     <message>
-        <location filename="../mainwindow.ui" line="6999"/>
-        <location filename="../mainwindow.ui" line="7020"/>
-        <location filename="../mainwindow.ui" line="7041"/>
-        <location filename="../mainwindow.ui" line="7062"/>
-        <location filename="../mainwindow.ui" line="7083"/>
-        <location filename="../mainwindow.ui" line="7104"/>
-        <location filename="../mainwindow.ui" line="7125"/>
-        <location filename="../mainwindow.ui" line="7146"/>
-        <location filename="../mainwindow.ui" line="7167"/>
-        <location filename="../mainwindow.ui" line="7188"/>
-        <location filename="../mainwindow.ui" line="7209"/>
-        <location filename="../mainwindow.ui" line="7230"/>
-        <location filename="../mainwindow.ui" line="7251"/>
-        <location filename="../mainwindow.ui" line="7272"/>
-        <location filename="../mainwindow.ui" line="7293"/>
-        <source>Explore..</source>
-        <translation>Explorar..</translation>
+        <location filename="../mainwindow.ui" line="282"/>
+        <source>Ctrl+N</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../mainwindow.ui" line="7002"/>
-        <location filename="../mainwindow.ui" line="7005"/>
-        <source>Show D1&apos;s properties</source>
-        <translation>Mostrar propiedades de D1</translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.ui" line="7023"/>
-        <location filename="../mainwindow.ui" line="7026"/>
-        <source>Show D2&apos;s properties</source>
-        <translation>Mostrar propiedades de D2</translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.ui" line="7044"/>
-        <location filename="../mainwindow.ui" line="7047"/>
-        <source>Show D3&apos;s properties</source>
-        <translation>Mostrar propiedades de D3</translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.ui" line="7065"/>
-        <location filename="../mainwindow.ui" line="7068"/>
-        <source>Show D4&apos;s properties</source>
-        <translation>Mostrar propiedades de D4</translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.ui" line="7086"/>
-        <location filename="../mainwindow.ui" line="7089"/>
-        <source>Show D5&apos;s properties</source>
-        <translation>Mostrar propiedades de D5</translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.ui" line="7107"/>
-        <location filename="../mainwindow.ui" line="7110"/>
-        <source>Show D6&apos;s properties</source>
-        <translation>Mostrar propiedades de D6</translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.ui" line="7128"/>
-        <location filename="../mainwindow.ui" line="7131"/>
-        <source>Show D7&apos;s properties</source>
-        <translation>Mostrar propiedades de D7</translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.ui" line="7149"/>
-        <location filename="../mainwindow.ui" line="7152"/>
-        <source>Show D8&apos;s properties</source>
-        <translation>Mostrar propiedades de D8</translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.ui" line="7170"/>
-        <location filename="../mainwindow.ui" line="7173"/>
-        <source>Show D9&apos;s properties</source>
-        <translation>Mostrar propiedades de D9</translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.ui" line="7191"/>
-        <location filename="../mainwindow.ui" line="7194"/>
-        <source>Show D10&apos;s properties</source>
-        <translation>Mostrar propiedades de D10</translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.ui" line="7212"/>
-        <location filename="../mainwindow.ui" line="7215"/>
-        <source>Show D11&apos;s properties</source>
-        <translation>Mostrar propiedades de D11</translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.ui" line="7233"/>
-        <location filename="../mainwindow.ui" line="7236"/>
-        <source>Show D12&apos;s properties</source>
-        <translation>Mostrar propiedades de D12</translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.ui" line="7254"/>
-        <location filename="../mainwindow.ui" line="7257"/>
-        <source>Show D13&apos;s properties</source>
-        <translation>Mostrar propiedades de D13</translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.ui" line="7275"/>
-        <location filename="../mainwindow.ui" line="7278"/>
-        <source>Show D14&apos;s properties</source>
-        <translation>Mostrar propiedades de D14</translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.ui" line="7296"/>
-        <location filename="../mainwindow.ui" line="7299"/>
-        <source>Show D15&apos;s properties</source>
-        <translation>Mostrar propiedades de D15</translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.ui" line="7308"/>
+        <location filename="../mainwindow.ui" line="294"/>
         <source>&amp;Save session</source>
         <translation>&amp;Guardar la sesión</translation>
     </message>
     <message>
-        <location filename="../mainwindow.ui" line="7311"/>
+        <location filename="../mainwindow.ui" line="297"/>
         <source>Save current session to a file</source>
         <translation>Guardar la sesión actual en un archivo</translation>
     </message>
     <message>
-        <location filename="../mainwindow.ui" line="7314"/>
+        <location filename="../mainwindow.ui" line="300"/>
         <source>Save current session</source>
-        <translation>Guardar la sesión actual</translation>
+        <translation>Guardar sesión actual</translation>
     </message>
     <message>
-        <location filename="../mainwindow.ui" line="8190"/>
-        <source>Alt+Shift+T</source>
-        <translation></translation>
+        <location filename="../mainwindow.ui" line="303"/>
+        <source>Alt+S</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../mainwindow.ui" line="8223"/>
-        <source>Alt+Q</source>
-        <translation></translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.ui" line="8235"/>
-        <source>Ctrl+A</source>
-        <translation></translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.ui" line="8274"/>
-        <source>Ctrl+Shift+U</source>
-        <translation></translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.ui" line="8643"/>
-        <location filename="../mainwindow.cpp" line="803"/>
-        <location filename="../mainwindow.cpp" line="804"/>
-        <source>Hide drives D9-DO</source>
-        <translation>Ocultar unidades D9-DO</translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.ui" line="8655"/>
-        <source>Toggle mini mode</source>
-        <translation>Alternar modo mini</translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.ui" line="8670"/>
-        <source>Toggle shade mode</source>
-        <translation>Alternar sombra modo</translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.ui" line="8673"/>
-        <source>Ctrl+S</source>
-        <translation></translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.ui" line="7326"/>
+        <location filename="../mainwindow.ui" line="312"/>
         <source>&amp;Open session...</source>
         <translation>&amp;Abrir Sesión...</translation>
     </message>
     <message>
-        <location filename="../mainwindow.ui" line="167"/>
-        <source>1:</source>
-        <translation></translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.ui" line="545"/>
-        <source>9:</source>
-        <translation></translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.ui" line="905"/>
-        <source>2:</source>
-        <translation></translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.ui" line="1274"/>
-        <source>J:</source>
-        <translation></translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.ui" line="1634"/>
-        <source>3:</source>
-        <translation></translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.ui" line="2003"/>
-        <source>K:</source>
-        <translation></translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.ui" line="2363"/>
-        <source>4:</source>
-        <translation></translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.ui" line="2723"/>
-        <source>L:</source>
-        <translation></translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.ui" line="3083"/>
-        <source>5:</source>
-        <translation></translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.ui" line="3443"/>
-        <source>M:</source>
-        <translation></translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.ui" line="3803"/>
-        <source>6:</source>
-        <translation></translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.ui" line="4163"/>
-        <source>N:</source>
-        <translation></translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.ui" line="4523"/>
-        <source>7:</source>
-        <translation></translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.ui" line="4883"/>
-        <source>O:</source>
-        <translation></translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.ui" line="5243"/>
-        <source>8:</source>
-        <translation></translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.ui" line="5594"/>
-        <source>Window</source>
-        <translation>Ventana</translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.ui" line="5625"/>
-        <source>Ctrl+U</source>
-        <translation></translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.ui" line="5808"/>
-        <source>Alt+=</source>
-        <translation></translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.ui" line="5826"/>
-        <source>Alt+!</source>
-        <translation></translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.ui" line="5844"/>
-        <source>Alt+&apos;</source>
-        <translation></translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.ui" line="5862"/>
-        <source>Alt+#</source>
-        <translation></translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.ui" line="5880"/>
-        <source>Alt+$</source>
-        <translation></translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.ui" line="5898"/>
-        <source>Alt+%</source>
-        <translation></translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.ui" line="6078"/>
-        <source>Ctrl+0</source>
-        <translation></translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.ui" line="6096"/>
-        <source>Ctrl+Alt+1</source>
-        <translation></translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.ui" line="6114"/>
-        <source>Ctrl+Alt+2</source>
-        <translation></translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.ui" line="6132"/>
-        <source>Ctrl+Alt+3</source>
-        <translation></translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.ui" line="6150"/>
-        <source>Ctrl+Alt+4</source>
-        <translation></translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.ui" line="6168"/>
-        <source>Ctrl+Alt+5</source>
-        <translation></translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.ui" line="6814"/>
-        <source>Alt+E</source>
-        <translation></translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.ui" line="7329"/>
-        <location filename="../mainwindow.ui" line="7332"/>
+        <location filename="../mainwindow.ui" line="315"/>
+        <location filename="../mainwindow.ui" line="318"/>
         <source>Open a previously saved session</source>
-        <translation>Abrir una sesión guardada anteriormente</translation>
+        <translation>Abre una sesión guardada previamente</translation>
     </message>
     <message>
-        <location filename="../mainwindow.ui" line="7344"/>
+        <location filename="../mainwindow.ui" line="321"/>
+        <source>Alt+O</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../mainwindow.ui" line="330"/>
         <source>&amp;Boot Atari executable...</source>
         <translation>&amp;Inicia ejecutable Atari...</translation>
     </message>
     <message>
-        <location filename="../mainwindow.ui" line="7347"/>
-        <location filename="../mainwindow.ui" line="7350"/>
+        <location filename="../mainwindow.ui" line="333"/>
+        <location filename="../mainwindow.ui" line="336"/>
         <source>Boot an Atari executable</source>
         <translation>Inicia un ejecutable Atari</translation>
     </message>
     <message>
-        <location filename="../mainwindow.ui" line="7353"/>
+        <location filename="../mainwindow.ui" line="339"/>
         <source>Alt+B</source>
-        <translation>Alt+B</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../mainwindow.ui" line="7371"/>
-        <location filename="../mainwindow.ui" line="7389"/>
-        <location filename="../mainwindow.ui" line="7407"/>
-        <location filename="../mainwindow.ui" line="7425"/>
-        <location filename="../mainwindow.ui" line="7443"/>
-        <location filename="../mainwindow.ui" line="7461"/>
-        <location filename="../mainwindow.ui" line="7479"/>
-        <location filename="../mainwindow.ui" line="7497"/>
-        <location filename="../mainwindow.ui" line="8055"/>
-        <location filename="../mainwindow.ui" line="8073"/>
-        <location filename="../mainwindow.ui" line="8091"/>
-        <location filename="../mainwindow.ui" line="8109"/>
-        <location filename="../mainwindow.ui" line="8127"/>
-        <location filename="../mainwindow.ui" line="8145"/>
-        <location filename="../mainwindow.ui" line="8163"/>
+        <location filename="../mainwindow.ui" line="357"/>
         <source>Save</source>
-        <translation>Guardar</translation>
+        <translation>Salvar</translation>
     </message>
     <message>
-        <location filename="../mainwindow.ui" line="7374"/>
-        <location filename="../mainwindow.ui" line="7377"/>
+        <location filename="../mainwindow.ui" line="360"/>
+        <location filename="../mainwindow.ui" line="363"/>
         <source>Save D1</source>
-        <translation>Guardar D1</translation>
+        <translation>Salvar D1</translation>
     </message>
     <message>
-        <location filename="../mainwindow.ui" line="7392"/>
-        <location filename="../mainwindow.ui" line="7395"/>
-        <source>Save D2</source>
-        <translation>Guardar D2</translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.ui" line="7410"/>
-        <location filename="../mainwindow.ui" line="7413"/>
-        <source>Save D3</source>
-        <translation>Guardar D3</translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.ui" line="7428"/>
-        <location filename="../mainwindow.ui" line="7431"/>
-        <source>Save D4</source>
-        <translation>Guardar D4</translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.ui" line="7446"/>
-        <location filename="../mainwindow.ui" line="7449"/>
-        <source>Save D5</source>
-        <translation>Guardar D5</translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.ui" line="7464"/>
-        <location filename="../mainwindow.ui" line="7467"/>
-        <source>Save D6</source>
-        <translation>Guardar D6</translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.ui" line="7482"/>
-        <location filename="../mainwindow.ui" line="7485"/>
-        <source>Save D7</source>
-        <translation>Guardar D7</translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.ui" line="7500"/>
-        <location filename="../mainwindow.ui" line="7503"/>
-        <source>Save D8</source>
-        <translation>Guardar D8</translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.ui" line="7515"/>
-        <location filename="../mainwindow.ui" line="7533"/>
-        <location filename="../mainwindow.ui" line="7551"/>
-        <location filename="../mainwindow.ui" line="7569"/>
-        <location filename="../mainwindow.ui" line="7587"/>
-        <location filename="../mainwindow.ui" line="7605"/>
-        <location filename="../mainwindow.ui" line="7623"/>
-        <location filename="../mainwindow.ui" line="7641"/>
-        <location filename="../mainwindow.ui" line="7659"/>
-        <location filename="../mainwindow.ui" line="7677"/>
-        <location filename="../mainwindow.ui" line="7695"/>
-        <location filename="../mainwindow.ui" line="7713"/>
-        <location filename="../mainwindow.ui" line="7731"/>
-        <location filename="../mainwindow.ui" line="7749"/>
-        <location filename="../mainwindow.ui" line="7767"/>
-        <source>Revert to original</source>
-        <translation>Volver al original</translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.ui" line="7518"/>
-        <location filename="../mainwindow.ui" line="7521"/>
-        <source>Revert D1 to its last saved state</source>
-        <translation>Revertir D1 a su último estado guardado</translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.ui" line="7536"/>
-        <location filename="../mainwindow.ui" line="7539"/>
-        <source>Revert D2 to its last saved state</source>
-        <translation>Revertir D2 a su último estado guardado</translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.ui" line="7554"/>
-        <location filename="../mainwindow.ui" line="7557"/>
-        <source>Revert D3 to its last saved state</source>
-        <translation>Revertir D3 a su último estado guardado</translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.ui" line="7572"/>
-        <location filename="../mainwindow.ui" line="7575"/>
-        <source>Revert D4 to its last saved state</source>
-        <translation>Revertir D4 a su último estado guardado</translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.ui" line="7590"/>
-        <location filename="../mainwindow.ui" line="7593"/>
-        <source>Revert D5 to its last saved state</source>
-        <translation>Revertir D4 a su último estado guardado</translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.ui" line="7608"/>
-        <location filename="../mainwindow.ui" line="7611"/>
-        <source>Revert D6 to its last saved state</source>
-        <translation>Revertir D6 a su último estado guardado</translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.ui" line="7626"/>
-        <location filename="../mainwindow.ui" line="7629"/>
-        <source>Revert D7 to its last saved state</source>
-        <translation>Revertir D7 a su último estado guardado</translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.ui" line="7644"/>
-        <location filename="../mainwindow.ui" line="7647"/>
-        <source>Revert D8 to its last saved state</source>
-        <translation>Revertir D8 a su último estado guardado</translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.ui" line="7662"/>
-        <location filename="../mainwindow.ui" line="7665"/>
-        <source>Revert D9 to its last saved state</source>
-        <translation>Revertir D9 a su último estado guardado</translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.ui" line="7680"/>
-        <location filename="../mainwindow.ui" line="7683"/>
-        <source>Revert D10 to its last saved state</source>
-        <translation>Revertir D10 a su último estado guardado</translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.ui" line="7698"/>
-        <location filename="../mainwindow.ui" line="7701"/>
-        <source>Revert D11 to its last saved state</source>
-        <translation>Revertir D11 a su último estado guardado</translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.ui" line="7716"/>
-        <location filename="../mainwindow.ui" line="7719"/>
-        <source>Revert D12 to its last saved state</source>
-        <translation>Revertir D12 a su último estado guardado</translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.ui" line="7734"/>
-        <location filename="../mainwindow.ui" line="7737"/>
-        <source>Revert D13 to its last saved state</source>
-        <translation>Revertir D12 a su último estado guardado</translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.ui" line="7752"/>
-        <location filename="../mainwindow.ui" line="7755"/>
-        <source>Revert D14 to its last saved state</source>
-        <translation>Revertir D14 a su último estado guardado</translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.ui" line="7770"/>
-        <location filename="../mainwindow.ui" line="7773"/>
-        <source>Revert D15 to its last saved state</source>
-        <translation>Revertir D15 a su último estado guardado</translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.ui" line="7785"/>
-        <location filename="../mainwindow.ui" line="7803"/>
-        <location filename="../mainwindow.ui" line="7821"/>
-        <location filename="../mainwindow.ui" line="7839"/>
-        <location filename="../mainwindow.ui" line="7857"/>
-        <location filename="../mainwindow.ui" line="7875"/>
-        <location filename="../mainwindow.ui" line="7893"/>
-        <location filename="../mainwindow.ui" line="7911"/>
-        <location filename="../mainwindow.ui" line="7929"/>
-        <location filename="../mainwindow.ui" line="7947"/>
-        <location filename="../mainwindow.ui" line="7965"/>
-        <location filename="../mainwindow.ui" line="7983"/>
-        <location filename="../mainwindow.ui" line="8001"/>
-        <location filename="../mainwindow.ui" line="8019"/>
-        <location filename="../mainwindow.ui" line="8037"/>
-        <source>Save as...</source>
-        <translation>Guardar como...</translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.ui" line="7788"/>
-        <location filename="../mainwindow.ui" line="7791"/>
-        <source>Save D1 to a file</source>
-        <translation>Guardar D1 en un archivo</translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.ui" line="7806"/>
-        <location filename="../mainwindow.ui" line="7809"/>
-        <source>Save D2 to a file</source>
-        <translation>Guardar D2 en un archivo</translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.ui" line="7824"/>
-        <location filename="../mainwindow.ui" line="7827"/>
-        <source>Save D3 to a file</source>
-        <translation>Guardar D3 en un archivo</translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.ui" line="7842"/>
-        <location filename="../mainwindow.ui" line="7845"/>
-        <source>Save D4 to a file</source>
-        <translation>Guardar D4 en un archivo</translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.ui" line="7860"/>
-        <location filename="../mainwindow.ui" line="7863"/>
-        <source>Save D5 to a file</source>
-        <translation>Guardar D5 en un archivo</translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.ui" line="7878"/>
-        <location filename="../mainwindow.ui" line="7881"/>
-        <source>Save D6 to a file</source>
-        <translation>Guardar D6 en un archivo</translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.ui" line="7896"/>
-        <location filename="../mainwindow.ui" line="7899"/>
-        <source>Save D7 to a file</source>
-        <translation>Guardar D7 en un archivo</translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.ui" line="7914"/>
-        <location filename="../mainwindow.ui" line="7917"/>
-        <source>Save D8 to a file</source>
-        <translation>Guardar D8 en un archivo</translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.ui" line="7932"/>
-        <location filename="../mainwindow.ui" line="7935"/>
-        <source>Save D9 to a file</source>
-        <translation>Guardar D9 en un archivo</translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.ui" line="7950"/>
-        <location filename="../mainwindow.ui" line="7953"/>
-        <source>Save D10 to a file</source>
-        <translation>Guardar D10 en un archivo</translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.ui" line="7968"/>
-        <location filename="../mainwindow.ui" line="7971"/>
-        <source>Save D11 to a file</source>
-        <translation>Guardar D11 en un archivo</translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.ui" line="7986"/>
-        <location filename="../mainwindow.ui" line="7989"/>
-        <source>Save D12 to a file</source>
-        <translation>Guardar D12 en un archivo</translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.ui" line="8004"/>
-        <location filename="../mainwindow.ui" line="8007"/>
-        <source>Save D13 to a file</source>
-        <translation>Guardar D13 en un archivo</translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.ui" line="8022"/>
-        <location filename="../mainwindow.ui" line="8025"/>
-        <source>Save D14 to a file</source>
-        <translation>Guardar D14 en un archivo</translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.ui" line="8040"/>
-        <location filename="../mainwindow.ui" line="8043"/>
-        <source>Save D15 to a file</source>
-        <translation>Guardar D15 en un archivo</translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.ui" line="8058"/>
-        <location filename="../mainwindow.ui" line="8061"/>
-        <source>Save D9</source>
-        <translation>Guardar D9</translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.ui" line="8076"/>
-        <location filename="../mainwindow.ui" line="8079"/>
-        <source>Save D10</source>
-        <translation>Guardar D10</translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.ui" line="8094"/>
-        <location filename="../mainwindow.ui" line="8097"/>
-        <source>Save D11</source>
-        <translation>Guardar D11</translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.ui" line="8112"/>
-        <location filename="../mainwindow.ui" line="8115"/>
-        <source>Save D12</source>
-        <translation>Guardar D12</translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.ui" line="8130"/>
-        <location filename="../mainwindow.ui" line="8133"/>
-        <source>Save D13</source>
-        <translation>Guardar D13</translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.ui" line="8148"/>
-        <location filename="../mainwindow.ui" line="8151"/>
-        <source>Save D14</source>
-        <translation>Guardar D4</translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.ui" line="8166"/>
-        <location filename="../mainwindow.ui" line="8169"/>
-        <source>Save D15</source>
-        <translation>Guardar D15</translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.ui" line="8181"/>
-        <location filename="../mainwindow.ui" line="8184"/>
-        <location filename="../mainwindow.ui" line="8187"/>
+        <location filename="../mainwindow.ui" line="375"/>
+        <location filename="../mainwindow.ui" line="378"/>
+        <location filename="../mainwindow.ui" line="381"/>
         <source>Show printer text output</source>
-        <translation>Mostrar texto de salida de la impresora</translation>
+        <translation>Mostrar salida de texto de impresora</translation>
     </message>
     <message>
-        <location filename="../mainwindow.ui" line="8199"/>
+        <location filename="../mainwindow.ui" line="384"/>
+        <source>Alt+Shift+T</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../mainwindow.ui" line="393"/>
         <source>Playback cassette image...</source>
-        <translation>Reproducción imagen de cassette ...</translation>
+        <translation>Reproducción de imagen de cassette...</translation>
     </message>
     <message>
-        <location filename="../mainwindow.ui" line="8202"/>
-        <location filename="../mainwindow.ui" line="8205"/>
+        <location filename="../mainwindow.ui" line="396"/>
+        <location filename="../mainwindow.ui" line="399"/>
         <source>Playback a cassette image</source>
-        <translation>Reproducción de una imagen en casete</translation>
+        <translation>Reproducción de una imagen de cassette</translation>
     </message>
     <message>
-        <location filename="../mainwindow.ui" line="8208"/>
+        <location filename="../mainwindow.ui" line="402"/>
         <source>Alt+C</source>
-        <translation>Alt+C</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../mainwindow.ui" line="8217"/>
+        <location filename="../mainwindow.ui" line="411"/>
         <source>&amp;Quit</source>
         <translation>&amp;Salir</translation>
     </message>
     <message>
-        <location filename="../mainwindow.ui" line="8220"/>
+        <location filename="../mainwindow.ui" line="414"/>
         <source>Quit RespeQt</source>
         <translation>Salir de RespeQt</translation>
     </message>
     <message>
-        <location filename="../mainwindow.ui" line="8232"/>
+        <location filename="../mainwindow.ui" line="417"/>
+        <source>Alt+Q</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../mainwindow.ui" line="426"/>
         <source>&amp;About RespeQt</source>
         <translation>&amp;Acerca de RespeQt</translation>
     </message>
     <message>
-        <location filename="../mainwindow.ui" line="8240"/>
+        <location filename="../mainwindow.ui" line="429"/>
+        <source>Ctrl+A</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../mainwindow.ui" line="434"/>
         <source>Help</source>
         <translation>Ayuda</translation>
     </message>
     <message>
-        <location filename="../mainwindow.ui" line="8248"/>
+        <location filename="../mainwindow.ui" line="442"/>
         <source>Contents</source>
         <translation>Contenido</translation>
     </message>
     <message>
-        <location filename="../mainwindow.ui" line="8253"/>
+        <location filename="../mainwindow.ui" line="447"/>
         <source>Index</source>
-        <translation>índice</translation>
+        <translation>Índice</translation>
     </message>
     <message>
-        <location filename="../mainwindow.ui" line="8265"/>
-        <location filename="../mainwindow.ui" line="8268"/>
-        <location filename="../mainwindow.ui" line="8271"/>
+        <location filename="../mainwindow.ui" line="459"/>
+        <location filename="../mainwindow.ui" line="462"/>
+        <location filename="../mainwindow.ui" line="465"/>
         <source>User Manual</source>
-        <translation>Manual de Uso</translation>
+        <translation>Manual de usuario</translation>
     </message>
     <message>
-        <location filename="../mainwindow.ui" line="8310"/>
-        <location filename="../mainwindow.ui" line="8331"/>
-        <location filename="../mainwindow.ui" line="8352"/>
-        <location filename="../mainwindow.ui" line="8373"/>
-        <location filename="../mainwindow.ui" line="8394"/>
-        <location filename="../mainwindow.ui" line="8415"/>
-        <location filename="../mainwindow.ui" line="8436"/>
-        <location filename="../mainwindow.ui" line="8457"/>
-        <location filename="../mainwindow.ui" line="8478"/>
-        <location filename="../mainwindow.ui" line="8499"/>
-        <location filename="../mainwindow.ui" line="8520"/>
-        <location filename="../mainwindow.ui" line="8541"/>
-        <location filename="../mainwindow.ui" line="8562"/>
-        <location filename="../mainwindow.ui" line="8583"/>
-        <source>Auto Commit</source>
-        <translation>Confirmación automática</translation>
+        <location filename="../mainwindow.ui" line="468"/>
+        <source>Ctrl+Shift+U</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../mainwindow.ui" line="8292"/>
-        <location filename="../mainwindow.ui" line="8313"/>
-        <location filename="../mainwindow.ui" line="8334"/>
-        <location filename="../mainwindow.ui" line="8355"/>
-        <location filename="../mainwindow.ui" line="8376"/>
-        <location filename="../mainwindow.ui" line="8397"/>
-        <location filename="../mainwindow.ui" line="8418"/>
-        <location filename="../mainwindow.ui" line="8439"/>
-        <location filename="../mainwindow.ui" line="8460"/>
-        <location filename="../mainwindow.ui" line="8481"/>
-        <location filename="../mainwindow.ui" line="8502"/>
-        <location filename="../mainwindow.ui" line="8523"/>
-        <location filename="../mainwindow.ui" line="8544"/>
-        <location filename="../mainwindow.ui" line="8565"/>
-        <location filename="../mainwindow.ui" line="8586"/>
-        <source>Commit changes to this disk automatically</source>
-        <translation>Confirme los cambios a este disco automáticamente</translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.ui" line="8295"/>
-        <location filename="../mainwindow.ui" line="8316"/>
-        <location filename="../mainwindow.ui" line="8337"/>
-        <location filename="../mainwindow.ui" line="8358"/>
-        <location filename="../mainwindow.ui" line="8379"/>
-        <location filename="../mainwindow.ui" line="8400"/>
-        <location filename="../mainwindow.ui" line="8421"/>
-        <location filename="../mainwindow.ui" line="8442"/>
-        <location filename="../mainwindow.ui" line="8463"/>
-        <location filename="../mainwindow.ui" line="8484"/>
-        <location filename="../mainwindow.ui" line="8505"/>
-        <location filename="../mainwindow.ui" line="8526"/>
-        <location filename="../mainwindow.ui" line="8547"/>
-        <location filename="../mainwindow.ui" line="8568"/>
-        <location filename="../mainwindow.ui" line="8589"/>
-        <source>Toggle Auto Commit ON/OFF</source>
-        <translation>Activar confirmación automática ON/OFF</translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.ui" line="8598"/>
+        <location filename="../mainwindow.ui" line="477"/>
         <source>Save mounted image group as default</source>
-        <translation>Guardar imagen como grupo montado por defecto</translation>
+        <translation>Guardar el grupo de imágenes montadas como predeterminado</translation>
     </message>
     <message>
-        <location filename="../mainwindow.ui" line="8610"/>
-        <source>Folder Boot Options</source>
-        <translation>Opciones de carpeta de inicio</translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.ui" line="8613"/>
-        <source>Change Boot Options</source>
-        <translation>Cambiar las opciones de arranque</translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.ui" line="8628"/>
-        <location filename="../mainwindow.ui" line="8631"/>
-        <location filename="../mainwindow.cpp" line="833"/>
-        <location filename="../mainwindow.cpp" line="834"/>
-        <location filename="../mainwindow.cpp" line="837"/>
+        <location filename="../mainwindow.ui" line="492"/>
+        <location filename="../mainwindow.ui" line="495"/>
+        <location filename="../mainwindow.cpp" line="824"/>
+        <location filename="../mainwindow.cpp" line="825"/>
         <source>Stop printer emulation</source>
-        <translation>Detener emulación de impresora</translation>
+        <translation>Detener la emulación de la impresora</translation>
     </message>
     <message>
-        <location filename="../mainwindow.ui" line="8634"/>
+        <location filename="../mainwindow.ui" line="498"/>
         <source>Alt+P</source>
-        <translation></translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../mainwindow.ui" line="8646"/>
-        <source>Ctrl+H</source>
-        <translation></translation>
+        <location filename="../mainwindow.ui" line="507"/>
+        <location filename="../mainwindow.cpp" line="783"/>
+        <location filename="../mainwindow.cpp" line="784"/>
+        <source>Hide drives D9-DO</source>
+        <translation>Ocultar unidades de disco D9-DO</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="126"/>
+        <location filename="../mainwindow.ui" line="510"/>
+        <source>Alt+H</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../mainwindow.ui" line="519"/>
+        <source>Toggle mini mode</source>
+        <translation>Modo mini de ventana</translation>
+    </message>
+    <message>
+        <location filename="../mainwindow.ui" line="522"/>
+        <source>Ctrl+M</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../mainwindow.ui" line="534"/>
+        <source>Toggle shade mode</source>
+        <translation>Cambiar modo de sombra</translation>
+    </message>
+    <message>
+        <location filename="../mainwindow.ui" line="537"/>
+        <source>Ctrl+S</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../mainwindow.ui" line="546"/>
+        <location filename="../mainwindow.ui" line="549"/>
+        <location filename="../mainwindow.ui" line="552"/>
+        <source>Open log window</source>
+        <translation>Abrir ventana de registro</translation>
+    </message>
+    <message>
+        <location filename="../mainwindow.ui" line="555"/>
+        <source>Ctrl+L</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../mainwindow.cpp" line="135"/>
         <source>RespeQt started at %1.</source>
-        <translation>RespeQt comenzó a %1.</translation>
+        <translation>RespeQt comenzó en %1.</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="153"/>
-        <location filename="../mainwindow.cpp" line="161"/>
-        <source>Import Settings</source>
-        <translation>Configuración de importación</translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.cpp" line="153"/>
-        <source>RespeQt has not found previously stored settings. However, RespeQt has located previous AspeQt settings. These will be imported to RespeQt. Your previous AspeQt settings will not be modified.</source>
-        <translation>RespeQt no ha encontrado valores previamente almacenados. Sin embargo, RespeQt ha localizado configuración anterior de AspeQt. Estos se importarán a RespeQt. No se modificará la configuración anterior de AspeQt.</translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.cpp" line="161"/>
-        <source>Settings were imported successfully</source>
-        <translation>Ajustes fueron importados con éxito</translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.cpp" line="193"/>
-        <location filename="../mainwindow.cpp" line="203"/>
+        <location filename="../mainwindow.cpp" line="195"/>
+        <location filename="../mainwindow.cpp" line="205"/>
         <source>Session file error</source>
-        <translation>Error en archivo de sesión</translation>
+        <translation>Error de archivo de sesión</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="194"/>
+        <location filename="../mainwindow.cpp" line="196"/>
         <source>Requested session file not found in the given directory path or the path is incorrect. RespeQt will continue with default session configuration.</source>
-        <translation>Archivo de la petición de sesión no se encuentra en la ruta del directorio o la ruta dada es incorrecta. RespeQt continuará con la configuración predeterminada de la sesión.</translation>
+        <translation>El archivo de sesión solicitado no se encuentra en la ruta del directorio dado o la ruta es incorrecta. RespeQt continuará con la configuración de sesión predeterminada.</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="204"/>
+        <location filename="../mainwindow.cpp" line="206"/>
         <source>Requested session file not found in the application&apos;s current directory path
  (No path was specified). RespeQt will continue with default session configuration.</source>
-        <translation>Archivo de la sesión no se encuentra en la ruta de la aplicación del directorio actual
-  (No hay ninguna ruta especificada). RespeQt continuará con la configuración predeterminada de la sesión.</translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.cpp" line="215"/>
-        <source>RespeQt - Atari Serial Peripheral Emulator for Qt</source>
-        <translation>RespeQt - Atari Emulador Serial de Periférico para Qt</translation>
+        <translation>El archivo de sesión solicitado no se encuentra en la ruta del directorio actual de la aplicación
+ (No se especificó ninguna ruta). RespeQt continuará con la configuración de sesión predeterminada.</translation>
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="217"/>
-        <location filename="../mainwindow.cpp" line="2075"/>
+        <source>RespeQt - Atari Serial Peripheral Emulator for Qt</source>
+        <translation>RespeQt - Atari Serial Peripheral Emulator para Qt</translation>
+    </message>
+    <message>
+        <location filename="../mainwindow.cpp" line="219"/>
+        <location filename="../mainwindow.cpp" line="1678"/>
         <source> -- Session: </source>
-        <translation> -- Sesión: </translation>
+        <translation> -- Sesión:</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="230"/>
+        <location filename="../mainwindow.cpp" line="232"/>
         <source>19200 bits/sec</source>
-        <translation>19200 bits/sec</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="240"/>
+        <location filename="../mainwindow.cpp" line="239"/>
         <source>Clear messages</source>
-        <translation>Borrar mensajes</translation>
+        <translation>Eliminar mensajes</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="260"/>
+        <location filename="../mainwindow.cpp" line="259"/>
         <source>Connected to the network via: </source>
-        <translation>Conectado a la red a través de:</translation>
+        <translation>Conectado a la red a través de: </translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="368"/>
+        <location filename="../mainwindow.cpp" line="263"/>
+        <source>No network connection</source>
+        <translation>No hay conexion de red</translation>
+    </message>
+    <message>
+        <location filename="../mainwindow.cpp" line="334"/>
         <source>RespeQt stopped at %1.</source>
-        <translation>RespeQt se detuvo en el %1.</translation>
+        <translation>RespeQt se detuvo en %1.</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="468"/>
+        <location filename="../mainwindow.cpp" line="474"/>
         <source>Swapped disk %1 with disk %2.</source>
-        <translation>Intercambio, disco %1 con el disco %2.</translation>
+        <translation>Disco intercambiado %1 con disco %2.</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="522"/>
+        <location filename="../mainwindow.cpp" line="528"/>
         <source>Cannot mount &apos;%1&apos;: No empty disk slots.</source>
-        <translation>No se puede montar &apos;%1&apos;: No hay ranuras de disco vacías.</translation>
+        <translation>No puede montar &apos;%1&apos;: No hay ranuras de disco vacías.</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="607"/>
+        <location filename="../mainwindow.cpp" line="625"/>
         <source>First run</source>
-        <translation>Primera ejecución</translation>
+        <translation>Primer intento</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="608"/>
+        <location filename="../mainwindow.cpp" line="626"/>
         <source>You are running RespeQt for the first time.
 
 Do you want to open the options dialog?</source>
         <translation>Está ejecutando RespeQt por primera vez.
 
-¿Desea abrir el diálogo de opciones?</translation>
+ṡQuieres abrir el diálogo de opciones?</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="770"/>
-        <location filename="../mainwindow.cpp" line="771"/>
         <location filename="../mainwindow.cpp" line="788"/>
         <location filename="../mainwindow.cpp" line="789"/>
         <source>Show drives D9-DO</source>
-        <translation>Mostrar Unidades D9-DO</translation>
+        <translation>Mostrar unidades D9-DO</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="824"/>
-        <location filename="../mainwindow.cpp" line="825"/>
-        <location filename="../mainwindow.cpp" line="828"/>
-        <source>Start printer emulation</source>
-        <translation>Comience emulación de impresora</translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.cpp" line="831"/>
+        <location filename="../mainwindow.cpp" line="813"/>
         <source>Printer emulation stopped.</source>
-        <translation>Emulación de impresora se detuvo.</translation>
+        <translation>La emulación de la impresora se detuvo.</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="840"/>
+        <location filename="../mainwindow.cpp" line="817"/>
         <source>Printer emulation started.</source>
-        <translation>Emulación de impresora comenzó.</translation>
+        <translation>Emulación de la impresora iniciada.</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="857"/>
+        <location filename="../mainwindow.cpp" line="829"/>
+        <location filename="../mainwindow.cpp" line="830"/>
+        <source>Start printer emulation</source>
+        <translation>Iniciar la emulación de la impresora.</translation>
+    </message>
+    <message>
+        <location filename="../mainwindow.cpp" line="851"/>
         <source>&amp;Stop emulation</source>
-        <translation>&amp;Parar la emulación</translation>
+        <translation>&amp;Detener la emulación</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="858"/>
-        <location filename="../mainwindow.cpp" line="859"/>
+        <location filename="../mainwindow.cpp" line="852"/>
+        <location filename="../mainwindow.cpp" line="853"/>
         <source>Stop SIO peripheral emulation</source>
-        <translation>Parar la emulación del periférico SIO</translation>
+        <translation>Detener la emulación periférica SIO</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="876"/>
+        <location filename="../mainwindow.cpp" line="870"/>
         <source>Emulation stopped.</source>
-        <translation>Emulación detenida.</translation>
+        <translation>La emulación se detuvo.</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="894"/>
-        <location filename="../mainwindow.cpp" line="916"/>
+        <location filename="../mainwindow.cpp" line="892"/>
+        <location filename="../mainwindow.cpp" line="912"/>
         <source>Folder image</source>
-        <translation>Carpeta de imágenes</translation>
+        <translation>Imagen de carpeta</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="942"/>
-        <location filename="../mainwindow.cpp" line="1474"/>
-        <location filename="../mainwindow.cpp" line="1709"/>
-        <location filename="../mainwindow.cpp" line="1752"/>
+        <location filename="../mainwindow.cpp" line="925"/>
+        <location filename="../mainwindow.cpp" line="1423"/>
+        <location filename="../mainwindow.cpp" line="1465"/>
+        <location filename="../mainwindow.cpp" line="1505"/>
         <source>Save failed</source>
         <translation>Error al guardar</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="942"/>
-        <location filename="../mainwindow.cpp" line="1474"/>
-        <location filename="../mainwindow.cpp" line="1709"/>
-        <location filename="../mainwindow.cpp" line="1752"/>
+        <location filename="../mainwindow.cpp" line="926"/>
+        <location filename="../mainwindow.cpp" line="1423"/>
+        <location filename="../mainwindow.cpp" line="1465"/>
+        <location filename="../mainwindow.cpp" line="1505"/>
         <source>&apos;%1&apos; cannot be saved, do you want to save the image with another name?</source>
-        <translation>&apos;%1&apos; no puede ser guardado, ¿quieres guardar la imagen con otro nombre?</translation>
+        <translation>&apos;%1&apos; no se puede guardar, ṡdesea guardar la imagen con otro nombre?</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="1189"/>
+        <location filename="../mainwindow.cpp" line="1135"/>
         <source>Unmounted disk %1</source>
-        <translation>Disco %1 desmontado</translation>
+        <translation type="unfinished">Disco %1 desmontado</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="1345"/>
-        <location filename="../mainwindow.cpp" line="2045"/>
+        <location filename="../mainwindow.cpp" line="1302"/>
+        <location filename="../mainwindow.cpp" line="1648"/>
         <source>[%1] Mounted &apos;%2&apos; as &apos;%3&apos;.</source>
         <translation>[%1] Montado &apos;%2&apos; como &apos;%3&apos;.</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="1364"/>
+        <location filename="../mainwindow.cpp" line="1321"/>
         <source>Open a disk image</source>
         <translation>Abrir una imagen de disco</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="264"/>
-        <source>No network connection</source>
-        <translation>No hay conexión a la red</translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.cpp" line="1366"/>
-        <location filename="../mainwindow.cpp" line="1735"/>
+        <location filename="../mainwindow.cpp" line="1323"/>
+        <location filename="../mainwindow.cpp" line="1488"/>
         <source>All Atari disk images (*.atr *.xfd *.pro);;SIO2PC ATR images (*.atr);;XFormer XFD images (*.xfd);;Pro images (*.pro);;All files (*)</source>
-        <translation>Todas las imágenes de disco de Atari (*.atr *.xfd *.atx *.pro);;SIO2PC ATR images (*.atr);;XFormer XFD images (*.xfd);;Pro images (*.pro);;Todos los archivos (*)</translation>
+        <translation>Todas las imágenes de disco de Atari (*.atr *.xfd *.pro);;Imágenes de SIO2PC ATR (*.atr);;Imágenes de XFormer XFD (*.xfd);;Imágenes pro (*.pro);;Todos los archivos (*)</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="1386"/>
+        <location filename="../mainwindow.cpp" line="1343"/>
         <source>Open a folder image</source>
         <translation>Abrir una imagen de carpeta</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="1429"/>
+        <location filename="../mainwindow.cpp" line="1382"/>
         <source>Image file unsaved</source>
-        <translation>Imagen de archivo sin guardar</translation>
+        <translation>Archivo de imagen no guardado</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="1429"/>
+        <location filename="../mainwindow.cpp" line="1382"/>
         <source>&apos;%1&apos; has unsaved changes, do you want to save it?</source>
-        <translation>&apos;%1&apos; tiene cambios sin guardar, ¿quieres guardarlo?</translation>
+        <translation>&apos;%1&apos; tiene cambios no guardados, ṡquieres guardarlo?</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="1591"/>
-        <source>[Disk 1] Auto-commit ON.</source>
-        <translation>[Disco 1] Confirmación automática activada.</translation>
+        <location filename="../mainwindow.cpp" line="1454"/>
+        <source>[Disk %1] Auto-commit ON.</source>
+        <translation>[Disco %1] Activar automáticamente.</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="1593"/>
-        <source>[Disk 1] Auto-commit OFF.</source>
-        <translation>[Disco 1] Confirmación automática desactivada.</translation>
+        <location filename="../mainwindow.cpp" line="1456"/>
+        <source>[Disk %1] Auto-commit OFF.</source>
+        <translation>[Disco% 1] Desactivada automáticamente.</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="1599"/>
-        <source>[Disk 2] Auto-commit ON.</source>
-        <translation>[Disco 2] Confirmación automática activada.</translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.cpp" line="1601"/>
-        <source>[Disk 2] Auto-commit OFF.</source>
-        <translation>[Disco 2] Confirmación automática desactivada.</translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.cpp" line="1607"/>
-        <source>[Disk 3] Auto-commit ON.</source>
-        <translation>[Disco 3] Confirmación automática activada.</translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.cpp" line="1609"/>
-        <source>[Disk 3] Auto-commit OFF.</source>
-        <translation>[Disco 3] Confirmación automática desactivada.</translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.cpp" line="1615"/>
-        <source>[Disk 4] Auto-commit ON.</source>
-        <translation>[Disco 4] Confirmación automática activada.</translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.cpp" line="1617"/>
-        <source>[Disk 4] Auto-commit OFF.</source>
-        <translation>[Disco 4] Confirmación automática desactivada.</translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.cpp" line="1623"/>
-        <source>[Disk 5] Auto-commit ON.</source>
-        <translation>[Disco 5] Confirmación automática activada.</translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.cpp" line="1625"/>
-        <source>[Disk 5] Auto-commit OFF.</source>
-        <translation>[Disco 5] Confirmación automática desactivada.</translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.cpp" line="1631"/>
-        <source>[Disk 6] Auto-commit ON.</source>
-        <translation>[Disco 6] Confirmación automática activada.</translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.cpp" line="1633"/>
-        <source>[Disk 6] Auto-commit OFF.</source>
-        <translation>[Disco 6] Confirmación automática desactivada.</translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.cpp" line="1639"/>
-        <source>[Disk 7] Auto-commit ON.</source>
-        <translation>[Disco 7] Confirmación automática activada.</translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.cpp" line="1641"/>
-        <source>[Disk 7] Auto-commit OFF.</source>
-        <translation>[Disco 7] Confirmación automática desactivada.</translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.cpp" line="1647"/>
-        <source>[Disk 8] Auto-commit ON.</source>
-        <translation>[Disco 8] Confirmación automática activada.</translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.cpp" line="1649"/>
-        <source>[Disk 8] Auto-commit OFF.</source>
-        <translation>[Disco 8] Confirmación automática desactivada.</translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.cpp" line="1654"/>
-        <source>[Disk 9] Auto-commit ON.</source>
-        <translation>[Disco 9] Confirmación automática activada.</translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.cpp" line="1656"/>
-        <source>[Disk 9] Auto-commit OFF.</source>
-        <translation>[Disco 9] Confirmación automática desactivada.</translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.cpp" line="1661"/>
-        <source>[Disk 10] Auto-commit ON.</source>
-        <translation>[Disco 10] Confirmación automática activada.</translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.cpp" line="1663"/>
-        <source>[Disk 10] Auto-commit OFF.</source>
-        <translation>[Disco 10] Confirmación automática desactivada.</translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.cpp" line="1668"/>
-        <source>[Disk 11] Auto-commit ON.</source>
-        <translation>[Disco 11] Confirmación automática activada.</translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.cpp" line="1670"/>
-        <source>[Disk 11] Auto-commit OFF.</source>
-        <translation>[Disco 11] Confirmación automática desactivada.</translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.cpp" line="1675"/>
-        <source>[Disk 12] Auto-commit ON.</source>
-        <translation>[Disco 11] Confirmación automática activada.</translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.cpp" line="1677"/>
-        <source>[Disk 12] Auto-commit OFF.</source>
-        <translation>[Disco 12] Confirmación automática desactivada.</translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.cpp" line="1682"/>
-        <source>[Disk 13] Auto-commit ON.</source>
-        <translation>[Disco 13] Confirmación automática activada.</translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.cpp" line="1684"/>
-        <source>[Disk 13] Auto-commit OFF.</source>
-        <translation>[Disco 13] Confirmación automática desactivada.</translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.cpp" line="1689"/>
-        <source>[Disk 14] Auto-commit ON.</source>
-        <translation>[Disco 14] Confirmación automática activada.</translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.cpp" line="1691"/>
-        <source>[Disk 14] Auto-commit OFF.</source>
-        <translation>[Disco 14] Confirmación automática desactivada.</translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.cpp" line="1696"/>
-        <source>[Disk 15] Auto-commit ON.</source>
-        <translation>[Disco 15] Confirmación automática activada.</translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.cpp" line="1698"/>
-        <source>[Disk 15] Auto-commit OFF.</source>
-        <translation>[Disco 15] Confirmación automática desactivada.</translation>
-    </message>
-    <message>
-        <location filename="../mainwindow.cpp" line="1733"/>
+        <location filename="../mainwindow.cpp" line="1486"/>
         <source>Save image as</source>
         <translation>Guardar imagen como</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="1770"/>
+        <location filename="../mainwindow.cpp" line="1523"/>
         <source>Revert to last saved</source>
-        <translation>Volver a la última guardada</translation>
+        <translation>Volver al último guardado</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="1771"/>
+        <location filename="../mainwindow.cpp" line="1524"/>
         <source>Do you really want to revert &apos;%1&apos; to its last saved state? You will lose the changes that has been made.</source>
-        <translation>¿Realmente desea revertir &apos;%1&apos; a su último estado guardado? Se perderán los cambios que ha realizado.</translation>
+        <translation>ṡRealmente desea revertir &apos;%1&apos; a su ultimo estado guardado? Perderás los cambios que se hayan realizado.</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="2054"/>
+        <location filename="../mainwindow.cpp" line="1657"/>
         <source>Open session</source>
-        <translation>Abrir sesión</translation>
+        <translation>Abrir session</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="2056"/>
-        <location filename="../mainwindow.cpp" line="2092"/>
+        <location filename="../mainwindow.cpp" line="1659"/>
+        <location filename="../mainwindow.cpp" line="1695"/>
         <source>RespeQt sessions (*.respeqt);;All files (*)</source>
-        <translation>Sesiónes RespeQt (*.respeqt);;Todos los archivos (*)</translation>
+        <translation>Sesiones de RespeQt (* .respeqt);;Todos los archivos (*)</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="2090"/>
+        <location filename="../mainwindow.cpp" line="1693"/>
         <source>Save session as</source>
-        <translation>Guardar la sesión como</translation>
+        <translation>Guardar sesión como</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="2113"/>
+        <location filename="../mainwindow.cpp" line="1716"/>
         <source>Open executable</source>
-        <translation>Abrir ejecutable</translation>
+        <translation>Abrir Ejecutable</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="2115"/>
+        <location filename="../mainwindow.cpp" line="1718"/>
         <source>Atari executables (*.xex *.com *.exe);;All files (*)</source>
-        <translation>Atari ejecutables (*.xex *.com *.exe);;Todos los archivos (*)</translation>
+        <translation>Ejecutables Atari (*.xex *.com *.exe);;Todos los archivos (*)</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="2143"/>
+        <location filename="../mainwindow.cpp" line="1746"/>
         <source>Open a cassette image</source>
-        <translation>Abrir una imagen casete</translation>
+        <translation>Abrir una imagen de cassette</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="2145"/>
+        <location filename="../mainwindow.cpp" line="1748"/>
         <source>CAS images (*.cas);;All files (*)</source>
-        <translation>Imagenes CAS (*.cas);;Todos los archivos (*)</translation>
+        <translation>Imágenes CAS (* .cas);;Todos los archivos (*)</translation>
     </message>
 </context>
 <context>
@@ -3215,7 +1957,7 @@ Do you want to open the options dialog?</source>
     <message>
         <location filename="../diskeditdialog.cpp" line="243"/>
         <source>No</source>
-        <translation>No</translation>
+        <translation type="unfinished">N°</translation>
     </message>
     <message>
         <location filename="../diskeditdialog.cpp" line="246"/>
@@ -3235,7 +1977,7 @@ Do you want to open the options dialog?</source>
     <message>
         <location filename="../diskeditdialog.cpp" line="255"/>
         <source>Time</source>
-        <translation>Tiempo</translation>
+        <translation>Hora</translation>
     </message>
     <message>
         <location filename="../diskeditdialog.cpp" line="258"/>
@@ -3251,550 +1993,1273 @@ Do you want to open the options dialog?</source>
         <translation>Opciones</translation>
     </message>
     <message>
-        <location filename="../optionsdialog.ui" line="51"/>
+        <location filename="../optionsdialog.ui" line="45"/>
         <source>1</source>
-        <translation></translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../optionsdialog.ui" line="56"/>
+        <location filename="../optionsdialog.ui" line="50"/>
         <source>Serial I/O backends</source>
-        <translation>Serial E/S AtariSIO</translation>
+        <translation>Serial E/S backends</translation>
     </message>
     <message>
-        <location filename="../optionsdialog.ui" line="63"/>
+        <location filename="../optionsdialog.ui" line="57"/>
         <source>Standard serial port</source>
-        <translation>Puerto serial estándar</translation>
+        <translation>Puerto serial estandar</translation>
     </message>
     <message>
-        <location filename="../optionsdialog.ui" line="71"/>
+        <location filename="../optionsdialog.ui" line="65"/>
         <source>AtariSIO</source>
-        <translation>AtariSIO</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../optionsdialog.ui" line="80"/>
-        <location filename="../optionsdialog.ui" line="427"/>
+        <location filename="../optionsdialog.ui" line="74"/>
+        <location filename="../optionsdialog.ui" line="510"/>
         <source>Emulation</source>
         <translation>Emulación</translation>
     </message>
     <message>
-        <location filename="../optionsdialog.ui" line="85"/>
+        <location filename="../optionsdialog.ui" line="79"/>
         <source>User interface</source>
         <translation>Interfaz de usuario</translation>
     </message>
     <message>
-        <location filename="../optionsdialog.ui" line="127"/>
+        <location filename="../optionsdialog.ui" line="115"/>
         <source>Standard serial port backend options</source>
-        <translation>Opciones de puerto serial</translation>
+        <translation>Opciones de backend de puerto serie estándar</translation>
     </message>
     <message>
-        <location filename="../optionsdialog.ui" line="136"/>
-        <location filename="../optionsdialog.ui" line="321"/>
+        <location filename="../optionsdialog.ui" line="124"/>
+        <location filename="../optionsdialog.ui" line="404"/>
         <source>Use this backend</source>
-        <translation>Utilice este backend</translation>
+        <translation>Usa este backend</translation>
     </message>
     <message>
-        <location filename="../optionsdialog.ui" line="155"/>
+        <location filename="../optionsdialog.ui" line="143"/>
         <source>Port name:</source>
         <translation>Nombre del puerto:</translation>
     </message>
     <message>
-        <location filename="../optionsdialog.ui" line="162"/>
-        <source>COM1</source>
-        <translation>COM1</translation>
-    </message>
-    <message>
-        <location filename="../optionsdialog.ui" line="175"/>
-        <location filename="../optionsdialog.ui" line="354"/>
+        <location filename="../optionsdialog.ui" line="159"/>
+        <location filename="../optionsdialog.ui" line="437"/>
         <source>Handshake method:</source>
-        <translation>Método de comunicación:</translation>
+        <translation>Método Handshake:</translation>
     </message>
     <message>
-        <location filename="../optionsdialog.ui" line="183"/>
-        <location filename="../optionsdialog.ui" line="362"/>
+        <location filename="../optionsdialog.ui" line="167"/>
+        <location filename="../optionsdialog.ui" line="445"/>
         <source>RI</source>
-        <translation></translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../optionsdialog.ui" line="188"/>
-        <location filename="../optionsdialog.ui" line="367"/>
+        <location filename="../optionsdialog.ui" line="172"/>
+        <location filename="../optionsdialog.ui" line="450"/>
         <source>DSR</source>
-        <translation></translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../optionsdialog.ui" line="193"/>
-        <location filename="../optionsdialog.ui" line="372"/>
+        <location filename="../optionsdialog.ui" line="177"/>
+        <location filename="../optionsdialog.ui" line="455"/>
         <source>CTS</source>
-        <translation></translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../optionsdialog.ui" line="198"/>
-        <source>NONE (Windows ONLY - Experimental)</source>
-        <translation>Ninguno (sólo Windows - Experimental)</translation>
+        <location filename="../optionsdialog.ui" line="182"/>
+        <source>NONE</source>
+        <translation>Ninguna</translation>
     </message>
     <message>
-        <location filename="../optionsdialog.ui" line="212"/>
+        <location filename="../optionsdialog.ui" line="187"/>
+        <source>SOFTWARE (SIO2BT)</source>
+        <translation>Porgrama (SIO2BT)</translation>
+    </message>
+    <message>
+        <location filename="../optionsdialog.ui" line="195"/>
+        <source>Trigger on falling edge</source>
+        <translation>Gatillo en el borde de caída</translation>
+    </message>
+    <message>
+        <location filename="../optionsdialog.ui" line="211"/>
+        <source>Write delay [ms]:</source>
+        <translation>Retraso de escritura [ms]:</translation>
+    </message>
+    <message>
+        <location filename="../optionsdialog.ui" line="225"/>
+        <source>0</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../optionsdialog.ui" line="230"/>
+        <source>10</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../optionsdialog.ui" line="235"/>
+        <source>20</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../optionsdialog.ui" line="240"/>
+        <source>30</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../optionsdialog.ui" line="245"/>
+        <source>40</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../optionsdialog.ui" line="250"/>
+        <source>50</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../optionsdialog.ui" line="255"/>
+        <source>60</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../optionsdialog.ui" line="269"/>
         <source>High speed mode baud rate:</source>
-        <translation>Modo de alta velocidad:</translation>
+        <translation>Velocidad de transmisión en modo de alta velocidad:</translation>
     </message>
     <message>
-        <location filename="../optionsdialog.ui" line="223"/>
+        <location filename="../optionsdialog.ui" line="280"/>
         <source>19200 (1x)</source>
-        <translation></translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../optionsdialog.ui" line="228"/>
+        <location filename="../optionsdialog.ui" line="285"/>
         <source>38400 (2x)</source>
-        <translation></translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../optionsdialog.ui" line="233"/>
+        <location filename="../optionsdialog.ui" line="290"/>
         <source>57600 (3x)</source>
-        <translation></translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../optionsdialog.ui" line="241"/>
+        <location filename="../optionsdialog.ui" line="298"/>
         <source>Use non-standard speeds</source>
         <translation>Utilice velocidades no estándar</translation>
     </message>
     <message>
-        <location filename="../optionsdialog.ui" line="257"/>
+        <location filename="../optionsdialog.ui" line="314"/>
         <source>High speed mode POKEY divisor:</source>
-        <translation>Alta velocidad de modo POKEY divisor:</translation>
-    </message>
-    <message>
-        <location filename="../optionsdialog.ui" line="312"/>
-        <source>AtariSIO backend options</source>
-        <translation>AtariSIO backend options</translation>
+        <translation>Modo de alta velocidad divisor POKEY:</translation>
     </message>
     <message>
         <location filename="../optionsdialog.ui" line="334"/>
+        <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;Complete/Error response delay (Îỳs)&lt;br&gt;See manual for more information&lt;/body&gt;&lt;/html&gt;</source>
+        <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;Retardo de respuesta completa/Error (Îỳs)&lt;br&gt;Ver manual para más información. &lt;/body&gt;&lt;/html&gt;</translation>
+    </message>
+    <message>
+        <location filename="../optionsdialog.ui" line="341"/>
+        <source>Îỳs</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../optionsdialog.ui" line="395"/>
+        <source>AtariSIO backend options</source>
+        <translation>Opciones de backend AtariSIO</translation>
+    </message>
+    <message>
+        <location filename="../optionsdialog.ui" line="417"/>
         <source>Device name:</source>
         <translation>Nombre del dispositivo:</translation>
     </message>
     <message>
-        <location filename="../optionsdialog.ui" line="341"/>
+        <location filename="../optionsdialog.ui" line="424"/>
         <source>/dev/atarisio0</source>
-        <translation>/dev/atarisio0</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../optionsdialog.ui" line="439"/>
-        <source>Use high speed executable loader</source>
-        <translation>Utilice cargador de alta velocidad para ejecutables</translation>
+        <location filename="../optionsdialog.ui" line="516"/>
+        <source>PCLINK:</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../optionsdialog.ui" line="477"/>
-        <source>Use custom baud rate for cassette emulation</source>
-        <translation>Use la velocidad de transmisión personalizada para la emulación de cinta</translation>
-    </message>
-    <message>
-        <location filename="../optionsdialog.ui" line="533"/>
+        <location filename="../optionsdialog.ui" line="534"/>
         <source>Folder Images:</source>
-        <translation>Carpeta Imágenes:</translation>
+        <translation>Imágenes de la carpeta:</translation>
     </message>
     <message>
-        <location filename="../optionsdialog.ui" line="552"/>
+        <location filename="../optionsdialog.ui" line="574"/>
+        <source>        (Required for AtariDOS compatibility)</source>
+        <translation>        (Requerido para la compatibilidad con AtariDOS)</translation>
+    </message>
+    <message>
+        <location filename="../optionsdialog.ui" line="606"/>
         <source>Filter out underscore character from file names</source>
         <translation>Filtrar el carácter de subrayado de los nombres de archivo</translation>
     </message>
     <message>
-        <location filename="../optionsdialog.ui" line="573"/>
-        <source>        (Required for AtariDOS compatibility)</source>
-        <translation>        (Necesarios para la compatibilidad Atari DOS)</translation>
+        <location filename="../optionsdialog.ui" line="632"/>
+        <source>CAPITAL letters in file names</source>
+        <translation>Letras mayúsculas en nombres de archivos</translation>
     </message>
     <message>
-        <location filename="../optionsdialog.ui" line="621"/>
+        <location filename="../optionsdialog.ui" line="651"/>
+        <source>Use custom baud rate for cassette emulation</source>
+        <translation>Utilice la velocidad de transmisión personalizada para la emulación de cassette</translation>
+    </message>
+    <message>
+        <location filename="../optionsdialog.ui" line="680"/>
+        <source>Use high speed executable loader</source>
+        <translation>Usar el cargador ejecutable de alta velocidad.</translation>
+    </message>
+    <message>
+        <location filename="../optionsdialog.ui" line="690"/>
+        <source>URL Submit</source>
+        <translation>Enviar URL</translation>
+    </message>
+    <message>
+        <location filename="../optionsdialog.ui" line="697"/>
+        <source>Smart Device:</source>
+        <translation>Dispositivo inteligente:</translation>
+    </message>
+    <message>
+        <location filename="../optionsdialog.ui" line="732"/>
         <source>User inteface</source>
         <translation>Interfaz de usuario</translation>
     </message>
     <message>
-        <location filename="../optionsdialog.ui" line="627"/>
+        <location filename="../optionsdialog.ui" line="738"/>
         <source>Language:</source>
-        <translation>Lenguaje:</translation>
+        <translation>Idioma:</translation>
     </message>
     <message>
-        <location filename="../optionsdialog.ui" line="637"/>
+        <location filename="../optionsdialog.ui" line="748"/>
         <source>Minimize to system tray</source>
-        <translation>Minimizar a la barra de tareas del sistema</translation>
+        <translation>Minimizar a la bandeja del sistema</translation>
     </message>
     <message>
-        <location filename="../optionsdialog.ui" line="644"/>
+        <location filename="../optionsdialog.ui" line="755"/>
         <source>Save window positions and sizes</source>
-        <translation>Guardar las posiciones y tamaños de ventanas</translation>
+        <translation>Guardar posiciones y tamaños de ventanas</translation>
     </message>
     <message>
-        <location filename="../optionsdialog.ui" line="683"/>
+        <location filename="../optionsdialog.ui" line="794"/>
         <source>Save D9-DO drive visibility status</source>
-        <translation>Guardar visualización de las unidades D9-DO</translation>
+        <translation>Guardar el estado de visibilidad de la unidad D9-DO</translation>
     </message>
     <message>
-        <location filename="../optionsdialog.ui" line="693"/>
+        <location filename="../optionsdialog.ui" line="804"/>
         <source>Enable Shade in Mini Mode by default</source>
-        <translation>Activar pantalla en modo Mini por defecto</translation>
+        <translation>Habilitar Sombra en Modo Mini por defecto</translation>
     </message>
     <message>
-        <location filename="../optionsdialog.ui" line="706"/>
+        <location filename="../optionsdialog.ui" line="817"/>
         <source>Use larger font in drive slot descriptions</source>
-        <translation>Utilizar letra más grande en las descripciones de ranura de disco</translation>
+        <translation>Use fuentes más grandes en las descripciones de las ranuras de disco</translation>
     </message>
     <message>
-        <location filename="../optionsdialog.ui" line="729"/>
+        <location filename="../optionsdialog.ui" line="834"/>
         <source>Save/Commit or Cancel/Ignore changes made to the settings</source>
-        <translation>Guardar/Confirmar o Cancelar/Ignorar los cambios realizados en los ajustes</translation>
+        <translation>Guardar/Confirmar o Cancelar/Ignorar los cambios realizados en la configuración</translation>
     </message>
     <message>
-        <location filename="../optionsdialog.cpp" line="76"/>
+        <location filename="../optionsdialog.cpp" line="59"/>
+        <source>Custom</source>
+        <translation>Personalizado</translation>
+    </message>
+    <message>
+        <location filename="../optionsdialog.cpp" line="100"/>
         <source>Automatic</source>
         <translation>Automático</translation>
     </message>
     <message>
-        <location filename="../optionsdialog.cpp" line="79"/>
-        <location filename="../optionsdialog.cpp" line="88"/>
+        <location filename="../optionsdialog.cpp" line="103"/>
+        <location filename="../optionsdialog.cpp" line="112"/>
         <source>English</source>
-        <translation>Español</translation>
+        <translation>Inglés</translation>
+    </message>
+</context>
+<context>
+    <name>PCLINK</name>
+    <message>
+        <location filename="../pclink.cpp" line="187"/>
+        <source>PCLINK Command=[$%1] aux1=$%2 aux2=$%3 cunit=$%4</source>
+        <translation>PCLINK Comando=[$%1] aux1=$%2 aux2=$%3 cunit=$%4</translation>
+    </message>
+    <message>
+        <location filename="../pclink.cpp" line="199"/>
+        <source>[%1] P</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../pclink.cpp" line="206"/>
+        <source>[%1] R</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../pclink.cpp" line="224"/>
+        <source>[%1] Get status for [%2]</source>
+        <translation>[%1] Obtener estado para [%2]</translation>
+    </message>
+    <message>
+        <location filename="../pclink.cpp" line="235"/>
+        <source>[%1] Speed poll</source>
+        <translation>[%1] Encuesta de velocidad</translation>
+    </message>
+    <message>
+        <location filename="../pclink.cpp" line="242"/>
+        <source>[%1] command: $%2, aux: $%3 NAKed.</source>
+        <translation>[%1] comando: $%2, aux: $%3 NAKed.</translation>
+    </message>
+    <message>
+        <location filename="../pclink.cpp" line="275"/>
+        <source>PCLINK[%1] Mount %2</source>
+        <translation>PCLINK[%1] Montar %2</translation>
+    </message>
+    <message>
+        <location filename="../pclink.cpp" line="317"/>
+        <source>PCLINK[%1] Unmount</source>
+        <translation>PCLINK[%1] Desmontar</translation>
+    </message>
+    <message>
+        <location filename="../pclink.cpp" line="470"/>
+        <source>match: %1%2%3%4%5%6%7%8%9%10%11 with %12%13%14%15%16%17%18%19%20%21%22: </source>
+        <translation>Coincidencia: %1%2%3%4%5%6%7%8%9%10%11 con %12%13%14%15%16%17%18%19%20%21%22: </translation>
+    </message>
+    <message>
+        <location filename="../pclink.cpp" line="483"/>
+        <source>no match</source>
+        <translation>Sin coincidencia</translation>
+    </message>
+    <message>
+        <location filename="../pclink.cpp" line="494"/>
+        <source>atr mismatch: not HIDDEN or ARCHIVED</source>
+        <translation>Desajuste atr: no OCULTO o ARCHIVADO</translation>
+    </message>
+    <message>
+        <location filename="../pclink.cpp" line="502"/>
+        <source>atr mismatch: not PROTECTED</source>
+        <translation>No coincidencia atr: no está PROTEGIDO</translation>
+    </message>
+    <message>
+        <location filename="../pclink.cpp" line="511"/>
+        <source>atr mismatch: not UNPROTECTED</source>
+        <translation>Desajuste atr: no DESPROTECTADO</translation>
+    </message>
+    <message>
+        <location filename="../pclink.cpp" line="520"/>
+        <source>atr mismatch: not SUBDIR</source>
+        <translation>No coincidencia atr: no SUBDIR</translation>
+    </message>
+    <message>
+        <location filename="../pclink.cpp" line="529"/>
+        <source>atr mismatch: not FILE</source>
+        <translation>No coincidencia atr: no FILE</translation>
+    </message>
+    <message>
+        <location filename="../pclink.cpp" line="534"/>
+        <source>match</source>
+        <translation>Coincidencia</translation>
+    </message>
+    <message>
+        <location filename="../pclink.cpp" line="599"/>
+        <source>%1: got fname &apos;%2&apos;</source>
+        <translation>%1: tiene nombre &apos;%2&apos;</translation>
+    </message>
+    <message>
+        <location filename="../pclink.cpp" line="607"/>
+        <source>%1: stat &apos;%2&apos;</source>
+        <translation>%1: estado &apos;%2&apos;</translation>
+    </message>
+    <message>
+        <location filename="../pclink.cpp" line="617"/>
+        <source>&apos;%1&apos;: is a symlink</source>
+        <translation>&apos;%1&apos;: es un enlace simbólico</translation>
+    </message>
+    <message>
+        <location filename="../pclink.cpp" line="621"/>
+        <source>&apos;%1&apos;: can&apos;t be accessed</source>
+        <translation>&apos;%1&apos;: no se puede acceder</translation>
+    </message>
+    <message>
+        <location filename="../pclink.cpp" line="622"/>
+        <source>access error code %1</source>
+        <translation>Código de error de acceso %1</translation>
+    </message>
+    <message>
+        <location filename="../pclink.cpp" line="719"/>
+        <source>Internal error: dir_cache should be NULL!</source>
+        <translation>Error interno: dir_cache debe ser NULL!</translation>
+    </message>
+    <message>
+        <location filename="../pclink.cpp" line="850"/>
+        <source>closing all files</source>
+        <translation>Cerrando todos los archivos</translation>
+    </message>
+    <message>
+        <location filename="../pclink.cpp" line="1126"/>
+        <source>&apos;P&apos; WRONG DATA FRAME, expected size %1 got %2</source>
+        <translation>&apos;P&apos; MARCO DE DATOS INCORRECTO, tamaño esperado %1 obtenido %2</translation>
+    </message>
+    <message>
+        <location filename="../pclink.cpp" line="1144"/>
+        <source>PARBLK retry, ignored</source>
+        <translation>Reintento de PARBLK, ignorado</translation>
+    </message>
+    <message>
+        <location filename="../pclink.cpp" line="1158"/>
+        <source>%1 (fno $%02)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../pclink.cpp" line="1172"/>
+        <source>bad handle 1 %1</source>
+        <translation>Mal manejo 1 %1</translation>
+    </message>
+    <message>
+        <location filename="../pclink.cpp" line="1179"/>
+        <location filename="../pclink.cpp" line="1314"/>
+        <source>bad size $0000 (0)</source>
+        <translation>Mal tamaño $ 0000 (0)</translation>
+    </message>
+    <message>
+        <location filename="../pclink.cpp" line="1199"/>
+        <source>size $%1 (%2), buffer $%3 (%4)</source>
+        <translation>tamaño $%1 (%2), buffer $%3 (%4)</translation>
+    </message>
+    <message>
+        <location filename="../pclink.cpp" line="1210"/>
+        <location filename="../pclink.cpp" line="1330"/>
+        <location filename="../pclink.cpp" line="1487"/>
+        <location filename="../pclink.cpp" line="1647"/>
+        <source>serial communication error, abort</source>
+        <translation>error de comunicación serie, abortar</translation>
+    </message>
+    <message>
+        <location filename="../pclink.cpp" line="1216"/>
+        <location filename="../pclink.cpp" line="1336"/>
+        <location filename="../pclink.cpp" line="1504"/>
+        <location filename="../pclink.cpp" line="1582"/>
+        <source>handle %1</source>
+        <translation>encargarse de %1</translation>
+    </message>
+    <message>
+        <location filename="../pclink.cpp" line="1233"/>
+        <source>FREAD: cannot read %1 bytes from dir</source>
+        <translation>FREAD: no puede leer %1 bytes de dir</translation>
+    </message>
+    <message>
+        <location filename="../pclink.cpp" line="1250"/>
+        <source>FREAD: cannot seek to $%1 (%2)</source>
+        <translation>FREAD: no se puede buscar a $%1 (%2)</translation>
+    </message>
+    <message>
+        <location filename="../pclink.cpp" line="1259"/>
+        <source>FREAD: cannot read %1 bytes from file</source>
+        <translation>FREAD: no puede leer %1 bytes del archivo</translation>
+    </message>
+    <message>
+        <location filename="../pclink.cpp" line="1287"/>
+        <source>FREAD: send $%1 (%2), status $%3</source>
+        <translation>FREAD: enviar $%1 (%2), estado $%3</translation>
+    </message>
+    <message>
+        <location filename="../pclink.cpp" line="1307"/>
+        <source>bad handle 2 %1</source>
+        <translation>Mango malo 2% 1</translation>
+    </message>
+    <message>
+        <location filename="../pclink.cpp" line="1322"/>
+        <source>size $%1 (%2)</source>
+        <translation>Tamaño $%1 (%2)</translation>
+    </message>
+    <message>
+        <location filename="../pclink.cpp" line="1342"/>
+        <source>FWRITE: cannot seek to $%1 (%2)</source>
+        <translation>FWRITE: no se puede buscar %1 (%2)</translation>
+    </message>
+    <message>
+        <location filename="../pclink.cpp" line="1355"/>
+        <source>FWRITE: block CRC mismatch</source>
+        <translation>FWRITE: bloque CRC no coinciden</translation>
+    </message>
+    <message>
+        <location filename="../pclink.cpp" line="1381"/>
+        <source>FWRITE: cannot write %1 bytes to file</source>
+        <translation>FWRITE: no se pueden escribir %1 bytes en el archivo</translation>
+    </message>
+    <message>
+        <location filename="../pclink.cpp" line="1392"/>
+        <source>FWRITE: received $%1 (%2), status $%3</source>
+        <translation>FWRITE: recibió $%1 (%2), estado $%3</translation>
+    </message>
+    <message>
+        <location filename="../pclink.cpp" line="1404"/>
+        <source>bad handle 3 %1</source>
+        <translation>Mango malo 3% 1</translation>
+    </message>
+    <message>
+        <location filename="../pclink.cpp" line="1412"/>
+        <location filename="../pclink.cpp" line="1571"/>
+        <location filename="../pclink.cpp" line="1609"/>
+        <location filename="../pclink.cpp" line="1952"/>
+        <location filename="../pclink.cpp" line="2061"/>
+        <location filename="../pclink.cpp" line="2140"/>
+        <location filename="../pclink.cpp" line="2230"/>
+        <location filename="../pclink.cpp" line="2304"/>
+        <location filename="../pclink.cpp" line="2388"/>
+        <location filename="../pclink.cpp" line="2585"/>
+        <source>bad exec</source>
+        <translation>Mala ejecución</translation>
+    </message>
+    <message>
+        <location filename="../pclink.cpp" line="1419"/>
+        <source>handle %1, newpos $%2 (%3)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../pclink.cpp" line="1443"/>
+        <source>bad handle 4 %1</source>
+        <translation>Mango malo 4 %1</translation>
+    </message>
+    <message>
+        <location filename="../pclink.cpp" line="1450"/>
+        <location filename="../pclink.cpp" line="1480"/>
+        <location filename="../pclink.cpp" line="2515"/>
+        <source>device $%1</source>
+        <translation>Dispositivo $%1</translation>
+    </message>
+    <message>
+        <location filename="../pclink.cpp" line="1461"/>
+        <source>handle %1, send $%2 (%3)</source>
+        <translation>manejar %1, enviar $%2 (%3)</translation>
+    </message>
+    <message>
+        <location filename="../pclink.cpp" line="1497"/>
+        <source>bad handle 5 %1</source>
+        <translation>Mango malo 5 %1</translation>
+    </message>
+    <message>
+        <location filename="../pclink.cpp" line="1514"/>
+        <source>eof_flg %1</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../pclink.cpp" line="1533"/>
+        <source>FNEXT: EOF</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../pclink.cpp" line="1543"/>
+        <source>FNEXT: status %1, send $%2 $%3%4 $%5%6%7 %8%9%10%11%12%13%14%15%16%17%18 %19-%20-%21 %22:%23:%24</source>
+        <translation>FNEXT: estado %1, enviar $%2 $%3%4 $%5%6%7 %8%9%10%11%12%13%14%15%16%17%18 %19-%20-%21 %22:%23:%24</translation>
+    </message>
+    <message>
+        <location filename="../pclink.cpp" line="1577"/>
+        <source>bad handle 6 %1</source>
+        <translation>Mango malo 6 %1</translation>
+    </message>
+    <message>
+        <location filename="../pclink.cpp" line="1625"/>
+        <source>mode: $%1, atr1: $%2, atr2: $%3, path: &apos;%4&apos;, name: &apos;%5&apos;</source>
+        <translation>Modo: $%1, atr1: $%2, atr2: $%3, ruta: &apos;%4&apos;, nombre: &apos;%5&apos;</translation>
+    </message>
+    <message>
+        <location filename="../pclink.cpp" line="1659"/>
+        <source>unsupported fmode ($%1)</source>
+        <translation>Modo no compatible ($%1)</translation>
+    </message>
+    <message>
+        <location filename="../pclink.cpp" line="1668"/>
+        <source>invalid path 1 &apos;%1&apos;</source>
+        <translation>Ruta no válida 1 &apos;%1&apos;</translation>
+    </message>
+    <message>
+        <location filename="../pclink.cpp" line="1673"/>
+        <location filename="../pclink.cpp" line="2074"/>
+        <source>local path &apos;%1&apos;</source>
+        <translation>Ruta de acceso local &apos;%1&apos;</translation>
+    </message>
+    <message>
+        <location filename="../pclink.cpp" line="1682"/>
+        <source>FOPEN: too many channels open</source>
+        <translation>FOPEN: Demasiados canales abiertos</translation>
+    </message>
+    <message>
+        <location filename="../pclink.cpp" line="1689"/>
+        <location filename="../pclink.cpp" line="1785"/>
+        <source>FOPEN: cannot stat &apos;%1&apos;</source>
+        <translation>FOPEN: No se puede iniciar &apos;%1&apos;</translation>
+    </message>
+    <message>
+        <location filename="../pclink.cpp" line="1703"/>
+        <source> ! fmode &amp; 0x10</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../pclink.cpp" line="1742"/>
+        <source>FOPEN: file not found</source>
+        <translation>FOPEN: Archivo no encontrado</translation>
+    </message>
+    <message>
+        <location filename="../pclink.cpp" line="1752"/>
+        <source>FOPEN: creating file</source>
+        <translation>FOPEN: Creando archivo</translation>
+    </message>
+    <message>
+        <location filename="../pclink.cpp" line="1759"/>
+        <source>FOPEN: bad filename &apos;%1&apos;</source>
+        <translation>FOPEN: Mal nombre de archivo &apos;%1&apos;</translation>
+    </message>
+    <message>
+        <location filename="../pclink.cpp" line="1779"/>
+        <source>FOPEN: full local path &apos;%1&apos;</source>
+        <translation>FOPEN: Ruta de acceso local completa &apos;%1&apos;</translation>
+    </message>
+    <message>
+        <location filename="../pclink.cpp" line="1796"/>
+        <source>FOPEN: &apos;%1&apos; is read-only</source>
+        <translation>FOPEN: &apos;%1&apos; es de solo lectura</translation>
+    </message>
+    <message>
+        <location filename="../pclink.cpp" line="1826"/>
+        <source>FOPEN: cannot open &apos;%1&apos;, %2 (%3)</source>
+        <translation>FOPEN: No se puede abrir &apos;%1&apos;, %2 (%3)</translation>
+    </message>
+    <message>
+        <location filename="../pclink.cpp" line="1865"/>
+        <source>FOPEN: bad handle 7 %1</source>
+        <translation>FOPEN: Mal manejo 7 %1</translation>
+    </message>
+    <message>
+        <location filename="../pclink.cpp" line="1875"/>
+        <source>FOPEN: %1 handle %2</source>
+        <translation>FOPEN: %1 encargarse de %2</translation>
+    </message>
+    <message>
+        <location filename="../pclink.cpp" line="1888"/>
+        <source>FOPEN: dir EOF?</source>
+        <translation>FOPEN: ṡFinal de directorio?</translation>
+    </message>
+    <message>
+        <location filename="../pclink.cpp" line="1920"/>
+        <source>FOPEN: send %1, send $%2 $%3%4 $%5%6%7 %8%9%10%11%12%13%14%15%16%17%18 %19-%20-%21 %22:%23:%24</source>
+        <translation>FOPEN: enviar %1, enviar $%2 $%3%4 $%5%6%7 %8%9%10%11%12%13%14%15%16%17%18 %19-%20-%21 %22:%23:%24</translation>
+    </message>
+    <message>
+        <location filename="../pclink.cpp" line="1960"/>
+        <source>invalid path 2 &apos;%1&apos;</source>
+        <translation>Ruta inválida 2 &apos;%1&apos;</translation>
+    </message>
+    <message>
+        <location filename="../pclink.cpp" line="1969"/>
+        <location filename="../pclink.cpp" line="2080"/>
+        <source>cannot open dir &apos;%1&apos;</source>
+        <translation>No se puede abrir el directorio &apos;%1&apos;</translation>
+    </message>
+    <message>
+        <location filename="../pclink.cpp" line="1974"/>
+        <source>local path &apos;%1&apos;, fatr1 $%2</source>
+        <translation>Ruta de acceso local &apos;%1&apos;, fatr1 $%2</translation>
+    </message>
+    <message>
+        <location filename="../pclink.cpp" line="2027"/>
+        <source>RENAME: renaming &apos;%1&apos; -&gt; &apos;%2&apos;</source>
+        <translation>RENAME: Cambio de nombre &apos;%1&apos; -&gt; &apos;%2&apos;</translation>
+    </message>
+    <message>
+        <location filename="../pclink.cpp" line="2031"/>
+        <source>RENAME: &apos;%1&apos; already exists</source>
+        <translation>RENAME: &apos;%1&apos; Ya existe</translation>
+    </message>
+    <message>
+        <location filename="../pclink.cpp" line="2038"/>
+        <source>RENAME: %1</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../pclink.cpp" line="2069"/>
+        <source>invalid path 3 &apos;%1&apos;</source>
+        <translation>Ruta inválida 3 &apos;%1&apos;</translation>
+    </message>
+    <message>
+        <location filename="../pclink.cpp" line="2113"/>
+        <source>REMOVE: delete &apos;%1&apos;</source>
+        <translation>REMOVE: Borrar &apos;%1&apos;</translation>
+    </message>
+    <message>
+        <location filename="../pclink.cpp" line="2116"/>
+        <source>REMOVE: cannot delete &apos;%1&apos;</source>
+        <translation>REMOVE: No se puede borrar &apos;%1&apos;</translation>
+    </message>
+    <message>
+        <location filename="../pclink.cpp" line="2146"/>
+        <source>illegal fatr2 $%1</source>
+        <translation>fatr2 ilegal $%1</translation>
+    </message>
+    <message>
+        <location filename="../pclink.cpp" line="2155"/>
+        <source>invalid path 4 &apos;%1&apos;</source>
+        <translation>Ruta inválida 4 &apos;%1&apos;</translation>
+    </message>
+    <message>
+        <location filename="../pclink.cpp" line="2160"/>
+        <source>local path &apos;%1&apos;, fatr1 $%2 fatr2 $%3</source>
+        <translation>Ruta de acceso local &apos;%1&apos;, fatr1 $%2 fatr2 $%3</translation>
+    </message>
+    <message>
+        <location filename="../pclink.cpp" line="2167"/>
+        <source>CHMOD: cannot open dir &apos;%1&apos;</source>
+        <translation>CHMOD: No se puede abrir el directorio &apos;%1&apos;</translation>
+    </message>
+    <message>
+        <location filename="../pclink.cpp" line="2199"/>
+        <source>CHMOD: change atrs in &apos;%1&apos;</source>
+        <translation>CHMOD: Cambiar permiso en &apos;%1&apos;</translation>
+    </message>
+    <message>
+        <location filename="../pclink.cpp" line="2208"/>
+        <source>CHMOD: failed on &apos;%1&apos;</source>
+        <translation>CHMOD: falla en &apos;%1&apos;</translation>
+    </message>
+    <message>
+        <location filename="../pclink.cpp" line="2238"/>
+        <source>invalid path 5 &apos;%1&apos;</source>
+        <translation>ruta inválida 5 apos;%1&apos;</translation>
+    </message>
+    <message>
+        <location filename="../pclink.cpp" line="2248"/>
+        <location filename="../pclink.cpp" line="2322"/>
+        <source>bad dir name &apos;%1&apos;</source>
+        <translation>Mal nombre de directorio &apos;%1&apos;</translation>
+    </message>
+    <message>
+        <location filename="../pclink.cpp" line="2262"/>
+        <source>making dir &apos;%1&apos;, time %2-%3-%4 %5:%6:%7</source>
+        <translation>Haciendo directorio &apos;%1&apos;, fecha %2-%3-%4 %5:%6:%7</translation>
+    </message>
+    <message>
+        <location filename="../pclink.cpp" line="2267"/>
+        <source>MKDIR: &apos;%1&apos; already exists</source>
+        <translation>MKDIR: &apos;%1&apos; Ya existe</translation>
+    </message>
+    <message>
+        <location filename="../pclink.cpp" line="2278"/>
+        <source>MKDIR: cannot make dir &apos;%1&apos;</source>
+        <translation>MKDIR: No se puede hacer el directorio &apos;%1&apos;</translation>
+    </message>
+    <message>
+        <location filename="../pclink.cpp" line="2312"/>
+        <source>invalid path 6 &apos;%1&apos;</source>
+        <translation>ruta no válida 6 &apos;%1&apos;</translation>
+    </message>
+    <message>
+        <location filename="../pclink.cpp" line="2336"/>
+        <source>cannot stat &apos;%1&apos;</source>
+        <translation>No se puede empezar &apos;%1&apos;</translation>
+    </message>
+    <message>
+        <location filename="../pclink.cpp" line="2344"/>
+        <source>&apos;%1&apos; can&apos;t be accessed</source>
+        <translation>&apos;%1&apos; No se puede acceder</translation>
+    </message>
+    <message>
+        <location filename="../pclink.cpp" line="2352"/>
+        <source>&apos;%1&apos; is not a directory</source>
+        <translation>&apos;%1&apos; No es un directorio</translation>
+    </message>
+    <message>
+        <location filename="../pclink.cpp" line="2359"/>
+        <source>dir &apos;%1&apos; is write-protected</source>
+        <translation>Directorio &apos;%1&apos; protegido contra escritura</translation>
+    </message>
+    <message>
+        <location filename="../pclink.cpp" line="2364"/>
+        <source>delete dir &apos;%1&apos;</source>
+        <translation>Eliminar directorio &apos;%1&apos;</translation>
+    </message>
+    <message>
+        <location filename="../pclink.cpp" line="2370"/>
+        <source>RMDIR: cannot del &apos;%1&apos;, %2 (%3)</source>
+        <translation>RMDIR: No se puede borrar &apos;%1&apos;, %2 (%3)</translation>
+    </message>
+    <message>
+        <location filename="../pclink.cpp" line="2396"/>
+        <source>invalid path 7 &apos;%1&apos;</source>
+        <translation>Ruta no válida 7 &apos;%1&apos;</translation>
+    </message>
+    <message>
+        <location filename="../pclink.cpp" line="2405"/>
+        <source>cannot access &apos;%1&apos;, %2</source>
+        <translation>No puede acceder apos;%1&apos;, %2</translation>
+    </message>
+    <message>
+        <location filename="../pclink.cpp" line="2430"/>
+        <source>new current dir &apos;%1&apos;</source>
+        <translation>Nuevo directorio actual &apos;%1&apos;</translation>
+    </message>
+    <message>
+        <location filename="../pclink.cpp" line="2448"/>
+        <source>device $1</source>
+        <translation>Dispositivo $1</translation>
+    </message>
+    <message>
+        <location filename="../pclink.cpp" line="2468"/>
+        <source>send &apos;%1&apos;</source>
+        <translation>Enviando &apos;%1&apos;</translation>
+    </message>
+    <message>
+        <location filename="../pclink.cpp" line="2529"/>
+        <source>reading &apos;%1&apos;</source>
+        <translation>Leyendo &apos;%1&apos;</translation>
+    </message>
+    <message>
+        <location filename="../pclink.cpp" line="2564"/>
+        <source>DFREE: send info (%1 bytes)</source>
+        <translation>DFREE: Enviar información (%1 bytes)</translation>
+    </message>
+    <message>
+        <location filename="../pclink.cpp" line="2593"/>
+        <source>invalid name</source>
+        <translation>Nombre inválido</translation>
+    </message>
+    <message>
+        <location filename="../pclink.cpp" line="2602"/>
+        <source>writing &apos;%1&apos;</source>
+        <translation>Escritura &apos;%1&apos;</translation>
+    </message>
+    <message>
+        <location filename="../pclink.cpp" line="2622"/>
+        <source>CHVOL: %1</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../pclink.cpp" line="2628"/>
+        <source>fno $%1 not implemented</source>
+        <translation>fno $%1 no se ha implementado</translation>
     </message>
 </context>
 <context>
     <name>Printer</name>
     <message>
-        <location filename="../miscdevices.cpp" line="48"/>
+        <location filename="../miscdevices.cpp" line="50"/>
         <source>[%1] Get status.</source>
-        <translation>[%1] Obtener el estado.</translation>
+        <translation>[%1] Obtener estado.</translation>
     </message>
     <message>
-        <location filename="../miscdevices.cpp" line="71"/>
-        <location filename="../miscdevices.cpp" line="108"/>
+        <location filename="../miscdevices.cpp" line="73"/>
+        <location filename="../miscdevices.cpp" line="110"/>
         <source>[%1] command: $%2, aux: $%3 NAKed.</source>
         <translation>[%1] comando: $%2, aux: $%3 NAKed.</translation>
     </message>
     <message>
-        <location filename="../miscdevices.cpp" line="79"/>
+        <location filename="../miscdevices.cpp" line="81"/>
         <source>[%1] Converting Inverse Video Characters for ASCII viewing</source>
-        <translation>[%1] La conversión inversa caracteres ASCII de vídeo para su visualización</translation>
+        <translation>[%1] Conversión de caracteres de video inversos para verlos en ASCII</translation>
     </message>
     <message>
-        <location filename="../miscdevices.cpp" line="86"/>
+        <location filename="../miscdevices.cpp" line="88"/>
         <source>[%1] Print: data frame failed</source>
-        <translation>[%1] Imprimir: El marco de datos ha fallado</translation>
+        <translation>[%1] Impresión: error en el marco de datos</translation>
     </message>
     <message>
-        <location filename="../miscdevices.cpp" line="92"/>
+        <location filename="../miscdevices.cpp" line="94"/>
         <source>[%1] Print (%2 chars)</source>
         <translation>[%1] Imprimir (%2 caracteres)</translation>
     </message>
     <message>
-        <location filename="../miscdevices.cpp" line="114"/>
+        <location filename="../miscdevices.cpp" line="116"/>
         <source>[%1] ignored</source>
-        <translation>[%1] ignorar</translation>
+        <translation>[%1] ignorado</translation>
+    </message>
+</context>
+<context>
+    <name>RCl</name>
+    <message>
+        <location filename="../miscdevices.cpp" line="225"/>
+        <source>[%1] Date/time sent to client (%2).</source>
+        <translation>[%1] Fecha/hora enviada al cliente (%2).</translation>
+    </message>
+    <message>
+        <location filename="../miscdevices.cpp" line="247"/>
+        <source>[%1] Swapped disk %2 with disk %3.</source>
+        <translation>[%1] Disco intercambiado %2 con disco %3.</translation>
+    </message>
+    <message>
+        <location filename="../miscdevices.cpp" line="253"/>
+        <source>[%1] Invalid swap request for drives: (%2)-(%3).</source>
+        <translation>[%1] Solicitud de intercambio no válida para unidades: (%2)-(%3).</translation>
+    </message>
+    <message>
+        <location filename="../miscdevices.cpp" line="287"/>
+        <source>[%1] Unmounted disk %2</source>
+        <translation>[%1] Disco sin montar %2</translation>
+    </message>
+    <message>
+        <location filename="../miscdevices.cpp" line="291"/>
+        <source>[%1] ALL images were remotely unmounted</source>
+        <translation>[%1] TODAS las imágenes fueron desmontadas remotamente</translation>
+    </message>
+    <message>
+        <location filename="../miscdevices.cpp" line="295"/>
+        <source>[%1] Can not remotely unmount ALL images due to pending changes.</source>
+        <translation>[%1] No se puede desmontar remotamente TODAS las imágenes debido a cambios pendientes.</translation>
+    </message>
+    <message>
+        <location filename="../miscdevices.cpp" line="304"/>
+        <source>[%1] Can not remotely unmount disk %2 due to pending changes.</source>
+        <translation>[%1] No se puede desmontar remotamente el disco %2 debido a cambios pendientes.</translation>
+    </message>
+    <message>
+        <location filename="../miscdevices.cpp" line="311"/>
+        <source>[%1] Remotely unmounted disk %2</source>
+        <translation>[%1] Disco desmontado remotamente %2</translation>
+    </message>
+    <message>
+        <location filename="../miscdevices.cpp" line="319"/>
+        <source>[%1] Invalid drive number: %2 for remote unmount</source>
+        <translation>[%1] Número de unidad no válido: %2 para desmontaje remoto</translation>
+    </message>
+    <message>
+        <location filename="../miscdevices.cpp" line="336"/>
+        <source>[%1] RespeQt can&apos;t determine the folder where the image file must be created/mounted!</source>
+        <translation>[%1] ḂRespeQt no puede determinar la carpeta donde se debe crear/montar el archivo de imagen!</translation>
+    </message>
+    <message>
+        <location filename="../miscdevices.cpp" line="338"/>
+        <source>[%1] Mount a Folder Image at least once before issuing a remote mount command.</source>
+        <translation>[%1] Monte una imagen de carpeta al menos una vez antes de emitir un comando de montaje remoto.</translation>
+    </message>
+    <message>
+        <location filename="../miscdevices.cpp" line="355"/>
+        <source>[%1] Read data frame failed</source>
+        <translation>[%1] Falló el marco de datos</translation>
+    </message>
+    <message>
+        <location filename="../miscdevices.cpp" line="370"/>
+        <source>[%1] Invalid image file attribute: %2</source>
+        <translation>[%1] Atributo de archivo de imagen no válido: %2</translation>
+    </message>
+    <message>
+        <location filename="../miscdevices.cpp" line="380"/>
+        <source>[%1] Can not create PC File: %2</source>
+        <translation>[%1] No se puede crear un archivo de PC: %2</translation>
+    </message>
+    <message>
+        <location filename="../miscdevices.cpp" line="514"/>
+        <source>[%1] command: $%2, aux: $%3 NAKed.</source>
+        <translation>[%1] comando: $%2, aux: $%3 NAKed.</translation>
+    </message>
+    <message>
+        <location filename="../miscdevices.cpp" line="534"/>
+        <source>[%1] Image %2 mounted</source>
+        <translation>[%1] Imagen %2 montada</translation>
     </message>
 </context>
 <context>
     <name>SimpleDiskImage</name>
     <message>
-        <location filename="../diskimage.cpp" line="273"/>
-        <location filename="../diskimage.cpp" line="282"/>
-        <location filename="../diskimage.cpp" line="292"/>
-        <location filename="../diskimage.cpp" line="306"/>
-        <location filename="../diskimage.cpp" line="318"/>
-        <location filename="../diskimage.cpp" line="326"/>
-        <location filename="../diskimage.cpp" line="350"/>
-        <location filename="../diskimage.cpp" line="398"/>
-        <location filename="../diskimage.cpp" line="410"/>
-        <location filename="../diskimage.cpp" line="425"/>
-        <location filename="../diskimage.cpp" line="458"/>
-        <location filename="../diskimage.cpp" line="465"/>
-        <location filename="../diskimage.cpp" line="476"/>
-        <location filename="../diskimage.cpp" line="483"/>
-        <location filename="../diskimage.cpp" line="494"/>
-        <location filename="../diskimage.cpp" line="517"/>
-        <location filename="../diskimage.cpp" line="523"/>
-        <location filename="../diskimage.cpp" line="529"/>
-        <location filename="../diskimage.cpp" line="790"/>
+        <location filename="../diskimage.cpp" line="274"/>
+        <location filename="../diskimage.cpp" line="283"/>
+        <location filename="../diskimage.cpp" line="293"/>
+        <location filename="../diskimage.cpp" line="307"/>
+        <location filename="../diskimage.cpp" line="319"/>
+        <location filename="../diskimage.cpp" line="327"/>
+        <location filename="../diskimage.cpp" line="351"/>
+        <location filename="../diskimage.cpp" line="399"/>
+        <location filename="../diskimage.cpp" line="411"/>
+        <location filename="../diskimage.cpp" line="426"/>
+        <location filename="../diskimage.cpp" line="459"/>
+        <location filename="../diskimage.cpp" line="466"/>
+        <location filename="../diskimage.cpp" line="477"/>
+        <location filename="../diskimage.cpp" line="484"/>
+        <location filename="../diskimage.cpp" line="495"/>
+        <location filename="../diskimage.cpp" line="518"/>
+        <location filename="../diskimage.cpp" line="524"/>
+        <location filename="../diskimage.cpp" line="530"/>
+        <location filename="../diskimage.cpp" line="791"/>
         <source>Cannot open &apos;%1&apos;: %2</source>
         <translation>No se puede abrir &apos;%1&apos;:%2</translation>
     </message>
     <message>
-        <location filename="../diskimage.cpp" line="284"/>
+        <location filename="../diskimage.cpp" line="285"/>
         <source>Cannot read the header: %1.</source>
         <translation>No se puede leer el encabezado: %1.</translation>
     </message>
     <message>
-        <location filename="../diskimage.cpp" line="292"/>
+        <location filename="../diskimage.cpp" line="293"/>
         <source>Not a valid ATR file.</source>
         <translation>No es un archivo válido ATR.</translation>
     </message>
     <message>
-        <location filename="../diskimage.cpp" line="308"/>
-        <location filename="../diskimage.cpp" line="467"/>
+        <location filename="../diskimage.cpp" line="309"/>
+        <location filename="../diskimage.cpp" line="468"/>
         <source>Cannot create temporary file &apos;%1&apos;: %2</source>
         <translation>No se puede crear &apos;%1&apos; archivo temporal: %2</translation>
     </message>
     <message>
-        <location filename="../diskimage.cpp" line="320"/>
-        <location filename="../diskimage.cpp" line="478"/>
+        <location filename="../diskimage.cpp" line="321"/>
+        <location filename="../diskimage.cpp" line="479"/>
         <source>Cannot read from file: %1.</source>
         <translation>No se puede leer desde el archivo: %1.</translation>
     </message>
     <message>
-        <location filename="../diskimage.cpp" line="328"/>
-        <location filename="../diskimage.cpp" line="485"/>
+        <location filename="../diskimage.cpp" line="329"/>
+        <location filename="../diskimage.cpp" line="486"/>
         <source>Cannot write to temporary file &apos;%1&apos;: %2</source>
         <translation>No se puede escribir &apos;%1&apos; archivo temporal: %2</translation>
     </message>
     <message>
-        <location filename="../diskimage.cpp" line="340"/>
+        <location filename="../diskimage.cpp" line="341"/>
         <source>Image size of &apos;%1&apos; is reported as %2 bytes in the header but it&apos;s actually %3.</source>
         <translation>Tamaño de la imagen de &apos;%1&apos; se presenta como &apos;%2&apos; bytes en el encabezado, pero en realidad es el %3.</translation>
     </message>
     <message>
-        <location filename="../diskimage.cpp" line="350"/>
+        <location filename="../diskimage.cpp" line="351"/>
         <source>Unknown sector size (%1).</source>
         <translation>Tamaño del sector Desconocido (%1).</translation>
     </message>
     <message>
-        <location filename="../diskimage.cpp" line="400"/>
-        <location filename="../diskimage.cpp" line="496"/>
+        <location filename="../diskimage.cpp" line="401"/>
+        <location filename="../diskimage.cpp" line="497"/>
         <source>Invalid image size (%1).</source>
         <translation>Tamaño de la imagen no válido (%1).</translation>
     </message>
     <message>
-        <location filename="../diskimage.cpp" line="412"/>
+        <location filename="../diskimage.cpp" line="413"/>
         <source>Too many sectors in the image (%1).</source>
         <translation>Demasiado sectores de la imagen (%1).</translation>
     </message>
     <message>
-        <location filename="../diskimage.cpp" line="420"/>
+        <location filename="../diskimage.cpp" line="421"/>
         <source>The file &apos;%1&apos; has some unrecognized fields in its header.</source>
         <translation>El archivo &apos;%1&apos; tiene algunos campos no reconocidos en su encabezado.</translation>
     </message>
     <message>
-        <location filename="../diskimage.cpp" line="427"/>
+        <location filename="../diskimage.cpp" line="428"/>
         <source>Cannot resize temporary file &apos;%1&apos;: %2</source>
         <translation>No se puede cambiar el tamaño de &apos;%1&apos; archivo temporal: %2</translation>
     </message>
     <message>
-        <location filename="../diskimage.cpp" line="517"/>
+        <location filename="../diskimage.cpp" line="518"/>
         <source>DCM images are not supported yet.</source>
         <translation>Imágenes DCM no son compatibles todavía.</translation>
     </message>
     <message>
-        <location filename="../diskimage.cpp" line="523"/>
+        <location filename="../diskimage.cpp" line="524"/>
         <source>SCP images are not supported yet.</source>
         <translation>Imágenes SCP no son compatibles todavía.</translation>
     </message>
     <message>
-        <location filename="../diskimage.cpp" line="529"/>
+        <location filename="../diskimage.cpp" line="530"/>
         <source>DI images are not supported yet.</source>
         <translation>Imágenes DI no son compatibles todavía.</translation>
     </message>
     <message>
-        <location filename="../diskimage.cpp" line="561"/>
-        <location filename="../diskimage.cpp" line="570"/>
-        <location filename="../diskimage.cpp" line="579"/>
-        <location filename="../diskimage.cpp" line="593"/>
-        <location filename="../diskimage.cpp" line="600"/>
-        <location filename="../diskimage.cpp" line="643"/>
-        <location filename="../diskimage.cpp" line="651"/>
-        <location filename="../diskimage.cpp" line="664"/>
-        <location filename="../diskimage.cpp" line="670"/>
-        <location filename="../diskimage.cpp" line="690"/>
-        <location filename="../diskimage.cpp" line="696"/>
-        <location filename="../diskimage.cpp" line="702"/>
-        <location filename="../diskimage.cpp" line="730"/>
-        <location filename="../diskimage.cpp" line="759"/>
+        <location filename="../diskimage.cpp" line="562"/>
+        <location filename="../diskimage.cpp" line="571"/>
+        <location filename="../diskimage.cpp" line="580"/>
+        <location filename="../diskimage.cpp" line="594"/>
+        <location filename="../diskimage.cpp" line="601"/>
+        <location filename="../diskimage.cpp" line="644"/>
+        <location filename="../diskimage.cpp" line="652"/>
+        <location filename="../diskimage.cpp" line="665"/>
+        <location filename="../diskimage.cpp" line="671"/>
+        <location filename="../diskimage.cpp" line="691"/>
+        <location filename="../diskimage.cpp" line="697"/>
+        <location filename="../diskimage.cpp" line="703"/>
+        <location filename="../diskimage.cpp" line="731"/>
+        <location filename="../diskimage.cpp" line="760"/>
         <source>Cannot save &apos;%1&apos;: %2</source>
         <translation>No se puede guardar &apos;%1&apos;:%2</translation>
     </message>
     <message>
-        <location filename="../diskimage.cpp" line="581"/>
-        <location filename="../diskimage.cpp" line="653"/>
+        <location filename="../diskimage.cpp" line="582"/>
+        <location filename="../diskimage.cpp" line="654"/>
         <source>Cannot rewind temporary file &apos;%1&apos;: %2</source>
         <translation>No puede rebobinar archivo temporal &apos;%1&apos;: %2</translation>
     </message>
     <message>
-        <location filename="../diskimage.cpp" line="595"/>
-        <location filename="../diskimage.cpp" line="666"/>
+        <location filename="../diskimage.cpp" line="596"/>
+        <location filename="../diskimage.cpp" line="667"/>
         <source>Cannot read from temporay file %1: %2</source>
         <translation>No se puede leer el archivo temporal %1: %2</translation>
     </message>
     <message>
-        <location filename="../diskimage.cpp" line="612"/>
+        <location filename="../diskimage.cpp" line="613"/>
         <source>Detailed geometry information will be lost when reopening &apos;%1&apos; due to ATR file format limitations.</source>
         <translation>Información detallada geometría se perderá cuando &apos;%1&apos; reapertura debido a ATR limitaciones de formato de archivo.</translation>
     </message>
     <message>
-        <location filename="../diskimage.cpp" line="632"/>
+        <location filename="../diskimage.cpp" line="633"/>
         <source>Detailed disk geometry information will be lost when reopening &apos;%1&apos; due to XFD file format limitations.</source>
         <translation>La información detallada geometría del disco se perderán cuando reapertura &apos;%1&apos; debido a XFD limitaciones de formato de archivo.</translation>
     </message>
     <message>
-        <location filename="../diskimage.cpp" line="635"/>
+        <location filename="../diskimage.cpp" line="636"/>
         <source>XFD file format cannot handle this disk geometry. Try saving &apos;%1&apos; as ATR.</source>
         <translation>XFD formato de archivo no puede manejar la geometría del disco. Intente guardar &apos;%1&apos; como ATR.</translation>
     </message>
     <message>
-        <location filename="../diskimage.cpp" line="690"/>
+        <location filename="../diskimage.cpp" line="691"/>
         <source>Saving DCM images is not supported yet.</source>
         <translation>Almacenamiento de imágenes DCM no está soportado todavía.</translation>
     </message>
     <message>
-        <location filename="../diskimage.cpp" line="696"/>
+        <location filename="../diskimage.cpp" line="697"/>
         <source>Saving SCP images is not supported yet.</source>
         <translation>Almacenamiento de imágenes SCP no está soportado todavía.</translation>
     </message>
     <message>
-        <location filename="../diskimage.cpp" line="702"/>
+        <location filename="../diskimage.cpp" line="703"/>
         <source>Saving DI images is not supported yet.</source>
         <translation>Almacenamiento de imágenes DI no está soportado todavía.</translation>
     </message>
     <message>
-        <location filename="../diskimage.cpp" line="730"/>
+        <location filename="../diskimage.cpp" line="731"/>
         <source>Unknown file extension.</source>
         <translation>Extensión de archivo desconocido.</translation>
     </message>
     <message>
-        <location filename="../diskimage.cpp" line="759"/>
-        <location filename="../diskimage.cpp" line="790"/>
+        <location filename="../diskimage.cpp" line="760"/>
+        <location filename="../diskimage.cpp" line="791"/>
         <source>Unknown file type.</source>
         <translation>Tipo de archivo desconocido.</translation>
     </message>
     <message>
-        <location filename="../diskimage.cpp" line="799"/>
+        <location filename="../diskimage.cpp" line="800"/>
         <source>Cannot create new image: Cannot create temporary file &apos;%2&apos;: %3.</source>
         <translation>No se puede crear una nueva imagen: No se puede crear el archivo temporal &apos;%2&apos;: %3.</translation>
     </message>
     <message>
-        <location filename="../diskimage.cpp" line="809"/>
+        <location filename="../diskimage.cpp" line="810"/>
         <source>Untitled image %1</source>
         <translation>Imagen sin nombre %1</translation>
     </message>
     <message>
-        <location filename="../diskimage.cpp" line="842"/>
+        <location filename="../diskimage.cpp" line="843"/>
         <source>[%1] Format ED denied.</source>
         <translation>[%1] Formato ED negado.</translation>
     </message>
     <message>
-        <location filename="../diskimage.cpp" line="851"/>
+        <location filename="../diskimage.cpp" line="852"/>
         <source>[%1] Format ED.</source>
         <translation>[%1] Formato ED.</translation>
     </message>
     <message>
-        <location filename="../diskimage.cpp" line="854"/>
+        <location filename="../diskimage.cpp" line="855"/>
         <source>[%1] Format ED failed.</source>
         <translation>[%1] Formato ED fallo.</translation>
     </message>
     <message>
-        <location filename="../diskimage.cpp" line="867"/>
+        <location filename="../diskimage.cpp" line="868"/>
         <source>[%1] Speed poll.</source>
         <translation>[%1] Velocidad de sondeo.</translation>
     </message>
     <message>
-        <location filename="../diskimage.cpp" line="878"/>
+        <location filename="../diskimage.cpp" line="879"/>
         <source>[%1] Get PERCOM block (%2).</source>
         <translation>[%1] Obtener bloqueo PERCOM (%2).</translation>
     </message>
     <message>
-        <location filename="../diskimage.cpp" line="897"/>
+        <location filename="../diskimage.cpp" line="898"/>
         <source>[%1] Set PERCOM block (%2).</source>
         <translation>[%1] Establecer bloqueo PERCOM (%2).</translation>
     </message>
     <message>
-        <location filename="../diskimage.cpp" line="916"/>
+        <location filename="../diskimage.cpp" line="917"/>
         <source>[%1] Format with custom sector skewing failed.</source>
         <translation>[%1] Formato a medida fallo en un sector.</translation>
     </message>
     <message>
-        <location filename="../diskimage.cpp" line="921"/>
+        <location filename="../diskimage.cpp" line="922"/>
         <source>[%1] Format with custom sector skewing (%2).</source>
         <translation>[%1] Formato personalizado con sector sesgaduras (%2).</translation>
     </message>
     <message>
-        <location filename="../diskimage.cpp" line="926"/>
+        <location filename="../diskimage.cpp" line="927"/>
         <source>[%1] Format with custom sector skewing denied.</source>
         <translation>[%1] Formato personalizado con sector sesgaduras negado.</translation>
     </message>
     <message>
-        <location filename="../diskimage.cpp" line="943"/>
+        <location filename="../diskimage.cpp" line="944"/>
         <source>[%1] Format.</source>
         <translation>[%1] Formateando.</translation>
     </message>
     <message>
-        <location filename="../diskimage.cpp" line="946"/>
+        <location filename="../diskimage.cpp" line="947"/>
         <source>[%1] Format denied.</source>
         <translation>[%1] Formato negado.</translation>
     </message>
     <message>
-        <location filename="../diskimage.cpp" line="964"/>
+        <location filename="../diskimage.cpp" line="965"/>
         <source>[%1] Write sector %2 denied.</source>
         <translation>[%1] Escribir sector %2 negada.</translation>
     </message>
     <message>
-        <location filename="../diskimage.cpp" line="969"/>
+        <location filename="../diskimage.cpp" line="970"/>
         <source>[%1] Write sector %2 (%3 bytes).</source>
         <translation>[%1] Escribir sector %2 (%3 bytes).</translation>
     </message>
     <message>
-        <location filename="../diskimage.cpp" line="972"/>
+        <location filename="../diskimage.cpp" line="973"/>
         <source>[%1] Write sector %2 failed.</source>
         <translation>[%1] Escribir sector %2 fallada.</translation>
     </message>
     <message>
-        <location filename="../diskimage.cpp" line="977"/>
+        <location filename="../diskimage.cpp" line="978"/>
         <source>[%1] Write sector %2 data frame failed.</source>
         <translation>[%1] Escribir sector %2 trama de datos ha fallado.</translation>
     </message>
     <message>
-        <location filename="../diskimage.cpp" line="984"/>
+        <location filename="../diskimage.cpp" line="985"/>
         <source>[%1] Write sector %2 NAKed.</source>
         <translation>[%1] Escribir sector %2 NAKed.</translation>
     </message>
     <message>
-        <location filename="../diskimage.cpp" line="1000"/>
+        <location filename="../diskimage.cpp" line="1001"/>
         <source>[%1] Read sector %2 (%3 bytes).</source>
         <translation>[%1] Leer sector %2 (%3 bytes).</translation>
     </message>
     <message>
-        <location filename="../diskimage.cpp" line="1005"/>
+        <location filename="../diskimage.cpp" line="1006"/>
         <source>[%1] Read sector %2 failed.</source>
         <translation>[%1] Leer sector %2 fallado.</translation>
     </message>
     <message>
-        <location filename="../diskimage.cpp" line="1012"/>
+        <location filename="../diskimage.cpp" line="1013"/>
         <source>[%1] Read sector %2 NAKed.</source>
         <translation>[%1] Leer sector %2 NAKed.</translation>
     </message>
     <message>
-        <location filename="../diskimage.cpp" line="1029"/>
+        <location filename="../diskimage.cpp" line="1030"/>
         <source>[%1] Get status.</source>
         <translation>[%1] Estado actual.</translation>
     </message>
     <message>
-        <location filename="../diskimage.cpp" line="1035"/>
+        <location filename="../diskimage.cpp" line="1036"/>
         <source>[%1] command: $%2, aux: $%3 NAKed.</source>
         <translation>[%1] comando: $%2, aux: $%3 NAK.</translation>
     </message>
     <message>
-        <location filename="../diskimage.cpp" line="1052"/>
+        <location filename="../diskimage.cpp" line="1053"/>
         <source>[%1] Cannot format: %2</source>
         <translation>[%1] No se puede formatear :%2</translation>
     </message>
     <message>
-        <location filename="../diskimage.cpp" line="1067"/>
-        <location filename="../diskimage.cpp" line="1081"/>
+        <location filename="../diskimage.cpp" line="1068"/>
+        <location filename="../diskimage.cpp" line="1082"/>
         <source>[%1] Cannot seek to sector %2: %3</source>
         <translation>[%1] No puede buscar el sector %2: %3</translation>
     </message>
     <message>
-        <location filename="../diskimage.cpp" line="1070"/>
+        <location filename="../diskimage.cpp" line="1071"/>
         <source>Sector number is out of bounds.</source>
         <translation>Número sector está fuera del límite.</translation>
     </message>
     <message>
-        <location filename="../diskimage.cpp" line="1097"/>
+        <location filename="../diskimage.cpp" line="1098"/>
         <source>[%1] Cannot read from sector %2: %3.</source>
         <translation>[%1] No se puede leer del sector %2: %3.</translation>
     </message>
     <message>
-        <location filename="../diskimage.cpp" line="1116"/>
+        <location filename="../diskimage.cpp" line="1117"/>
         <source>[%1] Cannot write to sector %2: %3.</source>
         <translation>[%1] No se puede escribir sector %2: %3.</translation>
     </message>
@@ -3802,54 +3267,83 @@ Do you want to open the options dialog?</source>
 <context>
     <name>SioWorker</name>
     <message>
-        <location filename="../sioworker.cpp" line="112"/>
+        <location filename="../sioworker.cpp" line="123"/>
         <source>Cannot read command frame.</source>
         <translation>No se puede leer trama de comando.</translation>
     </message>
     <message>
-        <location filename="../sioworker.cpp" line="127"/>
+        <location filename="../sioworker.cpp" line="138"/>
         <source>[%1] command: $%2, aux: $%3 ignored because the image explorer is open.</source>
         <translation>[%1] comando: $%2, aux: $%3  ignorado porque el explorador de imagen está abierta.</translation>
     </message>
     <message>
-        <location filename="../sioworker.cpp" line="133"/>
+        <location filename="../sioworker.cpp" line="144"/>
         <source>[%1] command: $%2, aux: $%3 ignored.</source>
         <translation>[%1] comando: $%2, aux: $%3 ignorado.</translation>
     </message>
     <message>
-        <location filename="../sioworker.cpp" line="198"/>
+        <location filename="../sioworker.cpp" line="233"/>
         <source>Disk 1 (below autoboot)</source>
         <translation>Disco 1 (con autoboot)</translation>
     </message>
     <message>
-        <location filename="../sioworker.cpp" line="215"/>
+        <location filename="../sioworker.cpp" line="250"/>
         <source>Disk %1</source>
         <translation>Disco %1</translation>
     </message>
     <message>
-        <location filename="../sioworker.cpp" line="221"/>
+        <location filename="../sioworker.cpp" line="256"/>
         <source>Printer %1</source>
         <translation>Impresora %1</translation>
     </message>
     <message>
-        <location filename="../sioworker.cpp" line="224"/>
-        <source>APE time downloader</source>
-        <translation>Descargas de tiempo de APE</translation>
+        <location filename="../sioworker.cpp" line="259"/>
+        <source>Smart device (APE time + URL)</source>
+        <translation>Dispositivo inteligente (hora APE + URL)</translation>
     </message>
     <message>
-        <location filename="../sioworker.cpp" line="227"/>
-        <source>AspeQt Client</source>
+        <location filename="../sioworker.cpp" line="262"/>
+        <source>RespeQt Client</source>
         <translation>AspeQt Cliente</translation>
     </message>
     <message>
-        <location filename="../sioworker.cpp" line="233"/>
+        <location filename="../sioworker.cpp" line="268"/>
         <source>RS232 %1</source>
-        <translation>RS232 %1</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../sioworker.cpp" line="236"/>
+        <location filename="../sioworker.cpp" line="271"/>
+        <source>PCLINK</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../sioworker.cpp" line="274"/>
         <source>Device $%1</source>
         <translation>Unidad $%1</translation>
+    </message>
+</context>
+<context>
+    <name>SmartDevice</name>
+    <message>
+        <location filename="../miscdevices.cpp" line="147"/>
+        <source>[%1] Read date/time (%2).</source>
+        <translation>[%1] Fecha/hora de lectura (%2).</translation>
+    </message>
+    <message>
+        <location filename="../miscdevices.cpp" line="167"/>
+        <source>[%1] Read data frame failed</source>
+        <translation>[%1] Falló el marco de datos</translation>
+    </message>
+    <message>
+        <location filename="../miscdevices.cpp" line="178"/>
+        <source>URL [%1] submitted</source>
+        <translation>URL [%1] enviada</translation>
+    </message>
+    <message>
+        <location filename="../miscdevices.cpp" line="183"/>
+        <location filename="../miscdevices.cpp" line="195"/>
+        <source>[%1] command: $%2, aux: $%3 NAKed.</source>
+        <translation>[%1] comando: $%2, aux: $%3 NAKed.</translation>
     </message>
 </context>
 <context>
@@ -3874,159 +3368,165 @@ Do you want to open the options dialog?</source>
 <context>
     <name>StandardSerialPortBackend</name>
     <message>
-        <location filename="../serialport-unix.cpp" line="85"/>
-        <location filename="../serialport-win32.cpp" line="69"/>
+        <location filename="../serialport-unix.cpp" line="92"/>
+        <location filename="../serialport-win32.cpp" line="77"/>
+        <location filename="../serialport-win32.cpp" line="93"/>
         <source>Cannot open serial port &apos;%1&apos;: %2</source>
         <translation>No se puede abrir puerto serial &apos;%1&apos;: %2</translation>
     </message>
     <message>
-        <location filename="../serialport-unix.cpp" line="92"/>
-        <location filename="../serialport-unix.cpp" line="97"/>
-        <source>Cannot clear DTR and RTS lines in serial port &apos;%1&apos;: %2</source>
-        <translation>No se puede borrar DTR y RTS líneas en el puerto serial &apos;%1&apos;: %2</translation>
+        <location filename="../serialport-unix.cpp" line="101"/>
+        <source>Cannot get serial port status</source>
+        <translation>No se puede obtener el estado del puerto serie</translation>
     </message>
     <message>
-        <location filename="../serialport-unix.cpp" line="124"/>
+        <location filename="../serialport-unix.cpp" line="106"/>
+        <source>Cannot set DTR and RTS lines in serial port &apos;%1&apos;: %2</source>
+        <translation>No se pueden establecer líneas DTR y RTS en serie &apos;%1&apos;: %2</translation>
+    </message>
+    <message>
+        <location filename="../serialport-unix.cpp" line="138"/>
         <source>Emulation started through standard serial port backend on &apos;%1&apos; with %2 handshaking.</source>
         <translation>Emulación inicia a través de back-end estándar de puerto serial de &apos;%1&apos; con %2 handshaking.</translation>
     </message>
     <message>
-        <location filename="../serialport-unix.cpp" line="140"/>
-        <location filename="../serialport-win32.cpp" line="125"/>
+        <location filename="../serialport-unix.cpp" line="154"/>
+        <location filename="../serialport-win32.cpp" line="154"/>
         <source>Cannot close serial port: %1</source>
         <translation>No se puede cerrar el puerto serial: %1</translation>
     </message>
     <message>
-        <location filename="../serialport-unix.cpp" line="239"/>
-        <location filename="../serialport-unix.cpp" line="252"/>
-        <location filename="../serialport-unix.cpp" line="309"/>
-        <location filename="../serialport-win32.cpp" line="232"/>
+        <location filename="../serialport-unix.cpp" line="255"/>
+        <location filename="../serialport-unix.cpp" line="268"/>
+        <location filename="../serialport-unix.cpp" line="301"/>
+        <location filename="../serialport-win32.cpp" line="263"/>
         <source>Cannot set serial port speed to %1: %2</source>
         <translation>No se puede establecer la velocidad del puerto serial para %1: %2</translation>
     </message>
     <message>
-        <location filename="../serialport-unix.cpp" line="239"/>
+        <location filename="../serialport-unix.cpp" line="255"/>
         <source>Closest possible speed is %2.</source>
         <translation>La velocidad posible más cercana es %2.</translation>
     </message>
     <message>
-        <location filename="../serialport-unix.cpp" line="258"/>
+        <location filename="../serialport-unix.cpp" line="274"/>
         <location filename="../serialport-unix.cpp" line="314"/>
-        <location filename="../serialport-win32.cpp" line="251"/>
+        <location filename="../serialport-win32.cpp" line="293"/>
         <source>%1 bits/sec</source>
-        <translation>%1 bits/sec</translation>
+        <translation>%1 bits/segundo</translation>
     </message>
     <message>
-        <location filename="../serialport-unix.cpp" line="259"/>
+        <location filename="../serialport-unix.cpp" line="275"/>
         <location filename="../serialport-unix.cpp" line="315"/>
-        <location filename="../serialport-win32.cpp" line="252"/>
+        <location filename="../serialport-win32.cpp" line="294"/>
         <source>Serial port speed set to %1.</source>
         <translation>Velocidad del puerto serial configurado para %1.</translation>
     </message>
     <message>
-        <location filename="../serialport-unix.cpp" line="279"/>
-        <source>Failed to set serial attrs</source>
-        <translation>Error al definir atributos seriales</translation>
-    </message>
-    <message>
-        <location filename="../serialport-unix.cpp" line="301"/>
+        <location filename="../serialport-unix.cpp" line="310"/>
         <source>Failed to set serial port speed to %1</source>
-        <translation>Error al ajustar la velocidad del puerto serial %1</translation>
+        <translation>Error al establecer la velocidad del puerto serie a %1</translation>
     </message>
     <message>
-        <location filename="../serialport-unix.cpp" line="352"/>
-        <location filename="../serialport-unix.cpp" line="368"/>
-        <location filename="../serialport-unix.cpp" line="397"/>
-        <source>Cannot retrieve serial port status: %1</source>
-        <translation>No se puede recuperar el estado del puerto serial: %1</translation>
-    </message>
-    <message>
-        <location filename="../serialport-unix.cpp" line="387"/>
-        <location filename="../serialport-win32.cpp" line="321"/>
+        <location filename="../serialport-unix.cpp" line="334"/>
+        <location filename="../serialport-unix.cpp" line="462"/>
+        <location filename="../serialport-win32.cpp" line="313"/>
+        <location filename="../serialport-win32.cpp" line="441"/>
         <source>Cannot clear serial port read buffer: %1</source>
-        <translation>No se puede borrar el puerto serial búfer de lectura: %1</translation>
+        <translation>No se puede borrar el búfer de lectura del puerto serie: %1</translation>
     </message>
     <message>
-        <location filename="../serialport-unix.cpp" line="432"/>
-        <location filename="../serialport-win32.cpp" line="371"/>
+        <location filename="../serialport-unix.cpp" line="431"/>
+        <location filename="../serialport-unix.cpp" line="447"/>
+        <location filename="../serialport-unix.cpp" line="480"/>
+        <source>Cannot retrieve serial port status: %1</source>
+        <translation>No se puede recuperar el estado del puerto serie: %1</translation>
+    </message>
+    <message>
+        <location filename="../serialport-unix.cpp" line="525"/>
+        <location filename="../serialport-win32.cpp" line="501"/>
         <source>Data frame checksum error, expected: %1, got: %2. (%3)</source>
         <translation>Los datos de suma de comprobación de errores de trama, que se espera: %1, obtuvo: %2. (%3)</translation>
     </message>
     <message>
-        <location filename="../serialport-unix.cpp" line="515"/>
-        <location filename="../serialport-unix.cpp" line="553"/>
-        <location filename="../serialport-win32.cpp" line="473"/>
-        <location filename="../serialport-win32.cpp" line="479"/>
+        <location filename="../serialport-unix.cpp" line="616"/>
+        <location filename="../serialport-unix.cpp" line="657"/>
+        <location filename="../serialport-win32.cpp" line="617"/>
+        <location filename="../serialport-win32.cpp" line="623"/>
         <source>Cannot read from serial port: %1</source>
         <translation>No se puede leer desde el puerto serial: %1</translation>
     </message>
     <message>
-        <location filename="../serialport-unix.cpp" line="531"/>
-        <location filename="../serialport-win32.cpp" line="487"/>
-        <source>Serial port read timeout.</source>
-        <translation>Puerto serial Lee tiempo de espera.</translation>
+        <location filename="../serialport-unix.cpp" line="631"/>
+        <source>Serial port read timeout. %1 of %2 read in %3 ms</source>
+        <translation>Tiempo de espera de lectura de puerto serie. %1 de %2 leído en %3 ms</translation>
     </message>
     <message>
-        <location filename="../serialport-unix.cpp" line="566"/>
-        <source>Serial port write timeout. (%1 of %2 written)</source>
-        <translation>Tiempo de espera de escritura puerto serial. (%1 de %2 escrito)</translation>
+        <location filename="../serialport-unix.cpp" line="671"/>
+        <source>Serial port write timeout. %1 of %2 written in %3 ms</source>
+        <translation>Tiempo de espera de escritura de puerto serie. %1 de %2 escrito en %3 ms</translation>
     </message>
     <message>
-        <location filename="../serialport-unix.cpp" line="571"/>
+        <location filename="../serialport-unix.cpp" line="676"/>
         <source>Cannot flush serial port write buffer: %1</source>
         <translation>No se puede vaciar búfer de escritura del puerto serial: %1</translation>
     </message>
     <message>
-        <location filename="../serialport-win32.cpp" line="523"/>
-        <source>Serial port write timeout.</source>
-        <translation>Puerto serial fuera del tiempo límite de escritura.</translation>
+        <location filename="../serialport-win32.cpp" line="97"/>
+        <source>Cannot set DTR line in serial port &apos;%1&apos;: %2</source>
+        <translation>No se puede establecer la línea DTR en el puerto serie &apos;%1&apos;: %2</translation>
     </message>
     <message>
-        <location filename="../serialport-win32.cpp" line="73"/>
-        <source>Cannot clear RTS line in serial port &apos;%1&apos;: %2</source>
-        <translation>No se puede borrar la línea RTS en el puerto serial &apos;%1&apos;: %2</translation>
+        <location filename="../serialport-win32.cpp" line="101"/>
+        <source>Cannot set RTS line in serial port &apos;%1&apos;: %2</source>
+        <translation>No se puede establecer la línea RTS en el puerto serie &apos;%1&apos;: %2</translation>
     </message>
     <message>
-        <location filename="../serialport-win32.cpp" line="77"/>
-        <source>Cannot clear DTR line in serial port &apos;%1&apos;: %2</source>
-        <translation>No se puede borrar la línea DTR en el puerto serial &apos;%1&apos;: %2</translation>
-    </message>
-    <message>
-        <location filename="../serialport-win32.cpp" line="107"/>
+        <location filename="../serialport-win32.cpp" line="136"/>
         <source>Emulation started through standard serial port backend on &apos;%1&apos; with %2 handshaking</source>
         <translation>Emulación de iniciado a través de puerto serial estándar backend en &apos;%1&apos; con handshaking de %2</translation>
     </message>
     <message>
-        <location filename="../serialport-win32.cpp" line="247"/>
+        <location filename="../serialport-win32.cpp" line="289"/>
         <source>Cannot set serial port timeouts: %1</source>
         <translation>No se puede establecer tiempos de espera del puerto serial: %1</translation>
     </message>
     <message>
-        <location filename="../serialport-win32.cpp" line="284"/>
+        <location filename="../serialport-win32.cpp" line="387"/>
         <source>Cannot set serial port event mask: %1</source>
         <translation>No se puede establecer la máscara de evento puerto serial: %1</translation>
     </message>
     <message>
-        <location filename="../serialport-win32.cpp" line="309"/>
-        <location filename="../serialport-win32.cpp" line="315"/>
+        <location filename="../serialport-win32.cpp" line="412"/>
+        <location filename="../serialport-win32.cpp" line="418"/>
         <source>Cannot wait for serial port event: %1</source>
         <translation>No puedo esperar para el evento del puerto serial: %1</translation>
     </message>
     <message>
-        <location filename="../serialport-win32.cpp" line="465"/>
+        <location filename="../serialport-win32.cpp" line="609"/>
         <source>Cannot create event: %1</source>
         <translation>No se puede crear el evento: %1</translation>
     </message>
     <message>
-        <location filename="../serialport-win32.cpp" line="505"/>
+        <location filename="../serialport-win32.cpp" line="634"/>
+        <source>Serial port read timeout.</source>
+        <translation>Tiempo de espera de lectura de puerto serie.</translation>
+    </message>
+    <message>
+        <location filename="../serialport-win32.cpp" line="650"/>
         <source>Cannot clear serial port write buffer: %1</source>
         <translation>No se puede borrar el búfer de escritura del puerto serial: %1</translation>
     </message>
     <message>
-        <location filename="../serialport-win32.cpp" line="512"/>
-        <location filename="../serialport-win32.cpp" line="517"/>
+        <location filename="../serialport-win32.cpp" line="668"/>
+        <location filename="../serialport-win32.cpp" line="673"/>
         <source>Cannot write to serial port: %1</source>
         <translation>No se puede escribir en el puerto serial: %1</translation>
+    </message>
+    <message>
+        <location filename="../serialport-win32.cpp" line="681"/>
+        <source>Serial port write timeout.</source>
+        <translation>Tiempo de espera de escritura de puerto serie.</translation>
     </message>
 </context>
 <context>
@@ -4040,13 +3540,13 @@ Do you want to open the options dialog?</source>
         <location filename="../textprinterwindow.ui" line="47"/>
         <location filename="../textprinterwindow.ui" line="50"/>
         <source>Atari Output (Atascii)</source>
-        <translation>Atari Salida (Atascii)</translation>
+        <translation>Salida Atari (Atascii)</translation>
     </message>
     <message>
         <location filename="../textprinterwindow.ui" line="69"/>
         <location filename="../textprinterwindow.ui" line="72"/>
         <source>Atari Output (Ascii)</source>
-        <translation>Atari Salida (Ascii)</translation>
+        <translation>Salida Atari (Ascii)</translation>
     </message>
     <message>
         <location filename="../textprinterwindow.ui" line="124"/>
@@ -4072,7 +3572,7 @@ Do you want to open the options dialog?</source>
         <location filename="../textprinterwindow.ui" line="169"/>
         <location filename="../textprinterwindow.ui" line="356"/>
         <source>Ctrl+S</source>
-        <translation></translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../textprinterwindow.ui" line="178"/>
@@ -4092,7 +3592,7 @@ Do you want to open the options dialog?</source>
     <message>
         <location filename="../textprinterwindow.ui" line="187"/>
         <source>Ctrl+C</source>
-        <translation></translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../textprinterwindow.ui" line="202"/>
@@ -4112,7 +3612,7 @@ Do you want to open the options dialog?</source>
     <message>
         <location filename="../textprinterwindow.ui" line="211"/>
         <source>Ctrl+W</source>
-        <translation></translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../textprinterwindow.ui" line="220"/>
@@ -4132,12 +3632,12 @@ Do you want to open the options dialog?</source>
     <message>
         <location filename="../textprinterwindow.ui" line="229"/>
         <source>Ctrl+P</source>
-        <translation></translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../textprinterwindow.ui" line="239"/>
         <source>Atascii Font</source>
-        <translation>Atascii Font</translation>
+        <translation>Fuente Atascii</translation>
     </message>
     <message>
         <location filename="../textprinterwindow.ui" line="242"/>
@@ -4152,7 +3652,7 @@ Do you want to open the options dialog?</source>
     <message>
         <location filename="../textprinterwindow.ui" line="248"/>
         <source>Alt+F</source>
-        <translation></translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../textprinterwindow.ui" line="264"/>
@@ -4172,7 +3672,7 @@ Do you want to open the options dialog?</source>
     <message>
         <location filename="../textprinterwindow.ui" line="273"/>
         <source>Alt+Shift+F</source>
-        <translation></translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../textprinterwindow.ui" line="292"/>
@@ -4192,7 +3692,7 @@ Do you want to open the options dialog?</source>
     <message>
         <location filename="../textprinterwindow.ui" line="301"/>
         <source>Alt+Shift+H</source>
-        <translation></translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../textprinterwindow.ui" line="323"/>
@@ -4212,7 +3712,7 @@ Do you want to open the options dialog?</source>
     <message>
         <location filename="../textprinterwindow.ui" line="332"/>
         <source>Alt+H</source>
-        <translation></translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../textprinterwindow.ui" line="347"/>

@@ -32,6 +32,7 @@ public:
     virtual bool setSpeed(int speed);
     virtual bool writeRawFrame(const QByteArray &data);
     virtual void setActiveSioDevices(const QByteArray &data);
+    virtual int speed();
 
     QString testFilename() { return mTestFilename; }
     void setTestFilename(QString filename) { mTestFilename = filename; }

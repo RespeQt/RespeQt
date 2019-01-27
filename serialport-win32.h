@@ -40,6 +40,7 @@ public:
     bool setSpeed(int speed);
     bool writeRawFrame(const QByteArray &data);
     void setActiveSioDevices(const QByteArray &data);
+    int speed();
 
 private:
     bool mCanceled;
@@ -53,7 +54,6 @@ private:
 
     bool setNormalSpeed();
     bool setHighSpeed();
-    int speed();
     quint8 sioChecksum(const QByteArray &data, uint size);
     QByteArray readRawFrame(uint size, bool verbose = true);
     QString lastErrorMessage();
@@ -87,6 +87,7 @@ public:
     bool setSpeed(int speed);
     bool writeRawFrame(const QByteArray &data);
     void setActiveSioDevices(const QByteArray &data);
+    int speed();
 };
 
 #endif // SERIALPORTWIN32_H

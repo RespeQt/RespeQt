@@ -258,9 +258,9 @@ version 0.8.3
                                          2 - Standard Enhanced density
                                          3 - Standard Double Density
                                          4 - Double sided, double density
-                                         5 - Double density Harddisk
+                                         5 - Double density hard disk
 
-                   Example: DNmyhd.atr.5, will create a double density harddisk .atr image with the name myhd
+                   Example: DNmyhd.atr.5, will create a double density hard disk .atr image with the name myhd
 
         An example of invoking AspeCl with multiple command line switches:
 

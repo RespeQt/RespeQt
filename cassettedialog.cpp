@@ -26,6 +26,8 @@ CassetteDialog::CassetteDialog(QWidget *parent, const QString &fileName)
     ui->setupUi(this);
 
     ui->progressBar->setVisible(false);
+    ui->imgCass->setVisible(false);
+
     worker = new CassetteWorker;
     mTotalDuration = worker->mTotalDuration;
     mRemainingTime = mTotalDuration;
@@ -80,6 +82,11 @@ int CassetteDialog::exec()
 
 void CassetteDialog::accept()
 {
+    ui->imgCass->setVisible(true);
+    mCassMovie = new QMovie(":/icons/other-icons/casette.gif");
+    ui->imgCass->setMovie (mCassMovie);
+    mCassMovie->start ();
+
     ui->buttonBox->setStandardButtons(QDialogButtonBox::Cancel);
     int minutes = mRemainingTime / 60000;
     int seconds = (mRemainingTime - minutes * 60000)/1000;

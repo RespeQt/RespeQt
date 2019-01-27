@@ -34,6 +34,7 @@
 #include "drivewidget.h"
 #include "infowidget.h"
 #include "printerwidget.h"
+#include "Emulator.h"
 
 namespace Ui
 {
@@ -85,6 +86,7 @@ private:
 
     QDialog *logWindow_;
 
+    RomProvider *m_romProvider;
 
     QList<QAction*> recentFilesActions_;
 
@@ -96,6 +98,9 @@ private:
     void mountDiskImage(int no);
     void mountFolderImage(int no);
     bool ejectImage(int no, bool ask = true);
+    void toggleLever(int no, bool open);
+    void toggleHappy(int no, bool enabled);
+    void toggleChip(int no, bool open);
     void toggleWriteProtection(int no, bool protectionEnabled);
     void openEditor(int no);
     void saveDisk(int no);
@@ -106,7 +111,10 @@ private:
     void autoSaveDisk(int no);                                              //
     void setUpPrinterEmulationWidgets(bool enabled);
 
+    bool firmwareAvailable(int no, QString &name, QString path);
+
     void createDeviceWidgets();
+    SimpleDiskImage *installDiskImage(int no);
 
 protected:
     void mousePressEvent(QMouseEvent *event);
@@ -153,6 +161,9 @@ private slots:
     void on_actionMountDisk_triggered(int deviceId);
     void on_actionMountFolder_triggered(int deviceId);
     void on_actionEject_triggered(int deviceId);
+    void on_actionToggleLever_triggered(int deviceId, bool open);
+    void on_actionToggleHappy_triggered(int deviceId, bool enabled);
+    void on_actionToggleChip_triggered(int deviceId, bool open);
     void on_actionWriteProtect_triggered(int deviceId, bool writeProtectEnabled);
     void on_actionMountRecent_triggered(const QString &fileName);
     void on_actionEditDisk_triggered(int deviceId);

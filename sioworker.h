@@ -76,6 +76,8 @@ private:
     QXmlStreamWriter *mSnapshotWriter;
     void writeSnapshotCommandFrame(qint8 no, qint8 command, qint8 aux1, qint8 aux2);
 #endif
+    bool displayCommandName;
+
 public:
     AbstractSerialPortBackend* port() {return mPort;}
     int maxSpeed;
@@ -92,7 +94,9 @@ public:
     void swapDevices(quint8 d1, quint8 d2);
     SioDevice* getDevice(quint8 no);
 
+    QString guessDiskCommand(quint8 command, quint16 aux);
     QString deviceName(int device);
+    void setDisplayCommandName(bool display) {displayCommandName = display;}
     static void usleep(unsigned long time) {QThread::usleep(time);}
 
 #ifndef QT_NO_DEBUG
