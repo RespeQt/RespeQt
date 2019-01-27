@@ -364,7 +364,7 @@ void MainWindow::createDeviceWidgets()
         connect(deviceWidget, SIGNAL(actionMountFolder(int)),this, SLOT(on_actionMountFolder_triggered(int)));
         connect(deviceWidget, SIGNAL(actionAutoSave(int)),this, SLOT(on_actionAutoSave_triggered(int)));
         connect(deviceWidget, SIGNAL(actionEject(int)),this, SLOT(on_actionEject_triggered(int)));
-        connect(deviceWidget, SIGNAL(actionToggleLever(int,bool)),this, SLOT(on_actionToggleLever_triggered(int,bool)));
+        connect(deviceWidget, SIGNAL(actionNextSide(int)),this, SLOT(on_actionNextSide_triggered(int)));
         connect(deviceWidget, SIGNAL(actionToggleHappy(int,bool)),this, SLOT(on_actionToggleHappy_triggered(int,bool)));
         connect(deviceWidget, SIGNAL(actionToggleChip(int,bool)),this, SLOT(on_actionToggleChip_triggered(int,bool)));
         connect(deviceWidget, SIGNAL(actionWriteProtect(int,bool)),this, SLOT(on_actionWriteProtect_triggered(int,bool)));
@@ -972,7 +972,7 @@ void MainWindow::deviceStatusChanged(int deviceNo)
                         }
                     }
                 }
-                diskWidget->showAsImageMounted(filenamelabel, img->description(), enableEdit, enableSave);
+                diskWidget->showAsImageMounted(filenamelabel, img->description(), enableEdit, enableSave, img->isLeverOpen(), img->isHappyEnabled(), img->isChipOpen(), img->hasSeveralSides());
             }
 
             img->setDisplayTransmission(respeqtSettings->displayTransmission());
@@ -1330,11 +1330,20 @@ void MainWindow::mountFile(int no, const QString &fileName, bool /*prot*/)
     }
 
     if (disk) {
+        SimpleDiskImage *oldDisk = qobject_cast <SimpleDiskImage*> (sio->getDevice(no + DISK_BASE_CDEVIC));
+        Board *board = oldDisk != NULL ? oldDisk->getBoardInfo() : NULL;
         if (!disk->open(fileName, type) || !ejectImage(no) ) {
             respeqtSettings->unmountImage(no);
             delete disk;
+            if (board != NULL) {
+                delete board;
+            }
             if(g_rclFileName.left(1) == "*") emit fileMounted(false);  //
             return;
+        }
+        else if (board != NULL) {
+            disk->setBoardInfo(board);
+            delete board;
         }
 
         sio->installDevice(DISK_BASE_CDEVIC + no, disk);
@@ -1476,10 +1485,10 @@ void MainWindow::mountFolderImage(int no)
     mountFileWithDefaultProtection(no, fileName);
 }
 
-void MainWindow::toggleLever(int no, bool open)
+void MainWindow::loadNextSide(int no)
 {
     SimpleDiskImage *img = qobject_cast <SimpleDiskImage*> (sio->getDevice(no + DISK_BASE_CDEVIC));
-    img->setLeverOpen(open);
+    mountFileWithDefaultProtection(no, img->getNextSideFilename());
 }
 
 void MainWindow::toggleHappy(int no, bool enabled)
@@ -1679,7 +1688,7 @@ void MainWindow::revertDisk(int no)
 void MainWindow::on_actionMountDisk_triggered(int deviceId) {mountDiskImage(deviceId);}
 void MainWindow::on_actionMountFolder_triggered(int deviceId) {mountFolderImage(deviceId);}
 void MainWindow::on_actionEject_triggered(int deviceId) {ejectImage(deviceId);}
-void MainWindow::on_actionToggleLever_triggered(int deviceId, bool open) {toggleLever(deviceId, open);}
+void MainWindow::on_actionNextSide_triggered(int deviceId) {loadNextSide(deviceId);}
 void MainWindow::on_actionToggleHappy_triggered(int deviceId, bool open) {toggleHappy(deviceId, open);}
 void MainWindow::on_actionToggleChip_triggered(int deviceId, bool open) {toggleChip(deviceId, open);}
 void MainWindow::on_actionWriteProtect_triggered(int deviceId, bool writeProtectEnabled) {toggleWriteProtection(deviceId, writeProtectEnabled);}

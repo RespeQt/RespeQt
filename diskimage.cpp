@@ -470,6 +470,66 @@ QString DiskGeometry::humanReadable() const
     return tr("%1 (%2k)").arg(result).arg((m_totalSize + 512) / 1024);
 }
 
+/* Board (Happy or Super Archiver) */
+
+Board::Board()
+    : QObject()
+{
+    m_chipOpen = false;
+    m_happyEnabled = false;
+    m_happy1050 = false;
+    m_lastArchiverUploadCrc16 = 0;
+    m_lastHappyUploadCrc16 = 0;
+    m_happyPatchInProgress = false;
+}
+
+Board::~Board()
+{
+}
+
+Board *Board::getCopy()
+{
+    Board *copy = new Board();
+    copy->m_chipOpen = m_chipOpen;
+    memcpy(copy->m_chipRam, m_chipRam, sizeof(m_chipRam));
+    copy->m_lastArchiverUploadCrc16 = m_lastArchiverUploadCrc16;
+    copy->m_trackData.append(m_trackData);
+    copy->m_lastArchiverSpeed = m_lastArchiverSpeed;
+    copy->m_happyEnabled = m_happyEnabled;
+    copy->m_happy1050 = m_happy1050;
+    copy->m_happyRam.append(m_happyRam);
+    copy->m_lastHappyUploadCrc16 = m_lastHappyUploadCrc16;
+    copy->m_happyPatchInProgress = m_happyPatchInProgress;
+    return copy;
+}
+
+void Board::setFromCopy(Board *copy)
+{
+    m_chipOpen = copy->m_chipOpen;
+    memcpy(m_chipRam, copy->m_chipRam, sizeof(m_chipRam));
+    m_lastArchiverUploadCrc16 = copy->m_lastArchiverUploadCrc16;
+    m_trackData.clear();
+    m_trackData.append(copy->m_trackData);
+    m_lastArchiverSpeed = copy->m_lastArchiverSpeed;
+    m_happyEnabled = copy->m_happyEnabled;
+    m_happy1050 = copy->m_happy1050;
+    m_happyRam.clear();
+    m_happyRam.append(copy->m_happyRam);
+    m_lastHappyUploadCrc16 = copy->m_lastHappyUploadCrc16;
+    m_happyPatchInProgress = copy->m_happyPatchInProgress;
+}
+
+bool Board::hasHappySignature()
+{
+    unsigned char *ram = (unsigned char *)m_happyRam.data();
+    for (unsigned int i = 0; i < sizeof(HAPPY_SIGNATURE); i++) {
+        if (ram[i] != HAPPY_SIGNATURE[i]) {
+            return false;
+        }
+    }
+    return true;
+}
+
 /* SimpleDiskImage */
 
 SimpleDiskImage::SimpleDiskImage(SioWorker *worker)
@@ -478,16 +538,12 @@ SimpleDiskImage::SimpleDiskImage(SioWorker *worker)
     m_editDialog = 0;
     m_displayTransmission = false;
     m_dumpDataFrame = false;
-    m_chipOpen = false;
-    m_happyEnabled = false;
-    m_happy1050 = false;
     m_displayTrackLayout = false;
     m_wd1771Status = 0xFF;
     m_isLeverOpen = false;
     m_isReady = false;
     m_timer.start();
     m_conversionInProgress = false;
-	m_lastArchiverUploadCrc16 = 0;
 }
 
 SimpleDiskImage::~SimpleDiskImage()
@@ -499,16 +555,28 @@ SimpleDiskImage::~SimpleDiskImage()
 
 QString SimpleDiskImage::description() const
 {
-    if (m_chipOpen && m_happyEnabled) {
-        return QString(m_geometry.humanReadable()).append(" - ").append(tr("CHIP mode and HAPPY mode"));
+    QString sides;
+    if (m_numberOfSides > 1) {
+        sides.append(" - ").append(tr("Image %1/%2").arg(m_currentSide).arg(m_numberOfSides));
     }
-    if (m_chipOpen) {
-        return QString(m_geometry.humanReadable()).append(" - ").append(tr("CHIP mode"));
+    if (m_board.isChipOpen()) {
+        return QString(m_geometry.humanReadable()).append(" - ").append(tr("CHIP mode")).append(sides);
     }
-    if (m_happyEnabled) {
-        return QString(m_geometry.humanReadable()).append(" - ").append(tr("HAPPY mode"));
+    else if (m_board.isHappyEnabled()) {
+        return QString(m_geometry.humanReadable()).append(" - ").append(tr("HAPPY mode")).append(sides);
     }
-    return m_geometry.humanReadable();
+    else {
+        return m_geometry.humanReadable().append(sides);
+    }
+}
+
+QString SimpleDiskImage::getNextSideLabel()
+{
+    int nextSide = m_currentSide + 1;
+    if (nextSide > m_numberOfSides) {
+        nextSide = 1;
+    }
+    return QString(tr("Load image %1 of %2:\n%3").arg(nextSide).arg(m_numberOfSides).arg(m_nextSideFilename));
 }
 
 void SimpleDiskImage::refreshNewGeometry()
@@ -518,30 +586,34 @@ void SimpleDiskImage::refreshNewGeometry()
 
 void SimpleDiskImage::setChipMode(bool enable)
 {
-    m_chipOpen = enable;
-    m_lastArchiverUploadCrc16 = 0;
+    m_board.setChipOpen(enable);
+    m_board.setLastArchiverUploadCrc16(0);
+    if (m_board.isChipOpen()) {
+        m_board.setHappyEnabled(false);
+    }
     emit statusChanged(m_deviceNo);
 }
 
 void SimpleDiskImage::setHappyMode(bool enable)
 {
-    m_happyEnabled = enable;
-    m_lastHappyUploadCrc16 = 0;
-    if (m_happyEnabled) {
-        if (m_happyRam.size() == 0) {
-            m_happyRam.reserve(6144);
+    m_board.setHappyEnabled(enable);
+    m_board.setLastHappyUploadCrc16(0);
+    if (m_board.isHappyEnabled()) {
+        m_board.setChipOpen(false);
+        if (m_board.m_happyRam.size() == 0) {
+            m_board.m_happyRam.reserve(6144);
             for (unsigned int i = 0; i < 6144; i++) {
-                m_happyRam[i] = 0;
+                m_board.m_happyRam[i] = 0;
             }
-            m_happyRam[0] = 0x80;
+            m_board.m_happyRam[0] = 0x80;
             for (unsigned int i = 0; i < sizeof(HAPPY_INITIAL_SECTOR_LIST); i++) {
-                m_happyRam[0x280 + i] = HAPPY_INITIAL_SECTOR_LIST[i];
+                m_board.m_happyRam[0x280 + i] = HAPPY_INITIAL_SECTOR_LIST[i];
             }
         }
     }
     else {
-        m_happyRam[0] = 0x80;
-        m_happy1050 = false;
+        m_board.m_happyRam[0] = 0x80;
+        m_board.setHappy1050(false);
     }
     emit statusChanged(m_deviceNo);
 }
@@ -594,33 +666,126 @@ bool SimpleDiskImage::openDi(const QString &fileName)
 bool SimpleDiskImage::open(const QString &fileName, FileTypes::FileType type)
 {
     m_originalImageType = type;
-
+    m_currentSide = 1;
+    m_numberOfSides = 1;
+    m_nextSideFilename.clear();
+    bool bResult = false;
     switch (type) {
         case FileTypes::Atr:
         case FileTypes::AtrGz:
-            return openAtr(fileName);
+            bResult = openAtr(fileName);
+        break;
         case FileTypes::Xfd:
         case FileTypes::XfdGz:
-            return openXfd(fileName);
+            bResult = openXfd(fileName);
+        break;
         case FileTypes::Dcm:
         case FileTypes::DcmGz:
-            return openDcm(fileName);
+            bResult = openDcm(fileName);
+        break;
         case FileTypes::Di:
         case FileTypes::DiGz:
-            return openDi(fileName);
+            bResult = openDi(fileName);
+        break;
         case FileTypes::Pro:
         case FileTypes::ProGz:
-            return openPro(fileName);
+            bResult = openPro(fileName);
+        break;
         case FileTypes::Atx:
         case FileTypes::AtxGz:
-            return openAtx(fileName);
+            bResult = openAtx(fileName);
+        break;
         case FileTypes::Scp:
         case FileTypes::ScpGz:
-            return openScp(fileName);
+            bResult = openScp(fileName);
+        break;
         default:
             qCritical() << "!e" << tr("Cannot open '%1': %2").arg(fileName).arg(tr("Unknown file type."));
-            return false;
+        break;
     }
+    if (bResult) {
+        QFileInfo fileInfo(fileName);
+        QString baseName = fileInfo.completeBaseName();
+        if (baseName.contains("Side", Qt::CaseInsensitive) || baseName.contains("Disk", Qt::CaseInsensitive)) {
+            QStringList imageList;
+            imageList << fileInfo.absoluteDir().absoluteFilePath(fileInfo.fileName());
+            QStringList images = fileInfo.absoluteDir().entryList(QStringList() << "*.xfd" << "*.XFD" << "*.atr" << "*.ATR" << "*.pro" << "*.PRO" << "*.atx" << "*.ATX", QDir::Files);
+            foreach(QString otherFileName, images) {
+                QFileInfo otherFileInfo(otherFileName);
+                QString otherBaseName = otherFileInfo.completeBaseName();
+                if (otherBaseName.contains("Side", Qt::CaseInsensitive) || otherBaseName.contains("Disk", Qt::CaseInsensitive)) {
+                    if (sameSoftware(baseName, otherBaseName)) {
+                        imageList << fileInfo.absoluteDir().absoluteFilePath(otherFileInfo.fileName());
+                    }
+                }
+            }
+            if (imageList.size() > 1) {
+                m_numberOfSides = imageList.size();
+                qSort(imageList.begin(), imageList.end(), qLess<QString>());
+                int currentIndex = 0;
+                foreach(QString otherFileName, imageList) {
+                    if (otherFileName == fileName) {
+                        break;
+                    }
+                    else {
+                        currentIndex++;
+                    }
+                }
+                m_currentSide = currentIndex + 1;
+                int nextIndex = m_currentSide >= m_numberOfSides ? 0 : m_currentSide;
+                m_nextSideFilename.append(imageList.at(nextIndex));
+                QFileInfo nextFileInfo(m_nextSideFilename);
+                qDebug() << "!u" << tr("Image is %1 of %2. Next image will be %3")
+                              .arg(currentIndex + 1)
+                              .arg(m_numberOfSides)
+                              .arg(nextFileInfo.fileName());
+            }
+        }
+    }
+    return bResult;
+}
+
+bool SimpleDiskImage::sameSoftware(const QString &fileName, const QString &otherFileName)
+{
+    int same = 0;
+    int minLength = fileName.length() < otherFileName.length() ? fileName.length() : otherFileName.length();
+    QChar c1, c2;
+    for (int i = 0; i < minLength; i++) {
+        if (fileName.data()[i] == otherFileName.data()[i]) {
+            same++;
+        }
+        else {
+            c1 = fileName.data()[i];
+            c2 = otherFileName.data()[i];
+            break;
+        }
+    }
+    if (same == minLength) {
+        return false;
+    }
+    if (same < 7) {
+        return false;
+    }
+    if (c1 >= 'A' && c1 <= 'H') {
+        if (c2 < 'A' || c2 > 'H') {
+            return false;
+        }
+    }
+    if (c1 >= 'a' && c1 <= 'h') {
+        if (c2 < 'a' || c2 > 'h') {
+            return false;
+        }
+    }
+    if (c1 >= '1' && c1 <= '8') {
+        if (c2 < '1' || c2 > '8') {
+            return false;
+        }
+    }
+    QString samePart = fileName.left(same);
+    if ((!samePart.contains("Side", Qt::CaseInsensitive)) && (!samePart.contains("Disk", Qt::CaseInsensitive))) {
+        return false;
+    }
+    return true;
 }
 
 bool SimpleDiskImage::saveDcm(const QString &fileName)
@@ -674,6 +839,9 @@ bool SimpleDiskImage::save()
 
 bool SimpleDiskImage::saveAs(const QString &fileName)
 {
+    m_currentSide = 1;
+    m_numberOfSides = 1;
+    m_nextSideFilename.clear();
     if (fileName.endsWith(".ATR", Qt::CaseInsensitive)) {
         FileTypes::FileType destinationImageType = FileTypes::Atr;
         if ((m_originalImageType == FileTypes::Atr) || (m_originalImageType == FileTypes::AtrGz) || (m_originalImageType == FileTypes::Xfd) || (m_originalImageType == FileTypes::XfdGz)) {
@@ -775,6 +943,9 @@ void SimpleDiskImage::reopen()
 
 void SimpleDiskImage::close()
 {
+    m_currentSide = 1;
+    m_numberOfSides = 1;
+    m_nextSideFilename.clear();
     if (m_editDialog) {
         delete m_editDialog;
     }
@@ -813,20 +984,20 @@ bool SimpleDiskImage::executeArchiverCode(quint16 aux, QByteArray &data)
                 firstDataPartCrc16 = crc16.GetCrc();
             }
         }
-        m_lastArchiverUploadCrc16 = crc16.GetCrc();
-        if (m_lastArchiverUploadCrc16 == 0xFD2E) {
+        m_board.setLastArchiverUploadCrc16(crc16.GetCrc());
+        if (m_board.getLastArchiverUploadCrc16() == 0xFD2E) {
             qDebug() << "!u" << tr("[%1] Uploaded code is: Speed check")
                         .arg(deviceName());
         }
-        else if (m_lastArchiverUploadCrc16 == 0x61F6) {
+        else if (m_board.getLastArchiverUploadCrc16() == 0x61F6) {
             qDebug() << "!u" << tr("[%1] Uploaded code is: Diagnostic")
                         .arg(deviceName());
         }
         else if ((firstDataPartCrc16 == 0x9537) || (firstDataPartCrc16 == 0xBEAF) || (firstDataPartCrc16 == 0xD2A0)) { // Super Archiver 3.02, 3.03, 3.12 respectively
-            m_lastArchiverUploadCrc16 = firstDataPartCrc16;
+            m_board.setLastArchiverUploadCrc16(firstDataPartCrc16);
             int startOffset = ((int)data[3]) & 0xFF; // this byte contains the offset of the first track data byte
-            m_trackData.clear();
-            m_trackData.append(data.mid(startOffset,128));
+            m_board.m_trackData.clear();
+            m_board.m_trackData.append(data.mid(startOffset,128));
             qDebug() << "!u" << tr("[%1] Uploaded code is: Prepare track data at offset $%2")
                         .arg(deviceName())
                         .arg(startOffset, 2, 16, QChar('0'));
@@ -840,7 +1011,7 @@ bool SimpleDiskImage::executeArchiverCode(quint16 aux, QByteArray &data)
                 crc16.Add((unsigned char) (data.at(j)));
             }
             if ((crc16.GetCrc() == 0x603D) || (crc16.GetCrc() == 0xBAC2) || (crc16.GetCrc() == 0xDFFF)) { // Super Archiver 3.02, 3.03, 3.12 respectively
-                m_lastArchiverUploadCrc16 = crc16.GetCrc();
+                m_board.setLastArchiverUploadCrc16(crc16.GetCrc());
                 // 2 implementations: one expects the sector list (Super Archiver 3.02 and 3.03) and the second expects a timing (3.12)
                 bool timingOnly = crc16.GetCrc() == 0xDFFF;
                 if (timingOnly) {
@@ -862,7 +1033,7 @@ bool SimpleDiskImage::executeArchiverCode(quint16 aux, QByteArray &data)
                 ok = readSkewAlignment(aux, data, timingOnly);
             }
             else if ((crc16.GetCrc() == 0xAD1D) || (crc16.GetCrc() == 0x8A65) || (crc16.GetCrc() == 0x64B1)) { // Super Archiver 3.02, 3.03, 3.12 respectively
-                m_lastArchiverUploadCrc16 = crc16.GetCrc();
+                m_board.setLastArchiverUploadCrc16(crc16.GetCrc());
                 if (crc16.GetCrc() == 0x64B1) {
                     quint16 timing = (((quint16)data[4]) & 0xFF) + ((((quint16)data[5]) << 8) & 0xFF00);
                     qDebug() << "!u" << tr("[%1] Uploaded code is: Format track $%2 with skew alignment $%3 with track $%4")
@@ -889,17 +1060,6 @@ bool SimpleDiskImage::executeArchiverCode(quint16 aux, QByteArray &data)
     return ok;
 }
 
-bool SimpleDiskImage::hasHappySignature()
-{
-    unsigned char *ram = (unsigned char *)m_happyRam.data();
-    for (unsigned int i = 0; i < sizeof(HAPPY_SIGNATURE); i++) {
-        if (ram[i] != HAPPY_SIGNATURE[i]) {
-            return false;
-        }
-    }
-    return true;
-}
-
 void SimpleDiskImage::readHappyTrack(int trackNumber, bool happy1050)
 {
     Crc16 crc;
@@ -916,14 +1076,14 @@ void SimpleDiskImage::readHappyTrack(int trackNumber, bool happy1050)
     if (happy1050) {
         startOffset = 0xD00;
         dstOffset = startOffset + 1;
-        m_happyRam[dstOffset++] = 0x8D;
-        m_happyRam[dstOffset++] = 0x7F;
+        m_board.m_happyRam[dstOffset++] = 0x8D;
+        m_board.m_happyRam[dstOffset++] = 0x7F;
     }
     else {
         startOffset = 0x300;
         dstOffset = startOffset + 1;
-        m_happyRam[dstOffset++] = 0x0B;
-        m_happyRam[dstOffset++] = 0xFE;
+        m_board.m_happyRam[dstOffset++] = 0x0B;
+        m_board.m_happyRam[dstOffset++] = 0xFE;
     }
     quint8 totalTiming = 0;
     for (quint8 sector = 0; sector < nbSectors; sector++) {
@@ -932,18 +1092,18 @@ void SimpleDiskImage::readHappyTrack(int trackNumber, bool happy1050)
             crc.Reset();
             crc.Add(DISK_ID_ADDR_MARK);
             for (int i = 0; i < 4; i++) {
-                m_happyRam[dstOffset++] = 0xFF - crc.Add((unsigned char)data[srcOffset++]);
+                m_board.m_happyRam[dstOffset++] = 0xFF - crc.Add((unsigned char)data[srcOffset++]);
             }
-            m_happyRam[dstOffset++] = 0xFF - (unsigned char)((crc.GetCrc() >> 8) & 0xFF);
-            m_happyRam[dstOffset++] = 0xFF - (unsigned char)(crc.GetCrc() & 0xFF);
-            m_happyRam[dstOffset++] = 0xFF;
+            m_board.m_happyRam[dstOffset++] = 0xFF - (unsigned char)((crc.GetCrc() >> 8) & 0xFF);
+            m_board.m_happyRam[dstOffset++] = 0xFF - (unsigned char)(crc.GetCrc() & 0xFF);
+            m_board.m_happyRam[dstOffset++] = 0xFF;
             totalTiming += (quint8)data[srcOffset++];
             srcOffset++;
             if (happy1050) {
-                m_happyRam[dstOffset++] = 0x7F - totalTiming;
+                m_board.m_happyRam[dstOffset++] = 0x7F - totalTiming;
             }
             else {
-                m_happyRam[dstOffset++] = 0xFF - totalTiming;
+                m_board.m_happyRam[dstOffset++] = 0xFF - totalTiming;
             }
         }
         else {
@@ -951,22 +1111,22 @@ void SimpleDiskImage::readHappyTrack(int trackNumber, bool happy1050)
             srcOffset += 6;
         }
     }
-    m_happyRam[startOffset] = (quint8)((dstOffset - 1) & 0xFF);
+    m_board.m_happyRam[startOffset] = (quint8)((dstOffset - 1) & 0xFF);
     for (int i = dstOffset; i < (startOffset + 0x100); i++) {
-        m_happyRam[i] = 0;
+        m_board.m_happyRam[i] = 0;
     }
     if (! happy1050) {
-        m_happyRam[0x28D] = (quint8)0x43;
+        m_board.m_happyRam[0x28D] = (quint8)0x43;
     }
 }
 
 QByteArray SimpleDiskImage::readHappySectors(int trackNumber, int afterSectorNumber, bool happy1050)
 {
     int baseOffset = happy1050 ? 0xC80 : 0x280;
-    bool rev50 = happy1050 ? false : (quint8)m_happyRam[0x14D] == 0x18;
-    quint8 fdcMask = rev50 ? 0x18 : m_happyRam[baseOffset + 0x01];
-    quint8 nbSectors = m_happyRam[baseOffset + 0x0F];
-    int start = (int)m_happyRam[baseOffset + 0x12];
+    bool rev50 = happy1050 ? false : (quint8)m_board.m_happyRam[0x14D] == 0x18;
+    quint8 fdcMask = rev50 ? 0x18 : m_board.m_happyRam[baseOffset + 0x01];
+    quint8 nbSectors = m_board.m_happyRam[baseOffset + 0x0F];
+    int start = (int)m_board.m_happyRam[baseOffset + 0x12];
     if (start < 0) {
         start = 0;
     }
@@ -980,17 +1140,17 @@ QByteArray SimpleDiskImage::readHappySectors(int trackNumber, int afterSectorNum
         // read all sectors requested by Happy
         int index = 0;
         for (int i = start; i >= 0; i--) {
-            if (((0xFF - m_happyRam[baseOffset + 0x14 + i]) & fdcMask) != 0) {
-                int sector = (int)((0xFF - m_happyRam[baseOffset + 0x38 + i]) & 0xFF);
+            if (((0xFF - m_board.m_happyRam[baseOffset + 0x14 + i]) & fdcMask) != 0) {
+                int sector = (int)((0xFF - m_board.m_happyRam[baseOffset + 0x38 + i]) & 0xFF);
                 int offset = baseOffset + 0x80 + ((i % 18) * 128);
                 QByteArray data;
                 int after = firstSector ? afterSectorNumber : 0;
                 firstSector = false;
                 readHappySectorAtPosition(trackNumber, sector, after, index, data);
                 for (int j = 0; j < data.size(); j++) {
-                    m_happyRam[offset + j] = data[j];
+                    m_board.m_happyRam[offset + j] = data[j];
                 }
-                m_happyRam[baseOffset + 0x14 + i] = m_wd1771Status;
+                m_board.m_happyRam[baseOffset + 0x14 + i] = m_wd1771Status;
                 nbSectors--;
                 if (nbSectors <= 0) {
                     break;
@@ -1002,13 +1162,13 @@ QByteArray SimpleDiskImage::readHappySectors(int trackNumber, int afterSectorNum
         nbSectors = 0;
         int nbSlots = 18;
         for (int i = start; i >= 0; i--) {
-            if (((0xFF - m_happyRam[baseOffset + 0x14 + i]) & fdcMask) != 0) {
+            if (((0xFF - m_board.m_happyRam[baseOffset + 0x14 + i]) & fdcMask) != 0) {
                 nbSectors++;
-                if ((m_happyRam[baseOffset + 0x5C + i] & 0x80) != 0) {
+                if ((m_board.m_happyRam[baseOffset + 0x5C + i] & 0x80) != 0) {
                     int nbOtherSlots = 18;
                     for (int j = start; j >= 0; j--) {
-                        if ((m_happyRam[baseOffset + 0x38 + i] == m_happyRam[baseOffset + 0x38 + j]) && (((0xFF - m_happyRam[baseOffset + 0x14 + j]) & fdcMask) == 0)) {
-                            m_happyRam[baseOffset + 0x14 + j] = 0xEF;
+                        if ((m_board.m_happyRam[baseOffset + 0x38 + i] == m_board.m_happyRam[baseOffset + 0x38 + j]) && (((0xFF - m_board.m_happyRam[baseOffset + 0x14 + j]) & fdcMask) == 0)) {
+                            m_board.m_happyRam[baseOffset + 0x14 + j] = 0xEF;
                             /*
                             if (j >= *$0091) {
                                 nbSectors++;
@@ -1031,12 +1191,12 @@ QByteArray SimpleDiskImage::readHappySectors(int trackNumber, int afterSectorNum
     }
     while ((nbSectors > 0) && (nbRetry > 0));
     if (! happy1050) {
-        m_happyRam[0x293] = 0x03;
-        m_happyRam[0x290] = 0x7F;
+        m_board.m_happyRam[0x293] = 0x03;
+        m_board.m_happyRam[0x290] = 0x7F;
     }
-    m_happyRam[baseOffset + 0x0F] = 0x00;
+    m_board.m_happyRam[baseOffset + 0x0F] = 0x00;
 
-    QByteArray status = m_happyRam.mid(baseOffset, 128);
+    QByteArray status = m_board.m_happyRam.mid(baseOffset, 128);
     return status;
 }
 
@@ -1461,8 +1621,8 @@ void SimpleDiskImage::handleCommand(quint8 command, quint16 aux)
         }
     case 0x41:  // Read track (HAPPY Rev.7)
         {
-            if (m_happyEnabled && m_happy1050) {
-                if (m_lastHappyUploadCrc16 == 0x4312) {
+            if (m_board.isHappyEnabled() && m_board.isHappy1050()) {
+                if (m_board.getLastHappyUploadCrc16() == 0x4312) {
                     if (!writeCommandAck()) {
                         break;
                     }
@@ -1475,14 +1635,14 @@ void SimpleDiskImage::handleCommand(quint8 command, quint16 aux)
                     sio->port()->setSpeed(findNearestSpeed(38400) + 1); // +1 (odd number) is a trick to set 2 stop bits (needed by Happy 810)
                     writeComplete();
                     readHappyTrack(trackNumber, true);
-                    writeDataFrame(m_happyRam.mid(0xD00, 128));
+                    writeDataFrame(m_board.m_happyRam.mid(0xD00, 128));
                 }
                 else {
                     qWarning() << "!w" << tr("[%1] Happy Execute custom code $%2 with AUX $%3 and CRC16 $%4. Ignored")
                                 .arg(deviceName())
                                 .arg(command, 2, 16, QChar('0'))
                                 .arg(aux, 4, 16, QChar('0'))
-                                .arg(m_lastHappyUploadCrc16, 4, 16, QChar('0'));
+                                .arg(m_board.getLastHappyUploadCrc16(), 4, 16, QChar('0'));
                     writeCommandNak();
                 }
             }
@@ -1495,8 +1655,8 @@ void SimpleDiskImage::handleCommand(quint8 command, quint16 aux)
         }
     case 0x42: // Write Sector using Index (CHIP/ARCHIVER) or Read All Sectors (HAPPY Rev.7)
         {
-            if (m_happyEnabled && m_happy1050) {
-                if (m_lastHappyUploadCrc16 == 0x4312) {
+            if (m_board.isHappyEnabled() && m_board.isHappy1050()) {
+                if (m_board.getLastHappyUploadCrc16() == 0x4312) {
                     if (!writeCommandAck()) {
                         break;
                     }
@@ -1530,12 +1690,12 @@ void SimpleDiskImage::handleCommand(quint8 command, quint16 aux)
                                 .arg(deviceName())
                                 .arg(command, 2, 16, QChar('0'))
                                 .arg(aux, 4, 16, QChar('0'))
-                                .arg(m_lastHappyUploadCrc16, 4, 16, QChar('0'));
+                                .arg(m_board.getLastHappyUploadCrc16(), 4, 16, QChar('0'));
                     writeCommandNak();
                 }
                 break;
             }
-            if (! m_chipOpen) {
+            if (! m_board.isChipOpen()) {
                 qWarning() << "!w" << tr("[%1] Super Archiver Write Sector using Index denied (CHIP is not open)")
                               .arg(deviceName());
                 writeCommandNak();
@@ -1575,22 +1735,22 @@ void SimpleDiskImage::handleCommand(quint8 command, quint16 aux)
         }
     case 0x43:  // Read all Sector Statuses (CHIP/ARCHIVER) or Set Skew Alignment (HAPPY Rev.7)
         {
-            if (m_happyEnabled && m_happy1050) {
-                if (m_lastHappyUploadCrc16 == 0x4312) {
+            if (m_board.isHappyEnabled() && m_board.isHappy1050()) {
+                if (m_board.getLastHappyUploadCrc16() == 0x4312) {
                     if (!writeCommandAck()) {
                         break;
                     }
                     for (int i = 0; i < 128; i++) {
-                        m_happyRam[0x380 + i] = 0;
+                        m_board.m_happyRam[0x380 + i] = 0;
                     }
-                    m_happyRam[0x3CB] = aux & 0xFF;
-                    m_happyRam[0x3CC] = (aux >> 8) & 0xFF;
+                    m_board.m_happyRam[0x3CB] = aux & 0xFF;
+                    m_board.m_happyRam[0x3CC] = (aux >> 8) & 0xFF;
                     qDebug() << "!n" << tr("[%1] Happy Set Skew Alignment track %2 ($%3) and sector %4 ($%5)")
                                 .arg(deviceName())
-                                .arg((quint8)0xFF - (quint8)m_happyRam[0x3CB])
-                                .arg((quint8)0xFF - (quint8)m_happyRam[0x3CB], 2, 16, QChar('0'))
-                                .arg((quint8)0xFF - (quint8)m_happyRam[0x3CC])
-                                .arg((quint8)0xFF - (quint8)m_happyRam[0x3CC], 2, 16, QChar('0'));
+                                .arg((quint8)0xFF - (quint8)m_board.m_happyRam[0x3CB])
+                                .arg((quint8)0xFF - (quint8)m_board.m_happyRam[0x3CB], 2, 16, QChar('0'))
+                                .arg((quint8)0xFF - (quint8)m_board.m_happyRam[0x3CC])
+                                .arg((quint8)0xFF - (quint8)m_board.m_happyRam[0x3CC], 2, 16, QChar('0'));
                     QThread::usleep(150);
                     sio->port()->setSpeed(findNearestSpeed(38400) + 1); // +1 (odd number) is a trick to set 2 stop bits (needed by Happy 810)
                     writeComplete();
@@ -1600,12 +1760,12 @@ void SimpleDiskImage::handleCommand(quint8 command, quint16 aux)
                                 .arg(deviceName())
                                 .arg(command, 2, 16, QChar('0'))
                                 .arg(aux, 4, 16, QChar('0'))
-                                .arg(m_lastHappyUploadCrc16, 4, 16, QChar('0'));
+                                .arg(m_board.getLastHappyUploadCrc16(), 4, 16, QChar('0'));
                     writeCommandNak();
                 }
                 break;
             }
-            if (! m_chipOpen) {
+            if (! m_board.isChipOpen()) {
                 qWarning() << "!w" << tr("[%1] Super Archiver Read all Sector Statuses denied (CHIP is not open)")
                               .arg(deviceName());
                 writeCommandNak();
@@ -1634,23 +1794,23 @@ void SimpleDiskImage::handleCommand(quint8 command, quint16 aux)
         }
     case 0x44:  // Read Sector using Index (CHIP/ARCHIVER) or Read Skew Alignment (HAPPY Rev.7)
         {
-            if (m_happyEnabled && m_happy1050) {
-                if (m_lastHappyUploadCrc16 == 0x4312) {
+            if (m_board.isHappyEnabled() && m_board.isHappy1050()) {
+                if (m_board.getLastHappyUploadCrc16() == 0x4312) {
                     if (!writeCommandAck()) {
                         break;
                     }
-                    m_happyRam[0x3C9] = aux & 0xFF;
-                    m_happyRam[0x3CA] = (aux >> 8) & 0xFF;
+                    m_board.m_happyRam[0x3C9] = aux & 0xFF;
+                    m_board.m_happyRam[0x3CA] = (aux >> 8) & 0xFF;
                     qDebug() << "!n" << tr("[%1] Happy Read Skew alignment of track %2 ($%3) sector %4 ($%5) with track %6 ($%7) sector %8 ($%9)")
                                 .arg(deviceName())
-                                .arg((quint8)0xFF - (quint8)m_happyRam[0x3CB])
-                                .arg((quint8)0xFF - (quint8)m_happyRam[0x3CB], 2, 16, QChar('0'))
-                                .arg((quint8)0xFF - (quint8)m_happyRam[0x3CC])
-                                .arg((quint8)0xFF - (quint8)m_happyRam[0x3CC], 2, 16, QChar('0'))
-                                .arg((quint8)0xFF - (quint8)m_happyRam[0x3C9])
-                                .arg((quint8)0xFF - (quint8)m_happyRam[0x3C9], 2, 16, QChar('0'))
-                                .arg((quint8)0xFF - (quint8)m_happyRam[0x3CA])
-                                .arg((quint8)0xFF - (quint8)m_happyRam[0x3CA], 2, 16, QChar('0'));
+                                .arg((quint8)0xFF - (quint8)m_board.m_happyRam[0x3CB])
+                                .arg((quint8)0xFF - (quint8)m_board.m_happyRam[0x3CB], 2, 16, QChar('0'))
+                                .arg((quint8)0xFF - (quint8)m_board.m_happyRam[0x3CC])
+                                .arg((quint8)0xFF - (quint8)m_board.m_happyRam[0x3CC], 2, 16, QChar('0'))
+                                .arg((quint8)0xFF - (quint8)m_board.m_happyRam[0x3C9])
+                                .arg((quint8)0xFF - (quint8)m_board.m_happyRam[0x3C9], 2, 16, QChar('0'))
+                                .arg((quint8)0xFF - (quint8)m_board.m_happyRam[0x3CA])
+                                .arg((quint8)0xFF - (quint8)m_board.m_happyRam[0x3CA], 2, 16, QChar('0'));
                     QThread::usleep(150);
                     sio->port()->setSpeed(findNearestSpeed(38400) + 1); // +1 (odd number) is a trick to set 2 stop bits (needed by Happy 810)
                     if (readHappySkewAlignment(true)) {
@@ -1665,19 +1825,19 @@ void SimpleDiskImage::handleCommand(quint8 command, quint16 aux)
                             break;
                         }
                     }
-                    writeDataFrame(m_happyRam.mid(0x380, 128));
+                    writeDataFrame(m_board.m_happyRam.mid(0x380, 128));
                 }
                 else {
                     qWarning() << "!w" << tr("[%1] Happy Execute custom code $%2 with AUX $%3 and CRC16 $%4. Ignored")
                                 .arg(deviceName())
                                 .arg(command, 2, 16, QChar('0'))
                                 .arg(aux, 4, 16, QChar('0'))
-                                .arg(m_lastHappyUploadCrc16, 4, 16, QChar('0'));
+                                .arg(m_board.getLastHappyUploadCrc16(), 4, 16, QChar('0'));
                     writeCommandNak();
                 }
                 break;
             }
-            if (! m_chipOpen) {
+            if (! m_board.isChipOpen()) {
                 qWarning() << "!w" << tr("[%1] Super Archiver Read Sector using Index denied (CHIP is not open)")
                               .arg(deviceName());
                 writeCommandNak();
@@ -1711,8 +1871,8 @@ void SimpleDiskImage::handleCommand(quint8 command, quint16 aux)
         }
     case 0x46:  // Write Track (CHIP/ARCHIVER) or Write Track (HAPPY Rev.7)
         {
-            if (m_happyEnabled && m_happy1050) {
-                if (m_lastHappyUploadCrc16 == 0x4312) {
+            if (m_board.isHappyEnabled() && m_board.isHappy1050()) {
+                if (m_board.getLastHappyUploadCrc16() == 0x4312) {
                     if (!writeCommandAck()) {
                         break;
                     }
@@ -1736,12 +1896,12 @@ void SimpleDiskImage::handleCommand(quint8 command, quint16 aux)
                                 .arg(deviceName())
                                 .arg(command, 2, 16, QChar('0'))
                                 .arg(aux, 4, 16, QChar('0'))
-                                .arg(m_lastHappyUploadCrc16, 4, 16, QChar('0'));
+                                .arg(m_board.getLastHappyUploadCrc16(), 4, 16, QChar('0'));
                     writeCommandNak();
                 }
                 break;
             }
-            if (! m_chipOpen) {
+            if (! m_board.isChipOpen()) {
                 qWarning() << "!w" << tr("[%1] Super Archiver Write Track denied (CHIP is not open)")
                               .arg(deviceName());
                 writeCommandNak();
@@ -1781,8 +1941,8 @@ void SimpleDiskImage::handleCommand(quint8 command, quint16 aux)
         }
     case 0x47:  // Read Track (128 bytes) (CHIP/ARCHIVER) or Write all Sectors (HAPPY Rev.7)
         {
-            if (m_happyEnabled && m_happy1050) {
-                if (m_lastHappyUploadCrc16 == 0x4312) {
+            if (m_board.isHappyEnabled() && m_board.isHappy1050()) {
+                if (m_board.getLastHappyUploadCrc16() == 0x4312) {
                     if (!writeCommandAck()) {
                         break;
                     }
@@ -1817,19 +1977,19 @@ void SimpleDiskImage::handleCommand(quint8 command, quint16 aux)
                             break;
                         }
                     }
-                    writeDataFrame(m_happyRam.mid(m_happy1050 ? 0xC80 : 0x280, 128));
+                    writeDataFrame(m_board.m_happyRam.mid(m_board.isHappy1050() ? 0xC80 : 0x280, 128));
                 }
                 else {
                     qWarning() << "!w" << tr("[%1] Happy Execute custom code $%2 with AUX $%3 and CRC16 $%4. Ignored")
                                 .arg(deviceName())
                                 .arg(command, 2, 16, QChar('0'))
                                 .arg(aux, 4, 16, QChar('0'))
-                                .arg(m_lastHappyUploadCrc16, 4, 16, QChar('0'));
+                                .arg(m_board.getLastHappyUploadCrc16(), 4, 16, QChar('0'));
                     writeCommandNak();
                 }
                 break;
             }
-            if (! m_chipOpen) {
+            if (! m_board.isChipOpen()) {
                 qWarning() << "!w" << tr("[%1] Super Archiver Read Track (128 bytes) denied (CHIP is not open)")
                               .arg(deviceName());
                 writeCommandNak();
@@ -1852,7 +2012,7 @@ void SimpleDiskImage::handleCommand(quint8 command, quint16 aux)
         }
     case 0x48:  // Configure drive (HAPPY Rev.7)
         {
-            if (m_happyEnabled) {
+            if (m_board.isHappyEnabled()) {
                 if (!writeCommandAck()) {
                     break;
                 }
@@ -1860,12 +2020,12 @@ void SimpleDiskImage::handleCommand(quint8 command, quint16 aux)
                                .arg(deviceName())
                                .arg(aux, 4, 16, QChar('0'));
                 if (aux == 0x0003) {
-                    for (int i = 0; i < m_happyRam.length(); i++) {
-                        m_happyRam[i] = (unsigned char) 0;
+                    for (int i = 0; i < m_board.m_happyRam.length(); i++) {
+                        m_board.m_happyRam[i] = (unsigned char) 0;
                     }
                 }
                 writeComplete();
-                m_happy1050 = true;
+                m_board.setHappy1050(true);
             }
             else {
                 writeCommandNak();
@@ -1876,8 +2036,8 @@ void SimpleDiskImage::handleCommand(quint8 command, quint16 aux)
         }
     case 0x49:  // Write track with skew alignment (HAPPY Rev.7)
         {
-            if (m_happyEnabled && m_happy1050) {
-                if (m_lastHappyUploadCrc16 == 0x4312) {
+            if (m_board.isHappyEnabled() && m_board.isHappy1050()) {
+                if (m_board.getLastHappyUploadCrc16() == 0x4312) {
                     if (!writeCommandAck()) {
                         break;
                     }
@@ -1886,10 +2046,10 @@ void SimpleDiskImage::handleCommand(quint8 command, quint16 aux)
                                 .arg(deviceName())
                                 .arg(trackNumber)
                                 .arg(trackNumber, 2, 16, QChar('0'))
-                                .arg((quint8)0xFF - (quint8)m_happyRam[0x3CB])
-                                .arg((quint8)0xFF - (quint8)m_happyRam[0x3CB], 2, 16, QChar('0'))
-                                .arg((quint8)0xFF - (quint8)m_happyRam[0x3CC])
-                                .arg((quint8)0xFF - (quint8)m_happyRam[0x3CC], 2, 16, QChar('0'));
+                                .arg((quint8)0xFF - (quint8)m_board.m_happyRam[0x3CB])
+                                .arg((quint8)0xFF - (quint8)m_board.m_happyRam[0x3CB], 2, 16, QChar('0'))
+                                .arg((quint8)0xFF - (quint8)m_board.m_happyRam[0x3CC])
+                                .arg((quint8)0xFF - (quint8)m_board.m_happyRam[0x3CC], 2, 16, QChar('0'));
                     QThread::usleep(150);
                     sio->port()->setSpeed(findNearestSpeed(38400) + 1); // +1 (odd number) is a trick to set 2 stop bits (needed by Happy 810)
                     if (writeHappyTrack(trackNumber, true)) {
@@ -1907,7 +2067,7 @@ void SimpleDiskImage::handleCommand(quint8 command, quint16 aux)
                                 .arg(deviceName())
                                 .arg(command, 2, 16, QChar('0'))
                                 .arg(aux, 4, 16, QChar('0'))
-                                .arg(m_lastHappyUploadCrc16, 4, 16, QChar('0'));
+                                .arg(m_board.getLastHappyUploadCrc16(), 4, 16, QChar('0'));
                     writeCommandNak();
                 }
             }
@@ -1920,8 +2080,8 @@ void SimpleDiskImage::handleCommand(quint8 command, quint16 aux)
         }
     case 0x4A:  // Init Skew Alignment (HAPPY Rev.7)
         {
-            if (m_happyEnabled && m_happy1050) {
-                if (m_lastHappyUploadCrc16 == 0x4312) {
+            if (m_board.isHappyEnabled() && m_board.isHappy1050()) {
+                if (m_board.getLastHappyUploadCrc16() == 0x4312) {
                     if (!writeCommandAck()) {
                         break;
                     }
@@ -1936,7 +2096,7 @@ void SimpleDiskImage::handleCommand(quint8 command, quint16 aux)
                                 .arg(deviceName())
                                 .arg(command, 2, 16, QChar('0'))
                                 .arg(aux, 4, 16, QChar('0'))
-                                .arg(m_lastHappyUploadCrc16, 4, 16, QChar('0'));
+                                .arg(m_board.getLastHappyUploadCrc16(), 4, 16, QChar('0'));
                     writeCommandNak();
                 }
             }
@@ -1949,7 +2109,7 @@ void SimpleDiskImage::handleCommand(quint8 command, quint16 aux)
         }
     case 0x4B:  // Prepare backup (HAPPY Rev.7)
         {
-            if (m_happyEnabled) {
+            if (m_board.isHappyEnabled()) {
                 if (!writeCommandAck()) {
                     break;
                 }
@@ -1959,7 +2119,7 @@ void SimpleDiskImage::handleCommand(quint8 command, quint16 aux)
                 QThread::usleep(150);
                 sio->port()->setSpeed(findNearestSpeed(38400) + 1); // +1 (odd number) is a trick to set 2 stop bits (needed by Happy 810)
                 writeComplete();
-                m_happy1050 = true;
+                m_board.setHappy1050(true);
             }
             else {
                 writeCommandNak();
@@ -1970,7 +2130,7 @@ void SimpleDiskImage::handleCommand(quint8 command, quint16 aux)
         }
     case 0x4C:  // Set RAM Buffer (CHIP/ARCHIVER)
         {
-            if (! m_chipOpen) {
+            if (! m_board.isChipOpen()) {
                 qWarning() << "!w" << tr("[%1] Super Archiver Set RAM Buffer denied (CHIP is not open)")
                               .arg(deviceName());
                 writeCommandNak();
@@ -1988,19 +2148,19 @@ void SimpleDiskImage::handleCommand(quint8 command, quint16 aux)
                 }
                 writeComplete();
                 for (int i = 0; i < 32; i++) {
-                    m_chipRam[i] = (unsigned char) ram[i];
+                    m_board.m_chipRam[i] = (unsigned char) ram[i];
                 }
             } else {
                 qCritical() << "!e" << tr("[%1] Super Archiver Set RAM Buffer data frame failed.")
                                .arg(deviceName());
-                m_chipRam[0] = 0;
+                m_board.m_chipRam[0] = 0;
                 writeDataNak();
             }
             break;
         }
     case 0x4D:  // Execute code (CHIP)
         {
-            if (! m_chipOpen) {
+            if (! m_board.isChipOpen()) {
                 qWarning() << "!w" << tr("[%1] Chip Execute code denied (CHIP is not open)")
                               .arg(deviceName());
                 writeCommandNak();
@@ -2051,8 +2211,8 @@ void SimpleDiskImage::handleCommand(quint8 command, quint16 aux)
             }
             if ((aux == 0x2267) || (aux == 0xABCD)) {
                 if (m_geometry.sectorCount() <= 1040 && m_geometry.bytesPerSector() == 128) {
-                    m_chipOpen = true;
-                    m_lastArchiverUploadCrc16 = 0;
+                    m_board.setChipOpen(true);
+                    m_board.setLastArchiverUploadCrc16(0);
                     emit statusChanged(m_deviceNo);
                     qDebug() << "!n" << tr("[%1] Open CHIP with code %2")
                                 .arg(deviceName())
@@ -2087,15 +2247,100 @@ void SimpleDiskImage::handleCommand(quint8 command, quint16 aux)
     case 0x70:  // High Speed Write sector with verify or Write memory (HAPPY 1050)
     case 0x77:  // High Speed Write sector without verify or Write memory (HAPPY 1050)
         {
-            bool commandIsHappy = m_happyEnabled && (((aux >= 0x0800) && (aux <= 0x1380)) || ((aux & 0x8000) && (aux < 0x9800)));
             quint16 sector = aux;
-            if (m_chipOpen) {
+            if (m_board.isChipOpen()) {
                 sector = aux & 0x3FF;
-                // when both CHIP and HAPPY emulations are active we can select one by looking at the previous command.
-                commandIsHappy = commandIsHappy && m_lastCommandIsHappy;
             }
-            m_lastCommandIsHappy = false;
-            if ((sector >= 1) && (sector <= m_geometry.sectorCount()) && (! commandIsHappy)) {
+            else if (m_board.isHappyEnabled()) {
+                if ((! m_board.isHappy1050()) && (aux >= 0x0800) && (aux <= 0x1380)) { // Write memory (HAPPY 810)
+                    if (!writeCommandAck()) {
+                        break;
+                    }
+                    qDebug() << "!n" << tr("[%1] Happy Write memory at $%2")
+                                .arg(deviceName())
+                                .arg(aux, 4, 16, QChar('0'));
+                    QByteArray ram = readDataFrame(m_geometry.bytesPerSector(sector));
+                    if (!ram.isEmpty()) {
+                        if (!writeDataAck()) {
+                            break;
+                        }
+                        for (int i = 0; i < ram.size(); i++) {
+                            m_board.m_happyRam[aux - 0x0800 + i] = ram[i];
+                        }
+                        if (aux == 0x0800) {
+                            // compute CRC16 and save it to know what data should be returned by other commands
+                            Crc16 crc16;
+                            crc16.Reset();
+                            for (int j = 0; j < ram.size(); j++) {
+                                crc16.Add((unsigned char) (ram.at(j)));
+                            }
+                            m_board.setLastHappyUploadCrc16(crc16.GetCrc());
+                            m_remainingBytes.clear();
+                        }
+                        if (m_disassembleUploadedCode) {
+                            int address = getUploadCodeStartAddress(command, aux, ram);
+                            if (address != -1) {
+                                disassembleCode(ram, (unsigned short) address, false, m_board.hasHappySignature());
+                            }
+                        }
+                        writeComplete();
+                    }
+                    else {
+                        writeError();
+                    }
+                    break;
+                }
+                else if ((aux & 0x8000) && (aux < 0x9800)) { // Write memory (HAPPY Rev.7)
+                    if (!writeCommandAck()) {
+                        break;
+                    }
+                    m_board.setHappy1050(true);
+                    qDebug() << "!n" << tr("[%1] Happy %2Write memory at $%3")
+                                .arg(deviceName())
+                                .arg((command == 0x70) || (command == 0x77) ? tr("High Speed ") : "")
+                                .arg(aux, 4, 16, QChar('0'));
+                    // We should set high speed for data with Happy 1050 Rev.7 but it does not work.
+                    // A patched version of Happy Warp Speed Software V7.1.atr has been prepared to send data at normal speed to RespeQt
+                    // The original version is not compatible with RespeQt.
+                    QByteArray ram = readDataFrame(m_geometry.bytesPerSector(sector));
+                    if (!ram.isEmpty()) {
+                        if (!writeDataAck()) {
+                            break;
+                        }
+                        for (int i = 0; i < ram.size(); i++) {
+                            m_board.m_happyRam[aux - 0x8000 + i] = ram[i];
+                        }
+                        if (aux == 0x8000) {
+                            // compute CRC16 and save it to know what data should be returned by other commands
+                            Crc16 crc16;
+                            crc16.Reset();
+                            for (int j = 0; j < ram.size(); j++) {
+                                crc16.Add((unsigned char) (ram.at(j)));
+                            }
+                            m_board.setLastHappyUploadCrc16(crc16.GetCrc());
+                            m_remainingBytes.clear();
+                        }
+                        if (m_disassembleUploadedCode) {
+                            int address = getUploadCodeStartAddress(command, aux, ram);
+                            if (address != -1) {
+                                disassembleCode(ram, (unsigned short) address, true, true);
+                            }
+                        }
+                        writeComplete();
+                    }
+                    else {
+                        writeError();
+                    }
+                    break;
+                }
+                else {
+                    writeCommandNak();
+                    qWarning() << "!w" << tr("[%1] Write memory at $%2 NAKed (Address out of range).")
+                                   .arg(deviceName())
+                                   .arg(aux, 4, 16, QChar('0'));
+                }
+            }
+            if ((sector >= 1) && (sector <= m_geometry.sectorCount())) {
                 if (!writeCommandAck()) {
                     break;
                 }
@@ -2150,95 +2395,6 @@ void SimpleDiskImage::handleCommand(quint8 command, quint16 aux)
                     writeDataNak();
                 }
             }
-            else if (m_happyEnabled) {
-                if ((! m_happy1050) && (aux >= 0x0800) && (aux <= 0x1380)) { // Write memory (HAPPY 810)
-                    if (!writeCommandAck()) {
-                        break;
-                    }
-                    m_lastCommandIsHappy = true;
-                    qDebug() << "!n" << tr("[%1] Happy Write memory at $%2")
-                                .arg(deviceName())
-                                .arg(aux, 4, 16, QChar('0'));
-                    QByteArray ram = readDataFrame(m_geometry.bytesPerSector(sector));
-                    if (!ram.isEmpty()) {
-                        if (!writeDataAck()) {
-                            break;
-                        }
-                        for (int i = 0; i < ram.size(); i++) {
-                            m_happyRam[aux - 0x0800 + i] = ram[i];
-                        }
-                        if (aux == 0x0800) {
-                            // compute CRC16 and save it to know what data should be returned by other commands
-                            Crc16 crc16;
-                            crc16.Reset();
-                            for (int j = 0; j < ram.size(); j++) {
-                                crc16.Add((unsigned char) (ram.at(j)));
-                            }
-                            m_lastHappyUploadCrc16 = crc16.GetCrc();
-                            m_remainingBytes.clear();
-                        }
-                        if (m_disassembleUploadedCode) {
-                            int address = getUploadCodeStartAddress(command, aux, ram);
-                            if (address != -1) {
-                                disassembleCode(ram, (unsigned short) address, false, hasHappySignature());
-                            }
-                        }
-                        writeComplete();
-                    }
-                    else {
-                        writeError();
-                    }
-                }
-                else if ((aux & 0x8000) && (aux < 0x9800)) { // Write memory (HAPPY Rev.7)
-                    if (!writeCommandAck()) {
-                        break;
-                    }
-                    m_lastCommandIsHappy = true;
-                    m_happy1050 = true;
-                    qDebug() << "!n" << tr("[%1] Happy %2Write memory at $%3")
-                                .arg(deviceName())
-                                .arg((command == 0x70) || (command == 0x77) ? tr("High Speed ") : "")
-                                .arg(aux, 4, 16, QChar('0'));
-                    // We should set high speed for data with Happy 1050 Rev.7 but it does not work.
-                    // A patched version of Happy Warp Speed Software V7.1.atr has been prepared to send data at normal speed to RespeQt
-                    // The original version is not compatible with RespeQt.
-                    QByteArray ram = readDataFrame(m_geometry.bytesPerSector(sector));
-                    if (!ram.isEmpty()) {
-                        if (!writeDataAck()) {
-                            break;
-                        }
-                        for (int i = 0; i < ram.size(); i++) {
-                            m_happyRam[aux - 0x8000 + i] = ram[i];
-                        }
-                        if (aux == 0x8000) {
-                            // compute CRC16 and save it to know what data should be returned by other commands
-                            Crc16 crc16;
-                            crc16.Reset();
-                            for (int j = 0; j < ram.size(); j++) {
-                                crc16.Add((unsigned char) (ram.at(j)));
-                            }
-                            m_lastHappyUploadCrc16 = crc16.GetCrc();
-                            m_remainingBytes.clear();
-                        }
-                        if (m_disassembleUploadedCode) {
-                            int address = getUploadCodeStartAddress(command, aux, ram);
-                            if (address != -1) {
-                                disassembleCode(ram, (unsigned short) address, true, true);
-                            }
-                        }
-                        writeComplete();
-                    }
-                    else {
-                        writeError();
-                    }
-                }
-                else {
-                    writeCommandNak();
-                    qWarning() << "!w" << tr("[%1] Write memory at $%2 NAKed (Address out of range).")
-                                   .arg(deviceName())
-                                   .arg(aux, 4, 16, QChar('0'));
-                }
-            }
             else {
                 writeCommandNak();
                 qWarning() << "!w" << tr("[%1] Write sector %2 ($%3) NAKed.")
@@ -2250,68 +2406,68 @@ void SimpleDiskImage::handleCommand(quint8 command, quint16 aux)
         }
     case 0x51:  // Execute custom code (HAPPY)
         {
-            if (m_happyEnabled && hasHappySignature()) {
+            if (m_board.isHappyEnabled() && m_board.hasHappySignature()) {
                 if (!writeCommandAck()) {
                     break;
                 }
                 writeComplete();
-                if ((m_lastHappyUploadCrc16 == 0xEF1A) || (m_lastHappyUploadCrc16 == 0xC8C8)) { // Happy Rev.5 and Rev.7
+                if ((m_board.getLastHappyUploadCrc16() == 0xEF1A) || (m_board.getLastHappyUploadCrc16() == 0xC8C8)) { // Happy Rev.5 and Rev.7
                     qDebug() << "!n" << tr("[%1] Happy Ram check")
                                 .arg(deviceName());
                     writeDataFrame(QByteArray((const char *)HAPPY_RAM_CHECK, sizeof(HAPPY_RAM_CHECK)));
                 }
-                else if (m_lastHappyUploadCrc16 == 0xC545) {
+                else if (m_board.getLastHappyUploadCrc16() == 0xC545) {
                     qDebug() << "!n" << tr("[%1] Happy Rom 810 test")
                                 .arg(deviceName());
                     writeDataFrame(QByteArray((const char *)HAPPY_ROM810_CHECK, sizeof(HAPPY_ROM810_CHECK)));
                 }
-                else if (m_lastHappyUploadCrc16 == 0x72CD) {
+                else if (m_board.getLastHappyUploadCrc16() == 0x72CD) {
                     qDebug() << "!n" << tr("[%1] Happy Extended ram check")
                                 .arg(deviceName());
                     writeDataFrame(QByteArray((const char *)HAPPY_RAM_EXTENDED_CHECK, sizeof(HAPPY_RAM_EXTENDED_CHECK)));
                 }
-                else if (m_lastHappyUploadCrc16 == 0xEABE) {
+                else if (m_board.getLastHappyUploadCrc16() == 0xEABE) {
                     qDebug() << "!n" << tr("[%1] Happy Run diagnostic")
                                 .arg(deviceName());
                     writeDataFrame(QByteArray((const char *)HAPPY_DIAGNOSTIC, sizeof(HAPPY_DIAGNOSTIC)));
                 }
-                else if (m_lastHappyUploadCrc16 == 0x8735) {
+                else if (m_board.getLastHappyUploadCrc16() == 0x8735) {
                     qDebug() << "!n" << tr("[%1] Happy Speed check")
                                 .arg(deviceName());
                     writeDataFrame(QByteArray((const char *)HAPPY_SPEED_CHECK, sizeof(HAPPY_SPEED_CHECK)));
                 }
-                else if (m_lastHappyUploadCrc16 == 0x8ABA) {
+                else if (m_board.getLastHappyUploadCrc16() == 0x8ABA) {
                     // Step-in, Step-out commands. No data to return
                     qDebug() << "!n" << tr("[%1] Happy Step-in / Step-out")
                                 .arg(deviceName());
                 }
-                else if (m_lastHappyUploadCrc16 == 0xE610) {
+                else if (m_board.getLastHappyUploadCrc16() == 0xE610) {
                     qDebug() << "!n" << tr("[%1] Happy Read/Write check")
                                 .arg(deviceName());
                     writeDataFrame(QByteArray((const char *)HAPPY_RW_CHECK, sizeof(HAPPY_RW_CHECK)));
                 }
-                else if (m_lastHappyUploadCrc16 == 0x9831) {
+                else if (m_board.getLastHappyUploadCrc16() == 0x9831) {
                     qDebug() << "!n" << tr("[%1] Happy Set unhappy mode")
                                 .arg(deviceName());
-                    m_happyEnabled = false;
+                    m_board.setHappyEnabled(false);
                     emit statusChanged(m_deviceNo);
-                    writeDataFrame(m_happyRam.left(128));
+                    writeDataFrame(m_board.m_happyRam.left(128));
                 }
-                else if (m_lastHappyUploadCrc16 == 0x5D3D) {
+                else if (m_board.getLastHappyUploadCrc16() == 0x5D3D) {
                     int trackNumber = (int)(0xFF - (aux & 0xFF));
                     qDebug() << "!n" << tr("[%1] Happy Read Track %2 ($%3)")
                                 .arg(deviceName())
                                 .arg(trackNumber)
                                 .arg(trackNumber, 2, 16, QChar('0'));
                     readHappyTrack(trackNumber, false);
-                    writeDataFrame(m_happyRam.mid(0x300, 128));
+                    writeDataFrame(m_board.m_happyRam.mid(0x300, 128));
                 }
-                else if (m_lastHappyUploadCrc16 == 0xEF08) {
+                else if (m_board.getLastHappyUploadCrc16() == 0xEF08) {
                     qDebug() << "!n" << tr("[%1] Happy init backup 1")
                                 .arg(deviceName());
                     writeDataFrame(QByteArray((const char *)HAPPY_BACKUP_BUF1, sizeof(HAPPY_BACKUP_BUF1)));
                 }
-                else if (m_lastHappyUploadCrc16 == 0xCC68) {
+                else if (m_board.getLastHappyUploadCrc16() == 0xCC68) {
                     qDebug() << "!n" << tr("[%1] Happy init backup 2")
                                 .arg(deviceName());
                     writeDataFrame(QByteArray((const char *)HAPPY_BACKUP_BUF2, sizeof(HAPPY_BACKUP_BUF2)));
@@ -2319,22 +2475,22 @@ void SimpleDiskImage::handleCommand(quint8 command, quint16 aux)
                 else {
                     // Clear buffer command contains 64 bytes of code but the remaining bytes are garbage.
                     // Just check the last instruction ($083D: JMP $1EFC)
-                    if (((quint8)m_happyRam[0x3D] == (quint8)0x4C) && ((quint8)m_happyRam[0x3E] == (quint8)0xFC) && ((quint8)m_happyRam[0x3F] == (quint8)0x1E)) {
+                    if (((quint8)m_board.m_happyRam[0x3D] == (quint8)0x4C) && ((quint8)m_board.m_happyRam[0x3E] == (quint8)0xFC) && ((quint8)m_board.m_happyRam[0x3F] == (quint8)0x1E)) {
                         qDebug() << "!n" << tr("[%1] Happy Clear buffer")
                                     .arg(deviceName());
-                        m_happyRam[0] = 0x80;
+                        m_board.m_happyRam[0] = 0x80;
                     }
                     else {
                         qWarning() << "!w" << tr("[%1] Happy Execute custom code $%2 with AUX $%3 and CRC16 $%4. Ignored")
                                     .arg(deviceName())
                                     .arg(command, 2, 16, QChar('0'))
                                     .arg(aux, 4, 16, QChar('0'))
-                                    .arg(m_lastHappyUploadCrc16, 4, 16, QChar('0'));
+                                    .arg(m_board.getLastHappyUploadCrc16(), 4, 16, QChar('0'));
                     }
                 }
             }
-            else if (m_happyEnabled && m_happy1050) {
-                if (m_lastHappyUploadCrc16 == 0x4312) {
+            else if (m_board.isHappyEnabled() && m_board.isHappy1050()) {
+                if (m_board.getLastHappyUploadCrc16() == 0x4312) {
                     if (!writeCommandAck()) {
                         break;
                     }
@@ -2347,7 +2503,7 @@ void SimpleDiskImage::handleCommand(quint8 command, quint16 aux)
                                 .arg(deviceName())
                                 .arg(command, 2, 16, QChar('0'))
                                 .arg(aux, 4, 16, QChar('0'))
-                                .arg(m_lastHappyUploadCrc16, 4, 16, QChar('0'));
+                                .arg(m_board.getLastHappyUploadCrc16(), 4, 16, QChar('0'));
                     writeCommandNak();
                 }
             }
@@ -2361,15 +2517,44 @@ void SimpleDiskImage::handleCommand(quint8 command, quint16 aux)
     case 0x52:  // Read sector (ALL) or Read memory (HAPPY 810)
     case 0x72:  // High Speed Read sector or Read memory (HAPPY 1050)
         {
-            bool commandIsHappy = m_happyEnabled && (((aux >= 0x0800) && (aux <= 0x1380)) || ((aux & 0x8000) && (aux < 0x9800)));
             quint16 sector = aux;
-            if (m_chipOpen) {
+            if (m_board.isChipOpen()) {
                 sector = aux & 0x3FF;
-                // when both CHIP and HAPPY emulations are active we can select one by looking at the previous command.
-                commandIsHappy = commandIsHappy && m_lastCommandIsHappy;
             }
-            m_lastCommandIsHappy = false;
-            if ((sector >= 1) && (sector <= m_geometry.sectorCount()) && (! commandIsHappy)) {
+            else if (m_board.isHappyEnabled()) {
+                if ((! m_board.isHappy1050()) && (aux >= 0x800) && (aux <= 0x1380)) { // Read memory (HAPPY 810 Rev.5)
+                    if (!writeCommandAck()) {
+                        break;
+                    }
+                    qDebug() << "!n" << tr("[%1] Happy Read memory at $%2")
+                                .arg(deviceName())
+                                .arg(aux, 4, 16, QChar('0'));
+                    if (!writeComplete()) {
+                        break;
+                    }
+                    writeDataFrame(m_board.m_happyRam.mid(aux - 0x800, 128));
+                    break;
+                }
+                else if ((aux & 0x8000) && (aux < 0x9800)) { // Read memory (HAPPY Rev.7)
+                    if (!writeCommandAck()) {
+                        break;
+                    }
+                    qDebug() << "!n" << tr("[%1] Happy %2Read memory at $%3")
+                                .arg(deviceName())
+                                .arg((command == 0x72) ? tr("High Speed ") : "")
+                                .arg(aux, 4, 16, QChar('0'));
+                    if (command == 0x72) {
+                        QThread::usleep(150);
+                        sio->port()->setSpeed(findNearestSpeed(38400) + 1); // +1 (odd number) is a trick to set 2 stop bits (needed by Happy 810)
+                    }
+                    if (!writeComplete()) {
+                        break;
+                    }
+                    writeDataFrame(m_board.m_happyRam.mid(aux & 0x7FFF, 128));
+                    break;
+                }
+            }
+            if ((sector >= 1) && (sector <= m_geometry.sectorCount())) {
                 if (!writeCommandAck()) {
                     break;
                 }
@@ -2402,7 +2587,7 @@ void SimpleDiskImage::handleCommand(quint8 command, quint16 aux)
                 }
                 QByteArray data;
                 if (readSector(aux, data)) {
-                    quint16 chipFlags = m_chipOpen ? aux & 0xFC00 : 0;
+                    quint16 chipFlags = m_board.isChipOpen() ? aux & 0xFC00 : 0;
                     if ((m_wd1771Status != 0xFF) && (chipFlags == 0)) {
                         if (!writeError()) {
                             break;
@@ -2414,7 +2599,7 @@ void SimpleDiskImage::handleCommand(quint8 command, quint16 aux)
                         }
                         // Are we booting Happy software in Atari memory ?
                         // Then patch Happy software on the fly to remove Write commands at double speed
-                        if (m_happyEnabled && (m_deviceNo == 0x31)) {
+                        if (m_board.isHappyEnabled() && (m_deviceNo == 0x31)) {
                             if ((command == 0x72) && ((sector == 397) || (sector == 421))) {
                                 // if we are loading Happy Warp Speed Software V7.1 disk A.atr from RespeQt, patch it to remove Write commands at double speed !
                                 Crc16 crc16;
@@ -2424,14 +2609,14 @@ void SimpleDiskImage::handleCommand(quint8 command, quint16 aux)
                                 }
                                 if ((sector == 397) && (crc16.GetCrc() == 0x7102)) {
                                     writeDataFrame(QByteArray((const char *)HAPPY_DOUBLESPEEDREV7_PATCH1, sizeof(HAPPY_DOUBLESPEEDREV7_PATCH1)));
-                                    m_happyPatchInProgress = true;
+                                    m_board.setHappyPatchInProgress(true);
                                     qDebug() << "!u" << tr("[%1] Happy Warp Speed Software V7.1 patched on the fly to be compatible with RespeQt")
                                                 .arg(deviceName());
                                     break;
                                 }
-                                else if ((sector == 421) && (crc16.GetCrc() == 0xF00A) && (m_happyPatchInProgress)) {
+                                else if ((sector == 421) && (crc16.GetCrc() == 0xF00A) && (m_board.isHappyPatchInProgress())) {
                                     writeDataFrame(QByteArray((const char *)HAPPY_DOUBLESPEEDREV7_PATCH2, sizeof(HAPPY_DOUBLESPEEDREV7_PATCH2)));
-                                    m_happyPatchInProgress = false;
+                                    m_board.setHappyPatchInProgress(false);
                                     break;
                                 }
                             }
@@ -2446,18 +2631,18 @@ void SimpleDiskImage::handleCommand(quint8 command, quint16 aux)
                                 }
                                 if ((sector == 59) && (crc16.GetCrc() == 0x8CB3)) {
                                     writeDataFrame(QByteArray((const char *)HAPPY_DOUBLESPEEDREV5_PATCH1, sizeof(HAPPY_DOUBLESPEEDREV5_PATCH1)));
-                                    m_happyPatchInProgress = true;
+                                    m_board.setHappyPatchInProgress(true);
                                     qDebug() << "!u" << tr("[%1] Happy Warp Speed Software V5.3 patched on the fly to be compatible with RespeQt")
                                                 .arg(deviceName());
                                     break;
                                 }
-                                else if ((sector == 71) && (crc16.GetCrc() == 0x4552) && (m_happyPatchInProgress)) {
+                                else if ((sector == 71) && (crc16.GetCrc() == 0x4552) && (m_board.isHappyPatchInProgress())) {
                                     writeDataFrame(QByteArray((const char *)HAPPY_DOUBLESPEEDREV5_PATCH2, sizeof(HAPPY_DOUBLESPEEDREV5_PATCH2)));
                                     break;
                                 }
-                                else if ((sector == 85) && (crc16.GetCrc() == 0xF00A) && (m_happyPatchInProgress)) {
+                                else if ((sector == 85) && (crc16.GetCrc() == 0xF00A) && (m_board.isHappyPatchInProgress())) {
                                     writeDataFrame(QByteArray((const char *)HAPPY_DOUBLESPEEDREV5_PATCH3, sizeof(HAPPY_DOUBLESPEEDREV5_PATCH3)));
-                                    m_happyPatchInProgress = false;
+                                    m_board.setHappyPatchInProgress(false);
                                     break;
                                 }
                             }
@@ -2472,45 +2657,6 @@ void SimpleDiskImage::handleCommand(quint8 command, quint16 aux)
                         break;
                     }
                     writeDataFrame(data);
-                }
-            }
-            else if (m_happyEnabled) {
-                if ((! m_happy1050) && (aux >= 0x800) && (aux <= 0x1380)) { // Read memory (HAPPY 810 Rev.5)
-                    if (!writeCommandAck()) {
-                        break;
-                    }
-                    m_lastCommandIsHappy = true;
-                    qDebug() << "!n" << tr("[%1] Happy Read memory at $%2")
-                                .arg(deviceName())
-                                .arg(aux, 4, 16, QChar('0'));
-                    if (!writeComplete()) {
-                        break;
-                    }
-                    writeDataFrame(m_happyRam.mid(aux - 0x800, 128));
-                }
-                else if ((aux & 0x8000) && (aux < 0x9800)) { // Read memory (HAPPY Rev.7)
-                    if (!writeCommandAck()) {
-                        break;
-                    }
-                    m_lastCommandIsHappy = true;
-                    qDebug() << "!n" << tr("[%1] Happy %2Read memory at $%3")
-                                .arg(deviceName())
-                                .arg((command == 0x72) ? tr("High Speed ") : "")
-                                .arg(aux, 4, 16, QChar('0'));
-                    if (command == 0x72) {
-                        QThread::usleep(150);
-                        sio->port()->setSpeed(findNearestSpeed(38400) + 1); // +1 (odd number) is a trick to set 2 stop bits (needed by Happy 810)
-                    }
-                    if (!writeComplete()) {
-                        break;
-                    }
-                    writeDataFrame(m_happyRam.mid(aux & 0x7FFF, 128));
-                }
-                else {
-                    writeCommandNak();
-                    qWarning() << "!w" << tr("[%1] Happy Read memory at $%2 NAKed (Address out of range).")
-                                   .arg(deviceName())
-                                   .arg(aux, 4, 16, QChar('0'));
                 }
             }
             else {
@@ -2546,9 +2692,9 @@ void SimpleDiskImage::handleCommand(quint8 command, quint16 aux)
         }
     case 0x54:  // Get RAM Buffer (CHIP/ARCHIVER) or Write sector and Write track (Happy 810 Rev.5)
         {
-            if (m_happyEnabled && m_lastCommandIsHappy) {
-                if (hasHappySignature()) {
-                    if (m_lastHappyUploadCrc16 == 0x4416) {
+            if (m_board.isHappyEnabled()) {
+                if (m_board.hasHappySignature()) { // Happy 810 Rev. 5
+                    if (m_board.getLastHappyUploadCrc16() == 0x4416) {
                         if (!writeCommandAck()) {
                             break;
                         }
@@ -2590,7 +2736,7 @@ void SimpleDiskImage::handleCommand(quint8 command, quint16 aux)
                         }
                         break;
                     }
-                    else if (m_lastHappyUploadCrc16 == 0xC96C) {
+                    else if (m_board.getLastHappyUploadCrc16() == 0xC96C) {
                         if (!writeCommandAck()) {
                             break;
                         }
@@ -2609,11 +2755,11 @@ void SimpleDiskImage::handleCommand(quint8 command, quint16 aux)
                         break;
                     }
                 }
-                else if (m_happy1050) {
+                else if (m_board.isHappy1050()) {
                     // try computing CRC16 for 0x9500 which is where diagnostic code is uploaded by Rev.7
                     Crc16 crc16;
                     crc16.Reset();
-                    QByteArray ram = m_happyRam.mid(0x1500, 128);
+                    QByteArray ram = m_board.m_happyRam.mid(0x1500, 128);
                     for (int j = 0; j < ram.size(); j++) {
                         crc16.Add((unsigned char) (ram.at(j)));
                     }
@@ -2631,7 +2777,7 @@ void SimpleDiskImage::handleCommand(quint8 command, quint16 aux)
                     }
                 }
             }
-            if (! m_chipOpen) {
+            if (! m_board.isChipOpen()) {
                 qWarning() << "!w" << tr("[%1] Get RAM Buffer denied (CHIP is not open)")
                               .arg(deviceName());
                 writeCommandNak();
@@ -2647,7 +2793,7 @@ void SimpleDiskImage::handleCommand(quint8 command, quint16 aux)
             }
             QByteArray result(128, 0);
             for (int i = 0; i < 32; i++) {
-                result[i] = m_chipRam[i];
+                result[i] = m_board.m_chipRam[i];
             }
             writeDataFrame(result);
             break;
@@ -2655,11 +2801,11 @@ void SimpleDiskImage::handleCommand(quint8 command, quint16 aux)
     case 0x55:  // Execute custom code (HAPPY)
     case 0x56:  // Execute custom code (HAPPY)
         {
-            if (m_happyEnabled && hasHappySignature()) {
+            if (m_board.isHappyEnabled() && m_board.hasHappySignature()) {
                 if (!writeCommandAck()) {
                     break;
                 }
-                if ((command == 0x55) && (m_lastHappyUploadCrc16 == 0x4416)) {
+                if ((command == 0x55) && (m_board.getLastHappyUploadCrc16() == 0x4416)) {
                     // Read sector at high speed
                     int track = (aux - 1) / m_geometry.sectorsPerTrack();
                     qDebug() << "!n" << tr("[%1] Happy High Speed Read Sector %2 ($%3) in track %4 ($%5)")
@@ -2690,17 +2836,17 @@ void SimpleDiskImage::handleCommand(quint8 command, quint16 aux)
                         writeDataFrame(data);
                     }
                 }
-                else if ((command == 0x55) && (m_lastHappyUploadCrc16 == 0x5D3D)) {
+                else if ((command == 0x55) && (m_board.getLastHappyUploadCrc16() == 0x5D3D)) {
                     qDebug() << "!n" << tr("[%1] Happy Read Skew alignment of track %2 ($%3) sector %4 ($%5) with track %6 ($%7) sector %8 ($%9)")
                                 .arg(deviceName())
-                                .arg((quint8)0xFF - (quint8)m_happyRam[0x3CB])
-                                .arg((quint8)0xFF - (quint8)m_happyRam[0x3CB], 2, 16, QChar('0'))
-                                .arg((quint8)0xFF - (quint8)m_happyRam[0x3CC])
-                                .arg((quint8)0xFF - (quint8)m_happyRam[0x3CC], 2, 16, QChar('0'))
-                                .arg((quint8)0xFF - (quint8)m_happyRam[0x3C9])
-                                .arg((quint8)0xFF - (quint8)m_happyRam[0x3C9], 2, 16, QChar('0'))
-                                .arg((quint8)0xFF - (quint8)m_happyRam[0x3CA])
-                                .arg((quint8)0xFF - (quint8)m_happyRam[0x3CA], 2, 16, QChar('0'));
+                                .arg((quint8)0xFF - (quint8)m_board.m_happyRam[0x3CB])
+                                .arg((quint8)0xFF - (quint8)m_board.m_happyRam[0x3CB], 2, 16, QChar('0'))
+                                .arg((quint8)0xFF - (quint8)m_board.m_happyRam[0x3CC])
+                                .arg((quint8)0xFF - (quint8)m_board.m_happyRam[0x3CC], 2, 16, QChar('0'))
+                                .arg((quint8)0xFF - (quint8)m_board.m_happyRam[0x3C9])
+                                .arg((quint8)0xFF - (quint8)m_board.m_happyRam[0x3C9], 2, 16, QChar('0'))
+                                .arg((quint8)0xFF - (quint8)m_board.m_happyRam[0x3CA])
+                                .arg((quint8)0xFF - (quint8)m_board.m_happyRam[0x3CA], 2, 16, QChar('0'));
                     if (readHappySkewAlignment(false)) {
                         if (!writeComplete()) {
                             break;
@@ -2714,9 +2860,9 @@ void SimpleDiskImage::handleCommand(quint8 command, quint16 aux)
                             break;
                         }
                     }
-                    writeDataFrame(m_happyRam.mid(0x380, 128));
+                    writeDataFrame(m_board.m_happyRam.mid(0x380, 128));
                 }
-                else if ((command == 0x56) && (m_lastHappyUploadCrc16 == 0x5D3D)) {
+                else if ((command == 0x56) && (m_board.getLastHappyUploadCrc16() == 0x5D3D)) {
                     int trackNumber = (int)(0xFF - (aux & 0xFF));
                     int aux2 = (aux >> 8) & 0xFF;
                     int afterSectorNumber = (aux2 == 0) ? 0 : 0xFF - aux2;
@@ -2740,7 +2886,7 @@ void SimpleDiskImage::handleCommand(quint8 command, quint16 aux)
                     }
                     writeDataFrame(data);
                 }
-                else if ((command == 0x55) && (m_lastHappyUploadCrc16 == 0xC96C)) {
+                else if ((command == 0x55) && (m_board.getLastHappyUploadCrc16() == 0xC96C)) {
                     int trackNumber = (int)(0xFF - (aux & 0xFF));
                     int aux2 = (aux >> 8) & 0xFF;
                     int afterSectorNumber = (aux2 == 0) ? 0 : 0xFF - aux2;
@@ -2771,17 +2917,17 @@ void SimpleDiskImage::handleCommand(quint8 command, quint16 aux)
                             break;
                         }
                     }
-                    writeDataFrame(m_happyRam.mid(0x280, 128));
+                    writeDataFrame(m_board.m_happyRam.mid(0x280, 128));
                 }
-                else if ((command == 0x56) && (m_lastHappyUploadCrc16 == 0xC96C)) {
-                    int trackNumber = (int)((quint8)0xFF - (quint8)m_happyRam[0x84F]);
-                    int sectorNumber = (int)((quint8)0xFF - (quint8)m_happyRam[0x81A]);
+                else if ((command == 0x56) && (m_board.getLastHappyUploadCrc16() == 0xC96C)) {
+                    int trackNumber = (int)((quint8)0xFF - (quint8)m_board.m_happyRam[0x84F]);
+                    int sectorNumber = (int)((quint8)0xFF - (quint8)m_board.m_happyRam[0x81A]);
                     qDebug() << "!n" << tr("[%1] Happy Write track %2 ($%3) skew aligned with track %4 ($%5) sector %6 ($%7)")
                                 .arg(deviceName())
                                 .arg(trackNumber)
                                 .arg(trackNumber, 2, 16, QChar('0'))
-                                .arg((quint8)0xFF - (quint8)m_happyRam[0x816])
-                                .arg((quint8)0xFF - (quint8)m_happyRam[0x816], 2, 16, QChar('0'))
+                                .arg((quint8)0xFF - (quint8)m_board.m_happyRam[0x816])
+                                .arg((quint8)0xFF - (quint8)m_board.m_happyRam[0x816], 2, 16, QChar('0'))
                                 .arg(sectorNumber)
                                 .arg(sectorNumber, 2, 16, QChar('0'));
                     if (writeHappyTrack(trackNumber, false)) {
@@ -2793,13 +2939,13 @@ void SimpleDiskImage::handleCommand(quint8 command, quint16 aux)
                                        .arg(deviceName());
                     }
                 }
-                else if ((command == 0x56) && (m_lastHappyUploadCrc16 == 0x4416)) {
+                else if ((command == 0x56) && (m_board.getLastHappyUploadCrc16() == 0x4416)) {
                     writeComplete();
                     qDebug() << "!n" << tr("[%1] Happy init sector copy")
                                 .arg(deviceName());
                 }
                 else {
-                    if (m_lastHappyUploadCrc16 == 0x8ABA) {
+                    if (m_board.getLastHappyUploadCrc16() == 0x8ABA) {
                         // Step-in, Step-out commands. No data to return
                         qDebug() << "!n" << tr("[%1] Happy Step-in / Step-out")
                                     .arg(deviceName());
@@ -2810,7 +2956,7 @@ void SimpleDiskImage::handleCommand(quint8 command, quint16 aux)
                                     .arg(deviceName())
                                     .arg(command, 2, 16, QChar('0'))
                                     .arg(aux, 4, 16, QChar('0'))
-                                    .arg(m_lastHappyUploadCrc16, 4, 16, QChar('0'));
+                                    .arg(m_board.getLastHappyUploadCrc16(), 4, 16, QChar('0'));
                         writeError();
                     }
                 }
@@ -2825,7 +2971,7 @@ void SimpleDiskImage::handleCommand(quint8 command, quint16 aux)
         }
     case 0x62: // Write Fuzzy Sector using Index (ARCHIVER)
         {
-            if (! m_chipOpen) {
+            if (! m_board.isChipOpen()) {
                 qWarning() << "!w" << tr("[%1] Super Archiver Write Fuzzy Sector using Index denied (CHIP is not open)")
                               .arg(deviceName());
                 writeCommandNak();
@@ -2893,7 +3039,7 @@ void SimpleDiskImage::handleCommand(quint8 command, quint16 aux)
         }
     case 0x67:  // Read Track (256 bytes) (ARCHIVER)
         {
-            if (! m_chipOpen) {
+            if (! m_board.isChipOpen()) {
                 qWarning() << "!w" << tr("[%1] Super Archiver Read Track (256 bytes) denied (CHIP is not open)")
                               .arg(deviceName());
                 writeCommandNak();
@@ -2916,7 +3062,7 @@ void SimpleDiskImage::handleCommand(quint8 command, quint16 aux)
         }
     case 0x71:  // Write fuzzy sector (ARCHIVER)
         {
-            if (! m_chipOpen) {
+            if (! m_board.isChipOpen()) {
                 qWarning() << "!w" << tr("[%1] Super Archiver Write Fuzzy sector denied (CHIP is not open)").arg(deviceName());
                 writeCommandNak();
                 break;
@@ -2967,7 +3113,7 @@ void SimpleDiskImage::handleCommand(quint8 command, quint16 aux)
         }
     case 0x73:  // Set Speed (ARCHIVER)
         {
-            if (! m_chipOpen) {
+            if (! m_board.isChipOpen()) {
                 qWarning() << "!w" << tr("[%1] Super Archiver Set Speed denied (CHIP is not open)")
                               .arg(deviceName());
                 writeCommandNak();
@@ -2979,7 +3125,7 @@ void SimpleDiskImage::handleCommand(quint8 command, quint16 aux)
             qDebug() << "!n" << tr("[%1] Super Archiver Set Speed %2")
                         .arg(deviceName())
                         .arg(aux);
-            m_lastArchiverSpeed = aux & 0xFF;
+            m_board.setLastArchiverSpeed(aux & 0xFF);
             if (!writeComplete()) {
                 break;
             }
@@ -2987,7 +3133,7 @@ void SimpleDiskImage::handleCommand(quint8 command, quint16 aux)
         }
     case 0x74:  // Read Memory (ARCHIVER)
         {
-            if (! m_chipOpen) {
+            if (! m_board.isChipOpen()) {
                 qWarning() << "!w" << tr("[%1] Super Archiver Read Memory denied (CHIP is not open)").arg(deviceName());
                 writeCommandNak();
                 break;
@@ -2999,24 +3145,24 @@ void SimpleDiskImage::handleCommand(quint8 command, quint16 aux)
                 break;
             }
             // this is the code for the speed check (item 5 of Super Archiver menu then Check drive RPM)
-            if (m_lastArchiverUploadCrc16 == 0xFD2E) {
+            if (m_board.getLastArchiverUploadCrc16() == 0xFD2E) {
                 qDebug() << "!n" << tr("[%1] Super Archiver Read memory (Speed check)")
                             .arg(deviceName());
-                ARCHIVER_SPEED_CHECK[2] = m_lastArchiverSpeed;
-                ARCHIVER_SPEED_CHECK[248] = m_lastArchiverSpeed == 2 ? 0xCC : 0xD8;
+                ARCHIVER_SPEED_CHECK[2] = m_board.getLastArchiverSpeed();
+                ARCHIVER_SPEED_CHECK[248] = m_board.getLastArchiverSpeed() == 2 ? 0xCC : 0xD8;
                 writeDataFrame(QByteArray((const char *)ARCHIVER_SPEED_CHECK, sizeof(ARCHIVER_SPEED_CHECK)));
             }
             // this is the code for the diagnostic test (Archiver memory, 6532, 6810, Archiver version and rom checksum)
-            else if (m_lastArchiverUploadCrc16 == 0x61F6) {
+            else if (m_board.getLastArchiverUploadCrc16() == 0x61F6) {
                 qDebug() << "!n" << tr("[%1] Super Archiver Read memory (Diagnostic)")
                             .arg(deviceName());
                 writeDataFrame(QByteArray((const char *)ARCHIVER_DIAGNOSTIC, sizeof(ARCHIVER_DIAGNOSTIC)));
             }
 			// this is the code to get the sector timing for skew alignment
-            else if ((m_lastArchiverUploadCrc16 == 0x603D) || (m_lastArchiverUploadCrc16 == 0xBAC2) || (m_lastArchiverUploadCrc16 == 0xDFFF)) { // Super Archiver 3.02, 3.03, 3.12 respectively
-                bool timingOnly = m_lastArchiverUploadCrc16 == 0xDFFF;
+            else if ((m_board.getLastArchiverUploadCrc16() == 0x603D) || (m_board.getLastArchiverUploadCrc16() == 0xBAC2) || (m_board.getLastArchiverUploadCrc16() == 0xDFFF)) { // Super Archiver 3.02, 3.03, 3.12 respectively
+                bool timingOnly = m_board.getLastArchiverUploadCrc16() == 0xDFFF;
                 if (timingOnly) {
-                    quint16 timing = (((quint16)m_trackData[0xF4]) & 0xFF) + ((((quint16)m_trackData[0xF5]) << 8) & 0xFF00);
+                    quint16 timing = (((quint16)m_board.m_trackData[0xF4]) & 0xFF) + ((((quint16)m_board.m_trackData[0xF5]) << 8) & 0xFF00);
                     qDebug() << "!n" << tr("[%1] Super Archiver Read Memory (Skew alignment of $%2)")
                                 .arg(deviceName())
                                 .arg(timing, 4, 16, QChar('0'));
@@ -3025,7 +3171,7 @@ void SimpleDiskImage::handleCommand(quint8 command, quint16 aux)
                     qDebug() << "!n" << tr("[%1] Super Archiver Read Memory (Skew alignment)")
                                 .arg(deviceName());
                 }
-                writeDataFrame(m_trackData);
+                writeDataFrame(m_board.m_trackData);
 			}
             else {
                 qDebug() << "!n" << tr("[%1] Super Archiver Read Memory")
@@ -3036,8 +3182,8 @@ void SimpleDiskImage::handleCommand(quint8 command, quint16 aux)
         }
     case 0x75:  // Upload and execute code (ARCHIVER)
         {
-            m_lastArchiverUploadCrc16 = 0;
-            if (! m_chipOpen) {
+            m_board.setLastArchiverUploadCrc16(0);
+            if (! m_board.isChipOpen()) {
                 qWarning() << "!w" << tr("[%1] Super Archiver Upload and execute code denied (CHIP is not open)")
                               .arg(deviceName());
                 writeCommandNak();
@@ -3339,7 +3485,7 @@ void SimpleDiskImage::dumpBuffer(unsigned char *buf, int len)
 
 int SimpleDiskImage::getUploadCodeStartAddress(quint8 command, quint16 aux, QByteArray &)
 {
-    if (m_chipOpen) {
+    if (m_board.isChipOpen()) {
         if (command == 0x4D) {
             return 0x0080;
         }
@@ -3347,9 +3493,9 @@ int SimpleDiskImage::getUploadCodeStartAddress(quint8 command, quint16 aux, QByt
             return 0x1000;
         }
     }
-    if (m_happyEnabled) {
+    if (m_board.isHappyEnabled()) {
         if (((command == 0x57) && (aux >= 0x800) && (aux < 0x1380)) || ((command == 0x77) && (aux >= 0x800) && (aux < 0x1380))) {
-            if (hasHappySignature()) {
+            if (m_board.hasHappySignature()) {
                 return (int) aux;
             }
         }

@@ -193,6 +193,50 @@ public:
     bool loadTrack(QString &originalFileName);
 };
 
+class Board: public QObject
+{
+    Q_OBJECT
+
+protected:
+    // For Chip 810 and Super Archiver 1050 emulation
+    bool m_chipOpen;
+    unsigned short m_lastArchiverUploadCrc16;
+    quint16 m_lastArchiverSpeed;
+    // For Happy 810/1050 emulation
+    bool m_happyEnabled;
+    bool m_happy1050;
+    unsigned short m_lastHappyUploadCrc16;
+    bool m_happyPatchInProgress;
+
+public:
+    // For Chip 810 and Super Archiver 1050 emulation
+    unsigned char m_chipRam[32];
+    QByteArray m_trackData;
+    // For Happy 810/1050 emulation
+    QByteArray m_happyRam;
+
+public:
+    Board();
+    ~Board();
+    Board *getCopy();
+    void setFromCopy(Board *info);
+    bool hasHappySignature();
+    inline void setChipOpen(bool open) {m_chipOpen = open;}
+    inline bool isChipOpen() const {return m_chipOpen;}
+    inline void setLastArchiverUploadCrc16(unsigned short crc16) {m_lastArchiverUploadCrc16 = crc16;}
+    inline unsigned short getLastArchiverUploadCrc16() const {return m_lastArchiverUploadCrc16;}
+    inline void setLastArchiverSpeed(quint16 speed) {m_lastArchiverSpeed = speed;}
+    inline quint16 getLastArchiverSpeed() const {return m_lastArchiverSpeed;}
+    inline void setHappyEnabled(bool enabled) {m_happyEnabled = enabled;}
+    inline bool isHappyEnabled() const {return m_happyEnabled;}
+    inline void setHappy1050(bool is1050) {m_happy1050 = is1050;}
+    inline bool isHappy1050() const {return m_happy1050;}
+    inline void setHappyPatchInProgress(bool progress) {m_happyPatchInProgress = progress;}
+    inline bool isHappyPatchInProgress() const {return m_happyPatchInProgress;}
+    inline void setLastHappyUploadCrc16(unsigned short crc16) {m_lastHappyUploadCrc16 = crc16;}
+    inline unsigned short getLastHappyUploadCrc16() const {return m_lastHappyUploadCrc16;}
+};
+
 class SimpleDiskImage: public SioDevice
 {
     Q_OBJECT
@@ -216,8 +260,15 @@ public:
     inline bool isUnmodifiable() const {return m_isUnmodifiable;}
     inline bool isUnnamed() const {return m_isUnnamed;}
     inline bool isReady() const {return m_isReady;}
+    inline bool isHappyEnabled() const {return m_board.isHappyEnabled();}
+    inline bool isChipOpen() const {return m_board.isChipOpen();}
+    inline bool hasSeveralSides() const {return m_numberOfSides > 1;}
+    virtual QString getNextSideLabel();
+    inline QString getNextSideFilename() {return m_nextSideFilename;}
     inline void setEditDialog(DiskEditDialog *aDialog) {m_editDialog = aDialog; emit statusChanged(m_deviceNo);}
     inline DiskEditDialog* editDialog() {return m_editDialog;}
+    inline Board *getBoardInfo() {return m_board.getCopy();}
+    inline void setBoardInfo(Board *info) {m_board.setFromCopy(info);}
 
     virtual void handleCommand(quint8 command, quint16 aux);
     virtual bool format(const DiskGeometry &geo);
@@ -268,6 +319,9 @@ protected:
     FileTypes::FileType m_originalImageType;
     bool m_gzipped;
     DiskEditDialog *m_editDialog;
+    int m_currentSide;
+    int m_numberOfSides;
+    QString m_nextSideFilename;
     bool m_displayTransmission;
     bool m_dumpDataFrame;
     bool m_displayTrackLayout;
@@ -286,19 +340,6 @@ protected:
     disassembly1050 m_disassembly1050;
     int m_remainingAddress;
     QByteArray m_remainingBytes;
-    // For Chip 810 and Super Archiver 1050 emulation
-    bool m_chipOpen;
-    unsigned char m_chipRam[32];
-    unsigned short m_lastArchiverUploadCrc16;
-    QByteArray m_trackData;
-    quint16 m_lastArchiverSpeed;
-    // For Happy 810 emulation
-    bool m_happyEnabled;
-    bool m_happy1050;
-    QByteArray m_happyRam;
-    unsigned short m_lastHappyUploadCrc16;
-    bool m_lastCommandIsHappy;
-    bool m_happyPatchInProgress;
     // Pro specific data
     ProSectorInfo m_proSectorInfo[1040 + 256]; // to support an enhanced density PRO file + 256 phantom sectors
     quint16 m_trackContent[200];
@@ -306,9 +347,12 @@ protected:
     AtxTrackInfo m_atxTrackInfo[40];
 	// Scp specific data
 	ScpTrackInfo m_scpTrackInfo[40];
+    // data for Happy or Archiver
+    Board m_board;
 
     bool seekToSector(quint16 sector);
     void refreshNewGeometry();
+    bool sameSoftware(const QString &fileName, const QString &otherFileName);
 
     bool openAtr(const QString &fileName);
     bool openXfd(const QString &fileName);
@@ -449,7 +493,6 @@ protected:
 	void fillBuffer(char *line, unsigned char *buf, int len, int ofs, bool dumpAscii);
     void dumpBuffer(unsigned char *buf, int len);
     bool executeArchiverCode(quint16 aux, QByteArray &data);
-    bool hasHappySignature();
     void readHappyTrack(int trackNumber, bool happy1050);
     bool writeHappyTrack(int trackNumber, bool happy1050);
     QByteArray readHappySectors(int trackNumber, int afterSectorNumber, bool happy1050);

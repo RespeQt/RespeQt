@@ -30,7 +30,7 @@ public:
 
     void showAsEmpty();
     void showAsFolderMounted(const QString &fileName, const QString &description, bool editEnabled);
-    void showAsImageMounted(const QString &fileName, const QString &description, bool editEnabled, bool enableSave);
+    void showAsImageMounted(const QString &fileName, const QString &description, bool editEnabled, bool enableSave, bool leverOpen, bool happyEnabled, bool chipOpen, bool severalSides);
 
     void updateFromImage(SimpleDiskImage* diskImage);
 
@@ -43,7 +43,7 @@ signals:
     void actionMountDisk(int deviceId);
     void actionMountFolder(int deviceId);
     void actionEject(int deviceId);
-    void actionToggleLever(int deviceId, bool open);
+    void actionNextSide(int deviceId);
     void actionToggleHappy(int deviceId, bool enabled);
     void actionToggleChip(int deviceId, bool open);
     void actionWriteProtect(int deviceId,bool state);
@@ -61,7 +61,7 @@ private slots:
     void on_actionMountDisk_triggered();
 
     void on_actionEject_triggered();
-    void on_actionToggleLever_triggered(bool open);
+    void on_actionNextSide_triggered();
     void on_actionToggleHappy_triggered(bool enabled);
     void on_actionToggleChip_triggered(bool open);
 
