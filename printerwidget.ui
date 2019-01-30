@@ -130,7 +130,10 @@
      </property>
      <property name="font">
       <font>
+       <family>Courier New</family>
+       <pointsize>12</pointsize>
        <weight>75</weight>
+       <italic>false</italic>
        <bold>true</bold>
       </font>
      </property>
