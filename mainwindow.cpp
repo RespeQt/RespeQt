@@ -428,12 +428,14 @@ void MainWindow::createDeviceWidgets()
      if (event->button() == Qt::LeftButton && !speedLabel->isHidden() && speedLabel->geometry().translated(ui->statusBar->geometry().topLeft()).contains(event->pos())) {
         ui->actionOptions->trigger();
      }
+#ifndef QT_NO_DEBUG
      if (sio && event->button() == Qt::LeftButton && !snapshot->isHidden() && snapshot->geometry().translated(ui->statusBar->geometry().topLeft()).contains(event->pos())) {
         if (!sio->isSnapshotRunning())
             sio->startSIOSnapshot();
         else
             sio->stopSIOSnapshot();
      }
+#endif
 }
 
 void MainWindow::dragEnterEvent(QDragEnterEvent *event)
