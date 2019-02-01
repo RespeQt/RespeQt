@@ -85,9 +85,7 @@ bool SioWorker::wait(unsigned long time)
 void SioWorker::start(Priority p)
 {
     switch (respeqtSettings->backend()) {
-#ifdef QT_NO_DEBUG
-        case SERIAL_BACKEND_TEST:
-#endif
+        default:
         case SERIAL_BACKEND_STANDARD:
             mPort = new StandardSerialPortBackend(0);
             break;

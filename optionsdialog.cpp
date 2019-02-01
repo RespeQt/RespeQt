@@ -275,12 +275,20 @@ void OptionsDialog::on_treeWidget_currentItemChanged(QTreeWidgetItem* current, Q
         m_ui->stackedWidget->setCurrentIndex(3);
     } else if (current == itemDiskOptions) {
         m_ui->stackedWidget->setCurrentIndex(4);
-    } else if (current == itemAtari1020) {
-        m_ui->stackedWidget->setCurrentIndex(5);
-    } else if (current == itemAtari1027) {
-        m_ui->stackedWidget->setCurrentIndex(6);
     } else if (current == itemI18n) {
-        m_ui->stackedWidget->setCurrentIndex(5); // TODO @MERGE@
+        m_ui->stackedWidget->setCurrentIndex(5);
+    } else if (current == itemAtari1020) {
+        m_ui->stackedWidget->setCurrentIndex(6);
+    } else if (current == itemAtari1027) {
+        m_ui->stackedWidget->setCurrentIndex(7);
+    } else if (current == itemFirmwareEmulation) {
+        m_ui->stackedWidget->setCurrentIndex(8);
+    } else if (current == itemFirmware810Path) {
+        m_ui->stackedWidget->setCurrentIndex(9);
+    } else if (current == itemFirmware1050Path) {
+        m_ui->stackedWidget->setCurrentIndex(10);
+    } else if (current == itemTraceOptions) {
+        m_ui->stackedWidget->setCurrentIndex(11);
     }
 }
 

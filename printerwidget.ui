@@ -128,17 +128,11 @@
        </disabled>
       </palette>
      </property>
-     <property name="font">
-      <font>
-       <family>Courier New</family>
-       <pointsize>12</pointsize>
-       <weight>75</weight>
-       <italic>false</italic>
-       <bold>true</bold>
-      </font>
-     </property>
      <property name="text">
       <string>1:</string>
+     </property>
+     <property name="scaledContents">
+      <bool>true</bool>
      </property>
      <property name="margin">
       <number>5</number>

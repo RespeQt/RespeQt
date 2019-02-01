@@ -830,87 +830,87 @@
     </layout>
    </widget>
    <widget class="QWidget" name="page_diskoptions">
-       <layout class="QGridLayout" name="gridLayout_10">
-        <property name="leftMargin">
-         <number>0</number>
-        </property>
-        <property name="topMargin">
-         <number>0</number>
-        </property>
-        <property name="rightMargin">
-         <number>0</number>
-        </property>
-        <property name="bottomMargin">
-         <number>0</number>
-        </property>
-        <property name="spacing">
-         <number>0</number>
-        </property>
-        <item row="0" column="0">
-         <widget class="QGroupBox" name="diskGroup">
-          <property name="minimumSize">
+    <layout class="QGridLayout" name="gridLayout_10">
+     <property name="leftMargin">
+      <number>0</number>
+     </property>
+     <property name="topMargin">
+      <number>0</number>
+     </property>
+     <property name="rightMargin">
+      <number>0</number>
+     </property>
+     <property name="bottomMargin">
+      <number>0</number>
+     </property>
+     <property name="spacing">
+      <number>0</number>
+     </property>
+     <item row="0" column="0">
+      <widget class="QGroupBox" name="diskGroup">
+       <property name="minimumSize">
+        <size>
+         <width>258</width>
+         <height>208</height>
+        </size>
+       </property>
+       <property name="title">
+        <string>Disk image options</string>
+       </property>
+       <layout class="QGridLayout" name="gridLayout_11">
+        <item row="4" column="0">
+         <widget class="QCheckBox" name="displayTransmission">
+          <property name="text">
+           <string>Display SIO protocol (ACK, NAK,...)</string>
+          </property>
+         </widget>
+        </item>
+        <item row="5" column="0">
+         <widget class="QCheckBox" name="spyMode">
+          <property name="text">
+           <string>Display data frames (spy mode)</string>
+          </property>
+         </widget>
+        </item>
+        <item row="6" column="0">
+         <widget class="QCheckBox" name="disassembleUploadedCode">
+          <property name="text">
+           <string>Display uploaded code disassembly</string>
+          </property>
+         </widget>
+        </item>
+        <item row="3" column="0">
+         <widget class="QCheckBox" name="trackLayout">
+          <property name="text">
+           <string>Display track layout of protected disks</string>
+          </property>
+         </widget>
+        </item>
+        <item row="9" column="0">
+         <spacer name="emulationSpacer2_2">
+          <property name="orientation">
+           <enum>Qt::Vertical</enum>
+          </property>
+          <property name="sizeHint" stdset="0">
            <size>
-            <width>258</width>
-            <height>208</height>
+            <width>20</width>
+            <height>40</height>
            </size>
           </property>
-          <property name="title">
-           <string>Disk image options</string>
+         </spacer>
+        </item>
+        <item row="2" column="0">
+         <widget class="QCheckBox" name="commandName">
+          <property name="text">
+           <string>Display command name of empty drive slots</string>
           </property>
-          <layout class="QGridLayout" name="gridLayout_11">
-           <item row="4" column="0">
-            <widget class="QCheckBox" name="displayTransmission">
-             <property name="text">
-              <string>Display SIO protocol (ACK, NAK,...)</string>
-             </property>
-            </widget>
-           </item>
-           <item row="5" column="0">
-            <widget class="QCheckBox" name="spyMode">
-             <property name="text">
-              <string>Display data frames (spy mode)</string>
-             </property>
-            </widget>
-           </item>
-           <item row="6" column="0">
-            <widget class="QCheckBox" name="disassembleUploadedCode">
-             <property name="text">
-              <string>Display uploaded code disassembly</string>
-             </property>
-            </widget>
-           </item>
-           <item row="3" column="0">
-            <widget class="QCheckBox" name="trackLayout">
-             <property name="text">
-              <string>Display track layout of protected disks</string>
-             </property>
-            </widget>
-           </item>
-           <item row="9" column="0">
-            <spacer name="emulationSpacer2_2">
-             <property name="orientation">
-              <enum>Qt::Vertical</enum>
-             </property>
-             <property name="sizeHint" stdset="0">
-              <size>
-               <width>20</width>
-               <height>40</height>
-              </size>
-             </property>
-            </spacer>
-           </item>
-           <item row="2" column="0">
-            <widget class="QCheckBox" name="commandName">
-             <property name="text">
-              <string>Display command name of empty drive slots</string>
-             </property>
-            </widget>
-           </item>
-          </layout>
          </widget>
         </item>
        </layout>
       </widget>
+     </item>
+    </layout>
+   </widget>
    <widget class="QWidget" name="page_i18n">
     <layout class="QGridLayout" name="gridLayout">
      <property name="leftMargin">
@@ -1949,142 +1949,144 @@
    </property>
   </widget>
   <action name="actionSelect810Firmware">
-     <property name="icon">
-      <iconset>
-       <normaloff>:/icons/silk-icons/icons/folder.png</normaloff>:/icons/silk-icons/icons/folder.png</iconset>
-     </property>
-     <property name="text">
-      <string>Select Atari 810 firmware...</string>
-     </property>
-     <property name="toolTip">
-      <string>Select Atari 810 firmware</string>
-     </property>
-     <property name="statusTip">
-      <string>Mount a folder image to D%1</string>
-     </property>
-    </action>
-    <action name="actionSelect810ChipFirmware">
-     <property name="icon">
-      <iconset>
-       <normaloff>:/icons/silk-icons/icons/folder.png</normaloff>:/icons/silk-icons/icons/folder.png</iconset>
-     </property>
-     <property name="text">
-      <string>Select Atari 810 Chip firmware...</string>
-     </property>
-     <property name="toolTip">
-      <string>Select Atari 810 Chip firmware</string>
-     </property>
-     <property name="statusTip">
-      <string>Mount a folder image to D%1</string>
-     </property>
-    </action>
-    <action name="actionSelect810HappyFirmware">
-     <property name="icon">
-      <iconset>
-       <normaloff>:/icons/silk-icons/icons/folder.png</normaloff>:/icons/silk-icons/icons/folder.png</iconset>
-     </property>
-     <property name="text">
-      <string>Select Atari 810 Happy firmware...</string>
-     </property>
-     <property name="toolTip">
-      <string>Select Atari 810 Happy firmware</string>
-     </property>
-     <property name="statusTip">
-      <string>Mount a folder image to D%1</string>
-     </property>
-    </action>
-    <action name="actionSelect1050Firmware">
-     <property name="icon">
-      <iconset>
-       <normaloff>:/icons/silk-icons/icons/folder.png</normaloff>:/icons/silk-icons/icons/folder.png</iconset>
-     </property>
-     <property name="text">
-      <string>Select Atari 1050 firmware...</string>
-     </property>
-     <property name="toolTip">
-      <string>Select Atari 1050 firmware</string>
-     </property>
-     <property name="statusTip">
-      <string>Mount a folder image to D%1</string>
-     </property>
-    </action>
-    <action name="actionSelect1050ArchiverFirmware">
-     <property name="icon">
-      <iconset>
-       <normaloff>:/icons/silk-icons/icons/folder.png</normaloff>:/icons/silk-icons/icons/folder.png</iconset>
-     </property>
-     <property name="text">
-      <string>Select Atari 1050 Archiver firmware...</string>
-     </property>
-     <property name="toolTip">
-      <string>Select Atari 1050 Archiver firmware</string>
-     </property>
-     <property name="statusTip">
-      <string>Mount a folder image to D%1</string>
-     </property>
-    </action>
-    <action name="actionSelect1050HappyFirmware">
-     <property name="icon">
-      <iconset>
-       <normaloff>:/icons/silk-icons/icons/folder.png</normaloff>:/icons/silk-icons/icons/folder.png</iconset>
-     </property>
-     <property name="text">
-      <string>Select Atari 1050 Happy firmware...</string>
-     </property>
-     <property name="toolTip">
-      <string>Select Atari 1050 Happy firmware</string>
-     </property>
-     <property name="statusTip">
-      <string>Mount a folder image to D%1</string>
-     </property>
-    </action>
-    <action name="actionSelect1050SpeedyFirmware">
-     <property name="icon">
-      <iconset>
-       <normaloff>:/icons/silk-icons/icons/folder.png</normaloff>:/icons/silk-icons/icons/folder.png</iconset>
-     </property>
-     <property name="text">
-      <string>Select Atari 1050 Speedy firmware...</string>
-     </property>
-     <property name="toolTip">
-      <string>Select Atari 1050 Speedy firmware</string>
-     </property>
-     <property name="statusTip">
-      <string>Mount a folder image to D%1</string>
-     </property>
-    </action>
-    <action name="actionSelect1050TurboFirmware">
-     <property name="icon">
-      <iconset>
-       <normaloff>:/icons/silk-icons/icons/folder.png</normaloff>:/icons/silk-icons/icons/folder.png</iconset>
-     </property>
-     <property name="text">
-      <string>Select Atari 1050 Turbo firmware...</string>
-     </property>
-     <property name="toolTip">
-      <string>Select Atari 1050 Turbo firmware</string>
-     </property>
-     <property name="statusTip">
-      <string>Mount a folder image to D%1</string>
-     </property>
-    </action>
-    <action name="actionSelect1050DuplicatorFirmware">
-     <property name="icon">
-      <iconset>
-       <normaloff>:/icons/silk-icons/icons/folder.png</normaloff>:/icons/silk-icons/icons/folder.png</iconset>
-     </property>
-     <property name="text">
-      <string>Select Atari 1050 Duplicator firmware...</string>
-     </property>
-     <property name="toolTip">
-      <string>Select Atari 1050 Duplicator firmware</string>
-     </property>
-     <property name="statusTip">
-      <string>Mount a folder image to D%1</string>
-     </property>
-    </action>
+   <property name="icon">
+    <iconset resource="icons.qrc">
+     <normaloff>:/icons/silk-icons/icons/folder.png</normaloff>:/icons/silk-icons/icons/folder.png</iconset>
+   </property>
+   <property name="text">
+    <string>Select Atari 810 firmware...</string>
+   </property>
+   <property name="toolTip">
+    <string>Select Atari 810 firmware</string>
+   </property>
+   <property name="statusTip">
+    <string>Mount a folder image to D%1</string>
+   </property>
+  </action>
+  <action name="actionSelect810ChipFirmware">
+   <property name="icon">
+    <iconset resource="icons.qrc">
+     <normaloff>:/icons/silk-icons/icons/folder.png</normaloff>:/icons/silk-icons/icons/folder.png</iconset>
+   </property>
+   <property name="text">
+    <string>Select Atari 810 Chip firmware...</string>
+   </property>
+   <property name="toolTip">
+    <string>Select Atari 810 Chip firmware</string>
+   </property>
+   <property name="statusTip">
+    <string>Mount a folder image to D%1</string>
+   </property>
+  </action>
+  <action name="actionSelect810HappyFirmware">
+   <property name="icon">
+    <iconset resource="icons.qrc">
+     <normaloff>:/icons/silk-icons/icons/folder.png</normaloff>:/icons/silk-icons/icons/folder.png</iconset>
+   </property>
+   <property name="text">
+    <string>Select Atari 810 Happy firmware...</string>
+   </property>
+   <property name="toolTip">
+    <string>Select Atari 810 Happy firmware</string>
+   </property>
+   <property name="statusTip">
+    <string>Mount a folder image to D%1</string>
+   </property>
+  </action>
+  <action name="actionSelect1050Firmware">
+   <property name="icon">
+    <iconset resource="icons.qrc">
+     <normaloff>:/icons/silk-icons/icons/folder.png</normaloff>:/icons/silk-icons/icons/folder.png</iconset>
+   </property>
+   <property name="text">
+    <string>Select Atari 1050 firmware...</string>
+   </property>
+   <property name="toolTip">
+    <string>Select Atari 1050 firmware</string>
+   </property>
+   <property name="statusTip">
+    <string>Mount a folder image to D%1</string>
+   </property>
+  </action>
+  <action name="actionSelect1050ArchiverFirmware">
+   <property name="icon">
+    <iconset resource="icons.qrc">
+     <normaloff>:/icons/silk-icons/icons/folder.png</normaloff>:/icons/silk-icons/icons/folder.png</iconset>
+   </property>
+   <property name="text">
+    <string>Select Atari 1050 Archiver firmware...</string>
+   </property>
+   <property name="toolTip">
+    <string>Select Atari 1050 Archiver firmware</string>
+   </property>
+   <property name="statusTip">
+    <string>Mount a folder image to D%1</string>
+   </property>
+  </action>
+  <action name="actionSelect1050HappyFirmware">
+   <property name="icon">
+    <iconset resource="icons.qrc">
+     <normaloff>:/icons/silk-icons/icons/folder.png</normaloff>:/icons/silk-icons/icons/folder.png</iconset>
+   </property>
+   <property name="text">
+    <string>Select Atari 1050 Happy firmware...</string>
+   </property>
+   <property name="toolTip">
+    <string>Select Atari 1050 Happy firmware</string>
+   </property>
+   <property name="statusTip">
+    <string>Mount a folder image to D%1</string>
+   </property>
+  </action>
+  <action name="actionSelect1050SpeedyFirmware">
+   <property name="icon">
+    <iconset resource="icons.qrc">
+     <normaloff>:/icons/silk-icons/icons/folder.png</normaloff>:/icons/silk-icons/icons/folder.png</iconset>
+   </property>
+   <property name="text">
+    <string>Select Atari 1050 Speedy firmware...</string>
+   </property>
+   <property name="toolTip">
+    <string>Select Atari 1050 Speedy firmware</string>
+   </property>
+   <property name="statusTip">
+    <string>Mount a folder image to D%1</string>
+   </property>
+  </action>
+  <action name="actionSelect1050TurboFirmware">
+   <property name="icon">
+    <iconset resource="icons.qrc">
+     <normaloff>:/icons/silk-icons/icons/folder.png</normaloff>:/icons/silk-icons/icons/folder.png</iconset>
+   </property>
+   <property name="text">
+    <string>Select Atari 1050 Turbo firmware...</string>
+   </property>
+   <property name="toolTip">
+    <string>Select Atari 1050 Turbo firmware</string>
+   </property>
+   <property name="statusTip">
+    <string>Mount a folder image to D%1</string>
+   </property>
+  </action>
+  <action name="actionSelect1050DuplicatorFirmware">
+   <property name="icon">
+    <iconset resource="icons.qrc">
+     <normaloff>:/icons/silk-icons/icons/folder.png</normaloff>:/icons/silk-icons/icons/folder.png</iconset>
+   </property>
+   <property name="text">
+    <string>Select Atari 1050 Duplicator firmware...</string>
+   </property>
+   <property name="toolTip">
+    <string>Select Atari 1050 Duplicator firmware</string>
+   </property>
+   <property name="statusTip">
+    <string>Mount a folder image to D%1</string>
+   </property>
+  </action>
  </widget>
- <resources/>
+ <resources>
+  <include location="icons.qrc"/>
+ </resources>
  <connections>
   <connection>
    <sender>buttonBox</sender>
@@ -2115,7 +2117,7 @@
     <hint type="destinationlabel">
      <x>286</x>
      <y>274</y>
-    buttonBox</hint>
+    </hint>
    </hints>
   </connection>
  </connections>
