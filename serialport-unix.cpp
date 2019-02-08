@@ -26,7 +26,7 @@
 #include <unistd.h>
 #ifdef Q_OS_UNIX
     #ifdef Q_OS_LINUX
-        #include <stropts.h>
+        //#include <stropts.h>
         #include <termio.h>
         #include <linux/serial.h>
     #endif
