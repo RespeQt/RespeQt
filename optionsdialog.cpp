@@ -35,8 +35,7 @@ OptionsDialog::OptionsDialog(QWidget *parent) :
     itemDiskOptions = m_ui->treeWidget->topLevelItem(2);
     itemI18n = m_ui->treeWidget->topLevelItem(3);
     itemTestSerialPort = m_ui->treeWidget->topLevelItem(0)->child(2);
-    itemAtari1020 = m_ui->treeWidget->topLevelItem(3)->child(0);
-    itemAtari1027 = m_ui->treeWidget->topLevelItem(3)->child(1);
+    itemAtari1027 = m_ui->treeWidget->topLevelItem(4)->child(0);
 
 #ifndef Q_OS_LINUX
     m_ui->treeWidget->topLevelItem(0)->removeChild(itemAtariSio);
@@ -277,18 +276,8 @@ void OptionsDialog::on_treeWidget_currentItemChanged(QTreeWidgetItem* current, Q
         m_ui->stackedWidget->setCurrentIndex(4);
     } else if (current == itemI18n) {
         m_ui->stackedWidget->setCurrentIndex(5);
-    } else if (current == itemAtari1020) {
-        m_ui->stackedWidget->setCurrentIndex(6);
     } else if (current == itemAtari1027) {
         m_ui->stackedWidget->setCurrentIndex(7);
-    } else if (current == itemFirmwareEmulation) {
-        m_ui->stackedWidget->setCurrentIndex(8);
-    } else if (current == itemFirmware810Path) {
-        m_ui->stackedWidget->setCurrentIndex(9);
-    } else if (current == itemFirmware1050Path) {
-        m_ui->stackedWidget->setCurrentIndex(10);
-    } else if (current == itemTraceOptions) {
-        m_ui->stackedWidget->setCurrentIndex(11);
     }
 }
 
@@ -423,7 +412,7 @@ void OptionsDialog::on_button_1027font_clicked()
     bool ok;
     QFont font;
     font.setFamily(m_ui->label_1027font->text());
-    QFontDialog::FontDialogOption options = QFontDialog::MonospacedFonts;
+    QFontDialog::FontDialogOptions options = QFontDialog::MonospacedFonts;
     QFont newFont = QFontDialog::getFont(&ok, font, this, tr("Select Atari 1027 font"), options);
     if (ok) {
         newFont.setPointSize(12);

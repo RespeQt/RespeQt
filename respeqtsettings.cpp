@@ -123,6 +123,7 @@ RespeqtSettings::RespeqtSettings()
 
     // Printer specific settings
     mAtari1027FontName = mSettings->value("Atari1027FontFamily", "Courier").toString();
+
     m810Firmware = mSettings->value("Atari810Firmware", "").toString();
     m810ChipFirmware = mSettings->value("Atari810ChipFirmware", "").toString();
     m810HappyFirmware = mSettings->value("Atari810HappyFirmware", "").toString();
