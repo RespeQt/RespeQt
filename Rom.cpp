@@ -112,8 +112,8 @@ struct ROM_SYMBOLS *Rom::LoadSymbolFile(QString filename)
                         }
                         addr++;
                     }
-                    if ((qstricmp(name, "#skip") == 0) || (qstricmp(name, "#command") == 0) || (qstricmp(name, "#frame") == 0)) {
-                        if (qstricmp(name, "#command") != 0) {
+					if ((qstricmp(name, "#skip") == 0) || (qstricmp(name, "#command") == 0) || (qstricmp(name, "#frame") == 0)) {
+						if (qstricmp(name, "#command") != 0) {
 							char *minus = addr;
 							while ((*minus == ' ') || (*minus == '\t')) {
 								minus++;
