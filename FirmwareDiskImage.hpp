@@ -61,7 +61,7 @@ public:
     virtual void            setLeverOpen(bool open);
     virtual void            setChipMode(bool enable);
     virtual void            handleCommand(quint8 command, quint16 aux);
-    virtual QString         description();
+    virtual QString         description() const;
     virtual QString         convertWd1771Status(quint8 status, quint16 weakBits, quint8 shortSize, int bitShift);
 
     // read or write a track (called from Track.cpp)

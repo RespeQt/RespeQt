@@ -16,6 +16,7 @@
 #include <QTranslator>
 #include <QDir>
 #include <QFileDialog>
+#include <QFontDialog>
 
 OptionsDialog::OptionsDialog(QWidget *parent) :
     QDialog(parent),
@@ -34,6 +35,7 @@ OptionsDialog::OptionsDialog(QWidget *parent) :
     itemDiskOptions = m_ui->treeWidget->topLevelItem(2);
     itemI18n = m_ui->treeWidget->topLevelItem(3);
     itemTestSerialPort = m_ui->treeWidget->topLevelItem(0)->child(2);
+    itemAtari1027 = m_ui->treeWidget->topLevelItem(4)->child(0);
 
 #ifndef Q_OS_LINUX
     m_ui->treeWidget->topLevelItem(0)->removeChild(itemAtariSio);
@@ -133,7 +135,6 @@ OptionsDialog::OptionsDialog(QWidget *parent) :
         }
     }
 
-    bool no_handshake = (respeqtSettings->serialPortHandshakingMethod()==HANDSHAKE_NO_HANDSHAKE);
     bool software_handshake = (respeqtSettings->serialPortHandshakingMethod()==HANDSHAKE_SOFTWARE);
     m_ui->serialPortWriteDelayLabel->setVisible(software_handshake);
     m_ui->serialPortWriteDelayCombo->setVisible(software_handshake);
@@ -145,6 +146,7 @@ OptionsDialog::OptionsDialog(QWidget *parent) :
     m_ui->serialPortCompErrDelayLabel->setVisible(!software_handshake);
     m_ui->serialPortCompErrDelayBox->setVisible(!software_handshake);
 #ifdef Q_OS_WIN
+    bool no_handshake = (respeqtSettings->serialPortHandshakingMethod()==HANDSHAKE_NO_HANDSHAKE);
     m_ui->serialPortFallingEdge->setVisible(!no_handshake && !software_handshake);
     m_ui->serialPortDTRControlEnable->setVisible(no_handshake || software_handshake);
 #else
@@ -159,6 +161,12 @@ OptionsDialog::OptionsDialog(QWidget *parent) :
     {
         m_ui->emulationHighSpeedExeLoaderBox->setVisible(true);
     }
+
+    m_ui->label_1027font->setText(respeqtSettings->atari1027FontFamily());
+    QFont font;
+    font.setPointSize(12);
+    font.setFamily(m_ui->label_1027font->text());
+    m_ui->fontSample->setFont(font);
 }
 
 OptionsDialog::~OptionsDialog()
@@ -186,7 +194,6 @@ void OptionsDialog::on_serialPortComboBox_currentIndexChanged(int index)
 
 void OptionsDialog::on_serialPortHandshakeCombo_currentIndexChanged(int index)
 {
-    bool no_handshake = (index==HANDSHAKE_NO_HANDSHAKE);
     bool software_handshake = (index==HANDSHAKE_SOFTWARE);
     m_ui->serialPortWriteDelayLabel->setVisible(software_handshake);
     m_ui->serialPortWriteDelayCombo->setVisible(software_handshake);
@@ -198,6 +205,7 @@ void OptionsDialog::on_serialPortHandshakeCombo_currentIndexChanged(int index)
     m_ui->serialPortCompErrDelayLabel->setVisible(!software_handshake);
     m_ui->serialPortCompErrDelayBox->setVisible(!software_handshake);
 #ifdef Q_OS_WIN
+    bool no_handshake = (index==HANDSHAKE_NO_HANDSHAKE);
     m_ui->serialPortFallingEdge->setVisible(!no_handshake && !software_handshake);
     m_ui->serialPortDTRControlEnable->setVisible(no_handshake || software_handshake);
 #endif
@@ -268,6 +276,8 @@ void OptionsDialog::on_treeWidget_currentItemChanged(QTreeWidgetItem* current, Q
         m_ui->stackedWidget->setCurrentIndex(4);
     } else if (current == itemI18n) {
         m_ui->stackedWidget->setCurrentIndex(5);
+    } else if (current == itemAtari1027) {
+        m_ui->stackedWidget->setCurrentIndex(7);
     }
 }
 
@@ -395,4 +405,19 @@ void OptionsDialog::on_testFileButton_clicked()
     m_ui->testFileLabel->setText(file1Name);
     respeqtSettings->setTestFile(file1Name);
 #endif
+}
+
+void OptionsDialog::on_button_1027font_clicked()
+{
+    bool ok;
+    QFont font;
+    font.setFamily(m_ui->label_1027font->text());
+    QFontDialog::FontDialogOptions options = QFontDialog::MonospacedFonts;
+    QFont newFont = QFontDialog::getFont(&ok, font, this, tr("Select Atari 1027 font"), options);
+    if (ok) {
+        newFont.setPointSize(12);
+        m_ui->label_1027font->setText(newFont.family());
+        m_ui->fontSample->setFont(newFont);
+        respeqtSettings->setAtari1027FontFamily(newFont.family());
+    }
 }

@@ -4,7 +4,9 @@
 //
 
 #include <memory.h>
+#ifndef __clang__
 #include <malloc.h>
+#endif
 #include <stdio.h>
 #include "Ram.hpp"
 
@@ -13,14 +15,14 @@
 Ram::Ram(Cpu6502 *cpu, int iSize)
 {
 	m_cpu = cpu;
-	m_ram = (unsigned char *)malloc(iSize);
+    m_ram = (unsigned char *)malloc(iSize);
 	m_size = iSize;
-	memset(m_ram, 0, iSize);
+    memset(m_ram, 0, iSize);
 }
 
 Ram::~Ram()
 {
-	free(m_ram);
+    free(m_ram);
 	m_ram = NULL;
 }
 

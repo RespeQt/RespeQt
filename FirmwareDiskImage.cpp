@@ -244,7 +244,7 @@ unsigned char FirmwareDiskImage::computeChksum(unsigned char *commandBuf, int le
     return (unsigned char) sum;
 }
 
-QString FirmwareDiskImage::description()
+QString FirmwareDiskImage::description() const
 {
     QString desc = QString(m_geometry.humanReadable()).append(" - ").append(hardwareName());
     if (m_board.isChipOpen()) {

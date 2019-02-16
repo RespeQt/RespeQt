@@ -28,9 +28,10 @@ bool showAtascii = true;
 int fontSize = 9;
 QString atasciiFont("Atari Classic Chunky");
 
+namespace Printers {
 
 TextPrinterWindow::TextPrinterWindow(QWidget *parent) :
-    QMainWindow(parent),
+    QMainWindow(parent), NativeOutput(),
     ui(new Ui::TextPrinterWindow)
 {
     ui->setupUi(this);
@@ -48,8 +49,12 @@ TextPrinterWindow::TextPrinterWindow(QWidget *parent) :
     ui->atasciiFontName->setText(atasciiFont + " - " + QString("%1").arg(fontSize));
     effAtasciiFont = 1;
 
-    connect(ui->asciiFontName, SIGNAL(currentFontChanged(QFont)), this, SLOT(asciiFontChanged(QFont)));
+    connect(ui->asciiFontName, &QFontComboBox::currentFontChanged, this, &TextPrinterWindow::asciiFontChanged);
+    connect(this, &TextPrinterWindow::textPrint, this, &TextPrinterWindow::print);
 
+    mFont = NULL;
+    mDevice = NULL;
+    mPainter = NULL;
 }
 
 TextPrinterWindow::~TextPrinterWindow()
@@ -81,6 +86,7 @@ void TextPrinterWindow::closeEvent(QCloseEvent *e)
     emit closed();
     e->accept();
 }
+
  void TextPrinterWindow::print(const QString &text)
 {
      // DO both ASCII and ATASCII windows   // 
@@ -282,3 +288,20 @@ void TextPrinterWindow::on_actionSave_triggered()
 //         ui->actionStrip_Line_Numbers->setEnabled(false);
      }
  }
+
+ void TextPrinterWindow::newLine(bool /*linefeed*/)
+ {
+    emit textPrint("\n");
+ }
+
+ void TextPrinterWindow::printChar(const QChar &c)
+ {
+    emit textPrint(QString(c));
+ }
+
+ void TextPrinterWindow::printString(const QString &s)
+ {
+    emit textPrint(s);
+ }
+
+} // End of namespace

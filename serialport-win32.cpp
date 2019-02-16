@@ -136,7 +136,6 @@ bool StandardSerialPortBackend::open()
     qWarning() << "!i" << tr("Emulation started through standard serial port backend on '%1' with %2 handshaking")
                   .arg(respeqtSettings->serialPortName())
                   .arg(m);
-
     return true;
 }
 

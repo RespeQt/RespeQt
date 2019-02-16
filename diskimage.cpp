@@ -553,7 +553,7 @@ SimpleDiskImage::~SimpleDiskImage()
     }
 }
 
-QString SimpleDiskImage::description()
+QString SimpleDiskImage::description() const
 {
     QString sides;
     if (m_numberOfSides > 1) {

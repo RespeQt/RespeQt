@@ -13,7 +13,10 @@
 #ifndef RESPEQTSETTINGS_H
 #define RESPEQTSETTINGS_H
 
+#include "mainwindow.h"
+
 #include <QSettings>
+#include <QPrinterInfo>
 
 #include "Emulator.h"
 
@@ -26,6 +29,11 @@ public:
     public:
         QString fileName;
         bool isWriteProtected;
+    };
+    class PrinterSettings {
+    public:
+        QString printerName;
+        int printerType;
     };
 
     RespeqtSettings();
@@ -154,7 +162,7 @@ public:
     void setLastPrtHeight(int lastH);
 
     QString i18nLanguage();
-    void setI18nLanguage(const QString &$lang);
+    void setI18nLanguage(const QString &lang);
 
     bool minimizeToTray();
     void setMinimizeToTray(bool tray);
@@ -216,6 +224,16 @@ public:
 // Explorer Window On Top
     bool explorerOnTop();
     void setExplorerOnTop(bool expOnTop);
+
+// Methods for setting and getting the Printer emulation settings.
+    void setPrinterType(int no, int printerType);
+    int printerType(int no) const;
+    void setConnectedPrinterName(int no, const QString &printerInfo);
+    const QString &connectedPrinterName(int no) const;
+    const PrinterSettings &connectedPrinterSettings(int no) const;
+
+    QString atari1027FontFamily();
+    void setAtari1027FontFamily(QString fontFamily);
 
 // Atari drive firmware
     QString atari810Firmware();
@@ -330,6 +348,7 @@ private:
     int mCustomCasBaud;
 
     ImageSettings mMountedImageSettings[16];    //
+    PrinterSettings mConnectedPrinterSettings[PRINTER_COUNT];
 
     ImageSettings mRecentImageSettings[NUM_RECENT_FILES];
     QString mLastDiskImageDir;
@@ -341,6 +360,8 @@ private:
     QString mLastCasDir;
     
     QString mI18nLanguage;
+
+    QString mAtari1027FontName;
 
     bool mMinimizeToTray;
     bool mFilterUnderscore;

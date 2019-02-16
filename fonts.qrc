@@ -1,0 +1,5 @@
+<RCC>
+    <qresource prefix="/fonts">
+        <file alias="1020">ATARI-1020_EMU.ttf</file>
+    </qresource>
+</RCC>

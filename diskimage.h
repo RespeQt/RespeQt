@@ -298,7 +298,7 @@ public:
 
     inline DiskGeometry geometry() const {return m_geometry;}
     inline QString originalFileName() const {return m_originalFileName;}
-    virtual QString description();
+    virtual QString description() const;
 
     virtual int getUploadCodeStartAddress(quint8 command, quint16 aux, QByteArray &data);
     virtual void disassembleCode(QByteArray &data, unsigned short address, bool drive1050, bool happy);

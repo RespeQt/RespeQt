@@ -34,8 +34,8 @@ protected:
 
 private:
     Ui::OptionsDialog *m_ui;
+    QTreeWidgetItem *itemTestSerialPort, *itemAtari1020, *itemAtari1027;
     QTreeWidgetItem *itemStandard, *itemAtariSio, *itemEmulation, *itemDiskOptions, *itemI18n, *itemFirmware810Path, *itemFirmware1050Path, *itemFirmwareEmulation, *itemTraceOptions;
-    QTreeWidgetItem *itemTestSerialPort;
 
     void selectFirmware(QLineEdit *edit, QString title, QString filters);
 
@@ -48,6 +48,7 @@ private slots:
     void OptionsDialog_accepted();
     void on_useEmulationCustomCasBaudBox_toggled(bool checked);
     void on_testFileButton_clicked();
+    void on_button_1027font_clicked();
     void on_actionSelect810Firmware_triggered();
     void on_actionSelect810ChipFirmware_triggered();
     void on_actionSelect810HappyFirmware_triggered();

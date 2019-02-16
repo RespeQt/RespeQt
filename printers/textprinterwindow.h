@@ -10,16 +10,43 @@
 #define TEXTPRINTERWINDOW_H
 
 #include <QMainWindow>
+#include "nativeoutput.h"
 
 namespace Ui {
     class TextPrinterWindow;
 }
 
-class TextPrinterWindow : public QMainWindow {
+namespace Printers {
+
+class TextPrinterWindow : public QMainWindow, public NativeOutput {
     Q_OBJECT
 public:
-    TextPrinterWindow(QWidget *parent = 0);
+    explicit TextPrinterWindow(QWidget *parent = 0);
     ~TextPrinterWindow();
+
+    virtual void newLine(bool linefeed = false);
+    virtual void newPage(bool) {}
+    virtual void updateBoundingBox() {}
+    virtual void beginOutput() {}
+    virtual void endOutput() {}
+    virtual void printChar(const QChar &c);
+    virtual void printString(const QString &s);
+    virtual void setWindow(const QRect &) {}
+    virtual void setPen(const QColor &) {}
+    virtual void setPen(Qt::PenStyle) {}
+    virtual void setPen(const QPen &) {}
+    virtual int dpiX() { return 1; }
+    virtual const QPen &pen() const { return mPen; }
+    virtual void setFont(QFont *) {}
+    virtual void translate(const QPointF &) {}
+    virtual void drawLine(const QPointF &, const QPointF &) {}
+    virtual void calculateFixedFontSize(uint8_t) {}
+
+public slots:
+    void print(const QString &text);
+
+signals:
+    void textPrint(const QString &text);
 
 protected:
     void changeEvent(QEvent *e);
@@ -27,6 +54,7 @@ protected:
 
 private:
     Ui::TextPrinterWindow *ui;
+    QPen mPen;
 
 private slots:
     void on_actionSave_triggered();
@@ -35,7 +63,6 @@ private slots:
     void on_actionPrint_triggered();
 
     // To manipulate fonts and ascii/atascii windows  // 
-    void print(const QString &text);
     void on_actionAtasciiFont_triggered();
     void on_actionFont_Size_triggered();
     void on_actionHideShow_Ascii_triggered();
@@ -47,4 +74,5 @@ signals:
     void closed();
 };
 
+}
 #endif // TEXTPRINTERWINDOW_H

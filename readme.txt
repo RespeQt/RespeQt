@@ -24,7 +24,7 @@ Some features
 
 License (see license.txt file for more details)
 ===============================================
-RespeQt fork Copyright 2015,2016 by Joseph Zatarski, Copyright 2015 DrVenkman, and Copyright 2016 TheMontezuma.
+RespeQt fork Copyright 2015,2016 by Joseph Zatarski, Copyright 2015 DrVenkman, and Copyright 2016 TheMontezuma, Copyright 2016, 2017 by Jochen Schäfer (josch1710), and Copyright 2017 by blind.
 RespeQt is based on AspeQt 1.0.0-preview7
 Original AspeQt code up to version 0.6.0 Copyright 2009 by Fatih Aygün. 
 Updates to AspeQt since v0.6.0 to 1.0.0-preview7 Copyright 2012 by Ray Ataergin.
@@ -45,6 +45,8 @@ Copyright Matthias Reichl <hias@horus.com>. Used in this package under GPL 2.0 l
 
 Atascii Fonts by Mark Simonson (http://members.bitstream.net/~marksim/atarimac).
 Used in this package under Freeware License.
+
+1020 emu font by UNIXcoffee928. Used with permission under GPL 2.0 license.
 
 RespeQt icon by djmat56. Used with permission.
 

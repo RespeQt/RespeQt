@@ -108,7 +108,6 @@
     <addaction name="actionBootExe"/>
     <addaction name="actionPlaybackCassette"/>
     <addaction name="actionPrinterEmulation"/>
-    <addaction name="actionShowPrinterTextOutput"/>
     <addaction name="separator"/>
     <addaction name="actionOpenSession"/>
     <addaction name="actionSaveSession"/>

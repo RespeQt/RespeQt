@@ -303,13 +303,13 @@ bool FolderImage::readSector(quint16 sector, QByteArray &data)
     if (sector == 360) {
         data = QByteArray(128, 0);
         data[0] = 2;
-        data[1] = 1010 % 256;
+        data[1] = uint8_t (1010 % 256);
         data[2] = 1010 / 256;
         data[10] = 0x7F;
         for (int i = 11; i < 100; i++) {
             data[i] = 0xff;
         }
-        return true;
+        return true; 
     }
 
     /* Directory sectors */

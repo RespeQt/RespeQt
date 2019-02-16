@@ -26,6 +26,7 @@
 #include "bootoptionsdialog.h"
 #include "logdisplaydialog.h"
 #include "infowidget.h"
+#include "printerwidget.h"
 
 #include <QEvent>
 #include <QDragEnterEvent>
@@ -39,26 +40,31 @@
 #include <QtDebug>
 #include <QDesktopWidget>
 #include <QFont>
+#include <QPrintDialog>
+#include <QPrinter>
+#include <QToolButton>
+#include <QHBoxLayout>
 
 #include "atarifilesystem.h"
 #include "miscutils.h"
 
+#include <QFontDatabase>
+
 RespeqtSettings *respeqtSettings;
-static MainWindow *mainWindow;
 
 static QFile *logFile;
 static QMutex *logMutex;
 
 QString g_exefileName;
-QString g_rclFileName;
+static QString g_rclFileName;
 QString g_respeQtAppPath;
-QRect g_savedGeometry;
+static QRect g_savedGeometry;
 char g_rclSlotNo;
 bool g_disablePicoHiSpeed;
-bool g_D9DOVisible = true;
+static bool g_D9DOVisible = true;
 bool g_miniMode = false;
-bool g_shadeMode = false;
-int g_savedWidth;
+static bool g_shadeMode = false;
+//static int g_savedWidth;
 
 // ****************************** END OF GLOBALS ************************************//
 
@@ -70,6 +76,7 @@ int g_savedWidth;
 // Error           (red)           "!e"
 
 void logMessageOutput(QtMsgType type, const QMessageLogContext &/*context*/, const QString &msg)
+// void logMessageOutput(QtMsgType type, const char *msg)
 {
     logMutex->lock();
     logFile->write(QString::number((quint64)QThread::currentThreadId(), 16).toLatin1());
@@ -108,7 +115,7 @@ void logMessageOutput(QtMsgType type, const QMessageLogContext &/*context*/, con
             return;
         }
 #endif
-        mainWindow->doLogMessage(localMsg.at(1), displayMsg);
+        MainWindow::getInstance()->doLogMessage(localMsg.at(1), displayMsg);
     }
 }
 
@@ -117,12 +124,14 @@ void MainWindow::doLogMessage(int type, const QString &msg)
     emit logMessage(type, msg);
 }
 
-MainWindow::MainWindow(QWidget *parent)
-    : QMainWindow(parent), ui(new Ui::MainWindow), isClosing(false)
-{
+MainWindow *MainWindow::instance = NULL;
 
+MainWindow::MainWindow(QWidget *parent)
+    : QMainWindow(parent), ui(new Ui::MainWindow),
+      isClosing(false)
+{
     /* Setup the logging system */
-    mainWindow = this;
+    instance = this;
     g_respeQtAppPath = QCoreApplication::applicationDirPath();
     g_disablePicoHiSpeed = false;
     logFile = new QFile(QDir::temp().absoluteFilePath("respeqt.log"));
@@ -168,11 +177,6 @@ MainWindow::MainWindow(QWidget *parent)
 
     /* Initialize diskWidgets array and tool button actions */
     createDeviceWidgets();
-
-    /* Add info widget for symetry */
-    this->infoWidget = new InfoWidget();
-    ui->rightColumn->addWidget( infoWidget );
-
 
     /* Parse command line arguments:
       arg(1): session file (xxxxxxxx.respeqt)   */
@@ -244,10 +248,19 @@ MainWindow::MainWindow(QWidget *parent)
     ui->statusBar->addPermanentWidget(prtOnOffLabel);
     ui->statusBar->addPermanentWidget(netLabel);
     ui->statusBar->addPermanentWidget(clearMessagesLabel);
-    ui->textEdit->installEventFilter(mainWindow);
+    ui->textEdit->installEventFilter(MainWindow::getInstance());
     changeFonts();
     g_D9DOVisible =  respeqtSettings->D9DOVisible();
     showHideDrives();
+
+#ifndef QT_NO_DEBUG
+    snapshot = new QLabel(this);
+    snapshot->setMinimumWidth(21);
+    snapshot->setPixmap(QIcon(":/icons/silk-icons/icons/camera.png").pixmap(16, 16, QIcon::Normal));
+    snapshot->setToolTip(tr("Record SIO traffic"));
+    snapshot->setStatusTip(snapshot->toolTip());
+    ui->statusBar->addPermanentWidget(snapshot);
+#endif
 
     m_romProvider = new RomProvider();
 
@@ -265,7 +278,6 @@ MainWindow::MainWindow(QWidget *parent)
 
         //        QMessageBox::information(this,tr("Network connection cannot be opened"), tr("No network interface was found!"));
     }
-
 
     /* Connect SioWorker signals */
     sio = new SioWorker();
@@ -295,16 +307,11 @@ MainWindow::MainWindow(QWidget *parent)
     RCl *rcl = new RCl(sio);
     sio->installDevice(RESPEQT_CLIENT_CDEVIC, rcl);
     
-    textPrinterWindow = new TextPrinterWindow();
     // Documentation Display
     docDisplayWindow = new DocDisplayWindow();
 
-    connect(textPrinterWindow, SIGNAL(closed()), this, SLOT(textPrinterWindowClosed()));
     connect(docDisplayWindow, SIGNAL(closed()), this, SLOT(docDisplayWindowClosed()));
 
-    Printer *printer = new Printer(sio);
-    connect(printer, SIGNAL(print(QString)), textPrinterWindow, SLOT(print(QString)));
-    sio->installDevice(PRINTER_BASE_CDEVIC, printer);
     setUpPrinterEmulationWidgets(respeqtSettings->printerEmulation());
 
     untitledName = 0;
@@ -371,6 +378,23 @@ void MainWindow::createDeviceWidgets()
         connect(this, SIGNAL(setFont(const QFont&)),deviceWidget, SLOT(setFont(const QFont&)));
     }
 
+    /* Add info widget for symmetry */
+    this->infoWidget = new InfoWidget();
+    ui->rightColumn->addWidget( infoWidget );
+
+    for (int i = 0; i < PRINTER_COUNT; i++) {      //
+        PrinterWidget* printerWidget = new PrinterWidget(i);
+
+        if (i<2) {
+            ui->leftColumn->addWidget( printerWidget );
+        } else {
+            ui->rightColumn->addWidget( printerWidget );
+        }
+
+        printerWidget->setup();
+        printerWidgets[i] = printerWidget;
+   }
+
     changeFonts();
 }
 
@@ -404,6 +428,14 @@ void MainWindow::createDeviceWidgets()
      if (event->button() == Qt::LeftButton && !speedLabel->isHidden() && speedLabel->geometry().translated(ui->statusBar->geometry().topLeft()).contains(event->pos())) {
         ui->actionOptions->trigger();
      }
+#ifndef QT_NO_DEBUG
+     if (sio && event->button() == Qt::LeftButton && !snapshot->isHidden() && snapshot->geometry().translated(ui->statusBar->geometry().topLeft()).contains(event->pos())) {
+        if (!sio->isSnapshotRunning())
+            sio->startSIOSnapshot();
+        else
+            sio->stopSIOSnapshot();
+     }
+#endif
 }
 
 void MainWindow::dragEnterEvent(QDragEnterEvent *event)
@@ -588,8 +620,6 @@ void MainWindow::closeEvent(QCloseEvent *event)
         if (img && img->editDialog()) img->editDialog()->close();
     }
 
-    delete textPrinterWindow;
-    textPrinterWindow = NULL;
     //
     delete docDisplayWindow;
     docDisplayWindow = NULL;
@@ -857,6 +887,12 @@ void MainWindow::sioStarted()
     onOffLabel->setPixmap(ui->actionStartEmulation->icon().pixmap(16, QIcon::Normal, QIcon::On));
     onOffLabel->setToolTip(ui->actionStartEmulation->toolTip());
     onOffLabel->setStatusTip(ui->actionStartEmulation->statusTip());
+    for (int i = 0; i < PRINTER_COUNT; i++) {
+        printerWidgets[i]->setSioWorker(sio);
+    }
+#ifndef QT_NO_DEBUG
+    snapshot->show();
+#endif
 }
 
 void MainWindow::sioFinished()
@@ -870,6 +906,9 @@ void MainWindow::sioFinished()
     onOffLabel->setStatusTip(ui->actionStartEmulation->statusTip());
     speedLabel->hide();
     speedLabel->clear();
+#ifndef QT_NO_DEBUG
+    //snapshot->hide();
+#endif
     qWarning() << "!i" << tr("Emulation stopped.");
 }
 
@@ -1057,11 +1096,14 @@ void MainWindow::on_actionOptions_triggered()
 
 void MainWindow::changeFonts()
 {
+    QFont font = QFontDatabase::systemFont(QFontDatabase::GeneralFont);
     if (respeqtSettings->useLargeFont()) {
-        QFont font("Arial Black", 9, QFont::Normal);
+        //QFont font("Arial Black", 9, QFont::Normal);
+        font.setPointSize(9);
         emit setFont(font);
     } else {
-        QFont font("MS Shell Dlg 2,8", 8, QFont::Normal);
+        font.setPointSize(8);
+        //QFont font("MS Shell Dlg 2,8", 8, QFont::Normal);
         emit setFont(font);
     }
  }
@@ -1644,7 +1686,6 @@ void MainWindow::revertDisk(int no)
     }
 }
 
-
 // Slots for handling actions for devices.
 void MainWindow::on_actionMountDisk_triggered(int deviceId) {mountDiskImage(deviceId);}
 void MainWindow::on_actionMountFolder_triggered(int deviceId) {mountFolderImage(deviceId);}
@@ -1660,9 +1701,7 @@ void MainWindow::on_actionAutoSave_triggered(int deviceId) {autoSaveDisk(deviceI
 void MainWindow::on_actionSaveAs_triggered(int deviceId) {saveDiskAs(deviceId);}
 void MainWindow::on_actionRevert_triggered(int deviceId) {revertDisk(deviceId);}
 
-
 void MainWindow::on_actionMountRecent_triggered(const QString &fileName) {mountFileWithDefaultProtection(firstEmptyDiskSlot(), fileName);}
-
 
 void MainWindow::on_actionEjectAll_triggered()
 {
@@ -1839,16 +1878,6 @@ void MainWindow::on_actionBootExe_triggered()
     if (!g_exefileName.isEmpty()) {
         respeqtSettings->setLastExeDir(QFileInfo(g_exefileName).absolutePath());
         bootExe(g_exefileName);
-    }
-}
-
-void MainWindow::on_actionShowPrinterTextOutput_triggered()
-{
-    if (ui->actionShowPrinterTextOutput->isChecked()) {
-        textPrinterWindow->setGeometry(respeqtSettings->lastPrtHorizontalPos() ,respeqtSettings->lastPrtVerticalPos(),respeqtSettings->lastPrtWidth(),respeqtSettings->lastPrtHeight());
-        textPrinterWindow->show();
-    } else {
-        textPrinterWindow->hide();
     }
 }
 

@@ -4,7 +4,9 @@
 //
 
 #include <memory.h>
+#ifndef __clang__
 #include <malloc.h>
+#endif
 #include "Track.hpp"
 #include "Emulator.h"
 #include "FirmwareDiskImage.hpp"

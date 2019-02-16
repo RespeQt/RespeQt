@@ -60,22 +60,6 @@
     <string>Folder Image Boot Options</string>
    </property>
    <layout class="QGridLayout" name="gridLayout">
-    <item row="0" column="0" colspan="3">
-     <widget class="QLabel" name="label">
-      <property name="font">
-       <font>
-        <weight>75</weight>
-        <bold>true</bold>
-       </font>
-      </property>
-      <property name="styleSheet">
-       <string notr="true">color: rgb(111, 111, 111);</string>
-      </property>
-      <property name="text">
-       <string>Select the DOS you want to boot your Atari with</string>
-      </property>
-     </widget>
-    </item>
     <item row="4" column="0" colspan="3">
      <widget class="QRadioButton" name="smartDOS">
       <property name="styleSheet">
@@ -102,19 +86,17 @@
       </property>
      </widget>
     </item>
-    <item row="6" column="0" colspan="3">
-     <widget class="QRadioButton" name="myPicoDOS">
+    <item row="9" column="0" rowspan="2" colspan="3">
+     <widget class="QLabel" name="label_2">
       <property name="font">
        <font>
-        <weight>75</weight>
-        <bold>true</bold>
+        <weight>50</weight>
+        <italic>true</italic>
+        <bold>false</bold>
        </font>
       </property>
-      <property name="styleSheet">
-       <string notr="true">color: rgb(140, 96, 115);</string>
-      </property>
       <property name="text">
-       <string>MyPicoDOS 4.05 (Standard)</string>
+       <string>(Check if you're already using a high-speed OS)</string>
       </property>
      </widget>
     </item>
@@ -153,6 +135,38 @@
       </property>
      </widget>
     </item>
+    <item row="0" column="0" colspan="3">
+     <widget class="QLabel" name="label">
+      <property name="font">
+       <font>
+        <weight>75</weight>
+        <bold>true</bold>
+       </font>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">color: rgb(111, 111, 111);</string>
+      </property>
+      <property name="text">
+       <string>Select the DOS you want to boot your Atari with</string>
+      </property>
+     </widget>
+    </item>
+    <item row="6" column="0" colspan="3">
+     <widget class="QRadioButton" name="myPicoDOS">
+      <property name="font">
+       <font>
+        <weight>75</weight>
+        <bold>true</bold>
+       </font>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">color: rgb(140, 96, 115);</string>
+      </property>
+      <property name="text">
+       <string>MyPicoDOS 4.05 (Standard)</string>
+      </property>
+     </widget>
+    </item>
     <item row="3" column="0" colspan="3">
      <widget class="QRadioButton" name="dosXL">
       <property name="styleSheet">
@@ -163,21 +177,7 @@
       </property>
      </widget>
     </item>
-    <item row="8" column="0" rowspan="2" colspan="3">
-     <widget class="QLabel" name="label_2">
-      <property name="font">
-       <font>
-        <weight>50</weight>
-        <italic>true</italic>
-        <bold>false</bold>
-       </font>
-      </property>
-      <property name="text">
-       <string>(Check if you're already using a high-speed OS)</string>
-      </property>
-     </widget>
-    </item>
-    <item row="7" column="0" colspan="2">
+    <item row="8" column="0" colspan="2">
      <widget class="QCheckBox" name="disablePicoHiSpeed">
       <property name="enabled">
        <bool>false</bool>

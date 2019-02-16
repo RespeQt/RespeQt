@@ -14,7 +14,7 @@ DEFINES += VERSION=\\\"r4.3\\\"
 TARGET = RespeQt
 TEMPLATE = app
 CONFIG += qt
-QT += core gui network widgets printsupport serialport
+QT += core gui network widgets printsupport serialport svg
 CONFIG += mobility
 MOBILITY = bearer
 INCLUDEPATH += $$[QT_INSTALL_HEADERS]/QtZlib
@@ -32,16 +32,32 @@ SOURCES += main.cpp \
     autobootdialog.cpp \
     atarifilesystem.cpp \
     miscutils.cpp \
-    textprinterwindow.cpp \
+    printers/textprinterwindow.cpp \
     cassettedialog.cpp \
     docdisplaywindow.cpp \
     bootoptionsdialog.cpp \
     network.cpp \
     logdisplaydialog.cpp \
     respeqtsettings.cpp \
-    drivewidget.cpp \
     pclink.cpp \
+    printers/baseprinter.cpp \
+    printers/atari1027.cpp \
+    atascii.cpp \
+    drivewidget.cpp \
     infowidget.cpp \
+    atasciiinternational.cpp \
+    printerwidget.cpp \
+    printers/atariprinter.cpp \
+    printers/atari1020.cpp \
+    serialport-test.cpp \    
+    printers/nativeoutput.cpp \
+    printers/centronics.cpp \
+    printers/escp.cpp \
+    printers/nativeprinter.cpp \
+    printers/svgoutput.cpp \
+    printers/windowoutput.cpp \
+    printers/bufferedpaintwidget.cpp \
+    printers/atari1029.cpp \
     Cpu6502.cpp \
     Crc16.cpp \
     Fdc.cpp \
@@ -71,8 +87,8 @@ SOURCES += main.cpp \
     diskimageatr.cpp \
     diskimagescp.cpp \
     disassembly810.cpp \
-    disassembly1050.cpp \
-    serialport-test.cpp
+    disassembly1050.cpp
+
 win32:LIBS += -lwinmm -lz
 unix:LIBS += -lz
 win32:SOURCES += serialport-win32.cpp
@@ -91,16 +107,32 @@ HEADERS += mainwindow.h \
     autobootdialog.h \
     atarifilesystem.h \
     miscutils.h \
-    textprinterwindow.h \
+    printers/textprinterwindow.h \
     cassettedialog.h \
     docdisplaywindow.h \
     bootoptionsdialog.h \
     network.h \
     logdisplaydialog.h \
     respeqtsettings.h \
-    drivewidget.h \
     pclink.h \
+    printers/baseprinter.h \
+    printers/atari1027.h \
+    atascii.h \
+    drivewidget.h \
     infowidget.h \
+    printerwidget.h \
+    atasciiinternational.h \
+    printers/atariprinter.h \
+    printers/atari1020.h \
+    serialport-test.h \
+    printers/nativeoutput.h \
+    printers/centronics.h \
+    printers/escp.h \
+    printers/nativeprinter.h \
+    printers/svgoutput.h \
+    printers/windowoutput.h \
+    printers/bufferedpaintwidget.h \
+    printers/atari1029.h \
     Chip.hpp \
     Cpu6502.hpp \
     Crc16.hpp \
@@ -128,9 +160,7 @@ HEADERS += mainwindow.h \
     Atari1050Duplicator.hpp \
     RomBankSwitchTurbo.hpp \
     disassembly810.h \
-    disassembly1050.h \
-    infowidget.h \
-    serialport-test.h
+    disassembly1050.h
 
 win32:HEADERS += serialport-win32.h
 unix:HEADERS += serialport-unix.h
@@ -140,17 +170,20 @@ FORMS += mainwindow.ui \
     createimagedialog.ui \
     diskeditdialog.ui \
     autobootdialog.ui \
-    textprinterwindow.ui \
+    printers/textprinterwindow.ui \
     cassettedialog.ui \
     docdisplaywindow.ui \
     bootoptionsdialog.ui \
     logdisplaydialog.ui \
     drivewidget.ui \
-    infowidget.ui
+    infowidget.ui \
+    printerwidget.ui \
+    printers/windowoutput.ui
 RESOURCES += icons.qrc \
     atarifiles.qrc \
     i18n.qrc \
-    documentation.qrc
+    documentation.qrc \
+    fonts.qrc
 OTHER_FILES += \
     license.txt \
     history.txt \
@@ -159,26 +192,22 @@ OTHER_FILES += \
     about.html \
     compile.txt \
 TRANSLATIONS = \
-               i18n/respeqt_de.ts \
-               i18n/respeqt_es.ts \
-               i18n/qt_pl.ts \
-               i18n/qt_tr.ts \
-               i18n/qt_ru.ts \
-               i18n/qt_sk.ts \
-               i18n/qt_de.ts \
-               i18n/qt_es.ts \
+    i18n/respeqt_de.ts \
+    i18n/respeqt_es.ts \
+    i18n/qt_pl.ts \
+    i18n/qt_tr.ts \
+    i18n/qt_ru.ts \
+    i18n/qt_sk.ts \
+    i18n/qt_de.ts \
+    i18n/qt_es.ts \
     i18n/respeqt_de.ts \
     i18n/respeqt_es.ts \
     i18n/respeqt_pl.ts \
     i18n/respeqt_ru.ts \
     i18n/respeqt_sk.ts \
-    i18n/respeqt_tr.ts
+i18n/respeqt_tr.ts
 
-RC_FILE = RespeQt.rc \
+RC_FILE = RespeQt.rc
 
-DISTFILES += \
-    test.xml
-
-
-
-
+DISTFILES +=
+QMAKE_CXXFLAGS += -std=c++0x

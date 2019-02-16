@@ -29,34 +29,17 @@
 #include "diskeditdialog.h"
 #include "serialport.h"
 #include "sioworker.h"
-#include "textprinterwindow.h"
 #include "docdisplaywindow.h"
 #include "network.h"
 #include "drivewidget.h"
 #include "infowidget.h"
+#include "printerwidget.h"
 #include "Emulator.h"
 
 namespace Ui
 {
     class MainWindow;
 }
-class DiskWidget
-{
-public:
-    QLabel *fileNameLabel;
-    QLabel *imagePropertiesLabel;
-    QAction *saveAction;
-    QAction *autoSaveAction;        //
-    QAction *bootOptionAction;      //
-    QAction *saveAsAction;
-    QAction *revertAction;
-    QAction *mountDiskAction;
-    QAction *mountFolderAction;
-    QAction *ejectAction;
-    QAction *writeProtectAction;
-    QAction *editAction;
-    QFrame *frame;
-};
 
 class MainWindow : public QMainWindow
 {
@@ -68,6 +51,7 @@ public:
     QString g_sessionFile;
     QString g_sessionFilePath;
     QString g_mainWindowTitle;
+    static MainWindow *getInstance() { return instance; }
 
 public slots:
     void show();
@@ -81,11 +65,14 @@ private:
     Ui::MainWindow *ui;
     SioWorker *sio;
     bool shownFirstTime;
+    PrinterWidget* printerWidgets[PRINTER_COUNT]; //
     DriveWidget* diskWidgets[DISK_COUNT];    //
     InfoWidget* infoWidget;
 
     QLabel *speedLabel, *onOffLabel, *prtOnOffLabel, *netLabel, *clearMessagesLabel;  //
-    TextPrinterWindow *textPrinterWindow;
+#ifndef Q_NO_DEBUG
+    QLabel *snapshot;
+#endif
     DocDisplayWindow *docDisplayWindow;    //
     QTranslator respeqt_translator, respeqt_qt_translator;
     QSystemTrayIcon trayIcon;
@@ -93,6 +80,8 @@ private:
     Qt::WindowStates oldWindowStates;
     QString lastMessage;
     int lastMessageRepeat;
+    static MainWindow *instance;
+    
     bool isClosing;
 
     QDialog *logWindow_;
@@ -100,7 +89,6 @@ private:
     RomProvider *m_romProvider;
 
     QList<QAction*> recentFilesActions_;
-
 
     void setSession();  //
     void updateRecentFileActions();
@@ -154,7 +142,6 @@ public:
 
 private slots:
     void on_actionPlaybackCassette_triggered();
-    void on_actionShowPrinterTextOutput_triggered();
     void on_actionBootExe_triggered();
     void on_actionSaveSession_triggered();
     void on_actionOpenSession_triggered();

@@ -15,6 +15,9 @@
 #include <QFile>
 #include <QDateTime>
 #include <QtDebug>
+#ifndef QT_NO_DEBUG
+#include <QFileDialog>
+#endif
 
 /* SioDevice */
 SioDevice::SioDevice(SioWorker *worker)
@@ -40,6 +43,9 @@ QString SioDevice::deviceName()
 
 SioWorker::SioWorker()
         : QThread()
+#ifndef QT_NO_DEBUG
+      , mSnapshotRunning(false), mSnapshotWriter(NULL)
+#endif
 {
     deviceMutex = new QMutex(QMutex::Recursive);
     for (int i=0; i <= 255; i++) {
@@ -79,9 +85,7 @@ bool SioWorker::wait(unsigned long time)
 void SioWorker::start(Priority p)
 {
     switch (respeqtSettings->backend()) {
-#ifdef QT_NO_DEBUG
-        case SERIAL_BACKEND_TEST:
-#endif
+        default:
         case SERIAL_BACKEND_STANDARD:
             mPort = new StandardSerialPortBackend(0);
             break;
@@ -135,6 +139,10 @@ void SioWorker::run()
         quint8 no = (quint8)cmd[0];
         quint8 command = (quint8)cmd[1];
         quint16 aux = ((quint8)cmd[2]) + ((quint8)cmd[3] * 256);
+
+#ifndef QT_NO_DEBUG
+        writeSnapshotCommandFrame(no, command, cmd[2], cmd[3]);
+#endif
 
         /* Redirect the command to the appropriate device */
         deviceMutex->lock();
@@ -416,6 +424,62 @@ QString SioWorker::deviceName(int device)
     }
     return result;
 }
+
+#ifndef QT_NO_DEBUG
+void SioWorker::startSIOSnapshot()
+{
+    QString fileName = QFileDialog::getSaveFileName(MainWindow::getInstance(),
+                 tr("Save test XML File"), QString(), tr("XML Files (*.xml)"));
+    if (fileName.length() > 0)
+    {
+        QFile *file = new QFile(fileName);
+        file->open(QFile::WriteOnly | QFile::Truncate);
+        mSnapshotWriter->setAutoFormatting(true);
+        mSnapshotWriter->writeStartDocument();
+        mSnapshotWriter->writeStartElement("testcase");
+        mSnapshotRunning = true;
+    }
+}
+
+void SioWorker::stopSIOSnapshot()
+{
+    if (mSnapshotWriter)
+    {
+        mSnapshotWriter->writeEndElement();
+        mSnapshotWriter->writeEndDocument();
+        mSnapshotWriter->device()->close();
+        delete mSnapshotWriter;
+        mSnapshotWriter = NULL;
+        mSnapshotRunning = false;
+    }
+}
+
+void SioWorker::writeSnapshotCommandFrame(qint8 no, qint8 command, qint8 aux1, qint8 aux2)
+{
+    // Record the command frame, if the snapshot is running
+    if (mSnapshotRunning && mSnapshotWriter)
+    {
+        mSnapshotWriter->writeStartElement("commandframe");
+        mSnapshotWriter->writeAttribute("device", QString::number(no));
+        mSnapshotWriter->writeAttribute("command", QString::number(command));
+        mSnapshotWriter->writeAttribute("aux1", QString::number(aux1));
+        mSnapshotWriter->writeAttribute("aux2", QString::number(aux2));
+        mSnapshotWriter->writeEndElement();
+    }
+}
+
+void SioWorker::writeSnapshotDataFrame(QByteArray &data)
+{
+    // Record the command frame, if the snapshot is running
+    if (mSnapshotRunning && mSnapshotWriter)
+    {
+        mSnapshotWriter->writeStartElement("dataframe");
+        mSnapshotWriter->writeCharacters(data);
+        mSnapshotWriter->writeEndElement();
+    }
+}
+
+#endif
 
 /* CassetteWorker */
 

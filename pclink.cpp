@@ -1115,6 +1115,9 @@ void PCLINK::do_pclink(uchar devno, uchar ccom, uchar caux1, uchar caux2)
         memset(&pbuf, 0, sizeof(PARBUF));
 
         QByteArray data = sio->port()->readDataFrame(parsize);
+#ifndef QT_NO_DEBUG
+        sio->writeSnapshotDataFrame(data);
+#endif
 
         device[cunit].status.stat &= ~0x02;
 
@@ -1347,6 +1350,9 @@ void PCLINK::do_pclink(uchar devno, uchar ccom, uchar caux1, uchar caux2)
         mem = (uchar*)malloc(blk_size);
 
         QByteArray data = sio->port()->readDataFrame(blk_size);
+#ifndef QT_NO_DEBUG
+        sio->writeSnapshotDataFrame(data);
+#endif
 
         sio->port()->writeDataAck(); 	/* ack the block of data */
 

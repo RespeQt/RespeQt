@@ -13,18 +13,6 @@
 
 #include "sioworker.h"
 
-class Printer: public SioDevice
-{
-    Q_OBJECT
-private:
-    int m_lastOperation;
-public:
-    Printer(SioWorker *worker): SioDevice(worker) {}
-    void handleCommand(quint8 command, quint16 aux);
-signals:
-    void print(const QString &text);
-};
-
 // SmartDevice (ApeTime + URL submit)
 class SmartDevice: public SioDevice
 {

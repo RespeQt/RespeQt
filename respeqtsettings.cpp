@@ -12,7 +12,7 @@
 
 #include "respeqtsettings.h"
 #include "serialport.h"
-#include "mainwindow.h"
+//#include "mainwindow.h"
 #include "Emulator.h"
 
 RespeqtSettings::RespeqtSettings()
@@ -120,6 +120,9 @@ RespeqtSettings::RespeqtSettings()
     mUseLargeFont = mSettings->value("UseLargeFont", false).toBool();
     mExplorerOnTop = mSettings->value("ExplorerOnTop", false).toBool();
     mEnableShade = mSettings->value("EnableShadeByDefault", true).toBool();
+
+    // Printer specific settings
+    mAtari1027FontName = mSettings->value("Atari1027FontFamily", "Courier").toString();
 
     m810Firmware = mSettings->value("Atari810Firmware", "").toString();
     m810ChipFirmware = mSettings->value("Atari810ChipFirmware", "").toString();
@@ -253,6 +256,15 @@ void RespeqtSettings::saveSessionToFile(const QString &fileName)
         s.setValue("IsWriteProtected", is.isWriteProtected);
     }
     s.endArray();
+
+    s.beginWriteArray("ConnectedPrinterSettings");
+    for (int i = 0; i < PRINTER_COUNT; i++) {
+        PrinterSettings ps = mConnectedPrinterSettings[i];
+        s.setArrayIndex(i);
+        s.setValue("PrinterName", ps.printerName);
+        s.setValue("PrinterType", ps.printerType);
+    }
+    s.endArray();
 }
 // Get all session related settings, so that a session could be fully restored //
  void RespeqtSettings::loadSessionFromFile(const QString &fileName)
@@ -335,6 +347,13 @@ void RespeqtSettings::saveSessionToFile(const QString &fileName)
         setMountedImageSetting(i, s.value("FileName", "").toString(), s.value("IsWriteProtected", false).toBool());
     }
     s.endArray();
+
+    s.beginReadArray("ConnectedPrinterSettings");
+    for (int i = 0; i < PRINTER_COUNT; i++) {
+        s.setArrayIndex(i);
+        setPrinterType(i, s.value("PrinterType", 0).toInt());
+        // TODO Get Printerdata out of it.
+    }
 }
 // Get MainWindow title from MainWindow  //
 void RespeqtSettings::setMainWindowTitle(const QString &g_mainWindowTitle)
@@ -969,6 +988,36 @@ void RespeqtSettings::writeRecentImageSettings()
         mSettings->setValue("IsWriteProtected", mRecentImageSettings[i].isWriteProtected);
     }
     mSettings->endArray();
+}
+
+void RespeqtSettings::setConnectedPrinterName(int no, const QString &printerName)
+{
+    mConnectedPrinterSettings[no].printerName = printerName;
+}
+
+const QString &RespeqtSettings::connectedPrinterName(int no) const {
+    return mConnectedPrinterSettings[no].printerName;
+}
+
+void RespeqtSettings::setPrinterType(int no, int printerType) {
+    mConnectedPrinterSettings[no].printerType = printerType;
+}
+
+int RespeqtSettings::printerType(int no) const {
+    return mConnectedPrinterSettings[no].printerType;
+}
+
+const RespeqtSettings::PrinterSettings &RespeqtSettings::connectedPrinterSettings(int no) const {
+    return mConnectedPrinterSettings[no];
+}
+
+QString RespeqtSettings::atari1027FontFamily() {
+    return mAtari1027FontName;
+}
+
+void RespeqtSettings::setAtari1027FontFamily(QString fontFamily) {
+    mAtari1027FontName = fontFamily;
+    mSettings->setValue("Atari1027FontFamily", fontFamily);
 }
 
 QString RespeqtSettings::atari810Firmware()

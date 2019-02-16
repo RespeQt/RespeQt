@@ -81,7 +81,6 @@ void DriveWidget::setup()
     ui->buttonSave->setDefaultAction(ui->actionSave);
     ui->autoSave->setDefaultAction(ui->actionAutoSave);
     ui->buttonEditDisk->setDefaultAction(ui->actionEditDisk);
-
 }
 
 void DriveWidget::updateFromImage(SimpleDiskImage *diskImage)
