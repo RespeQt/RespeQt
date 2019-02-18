@@ -809,6 +809,9 @@ void MainWindow::showHideDrives()
     for( int i = 8; i < DISK_COUNT; ++i ) {
         diskWidgets[i]->setVisible(g_D9DOVisible);
     }
+    for (int i = 2; i < PRINTER_COUNT; ++i ) {
+        printerWidgets[i]->setVisible(g_D9DOVisible);
+    }
 
     infoWidget->setVisible(g_D9DOVisible);
 
