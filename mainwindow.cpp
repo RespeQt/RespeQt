@@ -151,7 +151,7 @@ MainWindow::MainWindow(QWidget *parent)
     foreach(QFileInfo file, list) {
         deltree(file.absoluteFilePath());
     }
-    
+
     QCoreApplication::setOrganizationName("ZeeSoft");
     QCoreApplication::setOrganizationDomain("https://github.com/jzatarski/RespeQt");
     QCoreApplication::setApplicationName("RespeQt");
@@ -160,6 +160,11 @@ MainWindow::MainWindow(QWidget *parent)
     /* Load translators */
     loadTranslators();
 
+#ifdef Q_OS_MAC
+    /// This HAS to be executed before setupUi
+    bool noNative = !respeqtSettings->nativeMenu();
+    QApplication::setAttribute(Qt::AA_DontUseNativeMenuBar, noNative);
+#endif
 
     /* Setup UI */
     ui->setupUi(this);

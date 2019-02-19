@@ -152,6 +152,9 @@ RespeqtSettings::RespeqtSettings()
     mD2PowerOnWithDiskInserted = mSettings->value("D2PowerOnWithDiskInserted", false).toBool();
     mD3PowerOnWithDiskInserted = mSettings->value("D3PowerOnWithDiskInserted", false).toBool();
     mD4PowerOnWithDiskInserted = mSettings->value("D4PowerOnWithDiskInserted", false).toBool();
+#ifdef Q_OS_MAC
+    mNativeMenu = mSettings->value("NativeMenu", false).toBool();
+#endif
 }
 
 RespeqtSettings::~RespeqtSettings()
@@ -1378,3 +1381,16 @@ bool RespeqtSettings::firmwarePowerOnWithDisk(int drive)
     }
     return powerOn;
 }
+
+#ifdef Q_OS_MAC
+void RespeqtSettings::setNativeMenu(bool nativeMenu)
+{
+    mNativeMenu = nativeMenu;
+    mSettings->setValue("NativeMenu", nativeMenu);
+}
+
+bool RespeqtSettings::nativeMenu()
+{
+    return mNativeMenu;
+}
+#endif

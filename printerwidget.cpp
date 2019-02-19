@@ -153,8 +153,7 @@ void PrinterWidget::selectOutput()
             mDevice = window;
             window->show();
         } else {
-            QMessageBox::StandardButton reply;
-            reply = QMessageBox::information(this, tr("Output device"), tr("Not implemented yet"));
+            QMessageBox::information(this, tr("Output device"), tr("Not implemented yet"));
         }
     }
     if (ui->atariPrinters->currentIndex() >= 0
@@ -172,8 +171,7 @@ void PrinterWidget::on_actionConnectPrinter_triggered()
     if (ui->outputSelection->currentIndex() == 0
             || ui->atariPrinters->currentIndex() == 0)
     {
-        QMessageBox::StandardButton reply;
-        reply = QMessageBox::warning(this, tr("Printers"), tr("Please select an output device as well as a printer emulation."));
+        QMessageBox::warning(this, tr("Printers"), tr("Please select an output device as well as a printer emulation."));
         return;
     }
 

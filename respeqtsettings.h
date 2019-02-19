@@ -296,6 +296,10 @@ public:
     bool d4PowerOnWithDiskInserted();
     void setD4PowerOnWithDiskInserted(bool d4PowerOnWithDiskInserted);
     bool firmwarePowerOnWithDisk(int drive);
+#ifdef Q_OS_MAC
+    void setNativeMenu(bool nativeMenu);
+    bool nativeMenu();
+#endif
 
 private:
     QSettings *mSettings;
@@ -402,6 +406,10 @@ private:
     bool mD2PowerOnWithDiskInserted;
     bool mD3PowerOnWithDiskInserted;
     bool mD4PowerOnWithDiskInserted;
+
+#ifdef Q_OS_MAC
+    bool mNativeMenu;
+#endif
 };
 
 extern RespeqtSettings *respeqtSettings;

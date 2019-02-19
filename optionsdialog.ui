@@ -128,7 +128,7 @@
     </sizepolicy>
    </property>
    <property name="currentIndex">
-    <number>7</number>
+    <number>5</number>
    </property>
    <widget class="QWidget" name="page_serialPort">
     <layout class="QVBoxLayout" name="verticalLayout_2">
@@ -967,7 +967,7 @@
           </property>
          </widget>
         </item>
-        <item row="9" column="0">
+        <item row="10" column="0">
          <spacer name="i18nSpacer2">
           <property name="orientation">
            <enum>Qt::Vertical</enum>
@@ -1006,6 +1006,19 @@
           </property>
          </widget>
         </item>
+        <item row="8" column="0">
+         <widget class="QCheckBox" name="useLargerFont">
+          <property name="enabled">
+           <bool>true</bool>
+          </property>
+          <property name="text">
+           <string>Use larger font in drive slot descriptions</string>
+          </property>
+          <property name="checked">
+           <bool>false</bool>
+          </property>
+         </widget>
+        </item>
         <item row="7" column="0">
          <widget class="QCheckBox" name="enableShade">
           <property name="text">
@@ -1016,13 +1029,13 @@
           </property>
          </widget>
         </item>
-        <item row="8" column="0">
-         <widget class="QCheckBox" name="useLargerFont">
+        <item row="9" column="0">
+         <widget class="QCheckBox" name="useNativeMenu">
           <property name="enabled">
            <bool>true</bool>
           </property>
           <property name="text">
-           <string>Use larger font in drive slot descriptions</string>
+           <string>Use native menu bar</string>
           </property>
           <property name="checked">
            <bool>false</bool>

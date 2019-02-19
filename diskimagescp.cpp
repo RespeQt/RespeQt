@@ -391,96 +391,97 @@ bool SimpleDiskImage::saveScp(const QString &fileName)
     return false;
 }
 
-bool SimpleDiskImage::createScp(int untitledName)
+bool SimpleDiskImage::createScp(int /*untitledName*/)
 {
     setReady(true);
     return true;
 }
 
-bool SimpleDiskImage::readHappyScpSectorAtPosition(int trackNumber, int sectorNumber, int afterSectorNumber, int &index, QByteArray &data)
+bool SimpleDiskImage::readHappyScpSectorAtPosition(int /*trackNumber*/, int /*sectorNumber*/, int /*afterSectorNumber*/, int &/*index*/, QByteArray &/*data*/)
 {
     return true;
 }
 
-bool SimpleDiskImage::readHappyScpSkewAlignment(bool happy1050)
+bool SimpleDiskImage::readHappyScpSkewAlignment(bool /*happy1050*/)
 {
     return true;
 }
 
-bool SimpleDiskImage::writeHappyScpTrack(int trackNumber, bool happy1050)
+bool SimpleDiskImage::writeHappyScpTrack(int /*trackNumber*/, bool /*happy1050*/)
 {
     m_isModified = true;
     emit statusChanged(m_deviceNo);
     return true;
 }
 
-bool SimpleDiskImage::writeHappyScpSectors(int trackNumber, int afterSectorNumber, bool happy1050)
+bool SimpleDiskImage::writeHappyScpSectors(int /*trackNumber*/, int /*afterSectorNumber*/, bool /*happy1050*/)
 {
+    return true;
 }
 
-bool SimpleDiskImage::formatScp(const DiskGeometry &geo)
+bool SimpleDiskImage::formatScp(const DiskGeometry &/*geo*/)
 {
     m_isModified = true;
     emit statusChanged(m_deviceNo);
     return true;
 }
 
-void SimpleDiskImage::readScpTrack(quint16 aux, QByteArray &data, int length)
+void SimpleDiskImage::readScpTrack(quint16 /*aux*/, QByteArray &/*data*/, int /*length*/)
 {
 }
 
-bool SimpleDiskImage::readScpSectorStatuses(QByteArray &data)
-{
-    return true;
-}
-
-bool SimpleDiskImage::readScpSectorUsingIndex(quint16 aux, QByteArray &data)
+bool SimpleDiskImage::readScpSectorStatuses(QByteArray &/*data*/)
 {
     return true;
 }
 
-bool SimpleDiskImage::readScpSector(quint16 aux, QByteArray &data)
+bool SimpleDiskImage::readScpSectorUsingIndex(quint16 /*aux*/, QByteArray &/*data*/)
 {
     return true;
 }
 
-bool SimpleDiskImage::readScpSkewAlignment(quint16 aux, QByteArray &data, bool timingOnly)
+bool SimpleDiskImage::readScpSector(quint16 /*aux*/, QByteArray &/*data*/)
+{
+    return true;
+}
+
+bool SimpleDiskImage::readScpSkewAlignment(quint16 /*aux*/, QByteArray &data, bool /*timingOnly*/)
 {
     m_board.m_trackData.clear();
     m_board.m_trackData.append(data);
     return true;
 }
 
-bool SimpleDiskImage::resetScpTrack(quint16 aux)
+bool SimpleDiskImage::resetScpTrack(quint16 /*aux*/)
 {
     return true;
 }
 
-bool SimpleDiskImage::writeScpTrack(quint16 aux, const QByteArray &data)
+bool SimpleDiskImage::writeScpTrack(quint16 /*aux*/, const QByteArray &/*data*/)
 {
     return true;
 }
 
-bool SimpleDiskImage::writeScpTrackWithSkew(quint16 aux, const QByteArray &data) {
+bool SimpleDiskImage::writeScpTrackWithSkew(quint16 /*aux*/, const QByteArray &/*data*/) {
     return true;
 }
 
-bool SimpleDiskImage::writeScpSectorUsingIndex(quint16 aux, const QByteArray &data, bool fuzzy)
+bool SimpleDiskImage::writeScpSectorUsingIndex(quint16 /*aux*/, const QByteArray &/*data*/, bool /*fuzzy*/)
 {
     return true;
 }
 
-bool SimpleDiskImage::writeFuzzyScpSector(quint16 aux, const QByteArray &data)
+bool SimpleDiskImage::writeFuzzyScpSector(quint16 /*aux*/, const QByteArray &/*data*/)
 {
 	return true;
 }
 
-bool SimpleDiskImage::writeScpSector(quint16 aux, const QByteArray &data)
+bool SimpleDiskImage::writeScpSector(quint16 /*aux*/, const QByteArray &/*data*/)
 {
     return false;
 }
 
-bool SimpleDiskImage::writeScpSectorExtended(int bitNumber, quint8 dataType, quint8 trackNumber, quint8, quint8 sectorNumber, quint8, const QByteArray &data, bool crcError, int weakOffset)
+bool SimpleDiskImage::writeScpSectorExtended(int /*bitNumber*/, quint8 /*dataType*/, quint8 /*trackNumber*/, quint8, quint8 /*sectorNumber*/, quint8, const QByteArray &/*data*/, bool /*crcError*/, int /*weakOffset*/)
 {
     return true;
 }
@@ -509,13 +510,13 @@ void ScpTrackInfo::clear()
 	m_sectors.clear();
 }
 
-int ScpTrackInfo::count(quint8 sectorNumber)
+int ScpTrackInfo::count(quint8 /*sectorNumber*/)
 {
 	// TODO
 	return 0;
 }
 
-bool ScpTrackInfo::loadTrack(QString &originalFileName)
+bool ScpTrackInfo::loadTrack(QString &/*originalFileName*/)
 {
 	// TODO
 	return false;

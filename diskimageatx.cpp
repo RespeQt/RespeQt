@@ -1629,7 +1629,7 @@ quint8 SimpleDiskImage::writeAtxSectorHeader(quint8 dataSize, QByteArray &sector
     return dataSize;
 }
 
-bool SimpleDiskImage::writeAtxTrackWithSkew(quint16 aux, const QByteArray &data) {
+bool SimpleDiskImage::writeAtxTrackWithSkew(quint16 aux, const QByteArray &/*data*/) {
 //    int firstTrack = data[3];
 //    int secondTrack = aux & 0x3F;
     return writeTrack((aux & 0x3F) | 0xF000, m_board.m_trackData);

@@ -2255,7 +2255,7 @@ void FirmwareDiskImage::FillTrackFromAtxImage(int trackNumber, Track *track)
     }
 }
 
-void FirmwareDiskImage::FillTrackFromScpImage(int trackNumber, Track *track)
+void FirmwareDiskImage::FillTrackFromScpImage(int /*trackNumber*/, Track */*track*/)
 {
 }
 
