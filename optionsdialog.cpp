@@ -89,6 +89,9 @@ OptionsDialog::OptionsDialog(QWidget *parent) :
     m_ui->trackLayout->setChecked(respeqtSettings->isTrackLayout());
     m_ui->useLargerFont->setChecked(respeqtSettings->useLargeFont());
     m_ui->enableShade->setChecked(respeqtSettings->enableShade());
+#ifdef Q_OS_MAC
+    m_ui->useNativeMenu->setChecked(respeqtSettings->nativeMenu());
+#endif
 
     switch (respeqtSettings->backend()) {
 #ifndef QT_NO_DEBUG
@@ -167,6 +170,13 @@ OptionsDialog::OptionsDialog(QWidget *parent) :
     font.setPointSize(12);
     font.setFamily(m_ui->label_1027font->text());
     m_ui->fontSample->setFont(font);
+
+#ifdef Q_OS_MAC
+    m_ui->useNativeMenu->show();
+    m_ui->useNativeMenu->setChecked(respeqtSettings->nativeMenu());
+#else
+    m_ui->useNativeMenu->hide();
+#endif
 }
 
 OptionsDialog::~OptionsDialog()
@@ -324,6 +334,9 @@ void OptionsDialog::OptionsDialog_accepted()
     respeqtSettings->setBackend(backend);
 
     respeqtSettings->setI18nLanguage(m_ui->i18nLanguageCombo->itemData(m_ui->i18nLanguageCombo->currentIndex()).toString());
+#ifdef Q_OS_MAC
+    respeqtSettings->setNativeMenu(m_ui->useNativeMenu->isChecked());
+#endif
 }
 
 void OptionsDialog::on_useEmulationCustomCasBaudBox_toggled(bool checked)
