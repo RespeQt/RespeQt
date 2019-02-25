@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
  <class>InfoWidget</class>
- <widget class="QWidget" name="InfoWidget">
+ <widget class="QFrame" name="InfoWidget">
   <property name="geometry">
    <rect>
     <x>0</x>
@@ -24,6 +24,18 @@
   </property>
   <property name="windowTitle">
    <string>Form</string>
+  </property>
+  <property name="frameShape">
+   <enum>QFrame::Panel</enum>
+  </property>
+  <property name="frameShadow">
+   <enum>QFrame::Raised</enum>
+  </property>
+  <property name="lineWidth">
+   <number>1</number>
+  </property>
+  <property name="midLineWidth">
+   <number>0</number>
   </property>
  </widget>
  <resources/>
