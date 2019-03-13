@@ -51,7 +51,7 @@ namespace Printers
     void NativeOutput::printChar(const QChar &c)
     {
         QFontMetrics metrics(*mFont);
-        qDebug() << "!n" << mBoundingBox.right();
+        //qDebug() << "!n" << mBoundingBox.right();
         if (metrics.width(c) + mX > mBoundingBox.right()
             || mCharCount + 1 > mCharsPerLine) {
             // Char has to go on next line

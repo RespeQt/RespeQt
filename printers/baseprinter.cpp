@@ -1,6 +1,7 @@
 #include "baseprinter.h"
 #include "atari1027.h"
 #include "atari1020.h"
+#include "atari1029.h"
 #include "escp.h"
 #include "respeqtsettings.h"
 #include "logdisplaydialog.h"
@@ -9,13 +10,13 @@ namespace Printers
 {
     BasePrinter::BasePrinter(SioWorker *worker)
         : SioDevice(worker),
-          mOutput(NULL)
+          mOutput(nullptr)
     {}
 
     BasePrinter::~BasePrinter()
     {}
 
-    const QChar BasePrinter::translateAtascii(const char b)
+    const QChar BasePrinter::translateAtascii(const unsigned char b)
     {
         return mAtascii(b);
     }
@@ -28,12 +29,14 @@ namespace Printers
                 return new Atari1027(worker);
             case ATARI1020:
                 return new Atari1020(worker);
+            case ATARI1029:
+                return new Atari1029(worker);
             case ESCP:
                 return new Escp(worker);
             default:
                 throw new std::invalid_argument("Unknown printer type");
         }
-        return NULL;
+        return nullptr;
     }
 
 
@@ -43,7 +46,7 @@ namespace Printers
             qDebug() << "!n" << "[" << deviceName() << "] "
                      << hex << "command: " << command << " aux: " << aux;
             switch(command) {
-            case 0x53:
+            case 0x53: // dec 83
                 {
                     // Get status
                     if (!sio->port()->writeCommandAck()) {
@@ -60,22 +63,22 @@ namespace Printers
                     qDebug() << "!n" << tr("[%1] Get status.").arg(deviceName());
                     break;
                 }
-            case 0x57:
+            case 0x57: // dec 87
                 {
                     // Write
                     int aux2 = aux % 256;
 
-                    int len;
+                    unsigned int len;
                     switch (aux2) {
-                    case 0x4e:
+                    case 0x4e: // dec 78
                         // Normal
                         len = 40;
                         break;
-                    case 0x53:
+                    case 0x53: // dec 83
                         // Sideways
                         len = 29;
                         break;
-                    case 0x44:
+                    case 0x44: // dec 68
                         // Double width
                         len = 21;
                         break;

@@ -26,9 +26,9 @@ namespace Printers
         const QString &typeName() const { return mTypeName; }
 
         virtual void handleCommand(quint8 command, quint16 aux);
-        virtual bool handleBuffer(QByteArray &buffer, int len) = 0;
+        virtual bool handleBuffer(QByteArray &buffer, unsigned int len) = 0;
 
-        virtual const QChar translateAtascii(const char b);
+        virtual const QChar translateAtascii(const unsigned char b);
 
         NativeOutput *output() const { return mOutput; }
         void setOutput(NativeOutput *output);
@@ -36,7 +36,7 @@ namespace Printers
         // create a printer object of specified type
         static BasePrinter *createPrinter(int type, SioWorker *worker);
 
-        static const int NUM_KNOWN_PRINTERS = 2;
+        static const int NUM_KNOWN_PRINTERS = 3;
 
         static const int ATARI1027 = 1;
         static const int ATARI1020 = 2;
@@ -55,7 +55,7 @@ namespace Printers
         NativeOutput *mOutput;
 
     private:
-        int m_lastOperation;
+        char m_lastOperation;
 
     };
 }

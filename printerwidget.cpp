@@ -167,7 +167,6 @@ void PrinterWidget::selectOutput()
 
 void PrinterWidget::on_actionConnectPrinter_triggered()
 {
-    qDebug() << "!n" << ui->atariPrinters->currentIndex();
     if (ui->outputSelection->currentIndex() == 0
             || ui->atariPrinters->currentIndex() == 0)
     {

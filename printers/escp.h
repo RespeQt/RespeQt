@@ -10,7 +10,7 @@ namespace Printers
     public:
         Escp(SioWorker *sio);
 
-        virtual bool handleBuffer(QByteArray &buffer, int len);
+        virtual bool handleBuffer(QByteArray &buffer, unsigned int len);
 
     protected:
         bool mEsc; // Escape mode is off/on

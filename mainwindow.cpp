@@ -770,12 +770,12 @@ void MainWindow::on_actionToggleMiniMode_triggered()
     }
 
     if(!g_miniMode) {
-        if (g_D9DOVisible) {
+        /*if (g_D9DOVisible) {
             setMinimumWidth(688);
         } else
         {
             setMinimumWidth(344);
-        }
+        }*/
 
         setMinimumHeight(426);
         setMaximumHeight(QWIDGETSIZE_MAX);
@@ -824,12 +824,12 @@ void MainWindow::showHideDrives()
         ui->actionHideShowDrives->setText(QApplication::translate("MainWindow", "Hide drives D9-DO", 0));
         ui->actionHideShowDrives->setStatusTip(QApplication::translate("MainWindow", "Hide drives D9-DO", 0));
         ui->actionHideShowDrives->setIcon(QIcon(":/icons/silk-icons/icons/drive_add.png").pixmap(16, 16, QIcon::Normal, QIcon::On));
-        setMinimumWidth(688);
+        //setMinimumWidth(688);
     } else {
         ui->actionHideShowDrives->setText(QApplication::translate("MainWindow", "Show drives D9-DO", 0));
         ui->actionHideShowDrives->setStatusTip(QApplication::translate("MainWindow", "Show drives D9-DO", 0));
         ui->actionHideShowDrives->setIcon(QIcon(":/icons/silk-icons/icons/drive_delete.png").pixmap(16, 16, QIcon::Normal, QIcon::On));
-        setMinimumWidth(344);
+        //setMinimumWidth(344);
     }
 }
 

@@ -6,9 +6,9 @@ namespace Printers
         : BasePrinter(sio)
     {}
 
-    const QChar Centronics::translateAtascii(const char b)
+    const QChar Centronics::translateAtascii(const unsigned char b)
     {
-        if ((unsigned char)b == 155) // Translate EOL to CR
+        if (static_cast<unsigned char>(b) == 155) // Translate EOL to CR
         {
             return QChar(13);
         }

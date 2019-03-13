@@ -7,7 +7,7 @@ namespace Printers
         mInternational(false)
     {}
 
-    const QChar AtariPrinter::translateAtascii(const char b)
+    const QChar AtariPrinter::translateAtascii(const unsigned char b)
     {
         if (internationalMode()) {
             return mAtasciiInternational(b);

@@ -21,7 +21,7 @@ namespace Printers
     private:
         bool mESC;
 
-        virtual bool handleBuffer(QByteArray &buffer, int len);
+        virtual bool handleBuffer(QByteArray &buffer, unsigned int len);
         bool handleEscapedCodes(const char b);
         bool handlePrintableCodes(const char b);
     };

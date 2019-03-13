@@ -51,7 +51,7 @@ SioWorker::SioWorker()
     for (int i=0; i <= 255; i++) {
         devices[i] = 0;
     }
-    mPort = 0;
+    mPort = 0;  
 }
 
 SioWorker::~SioWorker()
@@ -434,6 +434,10 @@ void SioWorker::startSIOSnapshot()
     {
         QFile *file = new QFile(fileName);
         file->open(QFile::WriteOnly | QFile::Truncate);
+        if (!mSnapshotWriter)
+        {
+            mSnapshotWriter = new QXmlStreamWriter(file);
+        }
         mSnapshotWriter->setAutoFormatting(true);
         mSnapshotWriter->writeStartDocument();
         mSnapshotWriter->writeStartElement("testcase");
@@ -474,7 +478,15 @@ void SioWorker::writeSnapshotDataFrame(QByteArray &data)
     if (mSnapshotRunning && mSnapshotWriter)
     {
         mSnapshotWriter->writeStartElement("dataframe");
-        mSnapshotWriter->writeCharacters(data);
+        QString cs;
+        foreach(char c, data)
+        {
+            unsigned char chr = static_cast<unsigned char>(c);
+            cs.append("&#");
+            cs.append(QString::number(chr, 10));
+            cs.append(";");
+        }
+        mSnapshotWriter->writeCDATA(cs);
         mSnapshotWriter->writeEndElement();
     }
 }
