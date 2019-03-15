@@ -183,6 +183,7 @@ namespace Printers
                 // b is the LSB of the count of following columns
                 mGraphicsColumns += b;
                 mGraphicsMode = 1;
+                break;
 
             case 1:
                 // Now we fetch the graphics data, until mGraphicsColumns is 0
