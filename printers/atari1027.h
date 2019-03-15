@@ -22,8 +22,8 @@ namespace Printers
         bool mESC;
 
         virtual bool handleBuffer(QByteArray &buffer, unsigned int len);
-        bool handleEscapedCodes(const char b);
-        bool handlePrintableCodes(const char b);
+        bool handleEscapedCodes(const unsigned char b);
+        bool handlePrintableCodes(const unsigned char b);
     };
 }
 #endif // ATARI1027_H
