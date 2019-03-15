@@ -25,9 +25,10 @@ namespace Printers
 
     bool Atari1027::handleBuffer(QByteArray &buffer, unsigned int len)
     {
-        for(int i = 0; i < len; i++)
+        for(unsigned int i = 0; i < len; i++)
         {
-            unsigned char b = buffer.at(i);
+            unsigned char b = static_cast<unsigned char>(
+                        buffer.at(static_cast<int>(i)));
             switch(b) {
                 case 15: // CTRL+O starts underline mode
                 {
@@ -72,7 +73,7 @@ namespace Printers
                     // Drop the rest of the buffer
                     return true;
                 }
-                break;
+                // no break needed
 
                 case 27: // ESC could be starting something
                     if (mESC) { // ESC from last buffer
@@ -83,7 +84,7 @@ namespace Printers
                         if (i + 1 < len)
                         {
                             i++;
-                            b = buffer.at(i);
+                            b = static_cast<unsigned char>(buffer.at(static_cast<int>(i)));
                             if (!handleEscapedCodes(b))
                             {
                                 handlePrintableCodes(b);
@@ -100,7 +101,7 @@ namespace Printers
         return true;
     }
 
-    bool Atari1027::handleEscapedCodes(const char b)
+    bool Atari1027::handleEscapedCodes(const unsigned char b)
     {
         // At this time we have seen an ESC.
         switch(b) {
@@ -135,7 +136,7 @@ namespace Printers
         return false;
     }
 
-    bool Atari1027::handlePrintableCodes(const char b)
+    bool Atari1027::handlePrintableCodes(const unsigned char b)
     {
         QChar qb = translateAtascii(b & 127); // Masking inverse characters.
         mOutput->printChar(qb);

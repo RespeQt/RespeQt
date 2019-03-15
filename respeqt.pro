@@ -210,4 +210,3 @@ i18n/respeqt_tr.ts
 RC_FILE = RespeQt.rc
 
 DISTFILES +=
-QMAKE_CXXFLAGS += -std=c++0x
