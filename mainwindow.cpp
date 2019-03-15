@@ -841,7 +841,7 @@ void MainWindow::on_actionHideShowDrives_triggered()
 
     showHideDrives();
 
-    setGeometry(geometry().x(), geometry().y(), 0, geometry().height());
+    //setGeometry(geometry().x(), geometry().y(), 0, geometry().height());
     saveWindowGeometry();
 }
 
