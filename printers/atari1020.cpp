@@ -84,29 +84,39 @@ namespace Printers
                 if (b == 27) // ESC
                 {
                     mEsc = true;
-                } else if (mEsc && b == 27) // Cancel Esc
+                    return true;
+                }
+                if (mEsc)
                 {
-                    mEsc = false;
-                } else if (mEsc && b == 16) // CTRL+P: 20 characters
-                {
-                    mOutput->calculateFixedFontSize(20);
-                    mEsc = false;
-                } else if (mEsc && b == 19) // CTRL+S: 80 characters
-                {
-                    mOutput->calculateFixedFontSize(80);
-                    mEsc = false;
-                } else if (mEsc && b == 14) // CTRL+N: 40 characters
-                {
-                    mOutput->calculateFixedFontSize(40);
-                    mEsc = false;
-                } else if (mEsc && b == 23) // CTRL+W: Enter international mode
-                {
-                    mInternational = true;
-                    mEsc = false;
-                } else if (mEsc && b == 24) // CTRL+X: Exit international mode
-                {
-                    mInternational = false;
-                    mEsc = false;
+                    if (b == 27) // Cancel Esc
+                    {
+                        mEsc = false;
+                        handlePrintableCodes(27);
+                    } else if (b == 16) // CTRL+P: 20 characters
+                    {
+                        mOutput->calculateFixedFontSize(20);
+                        mEsc = false;
+                    } else if (b == 19) // CTRL+S: 80 characters
+                    {
+                        mOutput->calculateFixedFontSize(80);
+                        mEsc = false;
+                    } else if (b == 14) // CTRL+N: 40 characters
+                    {
+                        mOutput->calculateFixedFontSize(40);
+                        mEsc = false;
+                    } else if (b == 23) // CTRL+W: Enter international mode
+                    {
+                        mInternational = true;
+                        mEsc = false;
+                    } else if (b == 24) // CTRL+X: Exit international mode
+                    {
+                        mInternational = false;
+                        mEsc = false;
+                    } else {
+                        // Not known control codes are consumed.
+                        mEsc = false;
+                        return true;
+                    }
                 } else
                     handlePrintableCodes(b);
             }

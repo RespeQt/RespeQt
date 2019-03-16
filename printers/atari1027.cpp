@@ -78,7 +78,7 @@ namespace Printers
                 case 27: // ESC could be starting something
                     if (mESC) { // ESC from last buffer
                         mESC = false;
-                        handlePrintableCodes(b);
+                        handlePrintableCodes(27);
                     } else { // No ESC codes from last buffer
                         mESC = true;
                         if (i + 1 < len)
@@ -132,6 +132,11 @@ namespace Printers
                 setInternationalMode(false);
                 mESC = false;
                 return true;
+
+                // TODO Check
+            /*default: // Not known control codes are consumed
+                mESC = false;
+                return true;*/
         }
         return false;
     }

@@ -25,11 +25,11 @@ namespace Printers
         uint16_t mGraphicsColumns;
 
         virtual bool handleBuffer(QByteArray &buffer, unsigned int len);
-        bool handleEscapedCodes(const char b);
-        bool handlePrintableCodes(const char b);
+        bool handleEscapedCodes(const unsigned char b);
+        bool handlePrintableCodes(const unsigned char b);
         bool elongatedMode() { return mElongatedMode; }
         void setElongatedMode(bool elongatedMode);
-        bool handleGraphicsMode(const char b);
+        bool handleGraphicsMode(const unsigned char b);
     };
 }
 #endif // ATARI1029_H
