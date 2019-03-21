@@ -158,6 +158,7 @@ bool FolderImage::open(const QString &fileName, FileTypes::FileType /* type */)
         m_isReadOnly = true;
         m_isModified = false;
         m_isUnmodifiable = true;
+        m_isReady = true;
         return true;
     } else {
         return false;
