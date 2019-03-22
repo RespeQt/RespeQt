@@ -326,7 +326,7 @@ void PCLINK::unix_time_2_sdx(time_t *todp, uchar *ob)
 
     memset(ob, 0, 6);
 
-    if (*todp == 0)
+    if ((*todp == 0) || (*todp == -1))
         return;
 
     t = localtime(todp);
