@@ -216,7 +216,7 @@ namespace Printers
 
                         unsigned int endx, endy;
                         int x = fetchIntFromBuffer(buffer, len, i, endx);
-                        if (buffer.at(static_cast<int>(endx + 1)) != ',')
+                        if (buffer.at(static_cast<int>(endx) + 1) != ',')
                             throw new std::invalid_argument("expected ,");
                         if (x < 0 || x > 480)
                             throw new std::invalid_argument("x coordinate out of range");
@@ -250,7 +250,7 @@ namespace Printers
                             break;
                         }
 
-                        b = static_cast<unsigned char>(buffer.at(static_cast<int>(i + 1)));
+                        b = static_cast<unsigned char>(buffer.at(static_cast<int>(i) + 1));
                     } catch(...)
                     {
                         qDebug() << "!n" << tr("[%1] parsing error for draw command").arg(deviceName());
