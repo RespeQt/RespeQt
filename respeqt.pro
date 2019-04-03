@@ -55,8 +55,6 @@ SOURCES += main.cpp \
     printers/escp.cpp \
     printers/nativeprinter.cpp \
     printers/svgoutput.cpp \
-    printers/windowoutput.cpp \
-    printers/bufferedpaintwidget.cpp \
     printers/atari1029.cpp \
     Cpu6502.cpp \
     Crc16.cpp \
@@ -130,8 +128,6 @@ HEADERS += mainwindow.h \
     printers/escp.h \
     printers/nativeprinter.h \
     printers/svgoutput.h \
-    printers/windowoutput.h \
-    printers/bufferedpaintwidget.h \
     printers/atari1029.h \
     Chip.hpp \
     Cpu6502.hpp \
@@ -170,7 +166,6 @@ FORMS += mainwindow.ui \
     createimagedialog.ui \
     diskeditdialog.ui \
     autobootdialog.ui \
-    printers/textprinterwindow.ui \
     cassettedialog.ui \
     docdisplaywindow.ui \
     bootoptionsdialog.ui \
@@ -178,7 +173,7 @@ FORMS += mainwindow.ui \
     drivewidget.ui \
     infowidget.ui \
     printerwidget.ui \
-    printers/windowoutput.ui
+    printers/textprinterwindow.ui
 RESOURCES += icons.qrc \
     atarifiles.qrc \
     i18n.qrc \
@@ -208,5 +203,6 @@ TRANSLATIONS = \
 i18n/respeqt_tr.ts
 
 RC_FILE = RespeQt.rc
+ICON = RespeQt.icns
 
 DISTFILES +=

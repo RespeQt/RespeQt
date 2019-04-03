@@ -21,7 +21,7 @@ namespace Printers {
 class TextPrinterWindow : public QMainWindow, public NativeOutput {
     Q_OBJECT
 public:
-    explicit TextPrinterWindow(QWidget *parent = 0);
+    explicit TextPrinterWindow(QWidget *parent = Q_NULLPTR);
     ~TextPrinterWindow();
 
     virtual void newLine(bool linefeed = false);

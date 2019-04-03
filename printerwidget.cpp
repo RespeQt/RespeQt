@@ -4,7 +4,6 @@
 #include "printers/nativeoutput.h"
 #include "printers/nativeprinter.h"
 #include "printers/svgoutput.h"
-#include "printers/windowoutput.h"
 #include "printers/textprinterwindow.h"
 
 #include <QPrintDialog>
@@ -16,9 +15,9 @@ PrinterWidget::PrinterWidget(int printerNum, QWidget *parent)
    : QFrame(parent)
    , ui(new Ui::PrinterWidget)
    , printerNo_(printerNum)
-   , mPrinter(NULL)
-   , mDevice(NULL)
-   , mSio(NULL)
+   , mPrinter(Q_NULLPTR)
+   , mDevice(Q_NULLPTR)
+   , mSio(Q_NULLPTR)
    , mInitialized(false)
 {
     ui->setupUi(this);
@@ -38,7 +37,7 @@ void PrinterWidget::setup()
     // TODO Better solution to getting labels?
     std::map<QString, int> list;
     for (int i = 1; i <= Printers::BasePrinter::NUM_KNOWN_PRINTERS; i++) {
-        Printers::BasePrinter *printer = Printers::BasePrinter::createPrinter(i, NULL);
+        Printers::BasePrinter *printer = Printers::BasePrinter::createPrinter(i, Q_NULLPTR);
         list[printer->typeName()] = printer->typeId();
         delete printer;
     }
@@ -56,7 +55,6 @@ void PrinterWidget::setup()
 
     ui->outputSelection->addItem(tr("None"), -1);
     ui->outputSelection->addItem("SVG", QVariant(false));
-    //ui->outputSelection->addItem("Window", QVariant(false));
     ui->outputSelection->addItem("Text window", QVariant(false));
     QStringList printers = QPrinterInfo::availablePrinterNames();
     for (QStringList::const_iterator sit = printers.cbegin(); sit != printers.cend(); ++sit)
@@ -94,7 +92,7 @@ void PrinterWidget::selectPrinter()
     if (mPrinter)
     {
         delete mPrinter;
-        mPrinter = NULL;
+        mPrinter = Q_NULLPTR;
     }
     if (mSio) {
        // Create a new Atari printer device and install it.
@@ -141,11 +139,6 @@ void PrinterWidget::selectOutput()
             mDevice = svg;
             QString fileName = QFileDialog::getSaveFileName(this, tr("Save SVG"), "", tr("SVG (*.svg)"));
             svg->setFileName(fileName);
-        } else if (ui->outputSelection->currentText() == "Window")
-        {
-            Printers::WindowOutput *window = new Printers::WindowOutput();
-            mDevice = window;
-            window->show();
         } else if (ui->outputSelection->currentText() == "Text window")
         {
             Printers::TextPrinterWindow *window = new Printers::TextPrinterWindow();
@@ -194,12 +187,12 @@ void PrinterWidget::on_actionDisconnectPrinter_triggered()
     {
         // mPrinter->setOutput delete the output device,
         // so we don't need an explicit delete
-        mPrinter->setOutput(NULL);
+        mPrinter->setOutput(nullptr);
     } else {
         // Here we do need a delete
         delete mDevice;
     }
-    mDevice = NULL;
+    mDevice = nullptr;
 
     ui->outputSelection->setEnabled(true);
     ui->atariPrinters->setEnabled(true);

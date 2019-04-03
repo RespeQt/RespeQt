@@ -5,9 +5,9 @@
 namespace Printers
 {
     NativeOutput::NativeOutput():
-        mPainter(NULL),
-        mDevice(NULL),
-        mFont(NULL),
+        mPainter(Q_NULLPTR),
+        mDevice(Q_NULLPTR),
+        mFont(Q_NULLPTR),
         mX(0), mY(0),
         mCharsPerLine(80),
         mCharCount(0)
@@ -57,6 +57,8 @@ namespace Printers
             // Char has to go on next line
             newLine();
         }
+        QColor color(255, 0, 0);
+        mPainter->setPen(color);
         mPainter->drawText(mX, mY + metrics.height(), c);
         mX += metrics.width(c);
         mCharCount++;

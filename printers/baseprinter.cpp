@@ -10,7 +10,7 @@ namespace Printers
 {
     BasePrinter::BasePrinter(SioWorker *worker)
         : SioDevice(worker),
-          mOutput(nullptr)
+          mOutput(Q_NULLPTR)
     {}
 
     BasePrinter::~BasePrinter()
@@ -36,7 +36,6 @@ namespace Printers
             default:
                 throw new std::invalid_argument("Unknown printer type");
         }
-        return nullptr;
     }
 
 

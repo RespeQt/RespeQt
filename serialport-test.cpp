@@ -159,20 +159,35 @@ QByteArray TestSerialPortBackend::readCommandFrame()
     bool ok;
     data[0] = static_cast<char>(attr.value("device").toInt(&ok, 10));
     if (!ok)
-       return nullptr;
+    {
+        data[0] = static_cast<char>(attr.value("device").toInt(&ok, 16));
+        if (!ok)
+            return nullptr;
+    }
 
     data[1] = static_cast<char>(attr.value("command").toInt(&ok, 10));
     if (!ok)
-        return nullptr;
+    {
+        data[1] = static_cast<char>(attr.value("command").toInt(&ok, 16));
+        if (!ok)
+            return nullptr;
+    }
 
     data[2] = static_cast<char>(attr.value("aux1").toInt(&ok, 10));
     if (!ok)
-        return nullptr;
+    {
+        data[2] = static_cast<char>(attr.value("aux1").toInt(&ok, 16));
+        if (!ok)
+            return nullptr;
+    }
 
     data[3] = static_cast<char>(attr.value("aux2").toInt(&ok, 10));
     if (!ok)
-        return nullptr;
-
+    {
+        data[3] = static_cast<char>(attr.value("aux2").toInt(&ok, 16));
+        if (!ok)
+            return nullptr;
+    }
 
     return data;
 }

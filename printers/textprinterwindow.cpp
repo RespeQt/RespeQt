@@ -52,9 +52,9 @@ TextPrinterWindow::TextPrinterWindow(QWidget *parent) :
     connect(ui->asciiFontName, &QFontComboBox::currentFontChanged, this, &TextPrinterWindow::asciiFontChanged);
     connect(this, &TextPrinterWindow::textPrint, this, &TextPrinterWindow::print);
 
-    mFont = NULL;
-    mDevice = NULL;
-    mPainter = NULL;
+    mFont = Q_NULLPTR;
+    mDevice = Q_NULLPTR;
+    mPainter = Q_NULLPTR;
 }
 
 TextPrinterWindow::~TextPrinterWindow()
@@ -151,7 +151,7 @@ void TextPrinterWindow::on_actionAtasciiFont_triggered()
             case 3 :
                 atasciiFont = "Atari Classic Extrasmooth";
     }
-    QFont(a);
+    QFont a;
     a.setFamily(atasciiFont);
     a.setPointSize(fontSize);
     ui->printerTextEdit->setFont(a);
@@ -175,12 +175,12 @@ void TextPrinterWindow::on_actionFont_Size_triggered()
             case 3 :
                 fontSize = 12;
     }
-    QFont(a);
+    QFont a;
     a.setFamily(atasciiFont);
     a.setPointSize(fontSize);
     ui->printerTextEdit->setFont(a);
     ui->atasciiFontName->setText(atasciiFont + " - " + QString("%1").arg(fontSize));
-    QFont (f);
+    QFont f;
     f.setFamily(ui->asciiFontName->currentFont().toString());
     f.setPointSize(fontSize);
     ui->printerTextEditASCII->setFont(f);
@@ -234,7 +234,7 @@ void TextPrinterWindow::on_actionPrint_triggered()
 void TextPrinterWindow::on_actionSave_triggered()
 {
     QString fileName = QFileDialog::getSaveFileName(this, tr("Save printer text output"), respeqtSettings->lastPrinterTextDir(),
-                                                    tr("Text files (*.txt);;All files (*)"), 0);
+                                                    tr("Text files (*.txt);;All files (*)"), Q_NULLPTR);
     if (fileName.isEmpty()) {
         return;
     }
