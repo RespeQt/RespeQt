@@ -33,6 +33,8 @@ void PrinterWidget::setup()
     QString printerTxt = QString("P%1").arg(printerNo_ + 1);
     ui->printerLabel->setText(printerTxt);
 
+    RespeqtSettings::PrinterSettings ps = respeqtSettings->printerSettings(printerNo_);
+
     ui->atariPrinters->clear();
     // TODO Better solution to getting labels?
     std::map<QString, int> list;
@@ -52,16 +54,32 @@ void PrinterWidget::setup()
         }
     }
     ui->atariPrinters->setCurrentIndex(0);
+    if (ps.printerName != "")
+    {
+        int index = ui->atariPrinters->findText(ps.printerName);
+        if (index != -1)
+        {
+            ui->atariPrinters->setCurrentIndex(index);
+        }
+    }
 
     ui->outputSelection->addItem(tr("None"), -1);
     ui->outputSelection->addItem("SVG", QVariant(false));
-    ui->outputSelection->addItem("Text window", QVariant(false));
+    ui->outputSelection->addItem(tr("Text window"), QVariant(false));
     QStringList printers = QPrinterInfo::availablePrinterNames();
     for (QStringList::const_iterator sit = printers.cbegin(); sit != printers.cend(); ++sit)
     {
         ui->outputSelection->addItem(*sit, QVariant(true));
     }
     ui->outputSelection->setCurrentIndex(0);
+    if (ps.outputName != "")
+    {
+        int index = ui->outputSelection->findText(ps.outputName);
+        if (index != -1)
+        {
+            ui->outputSelection->setCurrentIndex(index);
+        }
+    }
 
     ui->atariPrinters->setEnabled(true);
     ui->outputSelection->setEnabled(true);
@@ -98,9 +116,9 @@ void PrinterWidget::selectPrinter()
        // Create a new Atari printer device and install it.
        int typeId = ui->atariPrinters->itemData(ui->atariPrinters->currentIndex()).toInt();
        Printers::BasePrinter *newPrinter = Printers::BasePrinter::createPrinter(typeId, mSio);
-       mSio->installDevice(PRINTER_BASE_CDEVIC + printerNo_, newPrinter);
+       mSio->installDevice(static_cast<quint8>(PRINTER_BASE_CDEVIC + printerNo_), newPrinter);
        mPrinter = newPrinter;
-       respeqtSettings->setPrinterType(printerNo_, mPrinter->typeId());
+       respeqtSettings->setOutputName(printerNo_, mPrinter->typeName());
     }
 
 }
@@ -129,7 +147,7 @@ void PrinterWidget::selectOutput()
         if (dialog.exec() == QDialog::Accepted)
         {
             temp->printer()->setPrinterName(printerName);
-            respeqtSettings->setConnectedPrinterName(printerNo_, printerName);
+            respeqtSettings->setOutputName(printerNo_, printerName);
         }
     } else if (mInitialized) {
         // Handling the special devices.
@@ -139,12 +157,14 @@ void PrinterWidget::selectOutput()
             mDevice = svg;
             QString fileName = QFileDialog::getSaveFileName(this, tr("Save SVG"), "", tr("SVG (*.svg)"));
             svg->setFileName(fileName);
-        } else if (ui->outputSelection->currentText() == "Text window")
+            respeqtSettings->setOutputName(printerNo_, "SVG");
+        } else if (ui->outputSelection->currentText() == tr("Text window"))
         {
             Printers::TextPrinterWindow *window = new Printers::TextPrinterWindow();
             window->setGeometry(respeqtSettings->lastPrtHorizontalPos(), respeqtSettings->lastPrtVerticalPos(), respeqtSettings->lastPrtWidth(), respeqtSettings->lastPrtHeight());
             mDevice = window;
             window->show();
+            respeqtSettings->setOutputName(printerNo_, "Text window");
         } else {
             QMessageBox::information(this, tr("Output device"), tr("Not implemented yet"));
         }

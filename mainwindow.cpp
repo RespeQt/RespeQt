@@ -583,7 +583,8 @@ void MainWindow::closeEvent(QCloseEvent *event)
             saveWindowGeometry();
         }
     }
-    if (g_sessionFile != "") respeqtSettings->saveSessionToFile(g_sessionFilePath + "/" + g_sessionFile);
+    if (g_sessionFile != "")
+        respeqtSettings->saveSessionToFile(g_sessionFilePath + "/" + g_sessionFile);
     respeqtSettings->setD9DOVisible(g_D9DOVisible);
     bool wasRunning = ui->actionStartEmulation->isChecked();
     QMessageBox::StandardButton answer = QMessageBox::No;
@@ -1358,19 +1359,24 @@ void MainWindow::mountFile(int no, const QString &fileName, bool /*prot*/)
 
         sio->installDevice(DISK_BASE_CDEVIC + no, disk);
 
-        PCLINK* pclink = reinterpret_cast<PCLINK*>(sio->getDevice(PCLINK_CDEVIC));
-        if(isDir || pclink->hasLink(no+1))
+        try {
+            PCLINK* pclink = dynamic_cast<PCLINK*>(sio->getDevice(PCLINK_CDEVIC));
+            if(pclink != Q_NULLPTR && (isDir || pclink->hasLink(no+1)))
+            {
+                sio->uninstallDevice(PCLINK_CDEVIC);
+                if(isDir)
+                {
+                    pclink->setLink(no+1,QDir::toNativeSeparators(fileName).toLatin1());
+                }
+                else
+                {
+                    pclink->resetLink(no+1);
+                }
+                sio->installDevice(PCLINK_CDEVIC,pclink);
+            }
+        } catch(std::bad_cast e)
         {
-            sio->uninstallDevice(PCLINK_CDEVIC);
-            if(isDir)
-            {
-                pclink->setLink(no+1,QDir::toNativeSeparators(fileName).toLatin1());
-            }
-            else
-            {
-                pclink->resetLink(no+1);
-            }
-            sio->installDevice(PCLINK_CDEVIC,pclink);
+            qDebug() << "!e " << tr("Bad cast for PCLINK");
         }
 
         diskWidgets[no]->updateFromImage(disk);

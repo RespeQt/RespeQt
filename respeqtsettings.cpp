@@ -123,6 +123,14 @@ RespeqtSettings::RespeqtSettings()
 
     // Printer specific settings
     mAtari1027FontName = mSettings->value("Atari1027FontFamily", "Courier").toString();
+    mSettings->beginReadArray("PrinterNames");
+    for(i = 0; i < PRINTER_COUNT; i++)
+    {
+        mSettings->setArrayIndex(i);
+        mPrinterSettings[i].printerName = mSettings->value("PrinterName", "").toString();
+        mPrinterSettings[i].outputName = mSettings->value("OutputName", "").toString();
+    }
+    mSettings->endArray();
 
     m810Firmware = mSettings->value("Atari810Firmware", "").toString();
     m810ChipFirmware = mSettings->value("Atari810ChipFirmware", "").toString();
@@ -262,10 +270,10 @@ void RespeqtSettings::saveSessionToFile(const QString &fileName)
 
     s.beginWriteArray("ConnectedPrinterSettings");
     for (int i = 0; i < PRINTER_COUNT; i++) {
-        PrinterSettings ps = mConnectedPrinterSettings[i];
+        PrinterSettings ps = mPrinterSettings[i];
         s.setArrayIndex(i);
         s.setValue("PrinterName", ps.printerName);
-        s.setValue("PrinterType", ps.printerType);
+        s.setValue("OutputName", ps.outputName);
     }
     s.endArray();
 }
@@ -354,8 +362,8 @@ void RespeqtSettings::saveSessionToFile(const QString &fileName)
     s.beginReadArray("ConnectedPrinterSettings");
     for (int i = 0; i < PRINTER_COUNT; i++) {
         s.setArrayIndex(i);
-        setPrinterType(i, s.value("PrinterType", 0).toInt());
-        // TODO Get Printerdata out of it.
+        setOutputName(i, s.value("OutputName", "").toString());
+        setPrinterName(i, s.value("PrinterName", "").toString());
     }
 }
 // Get MainWindow title from MainWindow  //
@@ -993,25 +1001,25 @@ void RespeqtSettings::writeRecentImageSettings()
     mSettings->endArray();
 }
 
-void RespeqtSettings::setConnectedPrinterName(int no, const QString &printerName)
+void RespeqtSettings::setPrinterName(int no, const QString &printerName)
 {
-    mConnectedPrinterSettings[no].printerName = printerName;
+    mPrinterSettings[no].printerName = printerName;
 }
 
-const QString &RespeqtSettings::connectedPrinterName(int no) const {
-    return mConnectedPrinterSettings[no].printerName;
+const QString &RespeqtSettings::printerName(int no) const {
+    return mPrinterSettings[no].printerName;
 }
 
-void RespeqtSettings::setPrinterType(int no, int printerType) {
-    mConnectedPrinterSettings[no].printerType = printerType;
+void RespeqtSettings::setOutputName(int no, const QString &outputName) {
+    mPrinterSettings[no].outputName = outputName;
 }
 
-int RespeqtSettings::printerType(int no) const {
-    return mConnectedPrinterSettings[no].printerType;
+const QString &RespeqtSettings::outputName(int no) const {
+    return mPrinterSettings[no].outputName;
 }
 
-const RespeqtSettings::PrinterSettings &RespeqtSettings::connectedPrinterSettings(int no) const {
-    return mConnectedPrinterSettings[no];
+const RespeqtSettings::PrinterSettings &RespeqtSettings::printerSettings(int no) const {
+    return mPrinterSettings[no];
 }
 
 QString RespeqtSettings::atari1027FontFamily() {
