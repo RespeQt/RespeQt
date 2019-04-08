@@ -123,7 +123,7 @@ RespeqtSettings::RespeqtSettings()
 
     // Printer specific settings
     mAtari1027FontName = mSettings->value("Atari1027FontFamily", "Courier").toString();
-    mSettings->beginReadArray("PrinterNames");
+    mSettings->beginReadArray("ConnectedPrinterSettings");
     for(i = 0; i < PRINTER_COUNT; i++)
     {
         mSettings->setArrayIndex(i);
@@ -596,7 +596,6 @@ void RespeqtSettings::setMountedImageProtection(int no, bool prot)
 
 void RespeqtSettings::setMountedImageSetting(int no, const QString &fileName, bool prot)
 {
-
     mMountedImageSettings[no].fileName = fileName;
     mMountedImageSettings[no].isWriteProtected = prot;
     if(mSessionFileName == "") mSettings->setValue(QString("MountedImageSettings/%1/FileName").arg(no+1), fileName);
@@ -1004,6 +1003,8 @@ void RespeqtSettings::writeRecentImageSettings()
 void RespeqtSettings::setPrinterName(int no, const QString &printerName)
 {
     mPrinterSettings[no].printerName = printerName;
+    if(mSessionFileName == "")
+        mSettings->setValue(QString("ConnectedPrinterSettings/%1/PrinterName").arg(no+1), printerName);
 }
 
 const QString &RespeqtSettings::printerName(int no) const {
@@ -1012,6 +1013,8 @@ const QString &RespeqtSettings::printerName(int no) const {
 
 void RespeqtSettings::setOutputName(int no, const QString &outputName) {
     mPrinterSettings[no].outputName = outputName;
+    if(mSessionFileName == "")
+        mSettings->setValue(QString("ConnectedPrinterSettings/%1/OutputName").arg(no+1), outputName);
 }
 
 const QString &RespeqtSettings::outputName(int no) const {

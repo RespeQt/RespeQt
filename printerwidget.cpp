@@ -118,7 +118,7 @@ void PrinterWidget::selectPrinter()
        Printers::BasePrinter *newPrinter = Printers::BasePrinter::createPrinter(typeId, mSio);
        mSio->installDevice(static_cast<quint8>(PRINTER_BASE_CDEVIC + printerNo_), newPrinter);
        mPrinter = newPrinter;
-       respeqtSettings->setOutputName(printerNo_, mPrinter->typeName());
+       respeqtSettings->setPrinterName(printerNo_, mPrinter->typeName());
     }
 
 }
