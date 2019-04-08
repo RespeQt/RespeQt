@@ -101,13 +101,13 @@ namespace Printers
         QFontMetrics metrics(*mFont);
         if (!linefeed)
         {
-            mX = mBoundingBox.left();
+            mX = static_cast<int>(trunc(mBoundingBox.left()));
             mCharCount = 0;
         }
         if (mY + metrics.height() > mBoundingBox.bottom())
         {
             newPage(linefeed);
-            mY = mBoundingBox.top();
+            mY = static_cast<int>(trunc(mBoundingBox.top()));
         } else {
             mY += metrics.lineSpacing();
         }
@@ -131,8 +131,8 @@ namespace Printers
 
     void NativeOutput::calculateFixedFontSize(uint8_t charsPerLine)
     {
-        float painterWidth = mBoundingBox.right() - mBoundingBox.left();
-        float oldFontSize = font()->pointSizeF();
+        qreal painterWidth = mBoundingBox.right() - mBoundingBox.left();
+        qreal oldFontSize = font()->pointSizeF();
         int oldWidth;
 
         // Loop
@@ -141,7 +141,7 @@ namespace Printers
             QFontMetrics metrics(*mFont);
             QRect bounds = metrics.boundingRect('M');
             oldWidth = bounds.width();
-            float scale = painterWidth / (oldWidth * charsPerLine);
+            qreal scale = painterWidth / (oldWidth * charsPerLine);
             mFont->setPointSizeF(bounds.height() * scale);
             setFont(mFont);
             oldFontSize = bounds.height() * scale;

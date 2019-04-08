@@ -21,18 +21,17 @@
 #include <QFontComboBox>
 #include <QMessageBox>
 
-int effAtasciiFont = 0;
-int effFontSize = 0;
-bool showAscii = true;
-bool showAtascii = true;
-int fontSize = 9;
-QString atasciiFont("Atari Classic Chunky");
-
 namespace Printers {
 
 TextPrinterWindow::TextPrinterWindow(QWidget *parent) :
     QMainWindow(parent), NativeOutput(),
-    ui(new Ui::TextPrinterWindow)
+    ui(new Ui::TextPrinterWindow),
+    effAtasciiFont(0),
+    effFontSize(0),
+    showAscii(true),
+    showAtascii(true),
+    fontSize(9),
+    atasciiFont("Atari Classic Chunky")
 {
     ui->setupUi(this);
     QFont f;

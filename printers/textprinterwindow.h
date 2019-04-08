@@ -10,6 +10,7 @@
 #define TEXTPRINTERWINDOW_H
 
 #include <QMainWindow>
+#include <QString>
 #include "nativeoutput.h"
 
 namespace Ui {
@@ -55,6 +56,12 @@ protected:
 private:
     Ui::TextPrinterWindow *ui;
     QPen mPen;
+    int effAtasciiFont;
+    int effFontSize;
+    bool showAscii;
+    bool showAtascii;
+    int fontSize;
+    QString atasciiFont;
 
 private slots:
     void on_actionSave_triggered();
