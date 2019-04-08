@@ -1,4 +1,5 @@
 #include "svgoutput.h"
+#include <math.h>
 
 namespace Printers {
     SVGOutput::SVGOutput()
@@ -14,11 +15,10 @@ namespace Printers {
     void SVGOutput::updateBoundingBox()
     {
         QFontMetrics metrics(*mFont);
-        mX = mBoundingBox.left();
-        mY = mBoundingBox.top() + metrics.lineSpacing();
+        mX = static_cast<int>(trunc(mBoundingBox.left()));
+        mY = static_cast<int>(trunc(mBoundingBox.top() + metrics.lineSpacing()));
     }
 
     void SVGOutput::newPage(bool /*linefeed*/)
     {}
-
 }

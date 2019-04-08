@@ -267,20 +267,20 @@ namespace Printers
 
             case 'X': // draw axes 0 = Y-axis, otherwise X-axis
                 try {
-                    unsigned int i_ = i, count, size, end;
-                    int mode;
+                    unsigned int i_ = i, end;
+                    int mode, size, count;
 
                     mode = fetchIntFromBuffer(buffer, len, i_, end);
                     if (len < end + 1)
                         throw new std::invalid_argument("expected comma, buffer too short");
                     i_ = end + 1; // separator check
-                    if (buffer.at(i_))
+                    if (buffer.at(static_cast<int>(i_)))
                         throw new std::invalid_argument(QString("expected comma, got %1").arg(b).toStdString());
                     i_++;
 
                     size = fetchIntFromBuffer(buffer, len, i_, end);
                     i_ = end + 1; // separator check
-                    if (buffer.at(i_))
+                    if (buffer.at(static_cast<int>(i_)))
                         throw new std::invalid_argument(QString("expected comma, got %1").arg(b).toStdString());
                     i_++;
 

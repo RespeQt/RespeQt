@@ -4,6 +4,7 @@
 #include <QPainter>
 #include <QRect>
 #include <QPaintDevice>
+#include <math.h>
 #include "sioworker.h"
 
 namespace Printers
@@ -25,8 +26,12 @@ namespace Printers
         virtual void setPen(const QColor &color);
         virtual void setPen(Qt::PenStyle style);
         virtual void setPen(const QPen &pen);
-        virtual int width() { return mBoundingBox.width(); }
-        virtual int height() { return mBoundingBox.height(); }
+        virtual int width() {
+            return static_cast<int>(trunc(mBoundingBox.width()));
+        }
+        virtual int height() {
+            return static_cast<int>(trunc(mBoundingBox.height()));
+        }
         virtual int dpiX() { return mDevice->logicalDpiX(); }
         virtual const QPen &pen() const { return mPainter->pen(); }
         virtual void setFont(QFont *font);

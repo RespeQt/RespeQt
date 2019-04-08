@@ -101,7 +101,7 @@ void TextPrinterWindow::closeEvent(QCloseEvent *e)
 
     // Disable ATASCII Inverse Video for ASCII window // 
     for (int x = 0; x <= n-1; ++x){
-        int byte = textASCII[x];
+        char byte = textASCII[x];
         if (byte < 0){
             textASCII[x] = byte ^ 0x80;
         }
