@@ -21,7 +21,7 @@ namespace Printers
         return mAtascii(b);
     }
 
-    BasePrinter *BasePrinter::createPrinter(int type, SioWorker *worker)
+    /*BasePrinter *BasePrinter::createPrinter(int type, SioWorker *worker)
     {
         switch (type)
         {
@@ -36,8 +36,7 @@ namespace Printers
             default:
                 throw new std::invalid_argument("Unknown printer type");
         }
-    }
-
+    }*/
 
     void BasePrinter::handleCommand(quint8 command, quint16 aux)
     {

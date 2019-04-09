@@ -1,6 +1,3 @@
 #include "printerfactory.h"
 
-PrinterFactory::PrinterFactory()
-{
-
-}
+Printers::PrinterFactory* Printers::PrinterFactory::sInstance = Q_NULLPTR;

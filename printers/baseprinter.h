@@ -33,15 +33,10 @@ namespace Printers
         NativeOutput *output() const { return mOutput; }
         void setOutput(NativeOutput *output);
 
-        // create a printer object of specified type
-        static BasePrinter *createPrinter(int type, SioWorker *worker);
-
-        static const int NUM_KNOWN_PRINTERS = 3;
-
         static const int ATARI1027 = 1;
         static const int ATARI1020 = 2;
         static const int ATARI1029 = 3;
-        static const int ESCP = -1;
+        static const int ESCP = 4;
 
     protected:
         // This should be static methods, because they are called

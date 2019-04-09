@@ -85,7 +85,8 @@ SOURCES += main.cpp \
     diskimageatr.cpp \
     diskimagescp.cpp \
     disassembly810.cpp \
-    disassembly1050.cpp
+    disassembly1050.cpp \
+    printers/printerfactory.cpp
 
 win32:LIBS += -lwinmm -lz
 unix:LIBS += -lz
@@ -156,7 +157,8 @@ HEADERS += mainwindow.h \
     Atari1050Duplicator.hpp \
     RomBankSwitchTurbo.hpp \
     disassembly810.h \
-    disassembly1050.h
+    disassembly1050.h \
+    printers/printerfactory.h
 
 win32:HEADERS += serialport-win32.h
 unix:HEADERS += serialport-unix.h

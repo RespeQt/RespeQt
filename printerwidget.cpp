@@ -5,6 +5,7 @@
 #include "printers/nativeprinter.h"
 #include "printers/svgoutput.h"
 #include "printers/textprinterwindow.h"
+#include "printers/printerfactory.h"
 
 #include <QPrintDialog>
 #include <QPrinterInfo>
@@ -38,8 +39,9 @@ void PrinterWidget::setup()
     ui->atariPrinters->clear();
     // TODO Better solution to getting labels?
     std::map<QString, int> list;
-    for (int i = 1; i <= Printers::BasePrinter::NUM_KNOWN_PRINTERS; i++) {
-        Printers::BasePrinter *printer = Printers::BasePrinter::createPrinter(i, Q_NULLPTR);
+    Printers::PrinterFactory* factory = Printers::PrinterFactory::instance();
+    for (int i = 1; i <= factory->numRegisteredPrinters(); i++) {
+        Printers::BasePrinter *printer = factory->createPrinter(i, Q_NULLPTR);
         list[printer->typeName()] = printer->typeId();
         delete printer;
     }
@@ -115,7 +117,9 @@ void PrinterWidget::selectPrinter()
     if (mSio) {
        // Create a new Atari printer device and install it.
        int typeId = ui->atariPrinters->itemData(ui->atariPrinters->currentIndex()).toInt();
-       Printers::BasePrinter *newPrinter = Printers::BasePrinter::createPrinter(typeId, mSio);
+
+       Printers::PrinterFactory* factory = Printers::PrinterFactory::instance();
+       Printers::BasePrinter *newPrinter = factory->createPrinter(typeId, mSio);
        mSio->installDevice(static_cast<quint8>(PRINTER_BASE_CDEVIC + printerNo_), newPrinter);
        mPrinter = newPrinter;
        respeqtSettings->setPrinterName(printerNo_, mPrinter->typeName());

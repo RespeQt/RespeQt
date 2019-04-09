@@ -27,6 +27,10 @@
 #include "logdisplaydialog.h"
 #include "infowidget.h"
 #include "printerwidget.h"
+#include "printers/printerfactory.h"
+#include "printers/atari1020.h"
+#include "printers/atari1027.h"
+#include "printers/atari1029.h"
 
 #include <QEvent>
 #include <QDragEnterEvent>
@@ -168,6 +172,12 @@ MainWindow::MainWindow(QWidget *parent)
 
     /* Setup UI */
     ui->setupUi(this);
+
+    /* Setup the printer factory */
+    Printers::PrinterFactory* factory = Printers::PrinterFactory::instance();
+    factory->registerPrinter<Printers::Atari1027>(Printers::BasePrinter::ATARI1027, "Atari 1027");
+    factory->registerPrinter<Printers::Atari1020>(Printers::BasePrinter::ATARI1020, "Atari 1020");
+    factory->registerPrinter<Printers::Atari1029>(Printers::BasePrinter::ATARI1029, "Atari 1029");
 
     /* Add QActions for most recent */
     for( int i = 0; i < NUM_RECENT_FILES; ++i ) {
