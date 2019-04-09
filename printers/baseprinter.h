@@ -22,9 +22,6 @@ namespace Printers
         BasePrinter(SioWorker *worker);
         virtual ~BasePrinter();
 
-        int typeId() const { return mTypeId; }
-        const QString &typeName() const { return mTypeName; }
-
         virtual void handleCommand(quint8 command, quint16 aux);
         virtual bool handleBuffer(QByteArray &buffer, unsigned int len) = 0;
 

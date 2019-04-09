@@ -40,10 +40,9 @@ void PrinterWidget::setup()
     // TODO Better solution to getting labels?
     std::map<QString, int> list;
     Printers::PrinterFactory* factory = Printers::PrinterFactory::instance();
-    for (int i = 1; i <= factory->numRegisteredPrinters(); i++) {
-        Printers::BasePrinter *printer = factory->createPrinter(i, Q_NULLPTR);
-        list[printer->typeName()] = printer->typeId();
-        delete printer;
+    for (int i = 1; i <= factory->numRegisteredPrinters(); i++)
+    {
+        list[factory->printerLabel(i)] = i;
     }
     ui->atariPrinters->addItem(tr("None"), -1);
     std::map<QString, int>::const_iterator cit;
@@ -122,7 +121,7 @@ void PrinterWidget::selectPrinter()
        Printers::BasePrinter *newPrinter = factory->createPrinter(typeId, mSio);
        mSio->installDevice(static_cast<quint8>(PRINTER_BASE_CDEVIC + printerNo_), newPrinter);
        mPrinter = newPrinter;
-       respeqtSettings->setPrinterName(printerNo_, mPrinter->typeName());
+       respeqtSettings->setPrinterName(printerNo_, factory->printerLabel(typeId));
     }
 
 }

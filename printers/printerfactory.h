@@ -57,7 +57,7 @@ namespace Printers {
             return Q_NULLPTR;
         }
 
-        QString getLabel(int type) const
+        QString printerLabel(int type) const
         {
             typename LabelMap::const_iterator it = printerLabels.find(type);
             if (it != printerLabels.end())
