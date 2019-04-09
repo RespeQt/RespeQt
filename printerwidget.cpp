@@ -222,3 +222,13 @@ void PrinterWidget::on_actionDisconnectPrinter_triggered()
     ui->actionDisconnectPrinter->setEnabled(false);
     ui->actionConnectPrinter->setEnabled(true);
 }
+
+void PrinterWidget::on_outputSelection_currentIndexChanged(const QString &outputName)
+{
+    respeqtSettings->setOutputName(printerNo_, outputName);
+}
+
+void PrinterWidget::on_atariPrinters_currentIndexChanged(const QString &printerName)
+{
+    respeqtSettings->setPrinterName(printerNo_, printerName);
+}
