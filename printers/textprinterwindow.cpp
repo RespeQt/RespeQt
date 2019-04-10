@@ -303,4 +303,12 @@ void TextPrinterWindow::on_actionSave_triggered()
     emit textPrint(s);
  }
 
+ bool TextPrinterWindow::setupOutput()
+ {
+    this->setGeometry(respeqtSettings->lastPrtHorizontalPos(), respeqtSettings->lastPrtVerticalPos(), respeqtSettings->lastPrtWidth(), respeqtSettings->lastPrtHeight());
+    this->show();
+
+    return true;
+ }
+
 } // End of namespace

@@ -15,6 +15,8 @@ namespace Printers
         NativeOutput();
         virtual ~NativeOutput();
 
+        virtual bool setupOutput() = 0;
+
         virtual void beginOutput();
         virtual void endOutput();
         virtual void newPage(bool linefeed = false) = 0;

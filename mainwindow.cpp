@@ -31,6 +31,10 @@
 #include "printers/atari1020.h"
 #include "printers/atari1027.h"
 #include "printers/atari1029.h"
+#include "printers/outputfactory.h"
+#include "printers/svgoutput.h"
+#include "printers/textprinterwindow.h"
+#include "printers/nativeprinter.h"
 
 #include <QEvent>
 #include <QDragEnterEvent>
@@ -48,6 +52,7 @@
 #include <QPrinter>
 #include <QToolButton>
 #include <QHBoxLayout>
+#include <QPrinterInfo>
 
 #include "atarifilesystem.h"
 #include "miscutils.h"
@@ -174,10 +179,20 @@ MainWindow::MainWindow(QWidget *parent)
     ui->setupUi(this);
 
     /* Setup the printer factory */
-    Printers::PrinterFactory* factory = Printers::PrinterFactory::instance();
-    factory->registerPrinter<Printers::Atari1027>(Printers::BasePrinter::ATARI1027, "Atari 1027");
-    factory->registerPrinter<Printers::Atari1020>(Printers::BasePrinter::ATARI1020, "Atari 1020");
-    factory->registerPrinter<Printers::Atari1029>(Printers::BasePrinter::ATARI1029, "Atari 1029");
+    Printers::PrinterFactory* pfactory = Printers::PrinterFactory::instance();
+    pfactory->registerPrinter<Printers::Atari1027>(Printers::BasePrinter::ATARI1027, "Atari 1027");
+    pfactory->registerPrinter<Printers::Atari1020>(Printers::BasePrinter::ATARI1020, "Atari 1020");
+    pfactory->registerPrinter<Printers::Atari1029>(Printers::BasePrinter::ATARI1029, "Atari 1029");
+
+    /* Setup the output factory */
+    Printers::OutputFactory* ofactory = Printers::OutputFactory::instance();
+    ofactory->registerOutput<Printers::SVGOutput>("SVG");
+    ofactory->registerOutput<Printers::TextPrinterWindow>(tr("Text window"));
+    QStringList printers = QPrinterInfo::availablePrinterNames();
+    for (QStringList::const_iterator sit = printers.cbegin(); sit != printers.cend(); ++sit)
+    {
+        ofactory->registerOutput<Printers::NativePrinter>(*sit);
+    }
 
     /* Add QActions for most recent */
     for( int i = 0; i < NUM_RECENT_FILES; ++i ) {

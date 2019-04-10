@@ -86,7 +86,8 @@ SOURCES += main.cpp \
     diskimagescp.cpp \
     disassembly810.cpp \
     disassembly1050.cpp \
-    printers/printerfactory.cpp
+    printers/printerfactory.cpp \
+    printers/outputfactory.cpp
 
 win32:LIBS += -lwinmm -lz
 unix:LIBS += -lz
@@ -158,7 +159,8 @@ HEADERS += mainwindow.h \
     RomBankSwitchTurbo.hpp \
     disassembly810.h \
     disassembly1050.h \
-    printers/printerfactory.h
+    printers/printerfactory.h \
+    printers/outputfactory.h
 
 win32:HEADERS += serialport-win32.h
 unix:HEADERS += serialport-unix.h

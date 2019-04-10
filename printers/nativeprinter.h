@@ -16,6 +16,8 @@ namespace Printers
         }
         virtual void newPage(bool linefeed = false);
 
+        virtual bool setupOutput();
+
     protected:
         virtual void updateBoundingBox();
     };

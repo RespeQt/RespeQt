@@ -20,6 +20,8 @@ namespace Printers
         virtual void updateBoundingBox();
         virtual void newPage(bool linefeed = false);
 
+        virtual bool setupOutput();
+
     };
 }
 #endif // SVGOUTPUT_H

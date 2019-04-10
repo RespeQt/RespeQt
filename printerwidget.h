@@ -32,8 +32,8 @@ signals:
     void actionConnectPrinter(int deviceId);
 
 private slots:
-    void selectPrinter();
-    void selectOutput();
+    bool selectPrinter();
+    bool selectOutput();
     void on_actionConnectPrinter_triggered();
     void on_actionDisconnectPrinter_triggered();
     void on_outputSelection_currentIndexChanged(const QString &outputName);

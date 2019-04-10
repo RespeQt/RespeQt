@@ -43,6 +43,8 @@ public:
     virtual void drawLine(const QPointF &, const QPointF &) {}
     virtual void calculateFixedFontSize(uint8_t) {}
 
+    virtual bool setupOutput();
+
 public slots:
     void print(const QString &text);
 

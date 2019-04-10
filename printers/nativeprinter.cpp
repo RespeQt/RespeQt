@@ -1,4 +1,5 @@
 #include "nativeprinter.h"
+#include <QPrintDialog>
 
 namespace Printers
 {
@@ -24,4 +25,12 @@ namespace Printers
     void NativePrinter::newPage(bool)
     {}
 
+    bool NativePrinter::setupOutput()
+    {
+        QPrintDialog dialog(printer());
+        dialog.setOption(QAbstractPrintDialog::PrintSelection, false);
+        dialog.setOption(QAbstractPrintDialog::PrintPageRange, false);
+        dialog.setOption(QAbstractPrintDialog::PrintCurrentPage, false);
+        return dialog.exec() == QDialog::Accepted;
+    }
 }
