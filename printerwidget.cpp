@@ -6,7 +6,7 @@
 #include "printers/outputfactory.h"
 #include "printers/nativeprinter.h"
 
-#include <QList>
+#include <QVector>
 #include <QString>
 #include <QMessageBox>
 
@@ -38,9 +38,11 @@ void PrinterWidget::setup()
     std::map<QString, int> list;
     ui->atariPrinters->addItem(tr("None"), -1);
     Printers::PrinterFactory* factory = Printers::PrinterFactory::instance();
-    for (int i = 1; i <= factory->numRegisteredPrinters(); i++)
+    const QVector<QString> pnames = factory->getPrinterNames();
+    QVector<QString>::const_iterator it;
+    for(it = pnames.begin(); it != pnames.end(); ++it)
     {
-        ui->atariPrinters->addItem(factory->printerLabel(i), i);
+        ui->atariPrinters->addItem(*it);
     }
 
     // Set to default (none) and then look whether we have a settings
@@ -56,11 +58,10 @@ void PrinterWidget::setup()
 
     ui->outputSelection->clear();
     ui->outputSelection->addItem(tr("None"), -1);
-    const QList<QString> names = Printers::OutputFactory::instance()->getOutputNames();
-    QList<QString>::const_iterator it; int i;
-    for (i = 1, it = names.begin(); it != names.end(); i++, it++)
+    const QVector<QString> onames = Printers::OutputFactory::instance()->getOutputNames();
+    for (it = onames.begin(); it != onames.end(); ++it)
     {
-        ui->outputSelection->addItem(*it, i);
+        ui->outputSelection->addItem(*it);
     }
 
     // Set to default (none) and then look whether we have a settings
@@ -106,16 +107,13 @@ bool PrinterWidget::selectPrinter()
         mPrinter = Q_NULLPTR;
     }
     if (mSio) {
-       // Create a new Atari printer device and install it.
-       int typeId = ui->atariPrinters->itemData(ui->atariPrinters->currentIndex()).toInt();
-
        Printers::PrinterFactory* factory = Printers::PrinterFactory::instance();
-       Printers::BasePrinter *newPrinter = factory->createPrinter(typeId, mSio);
+       Printers::BasePrinter *newPrinter = factory->createPrinter(ui->atariPrinters->currentText(), mSio);
        if (newPrinter != Q_NULLPTR)
        {
            mSio->installDevice(static_cast<quint8>(PRINTER_BASE_CDEVIC + printerNo_), newPrinter);
            mPrinter = newPrinter;
-           respeqtSettings->setPrinterName(printerNo_, factory->printerLabel(typeId));
+           respeqtSettings->setPrinterName(printerNo_, ui->atariPrinters->currentText());
            return true;
        }
     }

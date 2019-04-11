@@ -180,9 +180,9 @@ MainWindow::MainWindow(QWidget *parent)
 
     /* Setup the printer factory */
     Printers::PrinterFactory* pfactory = Printers::PrinterFactory::instance();
-    pfactory->registerPrinter<Printers::Atari1027>(Printers::BasePrinter::ATARI1027, "Atari 1027");
-    pfactory->registerPrinter<Printers::Atari1020>(Printers::BasePrinter::ATARI1020, "Atari 1020");
-    pfactory->registerPrinter<Printers::Atari1029>(Printers::BasePrinter::ATARI1029, "Atari 1029");
+    pfactory->registerPrinter<Printers::Atari1027>("Atari 1027");
+    pfactory->registerPrinter<Printers::Atari1020>("Atari 1020");
+    pfactory->registerPrinter<Printers::Atari1029>("Atari 1029");
 
     /* Setup the output factory */
     Printers::OutputFactory* ofactory = Printers::OutputFactory::instance();

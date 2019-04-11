@@ -30,11 +30,6 @@ namespace Printers
         NativeOutput *output() const { return mOutput; }
         void setOutput(NativeOutput *output);
 
-        static const int ATARI1027 = 1;
-        static const int ATARI1020 = 2;
-        static const int ATARI1029 = 3;
-        static const int ESCP = 4;
-
     protected:
         // This should be static methods, because they are called
         // from the constructor

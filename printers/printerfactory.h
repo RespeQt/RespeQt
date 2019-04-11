@@ -1,7 +1,8 @@
 #ifndef PRINTERFACTORY_H
 #define PRINTERFACTORY_H
 
-#include <QMap>
+#include <QVector>
+#include <QPair>
 #include <QString>
 #include "sioworker.h"
 #include "baseprinter.h"
@@ -19,12 +20,9 @@ namespace Printers {
 
         // Instanciation maps
         typedef BasePrinter* (*Creator)(SioWorker *worker);
-        typedef QMap<int, Creator> CreatorMap;
-        CreatorMap creatorFunctions;
-
-        // Label maps
-        typedef QMap<int, QString> LabelMap;
-        LabelMap printerLabels;
+        typedef QPair<QString, Creator> CreatorPair;
+        typedef QVector<CreatorPair> CreatorVector;
+        CreatorVector creatorFunctions;
 
         static PrinterFactory* sInstance;
         PrinterFactory() {}
@@ -40,29 +38,21 @@ namespace Printers {
         }
 
         template<class TDerived>
-        void registerPrinter(int type, QString label)
+        void registerPrinter(QString label)
         {
             static_assert (std::is_base_of<BasePrinter, TDerived>::value, "PrinterFactory::registerPrinter doesn't accept this type because doesn't derive from base class");
-            creatorFunctions[type] = &creator<TDerived>;
-            printerLabels[type] = label;
+            creatorFunctions.append(CreatorPair(label, &creator<TDerived>));
         }
 
-        BasePrinter* createPrinter(int type, SioWorker *worker) const
+        BasePrinter* createPrinter(QString label, SioWorker *worker) const
         {
-            typename CreatorMap::const_iterator it = creatorFunctions.find(type);
-            if (it != creatorFunctions.end())
+            CreatorVector::const_iterator it;
+            for(it = creatorFunctions.begin(); it != creatorFunctions.end(); ++it)
             {
-                return it.value()(worker);
-            }
-            return Q_NULLPTR;
-        }
-
-        QString printerLabel(int type) const
-        {
-            typename LabelMap::const_iterator it = printerLabels.find(type);
-            if (it != printerLabels.end())
-            {
-                return it.value();
+                if (it->first == label)
+                {
+                    return it->second(worker);
+                }
             }
             return Q_NULLPTR;
         }
@@ -70,6 +60,17 @@ namespace Printers {
         int numRegisteredPrinters() const
         {
             return creatorFunctions.size();
+        }
+
+        const QVector<QString> getPrinterNames() const
+        {
+            QVector<QString> names;
+            CreatorVector::const_iterator it;
+            for(it = creatorFunctions.begin(); it != creatorFunctions.end(); ++it)
+            {
+                names.append(it->first);
+            }
+            return names;
         }
     };
 }

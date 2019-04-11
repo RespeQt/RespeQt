@@ -1,9 +1,8 @@
 #ifndef OUTPUTFACTORY_H
 #define OUTPUTFACTORY_H
 
-#include <QMap>
+#include <QVector>
 #include <QString>
-#include <QList>
 #include "nativeoutput.h"
 
 namespace Printers {
@@ -19,8 +18,9 @@ namespace Printers {
 
         // Instanciation maps
         typedef NativeOutput* (*Creator)();
-        typedef QMap<QString, Creator> CreatorMap;
-        CreatorMap creatorFunctions;
+        typedef QPair<QString, Creator> CreatorPair;
+        typedef QVector<CreatorPair> CreatorVector;
+        CreatorVector creatorFunctions;
 
         static OutputFactory* sInstance;
         OutputFactory() {}
@@ -39,15 +39,18 @@ namespace Printers {
         void registerOutput(QString label)
         {
             static_assert (std::is_base_of<NativeOutput, TDerived>::value, "OutputFactory::registerOutput doesn't accept this type because doesn't derive from base class");
-            creatorFunctions[label] = &creator<TDerived>;
+            creatorFunctions.append(CreatorPair(label, &creator<TDerived>));
         }
 
         NativeOutput* createOutput(QString label) const
         {
-            typename CreatorMap::const_iterator it = creatorFunctions.find(label);
-            if (it != creatorFunctions.end())
+            typename CreatorVector::const_iterator it;
+            for(it = creatorFunctions.begin(); it != creatorFunctions.end(); ++it)
             {
-                return it.value()();
+                if (it->first == label)
+                {
+                    return it->second();
+                }
             }
             return Q_NULLPTR;
         }
@@ -57,9 +60,15 @@ namespace Printers {
             return creatorFunctions.size();
         }
 
-        const QList<QString> getOutputNames() const
+        const QVector<QString> getOutputNames() const
         {
-            return creatorFunctions.keys();
+            QVector<QString> names;
+            CreatorVector::const_iterator it;
+            for(it = creatorFunctions.begin(); it != creatorFunctions.end(); ++it)
+            {
+                names.append(it->first);
+            }
+            return names;
         }
 
     };
