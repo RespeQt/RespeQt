@@ -21,23 +21,6 @@ namespace Printers
         return mAtascii(b);
     }
 
-    /*BasePrinter *BasePrinter::createPrinter(int type, SioWorker *worker)
-    {
-        switch (type)
-        {
-            case ATARI1027:
-                return new Atari1027(worker);
-            case ATARI1020:
-                return new Atari1020(worker);
-            case ATARI1029:
-                return new Atari1029(worker);
-            case ESCP:
-                return new Escp(worker);
-            default:
-                throw new std::invalid_argument("Unknown printer type");
-        }
-    }*/
-
     void BasePrinter::handleCommand(quint8 command, quint16 aux)
     {
         if (respeqtSettings->printerEmulation() && mOutput) {  // Ignore printer commands  if Emulation turned OFF)    //

@@ -8,10 +8,7 @@ namespace Printers
         : AtariPrinter(worker),
           mESC(false),
           mElongatedMode(false)
-    {
-        mTypeId = ATARI1029;
-        mTypeName = QString("Atari 1029");
-    }
+    {}
 
     void Atari1029::setupFont()
     {

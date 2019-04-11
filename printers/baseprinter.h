@@ -30,14 +30,17 @@ namespace Printers
         NativeOutput *output() const { return mOutput; }
         void setOutput(NativeOutput *output);
 
+        static QString typeName()
+        {
+            throw new std::invalid_argument("Not implemented");
+        }
+
     protected:
         // This should be static methods, because they are called
         // from the constructor
         virtual void setupFont() {}
         virtual void setupOutput();
 
-        int mTypeId;
-        QString mTypeName;
         Atascii mAtascii;
         NativeOutput *mOutput;
 

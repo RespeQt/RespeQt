@@ -12,6 +12,11 @@ namespace Printers
 
         virtual bool handleBuffer(QByteArray &buffer, unsigned int len);
 
+        static QString typeName()
+        {
+            return "ESC/P";
+        }
+
     protected:
         bool mEsc; // Escape mode is off/on
         quint16 mMode, mLastMode;

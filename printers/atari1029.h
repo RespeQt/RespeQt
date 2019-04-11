@@ -17,6 +17,10 @@ namespace Printers
         Atari1029(SioWorker *worker);
 
         virtual void setupFont();
+        static QString typeName()
+        {
+            return "Atari 1029";
+        }
 
     private:
         bool mESC;

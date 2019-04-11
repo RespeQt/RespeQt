@@ -14,6 +14,11 @@ namespace Printers
         virtual void setupFont();
         virtual void setupOutput();
 
+        static QString typeName()
+        {
+            return "Atari 1020";
+        }
+
     protected:
         static const unsigned char BLACK;
         static const unsigned char BLUE;

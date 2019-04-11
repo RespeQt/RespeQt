@@ -26,10 +26,7 @@ namespace Printers
           mEsc(false),
           mPrintText(false),
           mTextOrientation(0)
-    {
-        mTypeId = ATARI1020;
-        mTypeName = QString("Atari 1020");
-    }
+    {}
 
     void Atari1020::setupOutput()
     {

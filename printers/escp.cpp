@@ -5,8 +5,6 @@ namespace Printers
     Escp::Escp(SioWorker *sio)
         : Centronics(sio)
     {
-        mTypeId = ESCP;
-        mTypeName = "ESC/P";
         initPrinter();
     }
 

@@ -7,10 +7,7 @@ namespace Printers
     Atari1027::Atari1027(SioWorker *worker)
         : AtariPrinter(worker),
           mESC(false)
-    {
-        mTypeId = ATARI1027;
-        mTypeName = QString("Atari 1027");
-    }
+    {}
 
     void Atari1027::setupFont()
     {
