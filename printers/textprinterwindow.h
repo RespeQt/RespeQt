@@ -44,6 +44,11 @@ public:
     virtual void calculateFixedFontSize(uint8_t) {}
 
     virtual bool setupOutput();
+    static QString typeName()
+    {
+        return QObject::tr("Text printer");
+    }
+
 
 public slots:
     void print(const QString &text);

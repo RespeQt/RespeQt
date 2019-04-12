@@ -22,6 +22,11 @@ namespace Printers
 
         virtual bool setupOutput();
 
+        static QString typeName()
+        {
+            return "SVG";
+        }
+
     };
 }
 #endif // SVGOUTPUT_H

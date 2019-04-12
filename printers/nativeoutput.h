@@ -48,6 +48,11 @@ namespace Printers
         void setX(int x) { mX = x; }
         void setY(int y) { mY = y; }
 
+        static QString typeName()
+        {
+            throw new std::invalid_argument("Not implemented");
+        }
+
     protected:
         QPainter *mPainter;
         QPaintDevice *mDevice;

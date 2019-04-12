@@ -187,8 +187,8 @@ MainWindow::MainWindow(QWidget *parent)
 
     /* Setup the output factory */
     Printers::OutputFactory* ofactory = Printers::OutputFactory::instance();
-    ofactory->registerOutput<Printers::SVGOutput>("SVG");
-    ofactory->registerOutput<Printers::TextPrinterWindow>(tr("Text window"));
+    ofactory->registerOutput<Printers::SVGOutput>(Printers::SVGOutput::typeName());
+    ofactory->registerOutput<Printers::TextPrinterWindow>(Printers::TextPrinterWindow::typeName());
     QStringList printers = QPrinterInfo::availablePrinterNames();
     for (QStringList::const_iterator sit = printers.cbegin(); sit != printers.cend(); ++sit)
     {
