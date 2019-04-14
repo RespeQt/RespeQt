@@ -232,8 +232,8 @@ public:
     const QString &printerName(int no) const;
     const PrinterSettings &printerSettings(int no) const;
 
-    QString atari1027FontFamily();
-    void setAtari1027FontFamily(QString fontFamily);
+    QString atariFixedFontFamily();
+    void setAtariFixedFontFamily(QString fontFamily);
 
 // Atari drive firmware
     QString atari810Firmware();
@@ -365,7 +365,7 @@ private:
     
     QString mI18nLanguage;
 
-    QString mAtari1027FontName;
+    QString mAtariFixedFontName;
 
     bool mMinimizeToTray;
     bool mFilterUnderscore;

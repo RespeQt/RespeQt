@@ -107,7 +107,7 @@
     </property>
     <item>
      <property name="text">
-      <string>Atari 1027</string>
+      <string>Printer fixed width font</string>
      </property>
     </item>
    </item>
@@ -128,7 +128,7 @@
     </sizepolicy>
    </property>
    <property name="currentIndex">
-    <number>5</number>
+    <number>7</number>
    </property>
    <widget class="QWidget" name="page_serialPort">
     <layout class="QVBoxLayout" name="verticalLayout_2">
@@ -1048,7 +1048,7 @@
     </layout>
    </widget>
    <widget class="QWidget" name="page_atari1020"/>
-   <widget class="QWidget" name="page_atari1027">
+   <widget class="QWidget" name="page_atarifixed">
     <layout class="QGridLayout" name="gridLayout_1">
      <property name="leftMargin">
       <number>0</number>
@@ -1066,9 +1066,9 @@
       <number>0</number>
      </property>
      <item row="0" column="0">
-      <widget class="QGroupBox" name="group_a1027">
+      <widget class="QGroupBox" name="group_afixed">
        <property name="title">
-        <string>Atari 1027</string>
+        <string>Printer fixed width font</string>
        </property>
        <layout class="QVBoxLayout" name="verticalLayout_7">
         <item>
@@ -1080,7 +1080,7 @@
            <number>0</number>
           </property>
           <item>
-           <widget class="QPushButton" name="button_1027font">
+           <widget class="QPushButton" name="button_atarifixed">
             <property name="sizePolicy">
              <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
               <horstretch>0</horstretch>
@@ -1093,7 +1093,7 @@
            </widget>
           </item>
           <item>
-           <widget class="QLabel" name="label_1027font">
+           <widget class="QLabel" name="label_atarifixed">
             <property name="sizePolicy">
              <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
               <horstretch>0</horstretch>

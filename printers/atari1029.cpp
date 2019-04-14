@@ -14,7 +14,7 @@ namespace Printers
     {
         if (mOutput)
         {
-            QFont *font = new QFont(respeqtSettings->atari1027FontFamily(), 12);
+            QFont *font = new QFont(respeqtSettings->atariFixedFontFamily(), 12);
             font->setUnderline(false);
             mOutput->setFont(font);
             mOutput->calculateFixedFontSize(80);

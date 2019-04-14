@@ -138,7 +138,7 @@ namespace Printers
 
         switch (b)
         {
-            case 'H': // return to HOME
+            case 'H': // set to HOME
                 mPenPoint.setX(0);
                 mPenPoint.setY(0);
             break;

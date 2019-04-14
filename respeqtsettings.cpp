@@ -122,7 +122,7 @@ RespeqtSettings::RespeqtSettings()
     mEnableShade = mSettings->value("EnableShadeByDefault", true).toBool();
 
     // Printer specific settings
-    mAtari1027FontName = mSettings->value("Atari1027FontFamily", "Courier").toString();
+    mAtariFixedFontName = mSettings->value("AtariFixedFontFamily", "Courier").toString();
     mSettings->beginReadArray("ConnectedPrinterSettings");
     for(i = 0; i < PRINTER_COUNT; i++)
     {
@@ -1025,13 +1025,13 @@ const RespeqtSettings::PrinterSettings &RespeqtSettings::printerSettings(int no)
     return mPrinterSettings[no];
 }
 
-QString RespeqtSettings::atari1027FontFamily() {
-    return mAtari1027FontName;
+QString RespeqtSettings::atariFixedFontFamily() {
+    return mAtariFixedFontName;
 }
 
-void RespeqtSettings::setAtari1027FontFamily(QString fontFamily) {
-    mAtari1027FontName = fontFamily;
-    mSettings->setValue("Atari1027FontFamily", fontFamily);
+void RespeqtSettings::setAtariFixedFontFamily(QString fontFamily) {
+    mAtariFixedFontName = fontFamily;
+    mSettings->setValue("AtariFixedFontFamily", fontFamily);
 }
 
 QString RespeqtSettings::atari810Firmware()
