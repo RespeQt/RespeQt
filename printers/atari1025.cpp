@@ -1,54 +1,44 @@
-#include "atari1027.h"
+#include "atari1025.h"
 #include "respeqtsettings.h"
 #include <stdlib.h>
 
 namespace Printers
 {
-    Atari1027::Atari1027(SioWorker *worker)
+    Atari1025::Atari1025(SioWorker *worker)
         : AtariPrinter(worker),
-          mESC(false)
+          mESC(false),
+          mCPI(10),
+          mLineChars(80),
+          mLPI(6)
     {}
 
-    void Atari1027::setupFont()
+    void Atari1025::setupFont()
     {
         if (mOutput)
         {
             QFont *font = new QFont(respeqtSettings->atariFixedFontFamily(), 12);
             font->setUnderline(false);
             mOutput->setFont(font);
-            mOutput->calculateFixedFontSize(80);
+            mOutput->calculateFixedFontSize(mLineChars);
         }
     }
 
-    bool Atari1027::handleBuffer(QByteArray &buffer, unsigned int len)
+    bool Atari1025::handleBuffer(QByteArray &buffer, unsigned int len)
     {
         for(unsigned int i = 0; i < len; i++)
         {
             unsigned char b = static_cast<unsigned char>(
                         buffer.at(static_cast<int>(i)));
             switch(b) {
-                case 15: // CTRL+O starts underline mode
-                {
-                    QFont *font = mOutput->font();
-                    font->setUnderline(true);
-                    mOutput->setFont(font);
-                    qDebug() << "!n" << "Underline on";
-                }
-                break;
-
-                case 14: // CTRL+N ends underline mode
-                {
-                    QFont *font = mOutput->font();
-                    font->setUnderline(false);
-                    mOutput->setFont(font);
-                    qDebug() << "!n" << "Underline off";
-                }
-                break;
-
                 case 23: // CTRL+W could be ESC code
                 case 24: // CTRL+X could be ESC code
-                case 25: // CTRL+Y could be ESC code
-                case 26: // CTRL+Z could be ESC code
+                case 20: // CTRL+T could be ESC code
+                case 15: // CTRL+O could be ESC code
+                case 14: // CTRL+N could be ESC code
+                case 76: // L could be ESC code
+                case 83: // S could be ESC code
+                case 54: // 6 could be ESC code
+                case 56: // 8 could be ESC code
                     if (mESC)
                     {
                         if (!handleEscapedCodes(b))
@@ -98,28 +88,10 @@ namespace Printers
         return true;
     }
 
-    bool Atari1027::handleEscapedCodes(const unsigned char b)
+    bool Atari1025::handleEscapedCodes(const unsigned char b)
     {
         // At this time we have seen an ESC.
         switch(b) {
-            case 25: // CTRL+Y starts underline mode
-            {
-                QFont *font = mOutput->font();
-                font->setUnderline(true);
-                mOutput->setFont(font);
-                mESC = false;
-                qDebug() << "!n" << "ESC Underline on";
-                return true;
-            }
-            case 26: // CTRL+Z ends underline mode
-            {
-                QFont *font = mOutput->font();
-                font->setUnderline(false);
-                mOutput->setFont(font);
-                mESC = false;
-                qDebug() << "!n" << "ESC Underline off";
-                return true;
-            }
             case 23: // CTRL+W starts international mode
                 setInternationalMode(true);
                 mESC = false;
@@ -127,6 +99,41 @@ namespace Printers
 
             case 24: // CTRL+X ends international mode
                 setInternationalMode(false);
+                mESC = false;
+                return true;
+
+            case 20: // CTRL+T print at 16.5 char/inch
+                setCharsPI(16.5f);
+                mESC = false;
+                return true;
+
+            case 15: // CTRL+O print at 10 char/inch
+                setCharsPI(10.0f);
+                mESC = false;
+                return true;
+
+            case 14: // CTRL+N print at 5 char/inch
+                setCharsPI(5.0f);
+                mESC = false;
+                return true;
+
+            case 76: // L set long line (80 char/line)
+                setLineChars(80);
+                mESC = false;
+                return true;
+
+            case 83: // S set short line (64 char/line)
+                setLineChars(64);
+                mESC = false;
+                return true;
+
+            case 54: // 6 set to 6 LPI
+                setLinesPI(6);
+                mESC = false;
+                return true;
+
+            case 56: // 8 set to 8 LPI
+                setLinesPI(8);
                 mESC = false;
                 return true;
 
@@ -138,10 +145,42 @@ namespace Printers
         return false;
     }
 
-    bool Atari1027::handlePrintableCodes(const unsigned char b)
+    bool Atari1025::handlePrintableCodes(const unsigned char b)
     {
         QChar qb = translateAtascii(b & 127); // Masking inverse characters.
         mOutput->printChar(qb);
         return true;
+    }
+
+    void Atari1025::setCharsPI(float chars)
+    {
+        mCPI = chars;
+        setupFont();
+    }
+
+    float Atari1025::charsPI() const
+    {
+        return mCPI;
+    }
+
+    void Atari1025::setLineChars(unsigned char chars)
+    {
+        mLineChars = chars;
+        setupFont();
+    }
+
+    unsigned char Atari1025::lineChars() const
+    {
+        return mLineChars;
+    }
+
+    void Atari1025::setLinesPI(unsigned char lines)
+    {
+        mLPI = lines;
+    }
+
+    unsigned char Atari1025::linesPI() const
+    {
+        return mLPI;
     }
 }

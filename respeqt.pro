@@ -87,7 +87,8 @@ SOURCES += main.cpp \
     disassembly810.cpp \
     disassembly1050.cpp \
     printers/printerfactory.cpp \
-    printers/outputfactory.cpp
+    printers/outputfactory.cpp \
+    printers/atari1025.cpp
 
 win32:LIBS += -lwinmm -lz
 unix:LIBS += -lz
@@ -160,7 +161,8 @@ HEADERS += mainwindow.h \
     disassembly810.h \
     disassembly1050.h \
     printers/printerfactory.h \
-    printers/outputfactory.h
+    printers/outputfactory.h \
+    printers/atari1025.h
 
 win32:HEADERS += serialport-win32.h
 unix:HEADERS += serialport-unix.h

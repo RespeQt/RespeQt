@@ -61,6 +61,9 @@ namespace Printers
         QRectF mBoundingBox;
         uint8_t mCharsPerLine;
         uint8_t mCharCount;
+        uint8_t mLPIMode;
+        bool mCharMode;
+        uint32_t hResolution, vResolution;
 
         virtual void updateBoundingBox() = 0;
     };

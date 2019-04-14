@@ -31,6 +31,7 @@
 #include "printers/atari1020.h"
 #include "printers/atari1027.h"
 #include "printers/atari1029.h"
+#include "printers/atari1025.h"
 #include "printers/outputfactory.h"
 #include "printers/svgoutput.h"
 #include "printers/textprinterwindow.h"
@@ -182,6 +183,7 @@ MainWindow::MainWindow(QWidget *parent)
     /* Setup the printer factory */
     Printers::PrinterFactory* pfactory = Printers::PrinterFactory::instance();
     pfactory->registerPrinter<Printers::Atari1020>(Printers::Atari1020::typeName());
+    pfactory->registerPrinter<Printers::Atari1025>(Printers::Atari1025::typeName());
     pfactory->registerPrinter<Printers::Atari1027>(Printers::Atari1027::typeName());
     pfactory->registerPrinter<Printers::Atari1029>(Printers::Atari1029::typeName());
 

@@ -165,10 +165,10 @@ OptionsDialog::OptionsDialog(QWidget *parent) :
         m_ui->emulationHighSpeedExeLoaderBox->setVisible(true);
     }
 
-    m_ui->label_1027font->setText(respeqtSettings->atari1027FontFamily());
+    m_ui->label_atarifixed->setText(respeqtSettings->atariFixedFontFamily());
     QFont font;
     font.setPointSize(12);
-    font.setFamily(m_ui->label_1027font->text());
+    font.setFamily(m_ui->label_atarifixed->text());
     m_ui->fontSample->setFont(font);
 
 #ifdef Q_OS_MAC
@@ -420,17 +420,18 @@ void OptionsDialog::on_testFileButton_clicked()
 #endif
 }
 
-void OptionsDialog::on_button_1027font_clicked()
+void OptionsDialog::on_button_atarifixed_clicked()
 {
     bool ok;
     QFont font;
-    font.setFamily(m_ui->label_1027font->text());
+    font.setFamily(m_ui->label_atarifixed->text());
     QFontDialog::FontDialogOptions options = QFontDialog::MonospacedFonts;
-    QFont newFont = QFontDialog::getFont(&ok, font, this, tr("Select Atari 1027 font"), options);
-    if (ok) {
+    QFont newFont = QFontDialog::getFont(&ok, font, this, tr("Select Atari fixed width font"), options);
+    if (ok)
+    {
         newFont.setPointSize(12);
-        m_ui->label_1027font->setText(newFont.family());
+        m_ui->label_atarifixed->setText(newFont.family());
         m_ui->fontSample->setFont(newFont);
-        respeqtSettings->setAtari1027FontFamily(newFont.family());
+        respeqtSettings->setAtariFixedFontFamily(newFont.family());
     }
 }

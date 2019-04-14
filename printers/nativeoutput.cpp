@@ -10,7 +10,8 @@ namespace Printers
         mFont(Q_NULLPTR),
         mX(0), mY(0),
         mCharsPerLine(80),
-        mCharCount(0)
+        mCharCount(0),
+        mLPIMode(0)
     {
 
     }
@@ -99,6 +100,12 @@ namespace Printers
     void NativeOutput::newLine(bool linefeed)
     {
         QFontMetrics metrics(*mFont);
+
+        int lineSpacing = metrics.lineSpacing();
+        if (mLPIMode > 0)
+        {
+            lineSpacing = metrics.height();
+        }
         if (!linefeed)
         {
             mX = static_cast<int>(trunc(mBoundingBox.left()));
@@ -109,7 +116,7 @@ namespace Printers
             newPage(linefeed);
             mY = static_cast<int>(trunc(mBoundingBox.top()));
         } else {
-            mY += metrics.lineSpacing();
+            mY += lineSpacing;
         }
     }
 

@@ -48,7 +48,6 @@ private slots:
     void OptionsDialog_accepted();
     void on_useEmulationCustomCasBaudBox_toggled(bool checked);
     void on_testFileButton_clicked();
-    void on_button_1027font_clicked();
     void on_actionSelect810Firmware_triggered();
     void on_actionSelect810ChipFirmware_triggered();
     void on_actionSelect810HappyFirmware_triggered();
@@ -58,6 +57,7 @@ private slots:
     void on_actionSelect1050SpeedyFirmware_triggered();
     void on_actionSelect1050TurboFirmware_triggered();
     void on_actionSelect1050DuplicatorFirmware_triggered();
+    void on_button_atarifixed_clicked();
 };
 
 #endif // OPTIONSDIALOG_H
