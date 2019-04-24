@@ -28,8 +28,8 @@ public:
     virtual void newLine(bool linefeed = false);
     virtual void newPage(bool) {}
     virtual void updateBoundingBox() {}
-    virtual void beginOutput() {}
-    virtual void endOutput() {}
+    virtual bool beginOutput() { return true; }
+    virtual bool endOutput() { return true; }
     virtual void printChar(const QChar &c);
     virtual void printString(const QString &s);
     virtual void setWindow(const QRect &) {}

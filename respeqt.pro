@@ -88,12 +88,15 @@ SOURCES += main.cpp \
     disassembly1050.cpp \
     printers/printerfactory.cpp \
     printers/outputfactory.cpp \
-    printers/atari1025.cpp
+    printers/atari1025.cpp \
+    printers/passthrough.cpp
 
-win32:LIBS += -lwinmm -lz
-unix:LIBS += -lz
-win32:SOURCES += serialport-win32.cpp
-unix:SOURCES += serialport-unix.cpp
+win32:LIBS += -lwinmm -lz -lwinspool
+unix:LIBS += -lz -lcups
+win32:SOURCES += serialport-win32.c \
+    printers/rawoutput_win.cpp
+unix:SOURCES += serialport-unix.cpp \
+    printers/rawoutput_cups.cpp
 HEADERS += mainwindow.h \
     serialport.h \
     sioworker.h \
@@ -162,7 +165,9 @@ HEADERS += mainwindow.h \
     disassembly1050.h \
     printers/printerfactory.h \
     printers/outputfactory.h \
-    printers/atari1025.h
+    printers/atari1025.h \
+    printers/passthrough.h \
+    printers/rawoutput.h
 
 win32:HEADERS += serialport-win32.h
 unix:HEADERS += serialport-unix.h

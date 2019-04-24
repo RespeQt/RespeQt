@@ -32,10 +32,12 @@
 #include "printers/atari1027.h"
 #include "printers/atari1029.h"
 #include "printers/atari1025.h"
+#include "printers/passthrough.h"
 #include "printers/outputfactory.h"
 #include "printers/svgoutput.h"
 #include "printers/textprinterwindow.h"
 #include "printers/nativeprinter.h"
+#include "printers/rawoutput.h"
 
 #include <QEvent>
 #include <QDragEnterEvent>
@@ -186,11 +188,13 @@ MainWindow::MainWindow(QWidget *parent)
     pfactory->registerPrinter<Printers::Atari1025>(Printers::Atari1025::typeName());
     pfactory->registerPrinter<Printers::Atari1027>(Printers::Atari1027::typeName());
     pfactory->registerPrinter<Printers::Atari1029>(Printers::Atari1029::typeName());
+    pfactory->registerPrinter<Printers::Passthrough>(Printers::Passthrough::typeName());
 
     /* Setup the output factory */
     Printers::OutputFactory* ofactory = Printers::OutputFactory::instance();
     ofactory->registerOutput<Printers::SVGOutput>(Printers::SVGOutput::typeName());
     ofactory->registerOutput<Printers::TextPrinterWindow>(Printers::TextPrinterWindow::typeName());
+    ofactory->registerOutput<Printers::RawOutput>(Printers::RawOutput::typeName());
     QStringList printers = QPrinterInfo::availablePrinterNames();
     for (QStringList::const_iterator sit = printers.cbegin(); sit != printers.cend(); ++sit)
     {

@@ -34,8 +34,9 @@ protected:
 
 private:
     Ui::OptionsDialog *m_ui;
-    QTreeWidgetItem *itemTestSerialPort, *itemAtari1020, *itemAtari1027;
-    QTreeWidgetItem *itemStandard, *itemAtariSio, *itemEmulation, *itemDiskOptions, *itemI18n, *itemFirmware810Path, *itemFirmware1050Path, *itemFirmwareEmulation, *itemTraceOptions;
+    QTreeWidgetItem *itemTestSerialPort, *itemPassthrough, *itemAtari1027,
+        *itemStandard, *itemAtariSio, *itemEmulation, *itemDiskOptions, *itemI18n,
+        *itemFirmware810Path, *itemFirmware1050Path, *itemFirmwareEmulation, *itemTraceOptions;
 
     void selectFirmware(QLineEdit *edit, QString title, QString filters);
 

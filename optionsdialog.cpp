@@ -17,6 +17,7 @@
 #include <QDir>
 #include <QFileDialog>
 #include <QFontDialog>
+#include <QPrintDialog>
 
 OptionsDialog::OptionsDialog(QWidget *parent) :
     QDialog(parent),
@@ -36,6 +37,7 @@ OptionsDialog::OptionsDialog(QWidget *parent) :
     itemI18n = m_ui->treeWidget->topLevelItem(3);
     itemTestSerialPort = m_ui->treeWidget->topLevelItem(0)->child(2);
     itemAtari1027 = m_ui->treeWidget->topLevelItem(4)->child(0);
+    itemPassthrough = m_ui->treeWidget->topLevelItem(4)->child(1);
 
 #ifndef Q_OS_LINUX
     m_ui->treeWidget->topLevelItem(0)->removeChild(itemAtariSio);
@@ -287,6 +289,8 @@ void OptionsDialog::on_treeWidget_currentItemChanged(QTreeWidgetItem* current, Q
     } else if (current == itemI18n) {
         m_ui->stackedWidget->setCurrentIndex(5);
     } else if (current == itemAtari1027) {
+        m_ui->stackedWidget->setCurrentIndex(6);
+    } else if (current == itemPassthrough) {
         m_ui->stackedWidget->setCurrentIndex(7);
     }
 }

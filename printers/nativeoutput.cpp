@@ -21,19 +21,21 @@ namespace Printers
         endOutput();
     }
 
-    void NativeOutput::beginOutput() {
+    bool NativeOutput::beginOutput() {
         mPainter = new QPainter();
         mPainter->setRenderHint(QPainter::Antialiasing);
         mPainter->begin(mDevice);
         setFont(mFont);
         updateBoundingBox();
+        return true;
     }
 
-    void NativeOutput::endOutput() {
+    bool NativeOutput::endOutput() {
         if (mPainter)
         {
             mPainter->end();
         }
+        return true;
     }
 
     void NativeOutput::setFont(QFont *font)

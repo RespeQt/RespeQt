@@ -17,8 +17,8 @@ namespace Printers
 
         virtual bool setupOutput() = 0;
 
-        virtual void beginOutput();
-        virtual void endOutput();
+        virtual bool beginOutput();
+        virtual bool endOutput();
         virtual void newPage(bool linefeed = false) = 0;
         virtual void newLine(bool linefeed = false);
         virtual void printChar(const QChar &c);
