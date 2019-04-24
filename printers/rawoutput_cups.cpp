@@ -17,6 +17,7 @@ namespace Printers {
 
     bool RawOutput::setupOutput()
     {
+        rawPrinterName = "HP_Color_LaserJet_MFP_M277dw";
         return true;
     }
 
@@ -27,7 +28,7 @@ namespace Printers {
         if (mJobId > 0)
         {
             // Job created, now start first and last document.
-            cupsStartDocument(CUPS_HTTP_DEFAULT, temp.data(), mJobId, "RespeQt", CUPS_FORMAT_TEXT, 1);
+            cupsStartDocument(CUPS_HTTP_DEFAULT, temp.data(), mJobId, "RespeQt", CUPS_FORMAT_RAW, 1);
         } else {
             // Error
             return false;

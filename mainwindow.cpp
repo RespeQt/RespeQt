@@ -28,16 +28,9 @@
 #include "infowidget.h"
 #include "printerwidget.h"
 #include "printers/printerfactory.h"
-#include "printers/atari1020.h"
-#include "printers/atari1027.h"
-#include "printers/atari1029.h"
-#include "printers/atari1025.h"
-#include "printers/passthrough.h"
 #include "printers/outputfactory.h"
-#include "printers/svgoutput.h"
-#include "printers/textprinterwindow.h"
-#include "printers/nativeprinter.h"
-#include "printers/rawoutput.h"
+#include "printers/printers.h"
+#include "printers/outputs.h"
 
 #include <QEvent>
 #include <QDragEnterEvent>

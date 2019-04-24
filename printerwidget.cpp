@@ -1,12 +1,10 @@
 #include "printerwidget.h"
 #include "ui_printerwidget.h"
 #include "respeqtsettings.h"
-#include "printers/nativeoutput.h"
+#include "printers/printers.h"
+#include "printers/outputs.h"
 #include "printers/printerfactory.h"
 #include "printers/outputfactory.h"
-#include "printers/nativeprinter.h"
-#include "printers/nativeprinter.h"
-#include "printers/passthrough.h"
 
 #include <QVector>
 #include <QString>
@@ -173,10 +171,10 @@ void PrinterWidget::on_actionConnectPrinter_triggered()
     {
         try {
             Printers::Passthrough *ptemp = dynamic_cast<Printers::Passthrough*>(mPrinter);
-            Printers::NativePrinter *otemp = dynamic_cast<Printers::NativePrinter*>(mDevice);
+            Printers::RawOutput *otemp = dynamic_cast<Printers::RawOutput*>(mDevice);
             if (ptemp == Q_NULLPTR || otemp == Q_NULLPTR)
             {
-                QMessageBox::critical(this, tr("Printer emulation"), tr("You are not allowed to use the passthrough emulation with an non-printer output."));
+                QMessageBox::critical(this, tr("Printer emulation"), tr("You are not allowed to use the passthrough emulation without an raw output."));
                 on_actionDisconnectPrinter_triggered();
                 return;
             }

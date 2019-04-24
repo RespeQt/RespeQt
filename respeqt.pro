@@ -98,6 +98,8 @@ win32:SOURCES += serialport-win32.c \
 unix:SOURCES += serialport-unix.cpp \
     printers/rawoutput_cups.cpp
 HEADERS += mainwindow.h \
+    printers/outputs.h \
+    printers/printers.h \
     serialport.h \
     sioworker.h \
     optionsdialog.h \
