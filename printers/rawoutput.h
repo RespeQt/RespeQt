@@ -4,6 +4,12 @@
 #include "nativeoutput.h"
 #include <QObject>
 
+#if defined(Q_OS_WIN)
+#include "windows.h"
+#endif
+
+class QComboBox;
+
 namespace Printers
 {
     class RawOutput : public NativeOutput
@@ -24,11 +30,14 @@ namespace Printers
                 return QObject::tr("Raw output");
             }
 
+            static void setupRawPrinters(QComboBox *);
+
         protected:
+            QString rawPrinterName;
 #if defined(Q_OS_WIN)
+            HANDLE mJob;
 #else
             int mJobId;
-            QString rawPrinterName;
 #endif
     };
 }

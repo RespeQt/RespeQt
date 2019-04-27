@@ -163,6 +163,7 @@ RespeqtSettings::RespeqtSettings()
 #ifdef Q_OS_MAC
     mNativeMenu = mSettings->value("NativeMenu", false).toBool();
 #endif
+    mRawPrinterName = mSettings->value("RawPrinterName", "").toString();
 }
 
 RespeqtSettings::~RespeqtSettings()
@@ -257,6 +258,10 @@ void RespeqtSettings::saveSessionToFile(const QString &fileName)
         s.setValue("D2PowerOnWithDiskInserted", mD2PowerOnWithDiskInserted);
         s.setValue("D3PowerOnWithDiskInserted", mD3PowerOnWithDiskInserted);
         s.setValue("D4PowerOnWithDiskInserted", mD4PowerOnWithDiskInserted);
+        s.setValue("RawPrinterName", mRawPrinterName);
+#ifdef Q_OS_MAC
+        s.setValue("NativeMenu", mNativeMenu);
+#endif
     s.endGroup();
 //
     s.beginWriteArray("MountedImageSettings");
@@ -350,6 +355,10 @@ void RespeqtSettings::saveSessionToFile(const QString &fileName)
         mD2PowerOnWithDiskInserted = s.value("D2PowerOnWithDiskInserted", false).toBool();
         mD3PowerOnWithDiskInserted = s.value("D3PowerOnWithDiskInserted", false).toBool();
         mD4PowerOnWithDiskInserted = s.value("D4PowerOnWithDiskInserted", false).toBool();
+        mRawPrinterName = s.value("RawPrinterName", "").toString();
+#ifdef Q_OS_MAC
+        mNativeMenu = s.value("NativeMenu", false).toBool();
+#endif
     s.endGroup();
  //
     s.beginReadArray("MountedImageSettings");
@@ -364,7 +373,7 @@ void RespeqtSettings::saveSessionToFile(const QString &fileName)
         s.setArrayIndex(i);
         setOutputName(i, s.value("OutputName", "").toString());
         setPrinterName(i, s.value("PrinterName", "").toString());
-    }
+    }   
 }
 // Get MainWindow title from MainWindow  //
 void RespeqtSettings::setMainWindowTitle(const QString &g_mainWindowTitle)
@@ -1405,3 +1414,14 @@ bool RespeqtSettings::nativeMenu()
     return mNativeMenu;
 }
 #endif
+
+void RespeqtSettings::setRawPrinterName(const QString &name)
+{
+    mRawPrinterName = name;
+    mSettings->setValue("RawPrinterName", name);
+}
+
+QString RespeqtSettings::rawPrinterName() const
+{
+    return mRawPrinterName;
+}

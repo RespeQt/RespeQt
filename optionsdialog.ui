@@ -1152,7 +1152,7 @@
        </widget>
       </item>
       <item>
-       <widget class="QComboBox" name="comboBox"/>
+       <widget class="QComboBox" name="rawPrinterName"/>
       </item>
       <item>
        <spacer name="verticalSpacer_5">

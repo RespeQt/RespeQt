@@ -39,18 +39,18 @@ namespace Printers
         }
 
         len = std::min(static_cast<unsigned int>(buffer.count()), len);
-        unsigned int buffersize = 0;
         for(unsigned int i = 0; i < len; i++) {
             unsigned char b = static_cast<unsigned char>(buffer.at(static_cast<int>(i)));
 
             if (b == 155) // EOL
             {
-                buffer.replace(static_cast<int>(i), 1, "\0x0D");
-                buffersize = i + 1;
+                const char lf = 13;
+                buffer.replace(static_cast<int>(i), 1, &lf);
+                buffer.resize(static_cast<int>(i+1));
                 break; // Drop the rest of the buffer
             }
         }
 
-        return output->sendBuffer(buffer, len);
+        return output->sendBuffer(buffer, static_cast<unsigned int>(buffer.size()));
     }
 }

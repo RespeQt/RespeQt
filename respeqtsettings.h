@@ -300,6 +300,8 @@ public:
     void setNativeMenu(bool nativeMenu);
     bool nativeMenu();
 #endif
+    void setRawPrinterName(const QString &name);
+    QString rawPrinterName() const;
 
 private:
     QSettings *mSettings;
@@ -410,6 +412,7 @@ private:
 #ifdef Q_OS_MAC
     bool mNativeMenu;
 #endif
+    QString mRawPrinterName;
 };
 
 extern RespeqtSettings *respeqtSettings;

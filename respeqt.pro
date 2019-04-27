@@ -93,7 +93,7 @@ SOURCES += main.cpp \
 
 win32:LIBS += -lwinmm -lz -lwinspool
 unix:LIBS += -lz -lcups
-win32:SOURCES += serialport-win32.c \
+win32:SOURCES += serialport-win32.cpp \
     printers/rawoutput_win.cpp
 unix:SOURCES += serialport-unix.cpp \
     printers/rawoutput_cups.cpp

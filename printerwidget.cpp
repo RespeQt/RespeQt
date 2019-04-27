@@ -182,7 +182,11 @@ void PrinterWidget::on_actionConnectPrinter_triggered()
         {}
 
         mPrinter->setOutput(mDevice);
-        mPrinter->output()->beginOutput();
+        if (!mPrinter->output()->beginOutput())
+        {
+            QMessageBox::critical(this, tr("Beginning output"), tr("The output device couldn't start."));
+            return;
+        }
         ui->outputSelection->setEnabled(false);
         ui->atariPrinters->setEnabled(false);
         ui->actionDisconnectPrinter->setEnabled(true);

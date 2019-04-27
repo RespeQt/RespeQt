@@ -12,6 +12,7 @@
 #include "optionsdialog.h"
 #include "ui_optionsdialog.h"
 #include "respeqtsettings.h"
+#include "printers/rawoutput.h"
 #include <QtSerialPort/QtSerialPort>
 #include <QTranslator>
 #include <QDir>
@@ -179,6 +180,11 @@ OptionsDialog::OptionsDialog(QWidget *parent) :
 #else
     m_ui->useNativeMenu->hide();
 #endif
+    // Setup via platform dependent class
+    Printers::RawOutput::setupRawPrinters(m_ui->rawPrinterName);
+    QString rawPrinterName = respeqtSettings->rawPrinterName();
+    if (rawPrinterName.length() > 0)
+        m_ui->rawPrinterName->setCurrentText(rawPrinterName);
 }
 
 OptionsDialog::~OptionsDialog()
@@ -341,6 +347,10 @@ void OptionsDialog::OptionsDialog_accepted()
 #ifdef Q_OS_MAC
     respeqtSettings->setNativeMenu(m_ui->useNativeMenu->isChecked());
 #endif
+    if (m_ui->rawPrinterName->currentData() != -1)
+        respeqtSettings->setRawPrinterName(m_ui->rawPrinterName->currentText());
+    else
+        respeqtSettings->setRawPrinterName("");
 }
 
 void OptionsDialog::on_useEmulationCustomCasBaudBox_toggled(bool checked)
