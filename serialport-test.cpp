@@ -12,7 +12,7 @@
 
 TestSerialPortBackend::TestSerialPortBackend(QObject *parent)
     : AbstractSerialPortBackend(parent),
-      mXmlReader(NULL),
+      mXmlReader(nullptr),
       mRegexp("&#(x?)(\\d{0,3});", QRegularExpression::CaseInsensitiveOption)
 {
     mTestFilename = respeqtSettings->testFile();
@@ -71,7 +71,7 @@ void TestSerialPortBackend::cancel()
         mXmlReader->device()->close();
     }
     delete mXmlReader;
-    mXmlReader = NULL;
+    mXmlReader = nullptr;
 }
 
 int TestSerialPortBackend::speedByte()
@@ -102,12 +102,14 @@ bool TestSerialPortBackend::readPauseTag()
         if (attr.hasAttribute("sec")) {
             int sec = attr.value("sec").toInt(&ok);
             qDebug() << "!n" << tr("Sleeping %1 seconds").arg(sec);
-            if (ok) QThread::currentThread()->sleep(sec);
+            if (ok)
+                QThread::currentThread()->sleep(static_cast<unsigned long>(sec));
         }
         if (attr.hasAttribute("msec")) {
             int msec = attr.value("msec").toInt(&ok);
             qDebug() << "!n" << tr("Sleeping %1 milliseconds").arg(msec);
-            if (ok) QThread::currentThread()->msleep(msec);
+            if (ok)
+                QThread::currentThread()->msleep(static_cast<unsigned long>(msec));
         }
         forwardXml();
     }
@@ -130,50 +132,61 @@ void TestSerialPortBackend::forwardXml()
 
 QByteArray TestSerialPortBackend::readCommandFrame()
 {
-    if (!mXmlReader) return NULL;
+    if (!mXmlReader)
+        return nullptr;
 
     QByteArray data;
 
     data.resize(4);
 
     forwardXml();
-    if (!readPauseTag()) return NULL;
+    if (!readPauseTag())
+        return nullptr;
 
     if (!mXmlReader->isStartElement()
-            && !mXmlReader->readNextStartElement()) return NULL;
-    if (mXmlReader->name() != "commandframe") return NULL;
+            && !mXmlReader->readNextStartElement())
+        return nullptr;
+    if (mXmlReader->name() != "commandframe")
+        return nullptr;
 
     QXmlStreamAttributes attr = mXmlReader->attributes();
     if (!attr.hasAttribute("device")
         || !attr.hasAttribute("command")
         || !attr.hasAttribute("aux1")
         || !attr.hasAttribute("aux2"))
-        return NULL;
+        return nullptr;
 
     bool ok;
-    data[0] = attr.value("device").toInt(&ok, 16);
+    data[0] = static_cast<char>(attr.value("device").toInt(&ok, 10));
     if (!ok)
     {
-        data[0] = attr.value("device").toInt(&ok, 10);
-        if (!ok) return NULL;
+        data[0] = static_cast<char>(attr.value("device").toInt(&ok, 16));
+        if (!ok)
+            return nullptr;
     }
-    data[1] = attr.value("command").toInt(&ok, 16);
+
+    data[1] = static_cast<char>(attr.value("command").toInt(&ok, 10));
     if (!ok)
     {
-        data[1] = attr.value("command").toInt(&ok, 10);
-        if (!ok) return NULL;
+        data[1] = static_cast<char>(attr.value("command").toInt(&ok, 16));
+        if (!ok)
+            return nullptr;
     }
-    data[2] = attr.value("aux1").toInt(&ok, 16);
+
+    data[2] = static_cast<char>(attr.value("aux1").toInt(&ok, 10));
     if (!ok)
     {
-        data[2] = attr.value("aux1").toInt(&ok, 10);
-        if (!ok) return NULL;
+        data[2] = static_cast<char>(attr.value("aux1").toInt(&ok, 16));
+        if (!ok)
+            return nullptr;
     }
-    data[3] = attr.value("aux2").toInt(&ok, 16);
+
+    data[3] = static_cast<char>(attr.value("aux2").toInt(&ok, 10));
     if (!ok)
     {
-        data[3] = attr.value("aux2").toInt(&ok, 10);
-        if (!ok) return NULL;
+        data[3] = static_cast<char>(attr.value("aux2").toInt(&ok, 16));
+        if (!ok)
+            return nullptr;
     }
 
     return data;
@@ -181,17 +194,19 @@ QByteArray TestSerialPortBackend::readCommandFrame()
 
 QByteArray TestSerialPortBackend::readDataFrame(uint size, bool verbose)
 {
-    if (!mXmlReader) return NULL;
+    if (!mXmlReader)
+        return nullptr;
 
     forwardXml();
-    if (!readPauseTag()) return NULL;
+    if (!readPauseTag())
+        return nullptr;
 
     if (!mXmlReader->isStartElement()
             && !mXmlReader->readNextStartElement())
-        return NULL;
+        return nullptr;
 
     if (mXmlReader->name() != "dataframe")
-        return NULL;
+        return nullptr;
 
     QString dataframe = mXmlReader->readElementText(QXmlStreamReader::IncludeChildElements);
     QRegularExpressionMatchIterator i = mRegexp.globalMatch(dataframe);

@@ -26,10 +26,7 @@ namespace Printers
           mEsc(false),
           mPrintText(false),
           mTextOrientation(0)
-    {
-        mTypeId = ATARI1020;
-        mTypeName = QString("Atari 1020");
-    }
+    {}
 
     void Atari1020::setupOutput()
     {
@@ -59,11 +56,11 @@ namespace Printers
         }
     }
 
-    bool Atari1020::handleBuffer(QByteArray &buffer, int len)
+    bool Atari1020::handleBuffer(QByteArray &buffer, unsigned int len)
     {
-        len = std::min(len, buffer.count());
-        for(int i = 0; i < len; i++) {
-            unsigned char b = buffer.at(i);
+        len = std::min(static_cast<unsigned int>(buffer.count()), len);
+        for(unsigned int i = 0; i < len; i++) {
+            unsigned char b = static_cast<unsigned char>(buffer.at(static_cast<int>(i)));
 
             if (b == 155) // EOL
             {
@@ -84,38 +81,39 @@ namespace Printers
                 if (b == 27) // ESC
                 {
                     mEsc = true;
-                } else if (mEsc && b == 27) // Cancel Esc
+                    return true;
+                }
+                if (mEsc)
                 {
-                    mEsc = false;
-                } else if (mEsc && b == 16) // CTRL+P: 20 characters
-                {
-                    mOutput->calculateFixedFontSize(20);
-                    /*QFont *font = mOutput->font();
-                    font->setPixelSize(mFontSize * 4);
-                    mOutput->setFont(font);*/
-                    mEsc = false;
-                } else if (mEsc && b == 19) // CTRL+S: 80 characters
-                {
-                    mOutput->calculateFixedFontSize(80);
-                    /*QFont *font = mOutput->font();
-                    font->setPixelSize(mFontSize);
-                    mOutput->setFont(font);*/
-                    mEsc = false;
-                } else if (mEsc && b == 14) // CTRL+N: 40 characters
-                {
-                    mOutput->calculateFixedFontSize(40);
-                    /*QFont *font = mOutput->font();
-                    font->setPixelSize(mFontSize * 2);
-                    mOutput->setFont(font);*/
-                    mEsc = false;
-                } else if (mEsc && b == 23) // CTRL+W: Enter international mode
-                {
-                    mInternational = true;
-                    mEsc = false;
-                } else if (mEsc && b == 24) // CTRL+X: Exit international mode
-                {
-                    mInternational = false;
-                    mEsc = false;
+                    if (b == 27) // Cancel Esc
+                    {
+                        mEsc = false;
+                        handlePrintableCodes(27);
+                    } else if (b == 16) // CTRL+P: 20 characters
+                    {
+                        mOutput->calculateFixedFontSize(20);
+                        mEsc = false;
+                    } else if (b == 19) // CTRL+S: 80 characters
+                    {
+                        mOutput->calculateFixedFontSize(80);
+                        mEsc = false;
+                    } else if (b == 14) // CTRL+N: 40 characters
+                    {
+                        mOutput->calculateFixedFontSize(40);
+                        mEsc = false;
+                    } else if (b == 23) // CTRL+W: Enter international mode
+                    {
+                        mInternational = true;
+                        mEsc = false;
+                    } else if (b == 24) // CTRL+X: Exit international mode
+                    {
+                        mInternational = false;
+                        mEsc = false;
+                    } else {
+                        // Not known control codes are consumed.
+                        mEsc = false;
+                        return true;
+                    }
                 } else
                     handlePrintableCodes(b);
             }
@@ -134,20 +132,20 @@ namespace Printers
         }
     }
 
-    bool Atari1020::handleGraphicsMode(QByteArray &buffer, int len, int &i)
+    bool Atari1020::handleGraphicsMode(QByteArray &buffer, unsigned int len, unsigned int &i)
     {
-        char b = buffer.at(i);
+        unsigned char b = static_cast<unsigned char>(buffer.at(static_cast<int>(i)));
 
         switch (b)
         {
-            case 'H': // return to HOME
+            case 'H': // set to HOME
                 mPenPoint.setX(0);
                 mPenPoint.setY(0);
             break;
 
             case 'S': // Scale characters
                 try {
-                    int end;
+                    unsigned int end;
                     int scale = fetchIntFromBuffer(buffer, len, i, end);
                     if (scale >= 0 && scale <= 63)
                     {
@@ -164,7 +162,7 @@ namespace Printers
 
             case 'C': // Set Color
             {
-                char next = buffer.at(i + 1);
+                unsigned char next = static_cast<unsigned char>(buffer.at(static_cast<int>(i + 1)));
                 if (next >= '0' && next <= '3')
                 {
                     mOutput->setPen(sColorMapping[next - '0']);
@@ -176,7 +174,7 @@ namespace Printers
 
             case 'L': // Line mode 0 = solid, anything else dashed
                 try {
-                    int end;
+                    unsigned int end;
                     int line = fetchIntFromBuffer(buffer, len, i, end);
                     if (line >= 0 && line <= 15)
                     {
@@ -209,13 +207,13 @@ namespace Printers
             case 'J': // draw relative
             case 'R': // move relative
             {
-                char command = b;
+                unsigned char command = b;
                 do {
                     try {
 
-                        int endx, endy;
+                        unsigned int endx, endy;
                         int x = fetchIntFromBuffer(buffer, len, i, endx);
-                        if (buffer.at(endx + 1) != ',')
+                        if (buffer.at(static_cast<int>(endx) + 1) != ',')
                             throw new std::invalid_argument("expected ,");
                         if (x < 0 || x > 480)
                             throw new std::invalid_argument("x coordinate out of range");
@@ -249,7 +247,7 @@ namespace Printers
                             break;
                         }
 
-                        b = buffer.at(i + 1);
+                        b = static_cast<unsigned char>(buffer.at(static_cast<int>(i) + 1));
                     } catch(...)
                     {
                         qDebug() << "!n" << tr("[%1] parsing error for draw command").arg(deviceName());
@@ -266,16 +264,21 @@ namespace Printers
 
             case 'X': // draw axes 0 = Y-axis, otherwise X-axis
                 try {
-                    int i_ = i, end, mode, count, size;
+                    unsigned int i_ = i, end;
+                    int mode, size, count;
+
                     mode = fetchIntFromBuffer(buffer, len, i_, end);
-                    if (len < end + 1) throw new std::invalid_argument("expected comma, buffer too short");
+                    if (len < end + 1)
+                        throw new std::invalid_argument("expected comma, buffer too short");
                     i_ = end + 1; // separator check
-                    if (buffer.at(i_)) throw new std::invalid_argument(QString("expected comma, got %1").arg(b).toStdString());
+                    if (buffer.at(static_cast<int>(i_)))
+                        throw new std::invalid_argument(QString("expected comma, got %1").arg(b).toStdString());
                     i_++;
 
                     size = fetchIntFromBuffer(buffer, len, i_, end);
                     i_ = end + 1; // separator check
-                    if (buffer.at(i_)) throw new std::invalid_argument(QString("expected comma, got %1").arg(b).toStdString());
+                    if (buffer.at(static_cast<int>(i_)))
+                        throw new std::invalid_argument(QString("expected comma, got %1").arg(b).toStdString());
                     i_++;
 
                     count = fetchIntFromBuffer(buffer, len, i_, end);
@@ -290,7 +293,7 @@ namespace Printers
 
             case 'Q': // select text orientation
                 try {
-                    int endx;
+                    unsigned int endx;
                     mTextOrientation = fetchIntFromBuffer(buffer, len, i, endx);
                     if (mTextOrientation < 0 || mTextOrientation > 3) throw new std::invalid_argument("orientation number out of range");
                     i = endx;
@@ -337,19 +340,19 @@ namespace Printers
         return true;
     }
 
-    int Atari1020::fetchIntFromBuffer(QByteArray &buffer, int /*len*/, int i, int &end)
+    int Atari1020::fetchIntFromBuffer(QByteArray &buffer, unsigned int /*len*/, unsigned int i, unsigned int &end)
     {
         int result = 0;
         QString number("");
 
         end = i + 1;
-        char next = buffer.at(end);
+        char next = buffer.at(static_cast<int>(end));
 
         // Is there a sign?
         if (next == '-' || next == '+') {
             number.append(next);
             end++;
-            next = buffer.at(end);
+            next = buffer.at(static_cast<int>(end));
         }
 
         // Search for next digit
@@ -357,7 +360,7 @@ namespace Printers
         {
             number.append(next);
             end++;
-            next = buffer.at(end);
+            next = buffer.at(static_cast<int>(end));
         }
         bool ok;
         result = number.toInt(&ok);
@@ -367,7 +370,7 @@ namespace Printers
             throw new std::invalid_argument("couldn't convert to int");
     }
 
-    bool Atari1020::handlePrintableCodes(const char b)
+    bool Atari1020::handlePrintableCodes(const unsigned char b)
     {
         QChar qb = translateAtascii(b & 127); // Masking inverse characters.
         mOutput->printChar(qb);

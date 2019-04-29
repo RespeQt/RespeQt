@@ -55,8 +55,6 @@ SOURCES += main.cpp \
     printers/escp.cpp \
     printers/nativeprinter.cpp \
     printers/svgoutput.cpp \
-    printers/windowoutput.cpp \
-    printers/bufferedpaintwidget.cpp \
     printers/atari1029.cpp \
     Cpu6502.cpp \
     Crc16.cpp \
@@ -87,13 +85,21 @@ SOURCES += main.cpp \
     diskimageatr.cpp \
     diskimagescp.cpp \
     disassembly810.cpp \
-    disassembly1050.cpp
+    disassembly1050.cpp \
+    printers/printerfactory.cpp \
+    printers/outputfactory.cpp \
+    printers/atari1025.cpp \
+    printers/passthrough.cpp
 
-win32:LIBS += -lwinmm -lz
-unix:LIBS += -lz
-win32:SOURCES += serialport-win32.cpp
-unix:SOURCES += serialport-unix.cpp
+win32:LIBS += -lwinmm -lz -lwinspool
+unix:LIBS += -lz -lcups
+win32:SOURCES += serialport-win32.cpp \
+    printers/rawoutput_win.cpp
+unix:SOURCES += serialport-unix.cpp \
+    printers/rawoutput_cups.cpp
 HEADERS += mainwindow.h \
+    printers/outputs.h \
+    printers/printers.h \
     serialport.h \
     sioworker.h \
     optionsdialog.h \
@@ -130,8 +136,6 @@ HEADERS += mainwindow.h \
     printers/escp.h \
     printers/nativeprinter.h \
     printers/svgoutput.h \
-    printers/windowoutput.h \
-    printers/bufferedpaintwidget.h \
     printers/atari1029.h \
     Chip.hpp \
     Cpu6502.hpp \
@@ -160,7 +164,12 @@ HEADERS += mainwindow.h \
     Atari1050Duplicator.hpp \
     RomBankSwitchTurbo.hpp \
     disassembly810.h \
-    disassembly1050.h
+    disassembly1050.h \
+    printers/printerfactory.h \
+    printers/outputfactory.h \
+    printers/atari1025.h \
+    printers/passthrough.h \
+    printers/rawoutput.h
 
 win32:HEADERS += serialport-win32.h
 unix:HEADERS += serialport-unix.h
@@ -170,7 +179,6 @@ FORMS += mainwindow.ui \
     createimagedialog.ui \
     diskeditdialog.ui \
     autobootdialog.ui \
-    printers/textprinterwindow.ui \
     cassettedialog.ui \
     docdisplaywindow.ui \
     bootoptionsdialog.ui \
@@ -178,7 +186,7 @@ FORMS += mainwindow.ui \
     drivewidget.ui \
     infowidget.ui \
     printerwidget.ui \
-    printers/windowoutput.ui
+    printers/textprinterwindow.ui
 RESOURCES += icons.qrc \
     atarifiles.qrc \
     i18n.qrc \
@@ -208,6 +216,6 @@ TRANSLATIONS = \
 i18n/respeqt_tr.ts
 
 RC_FILE = RespeQt.rc
+ICON = RespeQt.icns
 
 DISTFILES +=
-QMAKE_CXXFLAGS += -std=c++0x

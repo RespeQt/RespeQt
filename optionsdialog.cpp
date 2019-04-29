@@ -12,11 +12,13 @@
 #include "optionsdialog.h"
 #include "ui_optionsdialog.h"
 #include "respeqtsettings.h"
+#include "printers/rawoutput.h"
 #include <QtSerialPort/QtSerialPort>
 #include <QTranslator>
 #include <QDir>
 #include <QFileDialog>
 #include <QFontDialog>
+#include <QPrintDialog>
 
 OptionsDialog::OptionsDialog(QWidget *parent) :
     QDialog(parent),
@@ -36,6 +38,7 @@ OptionsDialog::OptionsDialog(QWidget *parent) :
     itemI18n = m_ui->treeWidget->topLevelItem(3);
     itemTestSerialPort = m_ui->treeWidget->topLevelItem(0)->child(2);
     itemAtari1027 = m_ui->treeWidget->topLevelItem(4)->child(0);
+    itemPassthrough = m_ui->treeWidget->topLevelItem(4)->child(1);
 
 #ifndef Q_OS_LINUX
     m_ui->treeWidget->topLevelItem(0)->removeChild(itemAtariSio);
@@ -165,10 +168,10 @@ OptionsDialog::OptionsDialog(QWidget *parent) :
         m_ui->emulationHighSpeedExeLoaderBox->setVisible(true);
     }
 
-    m_ui->label_1027font->setText(respeqtSettings->atari1027FontFamily());
+    m_ui->label_atarifixed->setText(respeqtSettings->atariFixedFontFamily());
     QFont font;
     font.setPointSize(12);
-    font.setFamily(m_ui->label_1027font->text());
+    font.setFamily(m_ui->label_atarifixed->text());
     m_ui->fontSample->setFont(font);
 
 #ifdef Q_OS_MAC
@@ -177,6 +180,11 @@ OptionsDialog::OptionsDialog(QWidget *parent) :
 #else
     m_ui->useNativeMenu->hide();
 #endif
+    // Setup via platform dependent class
+    Printers::RawOutput::setupRawPrinters(m_ui->rawPrinterName);
+    QString rawPrinterName = respeqtSettings->rawPrinterName();
+    if (rawPrinterName.length() > 0)
+        m_ui->rawPrinterName->setCurrentText(rawPrinterName);
 }
 
 OptionsDialog::~OptionsDialog()
@@ -287,6 +295,8 @@ void OptionsDialog::on_treeWidget_currentItemChanged(QTreeWidgetItem* current, Q
     } else if (current == itemI18n) {
         m_ui->stackedWidget->setCurrentIndex(5);
     } else if (current == itemAtari1027) {
+        m_ui->stackedWidget->setCurrentIndex(6);
+    } else if (current == itemPassthrough) {
         m_ui->stackedWidget->setCurrentIndex(7);
     }
 }
@@ -337,6 +347,10 @@ void OptionsDialog::OptionsDialog_accepted()
 #ifdef Q_OS_MAC
     respeqtSettings->setNativeMenu(m_ui->useNativeMenu->isChecked());
 #endif
+    if (m_ui->rawPrinterName->currentData() != -1)
+        respeqtSettings->setRawPrinterName(m_ui->rawPrinterName->currentText());
+    else
+        respeqtSettings->setRawPrinterName("");
 }
 
 void OptionsDialog::on_useEmulationCustomCasBaudBox_toggled(bool checked)
@@ -420,17 +434,18 @@ void OptionsDialog::on_testFileButton_clicked()
 #endif
 }
 
-void OptionsDialog::on_button_1027font_clicked()
+void OptionsDialog::on_button_atarifixed_clicked()
 {
     bool ok;
     QFont font;
-    font.setFamily(m_ui->label_1027font->text());
+    font.setFamily(m_ui->label_atarifixed->text());
     QFontDialog::FontDialogOptions options = QFontDialog::MonospacedFonts;
-    QFont newFont = QFontDialog::getFont(&ok, font, this, tr("Select Atari 1027 font"), options);
-    if (ok) {
+    QFont newFont = QFontDialog::getFont(&ok, font, this, tr("Select Atari fixed width font"), options);
+    if (ok)
+    {
         newFont.setPointSize(12);
-        m_ui->label_1027font->setText(newFont.family());
+        m_ui->label_atarifixed->setText(newFont.family());
         m_ui->fontSample->setFont(newFont);
-        respeqtSettings->setAtari1027FontFamily(newFont.family());
+        respeqtSettings->setAtariFixedFontFamily(newFont.family());
     }
 }

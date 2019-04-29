@@ -16,6 +16,12 @@ namespace Printers
         }
         virtual void newPage(bool linefeed = false);
 
+        virtual bool setupOutput();
+        static QString typeName()
+        {
+            return "NativePrinter";
+        }
+
     protected:
         virtual void updateBoundingBox();
     };

@@ -20,6 +20,13 @@ namespace Printers
         virtual void updateBoundingBox();
         virtual void newPage(bool linefeed = false);
 
+        virtual bool setupOutput();
+
+        static QString typeName()
+        {
+            return "SVG";
+        }
+
     };
 }
 #endif // SVGOUTPUT_H

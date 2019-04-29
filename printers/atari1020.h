@@ -10,9 +10,14 @@ namespace Printers
     public:
         Atari1020(SioWorker *sio);
 
-        virtual bool handleBuffer(QByteArray &buffer, int len);
+        virtual bool handleBuffer(QByteArray &buffer, unsigned int len);
         virtual void setupFont();
         virtual void setupOutput();
+
+        static QString typeName()
+        {
+            return "Atari 1020";
+        }
 
     protected:
         static const unsigned char BLACK;
@@ -27,9 +32,9 @@ namespace Printers
         int mTextOrientation;
         int mFontSize;
 
-        bool handlePrintableCodes(const char b);
-        bool handleGraphicsMode(QByteArray &buffer, int len, int &i);
-        int fetchIntFromBuffer(QByteArray &buffer, int len, int i, int &end);
+        bool handlePrintableCodes(const unsigned char b);
+        bool handleGraphicsMode(QByteArray &buffer, unsigned int len, unsigned int &i);
+        int fetchIntFromBuffer(QByteArray &buffer, unsigned int len, unsigned int i, unsigned int &end);
         void endCommandLine();
         bool drawAxis(bool xAxis, int size, int count);
     };

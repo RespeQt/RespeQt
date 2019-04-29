@@ -16,7 +16,7 @@ class PrinterWidget : public QFrame
     Q_OBJECT
 
 public:
-    explicit PrinterWidget(int printerNum, QWidget *parent = 0);
+    explicit PrinterWidget(int printerNum, QWidget *parent = Q_NULLPTR);
     ~PrinterWidget();
 
     int getPrinterNumber() const { return printerNo_; }
@@ -32,10 +32,12 @@ signals:
     void actionConnectPrinter(int deviceId);
 
 private slots:
-    void selectPrinter();
-    void selectOutput();
+    bool selectPrinter();
+    bool selectOutput();
     void on_actionConnectPrinter_triggered();
     void on_actionDisconnectPrinter_triggered();
+    void on_outputSelection_currentIndexChanged(const QString &outputName);
+    void on_atariPrinters_currentIndexChanged(const QString &printerName);
 
 private:
     Ui::PrinterWidget *ui;

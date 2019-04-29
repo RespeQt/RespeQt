@@ -9,7 +9,7 @@
 #include "ui_infowidget.h"
 
 InfoWidget::InfoWidget(QWidget *parent) :
-    QWidget(parent),
+    QFrame(parent),
     ui(new Ui::InfoWidget)
 {
     ui->setupUi(this);

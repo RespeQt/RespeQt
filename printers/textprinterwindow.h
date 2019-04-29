@@ -10,6 +10,7 @@
 #define TEXTPRINTERWINDOW_H
 
 #include <QMainWindow>
+#include <QString>
 #include "nativeoutput.h"
 
 namespace Ui {
@@ -21,14 +22,14 @@ namespace Printers {
 class TextPrinterWindow : public QMainWindow, public NativeOutput {
     Q_OBJECT
 public:
-    explicit TextPrinterWindow(QWidget *parent = 0);
+    explicit TextPrinterWindow(QWidget *parent = Q_NULLPTR);
     ~TextPrinterWindow();
 
     virtual void newLine(bool linefeed = false);
     virtual void newPage(bool) {}
     virtual void updateBoundingBox() {}
-    virtual void beginOutput() {}
-    virtual void endOutput() {}
+    virtual bool beginOutput() { return true; }
+    virtual bool endOutput() { return true; }
     virtual void printChar(const QChar &c);
     virtual void printString(const QString &s);
     virtual void setWindow(const QRect &) {}
@@ -41,6 +42,13 @@ public:
     virtual void translate(const QPointF &) {}
     virtual void drawLine(const QPointF &, const QPointF &) {}
     virtual void calculateFixedFontSize(uint8_t) {}
+
+    virtual bool setupOutput();
+    static QString typeName()
+    {
+        return QObject::tr("Text printer");
+    }
+
 
 public slots:
     void print(const QString &text);
@@ -55,6 +63,12 @@ protected:
 private:
     Ui::TextPrinterWindow *ui;
     QPen mPen;
+    int effAtasciiFont;
+    int effFontSize;
+    bool showAscii;
+    bool showAtascii;
+    int fontSize;
+    QString atasciiFont;
 
 private slots:
     void on_actionSave_triggered();

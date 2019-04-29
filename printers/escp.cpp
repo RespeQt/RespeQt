@@ -5,8 +5,6 @@ namespace Printers
     Escp::Escp(SioWorker *sio)
         : Centronics(sio)
     {
-        mTypeId = ESCP;
-        mTypeName = "ESC/P";
         initPrinter();
     }
 
@@ -15,9 +13,9 @@ namespace Printers
         mEsc = false;
     }
 
-    bool Escp::handleBuffer(QByteArray &/*buffer*/, int len)
+    bool Escp::handleBuffer(QByteArray &/*buffer*/, unsigned int len)
     {
-        for(int i = 0; i < len; i++)
+        for(unsigned int i = 0; i < len; i++)
         {
             //unsigned char b = buffer.at(i);
         }

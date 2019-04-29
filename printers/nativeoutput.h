@@ -4,6 +4,7 @@
 #include <QPainter>
 #include <QRect>
 #include <QPaintDevice>
+#include <math.h>
 #include "sioworker.h"
 
 namespace Printers
@@ -14,8 +15,10 @@ namespace Printers
         NativeOutput();
         virtual ~NativeOutput();
 
-        virtual void beginOutput();
-        virtual void endOutput();
+        virtual bool setupOutput() = 0;
+
+        virtual bool beginOutput();
+        virtual bool endOutput();
         virtual void newPage(bool linefeed = false) = 0;
         virtual void newLine(bool linefeed = false);
         virtual void printChar(const QChar &c);
@@ -25,8 +28,12 @@ namespace Printers
         virtual void setPen(const QColor &color);
         virtual void setPen(Qt::PenStyle style);
         virtual void setPen(const QPen &pen);
-        virtual int width() { return mBoundingBox.width(); }
-        virtual int height() { return mBoundingBox.height(); }
+        virtual int width() {
+            return static_cast<int>(trunc(mBoundingBox.width()));
+        }
+        virtual int height() {
+            return static_cast<int>(trunc(mBoundingBox.height()));
+        }
         virtual int dpiX() { return mDevice->logicalDpiX(); }
         virtual const QPen &pen() const { return mPainter->pen(); }
         virtual void setFont(QFont *font);
@@ -41,6 +48,11 @@ namespace Printers
         void setX(int x) { mX = x; }
         void setY(int y) { mY = y; }
 
+        static QString typeName()
+        {
+            throw new std::invalid_argument("Not implemented");
+        }
+
     protected:
         QPainter *mPainter;
         QPaintDevice *mDevice;
@@ -49,6 +61,9 @@ namespace Printers
         QRectF mBoundingBox;
         uint8_t mCharsPerLine;
         uint8_t mCharCount;
+        uint8_t mLPIMode;
+        bool mCharMode;
+        uint32_t hResolution, vResolution;
 
         virtual void updateBoundingBox() = 0;
     };

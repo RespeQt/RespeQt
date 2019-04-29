@@ -33,7 +33,7 @@ public:
     class PrinterSettings {
     public:
         QString printerName;
-        int printerType;
+        QString outputName;
     };
 
     RespeqtSettings();
@@ -226,14 +226,14 @@ public:
     void setExplorerOnTop(bool expOnTop);
 
 // Methods for setting and getting the Printer emulation settings.
-    void setPrinterType(int no, int printerType);
-    int printerType(int no) const;
-    void setConnectedPrinterName(int no, const QString &printerInfo);
-    const QString &connectedPrinterName(int no) const;
-    const PrinterSettings &connectedPrinterSettings(int no) const;
+    void setOutputName(int no, const QString &outputName);
+    const QString &outputName(int no) const;
+    void setPrinterName(int no, const QString &printerInfo);
+    const QString &printerName(int no) const;
+    const PrinterSettings &printerSettings(int no) const;
 
-    QString atari1027FontFamily();
-    void setAtari1027FontFamily(QString fontFamily);
+    QString atariFixedFontFamily();
+    void setAtariFixedFontFamily(QString fontFamily);
 
 // Atari drive firmware
     QString atari810Firmware();
@@ -300,6 +300,8 @@ public:
     void setNativeMenu(bool nativeMenu);
     bool nativeMenu();
 #endif
+    void setRawPrinterName(const QString &name);
+    QString rawPrinterName() const;
 
 private:
     QSettings *mSettings;
@@ -352,7 +354,7 @@ private:
     int mCustomCasBaud;
 
     ImageSettings mMountedImageSettings[16];    //
-    PrinterSettings mConnectedPrinterSettings[PRINTER_COUNT];
+    PrinterSettings mPrinterSettings[PRINTER_COUNT];
 
     ImageSettings mRecentImageSettings[NUM_RECENT_FILES];
     QString mLastDiskImageDir;
@@ -365,7 +367,7 @@ private:
     
     QString mI18nLanguage;
 
-    QString mAtari1027FontName;
+    QString mAtariFixedFontName;
 
     bool mMinimizeToTray;
     bool mFilterUnderscore;
@@ -410,6 +412,7 @@ private:
 #ifdef Q_OS_MAC
     bool mNativeMenu;
 #endif
+    QString mRawPrinterName;
 };
 
 extern RespeqtSettings *respeqtSettings;

@@ -122,7 +122,15 @@ RespeqtSettings::RespeqtSettings()
     mEnableShade = mSettings->value("EnableShadeByDefault", true).toBool();
 
     // Printer specific settings
-    mAtari1027FontName = mSettings->value("Atari1027FontFamily", "Courier").toString();
+    mAtariFixedFontName = mSettings->value("AtariFixedFontFamily", "Courier").toString();
+    mSettings->beginReadArray("ConnectedPrinterSettings");
+    for(i = 0; i < PRINTER_COUNT; i++)
+    {
+        mSettings->setArrayIndex(i);
+        mPrinterSettings[i].printerName = mSettings->value("PrinterName", "").toString();
+        mPrinterSettings[i].outputName = mSettings->value("OutputName", "").toString();
+    }
+    mSettings->endArray();
 
     m810Firmware = mSettings->value("Atari810Firmware", "").toString();
     m810ChipFirmware = mSettings->value("Atari810ChipFirmware", "").toString();
@@ -155,6 +163,7 @@ RespeqtSettings::RespeqtSettings()
 #ifdef Q_OS_MAC
     mNativeMenu = mSettings->value("NativeMenu", false).toBool();
 #endif
+    mRawPrinterName = mSettings->value("RawPrinterName", "").toString();
 }
 
 RespeqtSettings::~RespeqtSettings()
@@ -249,6 +258,10 @@ void RespeqtSettings::saveSessionToFile(const QString &fileName)
         s.setValue("D2PowerOnWithDiskInserted", mD2PowerOnWithDiskInserted);
         s.setValue("D3PowerOnWithDiskInserted", mD3PowerOnWithDiskInserted);
         s.setValue("D4PowerOnWithDiskInserted", mD4PowerOnWithDiskInserted);
+        s.setValue("RawPrinterName", mRawPrinterName);
+#ifdef Q_OS_MAC
+        s.setValue("NativeMenu", mNativeMenu);
+#endif
     s.endGroup();
 //
     s.beginWriteArray("MountedImageSettings");
@@ -262,10 +275,10 @@ void RespeqtSettings::saveSessionToFile(const QString &fileName)
 
     s.beginWriteArray("ConnectedPrinterSettings");
     for (int i = 0; i < PRINTER_COUNT; i++) {
-        PrinterSettings ps = mConnectedPrinterSettings[i];
+        PrinterSettings ps = mPrinterSettings[i];
         s.setArrayIndex(i);
         s.setValue("PrinterName", ps.printerName);
-        s.setValue("PrinterType", ps.printerType);
+        s.setValue("OutputName", ps.outputName);
     }
     s.endArray();
 }
@@ -342,6 +355,10 @@ void RespeqtSettings::saveSessionToFile(const QString &fileName)
         mD2PowerOnWithDiskInserted = s.value("D2PowerOnWithDiskInserted", false).toBool();
         mD3PowerOnWithDiskInserted = s.value("D3PowerOnWithDiskInserted", false).toBool();
         mD4PowerOnWithDiskInserted = s.value("D4PowerOnWithDiskInserted", false).toBool();
+        mRawPrinterName = s.value("RawPrinterName", "").toString();
+#ifdef Q_OS_MAC
+        mNativeMenu = s.value("NativeMenu", false).toBool();
+#endif
     s.endGroup();
  //
     s.beginReadArray("MountedImageSettings");
@@ -354,9 +371,9 @@ void RespeqtSettings::saveSessionToFile(const QString &fileName)
     s.beginReadArray("ConnectedPrinterSettings");
     for (int i = 0; i < PRINTER_COUNT; i++) {
         s.setArrayIndex(i);
-        setPrinterType(i, s.value("PrinterType", 0).toInt());
-        // TODO Get Printerdata out of it.
-    }
+        setOutputName(i, s.value("OutputName", "").toString());
+        setPrinterName(i, s.value("PrinterName", "").toString());
+    }   
 }
 // Get MainWindow title from MainWindow  //
 void RespeqtSettings::setMainWindowTitle(const QString &g_mainWindowTitle)
@@ -588,7 +605,6 @@ void RespeqtSettings::setMountedImageProtection(int no, bool prot)
 
 void RespeqtSettings::setMountedImageSetting(int no, const QString &fileName, bool prot)
 {
-
     mMountedImageSettings[no].fileName = fileName;
     mMountedImageSettings[no].isWriteProtected = prot;
     if(mSessionFileName == "") mSettings->setValue(QString("MountedImageSettings/%1/FileName").arg(no+1), fileName);
@@ -993,34 +1009,38 @@ void RespeqtSettings::writeRecentImageSettings()
     mSettings->endArray();
 }
 
-void RespeqtSettings::setConnectedPrinterName(int no, const QString &printerName)
+void RespeqtSettings::setPrinterName(int no, const QString &printerName)
 {
-    mConnectedPrinterSettings[no].printerName = printerName;
+    mPrinterSettings[no].printerName = printerName;
+    if(mSessionFileName == "")
+        mSettings->setValue(QString("ConnectedPrinterSettings/%1/PrinterName").arg(no+1), printerName);
 }
 
-const QString &RespeqtSettings::connectedPrinterName(int no) const {
-    return mConnectedPrinterSettings[no].printerName;
+const QString &RespeqtSettings::printerName(int no) const {
+    return mPrinterSettings[no].printerName;
 }
 
-void RespeqtSettings::setPrinterType(int no, int printerType) {
-    mConnectedPrinterSettings[no].printerType = printerType;
+void RespeqtSettings::setOutputName(int no, const QString &outputName) {
+    mPrinterSettings[no].outputName = outputName;
+    if(mSessionFileName == "")
+        mSettings->setValue(QString("ConnectedPrinterSettings/%1/OutputName").arg(no+1), outputName);
 }
 
-int RespeqtSettings::printerType(int no) const {
-    return mConnectedPrinterSettings[no].printerType;
+const QString &RespeqtSettings::outputName(int no) const {
+    return mPrinterSettings[no].outputName;
 }
 
-const RespeqtSettings::PrinterSettings &RespeqtSettings::connectedPrinterSettings(int no) const {
-    return mConnectedPrinterSettings[no];
+const RespeqtSettings::PrinterSettings &RespeqtSettings::printerSettings(int no) const {
+    return mPrinterSettings[no];
 }
 
-QString RespeqtSettings::atari1027FontFamily() {
-    return mAtari1027FontName;
+QString RespeqtSettings::atariFixedFontFamily() {
+    return mAtariFixedFontName;
 }
 
-void RespeqtSettings::setAtari1027FontFamily(QString fontFamily) {
-    mAtari1027FontName = fontFamily;
-    mSettings->setValue("Atari1027FontFamily", fontFamily);
+void RespeqtSettings::setAtariFixedFontFamily(QString fontFamily) {
+    mAtariFixedFontName = fontFamily;
+    mSettings->setValue("AtariFixedFontFamily", fontFamily);
 }
 
 QString RespeqtSettings::atari810Firmware()
@@ -1394,3 +1414,14 @@ bool RespeqtSettings::nativeMenu()
     return mNativeMenu;
 }
 #endif
+
+void RespeqtSettings::setRawPrinterName(const QString &name)
+{
+    mRawPrinterName = name;
+    mSettings->setValue("RawPrinterName", name);
+}
+
+QString RespeqtSettings::rawPrinterName() const
+{
+    return mRawPrinterName;
+}

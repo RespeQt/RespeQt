@@ -17,13 +17,17 @@ namespace Printers
         Atari1027(SioWorker *worker);
 
         virtual void setupFont();
+        static QString typeName()
+        {
+            return "Atari 1027";
+        }
 
     private:
         bool mESC;
 
-        virtual bool handleBuffer(QByteArray &buffer, int len);
-        bool handleEscapedCodes(const char b);
-        bool handlePrintableCodes(const char b);
+        virtual bool handleBuffer(QByteArray &buffer, unsigned int len);
+        bool handleEscapedCodes(const unsigned char b);
+        bool handlePrintableCodes(const unsigned char b);
     };
 }
 #endif // ATARI1027_H

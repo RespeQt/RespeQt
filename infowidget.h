@@ -8,13 +8,13 @@
 #ifndef INFOWIDGET_H
 #define INFOWIDGET_H
 
-#include <QWidget>
+#include <QFrame>
 
 namespace Ui {
 class InfoWidget;
 }
 
-class InfoWidget : public QWidget
+class InfoWidget : public QFrame
 {
     Q_OBJECT
 

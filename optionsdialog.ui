@@ -34,7 +34,7 @@
      <x>9</x>
      <y>9</y>
      <width>256</width>
-     <height>192</height>
+     <height>201</height>
     </rect>
    </property>
    <property name="sizePolicy">
@@ -107,7 +107,12 @@
     </property>
     <item>
      <property name="text">
-      <string>Atari 1027</string>
+      <string>Printer fixed width font</string>
+     </property>
+    </item>
+    <item>
+     <property name="text">
+      <string>Passthrough settings</string>
      </property>
     </item>
    </item>
@@ -128,7 +133,7 @@
     </sizepolicy>
    </property>
    <property name="currentIndex">
-    <number>5</number>
+    <number>7</number>
    </property>
    <widget class="QWidget" name="page_serialPort">
     <layout class="QVBoxLayout" name="verticalLayout_2">
@@ -1047,8 +1052,7 @@
      </item>
     </layout>
    </widget>
-   <widget class="QWidget" name="page_atari1020"/>
-   <widget class="QWidget" name="page_atari1027">
+   <widget class="QWidget" name="page_atarifixed">
     <layout class="QGridLayout" name="gridLayout_1">
      <property name="leftMargin">
       <number>0</number>
@@ -1066,9 +1070,9 @@
       <number>0</number>
      </property>
      <item row="0" column="0">
-      <widget class="QGroupBox" name="group_a1027">
+      <widget class="QGroupBox" name="group_afixed">
        <property name="title">
-        <string>Atari 1027</string>
+        <string>Printer fixed width font</string>
        </property>
        <layout class="QVBoxLayout" name="verticalLayout_7">
         <item>
@@ -1080,7 +1084,7 @@
            <number>0</number>
           </property>
           <item>
-           <widget class="QPushButton" name="button_1027font">
+           <widget class="QPushButton" name="button_atarifixed">
             <property name="sizePolicy">
              <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
               <horstretch>0</horstretch>
@@ -1093,7 +1097,7 @@
            </widget>
           </item>
           <item>
-           <widget class="QLabel" name="label_1027font">
+           <widget class="QLabel" name="label_atarifixed">
             <property name="sizePolicy">
              <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
               <horstretch>0</horstretch>
@@ -1125,6 +1129,46 @@
       </widget>
      </item>
     </layout>
+   </widget>
+   <widget class="QWidget" name="page_passthrough">
+    <widget class="QGroupBox" name="groupBox_passthrough">
+     <property name="geometry">
+      <rect>
+       <x>0</x>
+       <y>0</y>
+       <width>320</width>
+       <height>400</height>
+      </rect>
+     </property>
+     <property name="title">
+      <string>Passthrough settings</string>
+     </property>
+     <layout class="QVBoxLayout" name="verticalLayout">
+      <item>
+       <widget class="QLabel" name="label_5">
+        <property name="text">
+         <string>Raw output device</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QComboBox" name="rawPrinterName"/>
+      </item>
+      <item>
+       <spacer name="verticalSpacer_5">
+        <property name="orientation">
+         <enum>Qt::Vertical</enum>
+        </property>
+        <property name="sizeHint" stdset="0">
+         <size>
+          <width>20</width>
+          <height>40</height>
+         </size>
+        </property>
+       </spacer>
+      </item>
+     </layout>
+    </widget>
    </widget>
    <widget class="QWidget" name="page_firmware">
     <widget class="QGroupBox" name="firmware810Group">

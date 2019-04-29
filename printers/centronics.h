@@ -10,7 +10,7 @@ namespace Printers
     public:
         Centronics(SioWorker *sio);
 
-        virtual const QChar translateAtascii(const char b);
+        virtual const QChar translateAtascii(const unsigned char b);
     };
 }
 #endif // CENTRONICS_H

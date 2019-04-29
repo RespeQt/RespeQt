@@ -5,12 +5,13 @@
 namespace Printers
 {
     NativeOutput::NativeOutput():
-        mPainter(NULL),
-        mDevice(NULL),
-        mFont(NULL),
+        mPainter(Q_NULLPTR),
+        mDevice(Q_NULLPTR),
+        mFont(Q_NULLPTR),
         mX(0), mY(0),
         mCharsPerLine(80),
-        mCharCount(0)
+        mCharCount(0),
+        mLPIMode(0)
     {
 
     }
@@ -20,19 +21,21 @@ namespace Printers
         endOutput();
     }
 
-    void NativeOutput::beginOutput() {
+    bool NativeOutput::beginOutput() {
         mPainter = new QPainter();
         mPainter->setRenderHint(QPainter::Antialiasing);
         mPainter->begin(mDevice);
         setFont(mFont);
         updateBoundingBox();
+        return true;
     }
 
-    void NativeOutput::endOutput() {
+    bool NativeOutput::endOutput() {
         if (mPainter)
         {
             mPainter->end();
         }
+        return true;
     }
 
     void NativeOutput::setFont(QFont *font)
@@ -51,12 +54,14 @@ namespace Printers
     void NativeOutput::printChar(const QChar &c)
     {
         QFontMetrics metrics(*mFont);
-        qDebug() << "!n" << mBoundingBox.right();
+        //qDebug() << "!n" << mBoundingBox.right();
         if (metrics.width(c) + mX > mBoundingBox.right()
             || mCharCount + 1 > mCharsPerLine) {
             // Char has to go on next line
             newLine();
         }
+        QColor color(255, 0, 0);
+        mPainter->setPen(color);
         mPainter->drawText(mX, mY + metrics.height(), c);
         mX += metrics.width(c);
         mCharCount++;
@@ -97,17 +102,23 @@ namespace Printers
     void NativeOutput::newLine(bool linefeed)
     {
         QFontMetrics metrics(*mFont);
+
+        int lineSpacing = metrics.lineSpacing();
+        if (mLPIMode > 0)
+        {
+            lineSpacing = metrics.height();
+        }
         if (!linefeed)
         {
-            mX = mBoundingBox.left();
+            mX = static_cast<int>(trunc(mBoundingBox.left()));
             mCharCount = 0;
         }
         if (mY + metrics.height() > mBoundingBox.bottom())
         {
             newPage(linefeed);
-            mY = mBoundingBox.top();
+            mY = static_cast<int>(trunc(mBoundingBox.top()));
         } else {
-            mY += metrics.lineSpacing();
+            mY += lineSpacing;
         }
     }
 
@@ -129,8 +140,8 @@ namespace Printers
 
     void NativeOutput::calculateFixedFontSize(uint8_t charsPerLine)
     {
-        float painterWidth = mBoundingBox.right() - mBoundingBox.left();
-        float oldFontSize = font()->pointSizeF();
+        qreal painterWidth = mBoundingBox.right() - mBoundingBox.left();
+        qreal oldFontSize = font()->pointSizeF();
         int oldWidth;
 
         // Loop
@@ -139,7 +150,7 @@ namespace Printers
             QFontMetrics metrics(*mFont);
             QRect bounds = metrics.boundingRect('M');
             oldWidth = bounds.width();
-            float scale = painterWidth / (oldWidth * charsPerLine);
+            qreal scale = painterWidth / (oldWidth * charsPerLine);
             mFont->setPointSizeF(bounds.height() * scale);
             setFont(mFont);
             oldFontSize = bounds.height() * scale;

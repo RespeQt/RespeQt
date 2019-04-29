@@ -17,6 +17,10 @@ namespace Printers
         Atari1029(SioWorker *worker);
 
         virtual void setupFont();
+        static QString typeName()
+        {
+            return "Atari 1029";
+        }
 
     private:
         bool mESC;
@@ -24,12 +28,12 @@ namespace Printers
         uint8_t mGraphicsMode; // TODO Enum?
         uint16_t mGraphicsColumns;
 
-        virtual bool handleBuffer(QByteArray &buffer, int len);
-        bool handleEscapedCodes(const char b);
-        bool handlePrintableCodes(const char b);
+        virtual bool handleBuffer(QByteArray &buffer, unsigned int len);
+        bool handleEscapedCodes(const unsigned char b);
+        bool handlePrintableCodes(const unsigned char b);
         bool elongatedMode() { return mElongatedMode; }
         void setElongatedMode(bool elongatedMode);
-        bool handleGraphicsMode(const char b);
+        bool handleGraphicsMode(const unsigned char b);
     };
 }
 #endif // ATARI1029_H

@@ -1,6 +1,6 @@
 #include "atascii.h"
 
-std::map<char, QChar> Atascii::mapping;
+std::map<unsigned char, QChar> Atascii::mapping;
 Atascii::Atascii()
 {
     initMapping();
@@ -144,22 +144,20 @@ void Atascii::initMapping()
 }
 
 
-QChar Atascii::operator() (const char atascii) const
+QChar Atascii::operator() (const unsigned char atascii) const
 {
     return mapping.at(atascii);
 }
 
-char Atascii::operator() (const QChar &unicode) const
+unsigned char Atascii::operator() (const QChar &unicode) const
 {
-    std::map<char, QChar>::iterator it;
+    std::map<unsigned char, QChar>::iterator it;
     for (it = mapping.begin(); it != mapping.end(); ++it)
     {
         if (unicode == it->second)
         {
             return it->first;
         }
-        throw new std::invalid_argument("Unknown unicode mapping");
     }
-
-    return 0;
+    throw new std::invalid_argument("Unknown unicode mapping");
 }

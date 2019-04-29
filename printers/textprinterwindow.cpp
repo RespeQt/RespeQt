@@ -21,18 +21,17 @@
 #include <QFontComboBox>
 #include <QMessageBox>
 
-int effAtasciiFont = 0;
-int effFontSize = 0;
-bool showAscii = true;
-bool showAtascii = true;
-int fontSize = 9;
-QString atasciiFont("Atari Classic Chunky");
-
 namespace Printers {
 
 TextPrinterWindow::TextPrinterWindow(QWidget *parent) :
     QMainWindow(parent), NativeOutput(),
-    ui(new Ui::TextPrinterWindow)
+    ui(new Ui::TextPrinterWindow),
+    effAtasciiFont(0),
+    effFontSize(0),
+    showAscii(true),
+    showAtascii(true),
+    fontSize(9),
+    atasciiFont("Atari Classic Chunky")
 {
     ui->setupUi(this);
     QFont f;
@@ -52,9 +51,9 @@ TextPrinterWindow::TextPrinterWindow(QWidget *parent) :
     connect(ui->asciiFontName, &QFontComboBox::currentFontChanged, this, &TextPrinterWindow::asciiFontChanged);
     connect(this, &TextPrinterWindow::textPrint, this, &TextPrinterWindow::print);
 
-    mFont = NULL;
-    mDevice = NULL;
-    mPainter = NULL;
+    mFont = Q_NULLPTR;
+    mDevice = Q_NULLPTR;
+    mPainter = Q_NULLPTR;
 }
 
 TextPrinterWindow::~TextPrinterWindow()
@@ -101,7 +100,7 @@ void TextPrinterWindow::closeEvent(QCloseEvent *e)
 
     // Disable ATASCII Inverse Video for ASCII window // 
     for (int x = 0; x <= n-1; ++x){
-        int byte = textASCII[x];
+        char byte = textASCII[x];
         if (byte < 0){
             textASCII[x] = byte ^ 0x80;
         }
@@ -151,7 +150,7 @@ void TextPrinterWindow::on_actionAtasciiFont_triggered()
             case 3 :
                 atasciiFont = "Atari Classic Extrasmooth";
     }
-    QFont(a);
+    QFont a;
     a.setFamily(atasciiFont);
     a.setPointSize(fontSize);
     ui->printerTextEdit->setFont(a);
@@ -175,12 +174,12 @@ void TextPrinterWindow::on_actionFont_Size_triggered()
             case 3 :
                 fontSize = 12;
     }
-    QFont(a);
+    QFont a;
     a.setFamily(atasciiFont);
     a.setPointSize(fontSize);
     ui->printerTextEdit->setFont(a);
     ui->atasciiFontName->setText(atasciiFont + " - " + QString("%1").arg(fontSize));
-    QFont (f);
+    QFont f;
     f.setFamily(ui->asciiFontName->currentFont().toString());
     f.setPointSize(fontSize);
     ui->printerTextEditASCII->setFont(f);
@@ -234,7 +233,7 @@ void TextPrinterWindow::on_actionPrint_triggered()
 void TextPrinterWindow::on_actionSave_triggered()
 {
     QString fileName = QFileDialog::getSaveFileName(this, tr("Save printer text output"), respeqtSettings->lastPrinterTextDir(),
-                                                    tr("Text files (*.txt);;All files (*)"), 0);
+                                                    tr("Text files (*.txt);;All files (*)"), Q_NULLPTR);
     if (fileName.isEmpty()) {
         return;
     }
@@ -302,6 +301,14 @@ void TextPrinterWindow::on_actionSave_triggered()
  void TextPrinterWindow::printString(const QString &s)
  {
     emit textPrint(s);
+ }
+
+ bool TextPrinterWindow::setupOutput()
+ {
+    this->setGeometry(respeqtSettings->lastPrtHorizontalPos(), respeqtSettings->lastPrtVerticalPos(), respeqtSettings->lastPrtWidth(), respeqtSettings->lastPrtHeight());
+    this->show();
+
+    return true;
  }
 
 } // End of namespace

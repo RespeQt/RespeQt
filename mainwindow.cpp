@@ -27,6 +27,10 @@
 #include "logdisplaydialog.h"
 #include "infowidget.h"
 #include "printerwidget.h"
+#include "printers/printerfactory.h"
+#include "printers/outputfactory.h"
+#include "printers/printers.h"
+#include "printers/outputs.h"
 
 #include <QEvent>
 #include <QDragEnterEvent>
@@ -44,6 +48,8 @@
 #include <QPrinter>
 #include <QToolButton>
 #include <QHBoxLayout>
+#include <QPrinterInfo>
+#include <typeinfo>
 
 #include "atarifilesystem.h"
 #include "miscutils.h"
@@ -168,6 +174,25 @@ MainWindow::MainWindow(QWidget *parent)
 
     /* Setup UI */
     ui->setupUi(this);
+
+    /* Setup the printer factory */
+    Printers::PrinterFactory* pfactory = Printers::PrinterFactory::instance();
+    pfactory->registerPrinter<Printers::Atari1020>(Printers::Atari1020::typeName());
+    pfactory->registerPrinter<Printers::Atari1025>(Printers::Atari1025::typeName());
+    pfactory->registerPrinter<Printers::Atari1027>(Printers::Atari1027::typeName());
+    pfactory->registerPrinter<Printers::Atari1029>(Printers::Atari1029::typeName());
+    pfactory->registerPrinter<Printers::Passthrough>(Printers::Passthrough::typeName());
+
+    /* Setup the output factory */
+    Printers::OutputFactory* ofactory = Printers::OutputFactory::instance();
+    ofactory->registerOutput<Printers::SVGOutput>(Printers::SVGOutput::typeName());
+    ofactory->registerOutput<Printers::TextPrinterWindow>(Printers::TextPrinterWindow::typeName());
+    ofactory->registerOutput<Printers::RawOutput>(Printers::RawOutput::typeName());
+    QStringList printers = QPrinterInfo::availablePrinterNames();
+    for (QStringList::const_iterator sit = printers.cbegin(); sit != printers.cend(); ++sit)
+    {
+        ofactory->registerOutput<Printers::NativePrinter>(*sit);
+    }
 
     /* Add QActions for most recent */
     for( int i = 0; i < NUM_RECENT_FILES; ++i ) {
@@ -583,7 +608,8 @@ void MainWindow::closeEvent(QCloseEvent *event)
             saveWindowGeometry();
         }
     }
-    if (g_sessionFile != "") respeqtSettings->saveSessionToFile(g_sessionFilePath + "/" + g_sessionFile);
+    if (g_sessionFile != "")
+        respeqtSettings->saveSessionToFile(g_sessionFilePath + "/" + g_sessionFile);
     respeqtSettings->setD9DOVisible(g_D9DOVisible);
     bool wasRunning = ui->actionStartEmulation->isChecked();
     QMessageBox::StandardButton answer = QMessageBox::No;
@@ -770,12 +796,12 @@ void MainWindow::on_actionToggleMiniMode_triggered()
     }
 
     if(!g_miniMode) {
-        if (g_D9DOVisible) {
+        /*if (g_D9DOVisible) {
             setMinimumWidth(688);
         } else
         {
             setMinimumWidth(344);
-        }
+        }*/
 
         setMinimumHeight(426);
         setMaximumHeight(QWIDGETSIZE_MAX);
@@ -824,12 +850,12 @@ void MainWindow::showHideDrives()
         ui->actionHideShowDrives->setText(QApplication::translate("MainWindow", "Hide drives D9-DO", 0));
         ui->actionHideShowDrives->setStatusTip(QApplication::translate("MainWindow", "Hide drives D9-DO", 0));
         ui->actionHideShowDrives->setIcon(QIcon(":/icons/silk-icons/icons/drive_add.png").pixmap(16, 16, QIcon::Normal, QIcon::On));
-        setMinimumWidth(688);
+        //setMinimumWidth(688);
     } else {
         ui->actionHideShowDrives->setText(QApplication::translate("MainWindow", "Show drives D9-DO", 0));
         ui->actionHideShowDrives->setStatusTip(QApplication::translate("MainWindow", "Show drives D9-DO", 0));
         ui->actionHideShowDrives->setIcon(QIcon(":/icons/silk-icons/icons/drive_delete.png").pixmap(16, 16, QIcon::Normal, QIcon::On));
-        setMinimumWidth(344);
+        //setMinimumWidth(344);
     }
 }
 
@@ -841,7 +867,7 @@ void MainWindow::on_actionHideShowDrives_triggered()
 
     showHideDrives();
 
-    setGeometry(geometry().x(), geometry().y(), 0, geometry().height());
+    //setGeometry(geometry().x(), geometry().y(), 0, geometry().height());
     saveWindowGeometry();
 }
 
@@ -1358,19 +1384,24 @@ void MainWindow::mountFile(int no, const QString &fileName, bool /*prot*/)
 
         sio->installDevice(DISK_BASE_CDEVIC + no, disk);
 
-        PCLINK* pclink = reinterpret_cast<PCLINK*>(sio->getDevice(PCLINK_CDEVIC));
-        if(isDir || pclink->hasLink(no+1))
+        try {
+            PCLINK* pclink = dynamic_cast<PCLINK*>(sio->getDevice(PCLINK_CDEVIC));
+            if(pclink != Q_NULLPTR && (isDir || pclink->hasLink(no+1)))
+            {
+                sio->uninstallDevice(PCLINK_CDEVIC);
+                if(isDir)
+                {
+                    pclink->setLink(no+1,QDir::toNativeSeparators(fileName).toLatin1());
+                }
+                else
+                {
+                    pclink->resetLink(no+1);
+                }
+                sio->installDevice(PCLINK_CDEVIC,pclink);
+            }
+        } catch(std::bad_cast e)
         {
-            sio->uninstallDevice(PCLINK_CDEVIC);
-            if(isDir)
-            {
-                pclink->setLink(no+1,QDir::toNativeSeparators(fileName).toLatin1());
-            }
-            else
-            {
-                pclink->resetLink(no+1);
-            }
-            sio->installDevice(PCLINK_CDEVIC,pclink);
+            qDebug() << "!e " << tr("Bad cast for PCLINK");
         }
 
         diskWidgets[no]->updateFromImage(disk);
