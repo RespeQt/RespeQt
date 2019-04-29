@@ -1,16 +1,9 @@
 #include "rawoutput.h"
 #include "respeqtsettings.h"
 #include <winspool.h>
-#include <QWidget>
 #include <QComboBox>
 
 namespace Printers {
-
-    class ChooseDialog : public QWidget
-    {
-        Q_OBJECT
-    };
-
 
     RawOutput::RawOutput()
         :NativeOutput()

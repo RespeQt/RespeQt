@@ -5,7 +5,9 @@
 #include <QObject>
 
 #if defined(Q_OS_WIN)
-#include "windows.h"
+#include <windows.h>
+#elif defined (Q_OS_MAC) || defined(Q_OS_LINUX)
+#include <cups/cups.h>
 #endif
 
 class QComboBox;
@@ -30,14 +32,16 @@ namespace Printers
                 return QObject::tr("Raw output");
             }
 
-            static void setupRawPrinters(QComboBox *);
+            static void setupRawPrinters(QComboBox *list);
 
         protected:
             QString rawPrinterName;
 #if defined(Q_OS_WIN)
             HANDLE mJob;
-#else
+#elif defined(Q_OS_MAC) || defined(Q_OS_LINUX)
             int mJobId;
+            cups_dest_t *mDest;
+            cups_dinfo_t *mInfo;
 #endif
     };
 }
