@@ -43,7 +43,11 @@ namespace Printers {
 
         cupsFreeDestInfo(mInfo);
         mDest = Q_NULLPTR;
+#if defined(Q_OS_MAC)
+        delete mDest;
+#elif defined(Q_OS_LINUX)
         cupsFreeDests(1, mDest);
+#endif
         mDest = Q_NULLPTR;
         httpClose(mHttp);
 
@@ -96,9 +100,12 @@ namespace Printers {
             cups_dest_t *dest = reinterpret_cast<cups_dest_t*>(&user_data.dests[i]);
             if (rawPrinterName == QString::fromLocal8Bit(dest->name))
             {
-                //mDest = new cups_dest_t();
-                //memcpy(mDest, dest, sizeof(*dest));
+#if defined(Q_OS_MAC)
+                mDest = new cups_dest_t();
+                memcpy(mDest, dest, sizeof(*dest));
+#elif defined(Q_OS_LINUX)
                 cupsCopyDest(dest, 1, &mDest);
+#endif
             }
         }
         if (mDest != Q_NULLPTR)
