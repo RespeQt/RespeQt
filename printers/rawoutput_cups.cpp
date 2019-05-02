@@ -26,7 +26,6 @@ namespace Printers {
         {
             // Job created, now start first and last document.
             bool return_ = cupsStartDestDocument(mHttp, mDest, mInfo, mJobId, "RespeQt", CUPS_FORMAT_TEXT, 0, Q_NULLPTR, 1) == HTTP_STATUS_CONTINUE;
-            //cupsWriteRequestData(CUPS_HTTP_DEFAULT, "blablabla", 9);
             if (!return_)
                 qDebug() << "!n" << cupsLastErrorString();
             return return_;
@@ -97,8 +96,9 @@ namespace Printers {
             cups_dest_t *dest = reinterpret_cast<cups_dest_t*>(&user_data.dests[i]);
             if (rawPrinterName == QString::fromLocal8Bit(dest->name))
             {
-                mDest = new cups_dest_t();
-                memcpy(mDest, dest, sizeof(*dest));
+                //mDest = new cups_dest_t();
+                //memcpy(mDest, dest, sizeof(*dest));
+                cupsCopyDest(dest, 1, &mDest);
             }
         }
         if (mDest != Q_NULLPTR)
