@@ -20,12 +20,12 @@ MOBILITY = bearer
 INCLUDEPATH += $$[QT_INSTALL_HEADERS]/QtZlib
 SOURCES += main.cpp \
     mainwindow.cpp \
+    rcl.cpp \
     sioworker.cpp \
     optionsdialog.cpp \
     aboutdialog.cpp \
     diskimage.cpp \
     folderimage.cpp \
-    miscdevices.cpp \
     createimagedialog.cpp \
     diskeditdialog.cpp \
     autoboot.cpp \
@@ -49,7 +49,8 @@ SOURCES += main.cpp \
     printerwidget.cpp \
     printers/atariprinter.cpp \
     printers/atari1020.cpp \
-    serialport-test.cpp \    
+    serialport-test.cpp \
+    smartdevice.cpp \
     printers/nativeoutput.cpp \
     printers/centronics.cpp \
     printers/escp.cpp \
@@ -100,13 +101,13 @@ unix:SOURCES += serialport-unix.cpp \
 HEADERS += mainwindow.h \
     printers/outputs.h \
     printers/printers.h \
+    rcl.h \
     serialport.h \
     sioworker.h \
     optionsdialog.h \
     aboutdialog.h \
     diskimage.h \
     folderimage.h \
-    miscdevices.h \
     createimagedialog.h \
     diskeditdialog.h \
     autoboot.h \
@@ -169,7 +170,8 @@ HEADERS += mainwindow.h \
     printers/outputfactory.h \
     printers/atari1025.h \
     printers/passthrough.h \
-    printers/rawoutput.h
+    printers/rawoutput.h \
+    smartdevice.h
 
 win32:HEADERS += serialport-win32.h
 unix:HEADERS += serialport-unix.h
