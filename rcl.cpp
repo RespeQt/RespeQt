@@ -1,5 +1,5 @@
 /*
- * miscdevices.cpp
+ * rcl.cpp
  *
  * Copyright 2015, 2017 Joseph Zatarski
  * Copyright 2016, 2017 TheMontezuma
@@ -13,7 +13,7 @@
 #include "windows.h"
 #endif
 
-#include "miscdevices.h"
+#include "rcl.h"
 #include "respeqtsettings.h"
 #include "mainwindow.h"
 
@@ -23,98 +23,7 @@
 #include <QDesktopServices>
 #include <QUrl>
 
-extern char g_rclSlotNo;
-
-// 
-QString imageFileName;
-
-//SmartDevice (ApeTime + URL submit)
-
-void SmartDevice::handleCommand(quint8 command, quint16 aux)
-{
-    switch(command)
-    {
-    // Get APE Time
-    case 0x93:
-    {
-        if (!sio->port()->writeCommandAck())
-        {
-            return;
-        }
-
-        QByteArray data(6, 0);
-        QDateTime dateTime = QDateTime::currentDateTime();
-
-        data[0] = dateTime.date().day();
-        data[1] = dateTime.date().month();
-        data[2] = dateTime.date().year() % 100;
-        data[3] = dateTime.time().hour();
-        data[4] = dateTime.time().minute();
-        data[5] = dateTime.time().second();
-
-        sio->port()->writeComplete();
-        sio->port()->writeDataFrame(data);
-
-        qDebug() << "!n" << tr("[%1] Read date/time (%2).")
-                       .arg(deviceName())
-                       .arg(dateTime.toString(Qt::SystemLocaleShortDate));
-        break;
-    }
-
-    // Submit URL
-    case 0x55:
-    {
-        if(respeqtSettings->isURLSubmitEnabled() && aux!=0 && aux<=2000)
-        {
-            if (!sio->port()->writeCommandAck())
-            {
-                return;
-            }
-
-            QByteArray data(aux, 0);
-            data = sio->port()->readDataFrame(aux);
-            if (data.isEmpty())
-            {
-                qCritical() << "!e" << tr("[%1] Read data frame failed").arg(deviceName());
-                sio->port()->writeDataNak();
-                sio->port()->writeError();
-                return;
-            }
-            sio->port()->writeDataAck();
-            sio->port()->writeComplete();
-#ifndef QT_NO_DEBUG
-            sio->writeSnapshotDataFrame(data);
-#endif
-
-            QString urlstr(data);
-            QDesktopServices::openUrl(QUrl(urlstr));
-
-            qDebug() << "!n" << tr("URL [%1] submitted").arg(urlstr);
-        }
-        else
-        {
-            sio->port()->writeCommandNak();
-            qWarning() << "!w" << tr("[%1] command: $%2, aux: $%3 NAKed.")
-                           .arg(deviceName())
-                           .arg(command, 2, 16, QChar('0'))
-                           .arg(aux, 4, 16, QChar('0'));
-            return;
-        }
-        break;
-    }
-
-    default:
-    {
-        sio->port()->writeCommandNak();
-        qWarning() << "!w" << tr("[%1] command: $%2, aux: $%3 NAKed.")
-                       .arg(deviceName())
-                       .arg(command, 2, 16, QChar('0'))
-                       .arg(aux, 4, 16, QChar('0'));
-        break;
-    }
-
-    }
-}
+char RCl::g_rclSlotNo;
 
 // RespeQt Client ()
 
@@ -130,12 +39,12 @@ void RCl::handleCommand(quint8 command, quint16 aux)
                 return;
             }
 
-            data[0] = dateTime.date().day();
-            data[1] = dateTime.date().month();
-            data[2] = dateTime.date().year() % 100;
-            data[3] = dateTime.time().hour();
-            data[4] = dateTime.time().minute();
-            data[5] = dateTime.time().second();
+            data[0] = static_cast<char>(dateTime.date().day());
+            data[1] = static_cast<char>(dateTime.date().month());
+            data[2] = static_cast<char>(dateTime.date().year() % 100);
+            data[3] = static_cast<char>(dateTime.time().hour());
+            data[4] = static_cast<char>(dateTime.time().minute());
+            data[5] = static_cast<char>(dateTime.time().second());
             qDebug() << "!n" << tr("[%1] Date/time sent to client (%2).")
                        .arg(deviceName())
                        .arg(dateTime.toString(Qt::SystemLocaleShortDate));
@@ -151,13 +60,20 @@ void RCl::handleCommand(quint8 command, quint16 aux)
                 return;
             }
             qint8 swapDisk1, swapDisk2;
-            swapDisk1 = aux /256 - 1;
-            swapDisk2 = aux % 256 - 1;
-            if (swapDisk1 > 9) swapDisk1 -= 16;
-            if (swapDisk2 > 9) swapDisk2 -= 16;
-            if (swapDisk1 >= 0 and swapDisk1 < 15 and swapDisk2 >=0 and swapDisk2 < 15 and swapDisk1 != swapDisk2) {
-                sio->swapDevices(swapDisk1 + DISK_BASE_CDEVIC, swapDisk2 + DISK_BASE_CDEVIC);
-                respeqtSettings->swapImages(swapDisk1, swapDisk2);
+            swapDisk1 = static_cast<qint8>(aux / 256);
+            swapDisk2 = static_cast<qint8>(aux % 256);
+            if (swapDisk1 > 25)
+                swapDisk1 -= 16;
+            if (swapDisk2 > 25)
+                swapDisk2 -= 16;
+            if (swapDisk1 > 0 && swapDisk1 <= 15
+                && swapDisk2 > 0 && swapDisk2 <= 15
+                && swapDisk1 != swapDisk2)
+            {
+                sio->swapDevices(
+                    static_cast<quint8>(swapDisk1 + DISK_BASE_CDEVIC - 1),
+                    static_cast<quint8>(swapDisk2 + DISK_BASE_CDEVIC - 1));
+                respeqtSettings->swapImages(swapDisk1 - 1, swapDisk2 - 1);
                 qDebug() << "!n" << tr("[%1] Swapped disk %2 with disk %3.")
                                 .arg(deviceName())
                                 .arg(swapDisk2 + 1)
@@ -166,8 +82,8 @@ void RCl::handleCommand(quint8 command, quint16 aux)
                 sio->port()->writeCommandNak();
                 qDebug() << "!e" << tr("[%1] Invalid swap request for drives: (%2)-(%3).")
                            .arg(deviceName())
-                           .arg(swapDisk2 + 1)
-                           .arg(swapDisk1 + 1);
+                           .arg(swapDisk2)
+                           .arg(swapDisk1);
             }
             sio->port()->writeComplete();
          }
@@ -179,23 +95,27 @@ void RCl::handleCommand(quint8 command, quint16 aux)
               return;
           }
           qint8 unmountDisk;
-          unmountDisk = aux /256;
-          if (unmountDisk == -6) unmountDisk = 0;        // All drives
-          if (unmountDisk > 9) unmountDisk -= 16;       // Drive 10-15
-          if (unmountDisk >= 0 and unmountDisk <= 15) {
+          unmountDisk = static_cast<qint8>(aux /256);
+          if (unmountDisk == -6)
+              unmountDisk = 0;        // All drives
+          if (unmountDisk > 25)
+              unmountDisk -= 16;       // Drive 10-15
+          if (unmountDisk >= 0 && unmountDisk <= 15) {
               if (unmountDisk == 0) {
               // Eject All disks
                   int toBeSaved = 0;
-                  for (int i = 0; i <= 14; i++) {    // 
-                      SimpleDiskImage *img = qobject_cast <SimpleDiskImage*> (sio->getDevice(i + DISK_BASE_CDEVIC));
+                  for (int i = 0; i <= 14; i++) {    //
+                      SimpleDiskImage *img = qobject_cast <SimpleDiskImage*>
+                            (sio->getDevice(static_cast<quint8>(i + DISK_BASE_CDEVIC)));
                       if (img && img->isModified()) {
                           toBeSaved++;
                       }
                   }
                   if (!toBeSaved) {
                       for (int i = 14; i >= 0; i--) {
-                          SimpleDiskImage *img = qobject_cast <SimpleDiskImage*> (sio->getDevice(i + DISK_BASE_CDEVIC));
-                          sio->uninstallDevice(i + DISK_BASE_CDEVIC);
+                          SimpleDiskImage *img = qobject_cast <SimpleDiskImage*>
+                                  (sio->getDevice(static_cast<quint8>(i + DISK_BASE_CDEVIC)));
+                          sio->uninstallDevice(static_cast<quint8>(i + DISK_BASE_CDEVIC));
                           delete img;
                           respeqtSettings->unmountImage(i);
                           qDebug() << "!n" << tr("[%1] Unmounted disk %2")
@@ -211,7 +131,8 @@ void RCl::handleCommand(quint8 command, quint16 aux)
                   }
               } else {
                   // Single Disk Eject
-                  SimpleDiskImage *img = qobject_cast <SimpleDiskImage*> (sio->getDevice(unmountDisk - 1 + DISK_BASE_CDEVIC));
+                  SimpleDiskImage *img = qobject_cast <SimpleDiskImage*>
+                          (sio->getDevice(static_cast<quint8>(unmountDisk - 1 + DISK_BASE_CDEVIC)));
 
                   if (img && img->isModified()) {
                       sio->port()->writeCommandNak();
@@ -219,7 +140,7 @@ void RCl::handleCommand(quint8 command, quint16 aux)
                                 .arg(deviceName())
                                 .arg(unmountDisk);
                   } else {
-                      sio->uninstallDevice(unmountDisk - 1 + DISK_BASE_CDEVIC);
+                      sio->uninstallDevice(static_cast<quint8>(unmountDisk - 1 + DISK_BASE_CDEVIC));
                       delete img;
                       respeqtSettings->unmountImage(unmountDisk - 1);
                       qDebug() << "!n" << tr("[%1] Remotely unmounted disk %2")
@@ -264,7 +185,10 @@ void RCl::handleCommand(quint8 command, quint16 aux)
           }
           if (aux == 0) {
               QByteArray data(len, 0);
-              data = sio->port()->readDataFrame(len);
+              data = sio->port()->readDataFrame(static_cast<uint>(len));
+#ifndef QT_NO_DEBUG
+              sio->writeSnapshotDataFrame(data);
+#endif
               if (data.isEmpty()) {
                   qCritical() << "!e" << tr("[%1] Read data frame failed")
                                 .arg(deviceName());
@@ -272,9 +196,6 @@ void RCl::handleCommand(quint8 command, quint16 aux)
                   sio->port()->writeError();
                   return;
                }
-#ifndef QT_NO_DEBUG
-              sio->writeSnapshotDataFrame(data);
-#endif
               imageFileName = data;
               if (command == 0x97) {     // Create new image file first
                   int i, type;
@@ -310,9 +231,9 @@ void RCl::handleCommand(quint8 command, quint16 aux)
                       fileSize = 92160;
                       fileData.resize(fileSize+16);
                       fileData.fill(0);
-                      fileData[2] = 0x80;
-                      fileData[3] = 0x16;
-                      fileData[4] = 0x80;
+                      fileData[2] = static_cast<char>(0x80);
+                      fileData[3] = static_cast<char>(0x16);
+                      fileData[4] = static_cast<char>(0x80);
                       }
                       break;
                     case 2 :        // Enhanced Density
@@ -320,9 +241,9 @@ void RCl::handleCommand(quint8 command, quint16 aux)
                       fileSize = 133120;
                       fileData.resize(fileSize+16);
                       fileData.fill(0);
-                      fileData[2] = 0x80;
-                      fileData[3] = 0x20;
-                      fileData[4] = 0x80;
+                      fileData[2] = static_cast<char>(0x80);
+                      fileData[3] = static_cast<char>(0x20);
+                      fileData[4] = static_cast<char>(0x80);
                       }
                       break;
                     case 3 :        // Double Density
@@ -330,10 +251,10 @@ void RCl::handleCommand(quint8 command, quint16 aux)
                       fileSize = 183936;
                       fileData.resize(fileSize+16);
                       fileData.fill(0);
-                      fileData[2] = 0xE8;
-                      fileData[3] = 0x2C;
-                      fileData[4] = 0x00;
-                      fileData[5] = 0x01;
+                      fileData[2] = static_cast<char>(0xE8);
+                      fileData[3] = static_cast<char>(0x2C);
+                      fileData[4] = static_cast<char>(0x00);
+                      fileData[5] = static_cast<char>(0x01);
                       }
                       break;
                     case 4 :        // Double Sided, Double Density
@@ -341,10 +262,10 @@ void RCl::handleCommand(quint8 command, quint16 aux)
                       fileSize = 368256;
                       fileData.resize(fileSize+16);
                       fileData.fill(0);
-                      fileData[2] = 0xE8;
-                      fileData[3] = 0x59;
-                      fileData[4] = 0x00;
-                      fileData[5] = 0x01;
+                      fileData[2] = static_cast<char>(0xE8);
+                      fileData[3] = static_cast<char>(0x59);
+                      fileData[4] = static_cast<char>(0x00);
+                      fileData[5] = static_cast<char>(0x01);
                       }
                       break;
                     case 5 :        // Double Density Hard Disk
@@ -352,11 +273,11 @@ void RCl::handleCommand(quint8 command, quint16 aux)
                       fileSize = 16776576;
                       fileData.resize(fileSize+16);
                       fileData.fill(0);
-                      fileData[2] = 0xD8;
-                      fileData[3] = 0xFF;
-                      fileData[4] = 0x00;
-                      fileData[5] = 0x01;
-                      fileData[6] = 0x0F;
+                      fileData[2] = static_cast<char>(0xD8);
+                      fileData[3] = static_cast<char>(0xFF);
+                      fileData[4] = static_cast<char>(0x00);
+                      fileData[5] = static_cast<char>(0x01);
+                      fileData[6] = static_cast<char>(0x0F);
                       }
                       break;
                     case 6 :        // Quad Density Hard Disk
@@ -364,16 +285,16 @@ void RCl::handleCommand(quint8 command, quint16 aux)
                       fileSize = 33553576;
                       fileData.resize(fileSize+16);
                       fileData.fill(0);
-                      fileData[2] = 0xE0;
-                      fileData[3] = 0xFF;
-                      fileData[4] = 0x00;
-                      fileData[5] = 0x02;
-                      fileData[6] = 0x1F;
+                      fileData[2] = static_cast<char>(0xE0);
+                      fileData[3] = static_cast<char>(0xFF);
+                      fileData[4] = static_cast<char>(0x00);
+                      fileData[5] = static_cast<char>(0x02);
+                      fileData[6] = static_cast<char>(0x1F);
                       }
                       break;
                   }
-                  fileData[0] = 0x96;
-                  fileData[1] = 0x02;
+                  fileData[0] = static_cast<char>(0x96);
+                  fileData[1] = static_cast<char>(0x02);
                   file.write(fileData);
                   fileData.clear();
                   file.close();
@@ -404,20 +325,21 @@ void RCl::handleCommand(quint8 command, quint16 aux)
                 return;
             }
             qint8 commitDisk;
-            commitDisk = aux % 256 - 1;
-            if (commitDisk > 9) commitDisk -= 16;
+            commitDisk = static_cast<qint8>(aux % 256);
+            if (commitDisk > 9)
+                commitDisk -= 16;
 
-            if (commitDisk != -7 && (commitDisk <0 || commitDisk > 14)) {
+            if (commitDisk != -6 && (commitDisk <0 || commitDisk > 14)) {
                 sio->port()->writeCommandNak();
                 return;
             }
             // All disks or a given disk
-            if (commitDisk == -7) {
+            if (commitDisk == -6) {
                 for (int i = 0; i < 15; i++) {
                     emit toggleAutoCommit(i);
                 }
             } else {
-                emit toggleAutoCommit(commitDisk);
+                emit toggleAutoCommit(commitDisk - 1);
             }
 
             sio->port()->writeComplete();
@@ -437,7 +359,7 @@ void RCl::handleCommand(quint8 command, quint16 aux)
 // Get the next slot number available for mounting a disk image
 void RCl::gotNewSlot(int slot)
 {
-   g_rclSlotNo = slot;
+   g_rclSlotNo = static_cast<char>(slot);
 
    // Ask the MainWindow to mount the file
    emit mountFile(slot, imageFileName);

@@ -22,12 +22,16 @@ namespace Printers {
 
     bool RawOutput::beginOutput()
     {
-        if (cupsCreateDestJob(CUPS_HTTP_DEFAULT, mDest, mInfo, &mJobId, "RespeQt", 0, Q_NULLPTR) == IPP_STATUS_OK)
+        if (cupsCreateDestJob(mHttp, mDest, mInfo, &mJobId, "RespeQt", 0, Q_NULLPTR) == IPP_STATUS_OK)
         {
             // Job created, now start first and last document.
-            return cupsStartDestDocument(CUPS_HTTP_DEFAULT, mDest, mInfo, mJobId, "RespeQt", CUPS_FORMAT_RAW, 0, Q_NULLPTR, 1) == HTTP_STATUS_CONTINUE;
+            bool return_ = cupsStartDestDocument(mHttp, mDest, mInfo, mJobId, "RespeQt", CUPS_FORMAT_TEXT, 0, Q_NULLPTR, 1) == HTTP_STATUS_CONTINUE;
+            if (!return_)
+                qDebug() << "!n" << cupsLastErrorString();
+            return return_;
         } else {
             // Error
+            qDebug() << "!n"<< cupsLastErrorString();
             return false;
         }
     }
@@ -35,7 +39,17 @@ namespace Printers {
     bool RawOutput::endOutput()
     {
         QByteArray temp = rawPrinterName.toLocal8Bit();
-        cupsFinishDestDocument(CUPS_HTTP_DEFAULT, mDest, mInfo);
+        cupsFinishDestDocument(mHttp, mDest, mInfo);
+
+        cupsFreeDestInfo(mInfo);
+        mDest = Q_NULLPTR;
+#if defined(Q_OS_MAC)
+        delete mDest;
+#elif defined(Q_OS_LINUX)
+        cupsFreeDests(1, mDest);
+#endif
+        mDest = Q_NULLPTR;
+        httpClose(mHttp);
 
         return true;
     }
@@ -43,8 +57,10 @@ namespace Printers {
     bool RawOutput::sendBuffer(const QByteArray &b, unsigned int len)
     {
         // CUPS direct print
-        cupsWriteRequestData(CUPS_HTTP_DEFAULT, b.data(), static_cast<size_t>(len));
-        return false;
+        bool return_ = cupsWriteRequestData(mHttp, b.data(), static_cast<size_t>(len)) != HTTP_STATUS_ERROR;
+        if (!return_)
+            qDebug()<<"!n "<< cupsLastErrorString();
+        return return_;
     }
 
     typedef struct {
@@ -67,8 +83,10 @@ namespace Printers {
     {
         my_user_data_t user_data = { 0, Q_NULLPTR };
         cups_ptype_t type = CUPS_PRINTER_LOCAL, mask = CUPS_PRINTER_LOCAL;
+        char *resource = new char[256];
 
         rawPrinterName = respeqtSettings->rawPrinterName();
+
         if (!cupsEnumDests(CUPS_DEST_FLAGS_NONE, 5000, Q_NULLPTR, type, mask,
             reinterpret_cast<cups_dest_cb_t>(my_dest_cb), &user_data))
         {
@@ -82,16 +100,24 @@ namespace Printers {
             cups_dest_t *dest = reinterpret_cast<cups_dest_t*>(&user_data.dests[i]);
             if (rawPrinterName == QString::fromLocal8Bit(dest->name))
             {
+#if defined(Q_OS_MAC)
                 mDest = new cups_dest_t();
                 memcpy(mDest, dest, sizeof(*dest));
+#elif defined(Q_OS_LINUX)
+                cupsCopyDest(dest, 1, &mDest);
+#endif
             }
         }
         if (mDest != Q_NULLPTR)
-            mInfo = cupsCopyDestInfo(CUPS_HTTP_DEFAULT, mDest);
-
+        {
+            mHttp = cupsConnectDest(mDest, CUPS_DEST_FLAGS_NONE,
+                                           30000, Q_NULLPTR, resource,
+                                           sizeof(resource), Q_NULLPTR, Q_NULLPTR);
+            mInfo = cupsCopyDestInfo(mHttp, mDest);
+        }
         cupsFreeDests(user_data.num_dests, user_data.dests);
-        return mDest != Q_NULLPTR;
 
+        return mDest != Q_NULLPTR && mHttp != Q_NULLPTR;
     }
 
     void RawOutput::setupRawPrinters(QComboBox *list)

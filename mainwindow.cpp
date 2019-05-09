@@ -18,7 +18,8 @@
 #include "drivewidget.h"
 #include "folderimage.h"
 #include "pclink.h"
-#include "miscdevices.h"
+#include "rcl.h"
+#include "smartdevice.h"
 #include "respeqtsettings.h"
 #include "autobootdialog.h"
 #include "autoboot.h"
@@ -65,7 +66,6 @@ QString g_exefileName;
 static QString g_rclFileName;
 QString g_respeQtAppPath;
 static QRect g_savedGeometry;
-char g_rclSlotNo;
 bool g_disablePicoHiSpeed;
 static bool g_D9DOVisible = true;
 bool g_miniMode = false;

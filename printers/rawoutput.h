@@ -42,6 +42,7 @@ namespace Printers
             int mJobId;
             cups_dest_t *mDest;
             cups_dinfo_t *mInfo;
+            http_t *mHttp;
 #endif
     };
 }

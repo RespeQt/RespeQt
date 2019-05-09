@@ -1,5 +1,5 @@
 /*
- * miscdevices.h
+ * rcl.h
  *
  * Copyright 2015, 2017 Joseph Zatarski
  *
@@ -8,20 +8,10 @@
  * know the specific year(s) please let the current maintainer know.
  */
 
-#ifndef MISCDEVICES_H
-#define MISCDEVICES_H
+#ifndef RCL_H
+#define RCL_H
 
 #include "sioworker.h"
-
-// SmartDevice (ApeTime + URL submit)
-class SmartDevice: public SioDevice
-{
-    Q_OBJECT
-
-public:
-    SmartDevice(SioWorker *worker): SioDevice(worker) {}
-    void handleCommand(quint8 command, quint16 aux);
-};
 
 // RespeQt Time Server //
 class RCl: public SioDevice
@@ -39,8 +29,11 @@ public slots:
 signals:
     void findNewSlot (int startFrom, bool createOne);
     void mountFile (int no, const QString fileName);
-    void toggleAutoCommit (int no);                     // 
+    void toggleAutoCommit (int no);
 
+private:
+    QString imageFileName;
+    static char g_rclSlotNo;
 };
 
-#endif // MISCDEVICES_H
+#endif // RCL_H

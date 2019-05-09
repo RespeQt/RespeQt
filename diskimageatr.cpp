@@ -56,7 +56,7 @@ bool SimpleDiskImage::openAtr(const QString &fileName)
     }
 
     // Validate the magic number
-    quint16 magic = ((quint8)header[0]) + ((quint8)header[1]) * 256;
+    quint16 magic = static_cast<quint8>(header[0]) + static_cast<quint8>(header[1]) * 256;
     if (magic != 0x0296) {
         qCritical() << "!e" << tr("Cannot open '%1': %2").arg(fileName).arg(tr("Not a valid ATR file."));
         sourceFile->close();
@@ -65,9 +65,9 @@ bool SimpleDiskImage::openAtr(const QString &fileName)
     }
 
     // Decode image meta-data
-    quint16 sizeLo = ((quint8)header[2]) + ((quint8)header[3]) * 256;
-    quint16 secSize = ((quint8)header[4]) + ((quint8)header[5]) * 256;
-    quint32 sizeHi = ((quint8)header[6]) + ((quint8)header[7]) * 256;
+    quint16 sizeLo = static_cast<quint8>(header[2]) + static_cast<quint8>(header[3]) * 256;
+    quint16 secSize = static_cast<quint8>(header[4]) + static_cast<quint8>(header[5]) * 256;
+    quint32 sizeHi = static_cast<quint8>(header[6]) + static_cast<quint8>(header[7]) * 256;
     quint64 size = (sizeLo + sizeHi * 65536) * 16;
 
     // Try to create the temporary file
@@ -105,7 +105,7 @@ bool SimpleDiskImage::openAtr(const QString &fileName)
         }
     }
 
-    quint64 imageSize = file.size();
+    quint64 imageSize = static_cast<quint64>(file.size());
 
     // Check if the reported image size is consistent with the actual size
     // 
@@ -145,11 +145,8 @@ bool SimpleDiskImage::openAtr(const QString &fileName)
             }
         } else {
             // Handle double density images with 4 or more sectors
-            if ((size + 384) % 256 != 0) {
-                // 
-                if (size / 256 < 720 ) {
-                    sizeValid = false;
-                }
+            if ((size - 384) % 256 != 0 && ((size + 384) / 256) % 720 != 0) {
+                sizeValid = false;
             }
         }
     } else {
@@ -272,7 +269,7 @@ bool SimpleDiskImage::openXfd(const QString &fileName)
         }
     }
 
-    quint64 size = file.size();
+    quint64 size = static_cast<quint64>(file.size());
 
     if ((size % 128) != 0) {
         qCritical() << "!e" << tr("Cannot open '%1': %2")
