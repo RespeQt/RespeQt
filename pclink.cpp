@@ -164,7 +164,7 @@ char RESERVED_NAME_PREFIX_STR[] = {RESERVED_NAME_PREFIX_CHAR,0};
 /*************************************************************************/
 
 PCLINK::PCLINK(SioWorker *worker)
-    :SioDevice(worker)
+    :SDXProtocol(worker)
 {
     do_pclink_init(1);
 }

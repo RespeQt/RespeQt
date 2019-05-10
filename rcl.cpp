@@ -95,7 +95,7 @@ void RCl::handleCommand(quint8 command, quint16 aux)
               return;
           }
           qint8 unmountDisk;
-          unmountDisk = static_cast<qint8>(aux /256);
+          unmountDisk = static_cast<qint8>(aux / 256);
           if (unmountDisk == -6)
               unmountDisk = 0;        // All drives
           if (unmountDisk > 25)

@@ -21,6 +21,7 @@ INCLUDEPATH += $$[QT_INSTALL_HEADERS]/QtZlib
 SOURCES += main.cpp \
     mainwindow.cpp \
     rcl.cpp \
+    sdxprotocol.cpp \
     sioworker.cpp \
     optionsdialog.cpp \
     aboutdialog.cpp \
@@ -102,6 +103,7 @@ HEADERS += mainwindow.h \
     printers/outputs.h \
     printers/printers.h \
     rcl.h \
+    sdxprotocol.h \
     serialport.h \
     sioworker.h \
     optionsdialog.h \
