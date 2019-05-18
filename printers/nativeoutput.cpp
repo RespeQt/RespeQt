@@ -11,9 +11,11 @@ namespace Printers
         mX(0), mY(0),
         mCharsPerLine(80),
         mCharCount(0),
-        mLPIMode(0)
+        mLPIMode(0),
+        mCharMode(true),
+        hResolution(0), vResolution(0)
     {
-
+        calculateFixedFontSize(mCharsPerLine);
     }
 
     NativeOutput::~NativeOutput()
@@ -36,6 +38,30 @@ namespace Printers
             mPainter->end();
         }
         return true;
+    }
+
+    void NativeOutput::calculateFixedFontSize(uint8_t charsPerLine)
+    {
+        qreal painterWidth = mBoundingBox.right() - mBoundingBox.left();
+        qreal oldFontSize = font()->pointSizeF();
+        int oldWidth;
+
+        // Loop
+        for (int i=0 ; i<3 ; i++)
+        {
+            QFontMetrics metrics(*mFont);
+            QRect bounds = metrics.boundingRect('M');
+            oldWidth = bounds.width();
+            qreal scale = painterWidth / (oldWidth * charsPerLine);
+            mFont->setPointSizeF(bounds.height() * scale);
+            setFont(mFont);
+            oldFontSize = bounds.height() * scale;
+        }
+
+        // End
+        mFont->setPointSizeF(oldFontSize);
+        setFont(mFont);
+        mCharsPerLine = charsPerLine;
     }
 
     void NativeOutput::setFont(QFont *font)
@@ -136,30 +162,6 @@ namespace Printers
         {
             mPainter->setWindow(window);
         }
-    }
-
-    void NativeOutput::calculateFixedFontSize(uint8_t charsPerLine)
-    {
-        qreal painterWidth = mBoundingBox.right() - mBoundingBox.left();
-        qreal oldFontSize = font()->pointSizeF();
-        int oldWidth;
-
-        // Loop
-        for (int i=0 ; i<3 ; i++)
-        {
-            QFontMetrics metrics(*mFont);
-            QRect bounds = metrics.boundingRect('M');
-            oldWidth = bounds.width();
-            qreal scale = painterWidth / (oldWidth * charsPerLine);
-            mFont->setPointSizeF(bounds.height() * scale);
-            setFont(mFont);
-            oldFontSize = bounds.height() * scale;
-        }
-
-        // End
-        mFont->setPointSizeF(oldFontSize);
-        setFont(mFont);
-        mCharsPerLine = charsPerLine;
     }
 
     void NativeOutput::plot(QPoint p, uint8_t dot)
