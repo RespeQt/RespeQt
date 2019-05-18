@@ -87,14 +87,14 @@ void SioWorker::start(Priority p)
     switch (respeqtSettings->backend()) {
         default:
         case SERIAL_BACKEND_STANDARD:
-            mPort = new StandardSerialPortBackend(0);
+            mPort = new StandardSerialPortBackend(this);
             break;
         case SERIAL_BACKEND_SIO_DRIVER:
-            mPort = new AtariSioBackend(0);
+            mPort = new AtariSioBackend(this);
             break;
 #ifndef QT_NO_DEBUG
         case SERIAL_BACKEND_TEST:
-            mPort = new TestSerialPortBackend(0);
+            mPort = new TestSerialPortBackend(this);
             break;
 #endif
     }
@@ -673,11 +673,16 @@ void CassetteWorker::start(Priority p)
 {
     switch (respeqtSettings->backend()) {
         case SERIAL_BACKEND_STANDARD:
-            mPort = new StandardSerialPortBackend(0);
+            mPort = new StandardSerialPortBackend(this);
             break;
         case SERIAL_BACKEND_SIO_DRIVER:
-            mPort = new AtariSioBackend(0);
+            mPort = new AtariSioBackend(this);
             break;
+#ifndef QT_NO_DEBUG
+        case SERIAL_BACKEND_TEST:
+            mPort = new TestSerialPortBackend(this);
+            break;
+#endif
     }
     QThread::start(p);
 }

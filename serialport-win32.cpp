@@ -508,6 +508,16 @@ QByteArray StandardSerialPortBackend::readDataFrame(uint size, bool verbose)
     quint8 got = sioChecksum(data, size);
     if (expected == got) {
         data.resize(size);
+
+#ifndef QT_NO_DEBUG
+    try {
+        SioWorker *sio = dynamic_cast<SioWorker*>(parent());
+        if (sio) {
+            sio->writeSnapshotDataFrame(data);
+        }
+    } catch(...) {}
+#endif
+
         return data;
     } else {
         if (verbose) {
