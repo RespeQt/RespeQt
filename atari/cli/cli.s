@@ -3,6 +3,8 @@
 ;  Copyright (c) 2018 by Jonathan Halliday <fjc@atari8.co.uk>
 ;  Copyright (c) 2019 by Jochen Schäfer <jochen@joschs-robotics.de>
 ;
+;  Assemble this program with MADS (http://mads.atari8.info)
+;
 ;  This program is free software; you can redistribute it and/or modify
 ;  it under the terms of the GNU General Public License as published by
 ;  the Free Software Foundation; either version 2 of the License, or
@@ -27,6 +29,7 @@
 .proc Start
 	jsr About
 
+; Parser 
 MainLoop
 	jsr printf
 	.byte '>',0
@@ -51,121 +54,28 @@ GotCmd
 	pha
 	lda JumpTable,y
 	pha
-	rts ; Jump to found command through stack
+	rts ; Jump to matched command through stack
 .endp	
-
-.proc Exit
-	pla
-	pla
-	rts
-.endp
-
-.proc Mount
-	jsr NotImplemented
-	rts
-.endp
-
-.proc Umount
-	jsr NotImplemented
-	rts
-.endp
-
-.proc Swap
-	jsr NotImplemented
-	rts
-.endp
-
-.proc Toggle
-	jsr NotImplemented
-	rts
-//	jsr GetDrvWC
-//	bcs Error
-//	sta Drive
-//	jsr GetNextChar
-//	bcc Error
-
-//	lda #DCB.AutoToggle
-//	jsr SetupDCB
-//	mva Drive DAUX1
-//	jsr SIOV
-//	bpl Toggle_OK
-//	jsr Printf
-//	.byte "Error toggling auto-commit!",155,0
-//	sec
-//	rts
-//Toggle_OK
-//	lda Drive
-//	cmp #0
-//	beq AllDrives
-//	jsr MakeDriveID
-//	sta DriveID1
-//	jsr Printf
-//	.byte "Auto-commit toggled on drive %c",155,0
-//	.word DriveID1
-//	cls
-//	rts	
-//Error
-//	jmp About
-//AllDrives
-//	jsr Printf
-//	.byte "Auto-commit toggled on all drives",155,0
-//	clc
-//	rts
-.endp
-
-
-.proc DateTime
-	lda #DCB.GetTD
-	jsr SetupDCB
-	jsr SIOV
-	bpl DateTimeOK
-	jsr Printf
-	.byte 'Error getting date/time!',155,0
-	sec
-	rts
-DateTimeOK
-	jsr Printf
-	mva IOBuf+2 DTYear
-	mva IOBuf+1 DTMonth
-	mva IOBuf DTDay
-	mva IOBuf+3 DTHour
-	mva IOBuf+4 DTMin
-	mva IOBuf+5 DTSec
-	.byte 'Current date and time is %b-%b-%b %b:%b:%b',155,0
-DTYear .byte 0
-DTMonth .byte 0
-DTDay .byte 0
-DTHour .byte 0
-DTMin .byte 0
-DTSec .byte 0
-	clc
-	rts
-.endp
-
-.proc NotImplemented
-	jsr printf
-	.byte 'Feature not implemented yet',155,0
-	clc
-	rts
-.endp
 
 //
 //	Get next character from arg
 //
 
 .proc GetNextChar
-	iny
-	lda (comtab),y
+	lda ArgBuf,y
 	jsr ToUpper
+	iny
 	cmp #155
 	rts
 .endp
 
 
+// The next three .proc have to stay together to work.
+
 //
 //	Get drive spec and allow '*'
 //
-
+// The following three proc have to stay together.
 .proc GetDrvWC
 	sec
 	.byte $24 ; OPCODE for ZP BIT, jumps over following clc
@@ -210,7 +120,7 @@ NotDigit
 	bcc Bad
 	cmp #'J'
 	bcs @+
-	sbc #'A'-2	; carry is clear, i.e. A contains 'A'-'I'
+	sbc #'A'-11	; carry is clear, i.e. A contains 'A'-'I'
 	clc
 	rts
 @
@@ -228,58 +138,6 @@ Abort
 	.endp
 	
 
-
-
-.proc CLS
-	jsr printf
-	.byte 125,0
-	rts
-.endp
-
-
-
-.proc CloseChannel
-	tya
-	pha
-	jsr DoCIO
-	.byte 1,12,0,0
-	.word 0,0
-	pla
-	tay
-	rts
-.endp
-
-
-
-.proc Errors
-	jsr CloseChannel
-	sty tmp2
-	cpy #150
-	beq BadPath
-	cpy #170
-	beq BadFile
-	cpy #128
-	beq BreakAbort
-	jsr printf
-	.byte 155,'System error: $%x!',155,0
-	.word tmp2
-	rts
-BadPath
-	jsr printf
-	.byte 155,'Path not found!',155,0
-	rts
-BadFile
-	jsr printf
-	.byte 155,'File not found!',155,0
-	rts
-BreakAbort
-	jsr printf
-	.byte 155,'Break Abort!',155,0
-	rts
-.endp
-
-
-
 .proc MatchCommand
 	mva #0 tmp1
 Loop1
@@ -292,21 +150,35 @@ Loop1
 	sta ptr1+1
 	ldy #0
 Loop2
-	lda (ptr1),y
-	cmp ArgBuf,y
+	lda (ptr1),y ; Look in the command text table
+	beq Match ; If we reached the end of the command text, A = 0
+	cmp ArgBuf,y ; Compare that with the argument buffer
 	bne Next
-	cmp #0
-	beq Match
 	iny
 	bne Loop2
 Match
+	; We reset the argument flag bit 0 for following space
+	lda ArgumentFlag
+	ora #1 ; Preset the flag
+	sta ArgumentFlag
+	; Now we look at the next char in the argument buffer for a space
+	lda ArgBuf,y
+	beq MatchExit ; With string end (=0), we handle that like space.
+	cmp #$20 ; Is this space?
+	beq MatchExit ; Space, flag is already cleared, we don't care for the index
+	lda ArgumentFlag
+	and #$FE ; We clear the space flag, we must store the index
+	sta ArgumentFlag
+	sty ArgumentIndex
+	
+MatchExit
 	lda tmp1
 	clc
 	rts
 Next
 	inc tmp1
 	lda tmp1
-	cmp #8
+	cmp #[.len[JumpTable]/2]
 	bcc Loop1
 	sec
 	rts
@@ -430,7 +302,6 @@ Done	; no more args
 	rts
 .endp
 
-
 ;
 ;	Get next word arg (returned in a,y)
 ;
@@ -460,6 +331,240 @@ Done	; no more args
 	adc #'0'	; everything gets $30 added
 	rts
 .endp
+
+.proc About
+	jsr printf
+	.byte 'RespeQt Client Terminal ', 155
+	.byte '(c)2018, FJC, (c)2019, JoSch',155
+	.byte 155,0
+	jsr printf
+	.byte 'Commands:',155
+	.byte ' DT: Show time/date',155
+	.byte ' DM fname.ext:   Existing Image Mount',155
+	.byte ' DN fname.ext.x: New Image Mount',155
+	.byte 155
+	.byte ' x: 1:SSSD 2:SSED 3:SSDD',155
+	.byte '    4:DSDD 5:DDHD 6:QDHD',155
+	.byte 155,0
+	jsr printf
+	.byte ' DU [d/*]: Unmount disk/all disks',155	
+	.byte ' DS d d:  Swap Disks',155
+	.byte ' DA [d/*]: Auto commit disk/all disks',155
+	.byte ' CLS',155
+	.byte ' ?: Show usage',155
+	.byte ' X: Exit CLI',155,155
+	.byte 0
+	rts
+.endp
+
+.proc JumpTable
+	.word Mount-1
+	.word MountNew-1
+	.word Umount-1
+	.word DateTime-1
+	.word Swap-1
+	.word CLS-1
+	.word About-1
+	.word Exit-1
+	.word Toggle-1
+.endp
+
+Commands
+	.word txtMOUNT
+	.word txtMOUNTNEW
+	.word txtUMOUNT
+	.word txtDATETIME
+	.word txtSWAP
+	.word txtCLS
+	.word txtHelp
+	.word txtExit
+	.word txtTOGGLE
+
+txtDATETIME
+	.byte 'DT',0
+txtExit
+	.byte 'X',0
+txtUMOUNT
+	.byte 'DU',0
+txtMOUNT
+	.byte 'DM',0
+txtSWAP
+	.byte 'DS',0
+txtTOGGLE
+	.byte 'DA',0
+txtCLS
+	.byte 'CLS',0
+txtHelp
+	.byte '?',0
+txtMOUNTNEW
+	.byte 'DN',0
+
+
+
+
+; Commands
+.proc Exit
+	pla
+	pla
+	rts
+.endp
+
+.proc Mount
+	jsr NotImplemented
+	rts
+.endp
+
+.proc MountNew
+	jsr NotImplemented
+	rts
+.endp
+
+.proc Umount
+	jsr NotImplemented
+	rts
+.endp
+
+.proc Swap
+	jsr NotImplemented
+	rts
+.endp
+
+.proc Toggle
+; If the user types the parameter without a space,
+; we have to check before we fetch another parameter (A!=0, then no space)
+	lda ArgumentFlag
+	bit $1
+	bne FetchParam ; flag was set, so we have to get next parameter
+	; Now we need to restore the y to get the next char
+	ldy ArgumentIndex
+	jmp CalcDrive
+ 
+FetchParam
+	; Trailing space, so we fetch the next param
+	jsr GetNextParam
+	ldy #0
+CalcDrive
+	jsr GetDrvWC
+	bcs Error
+	sta DAUX1
+	lda #DCB.AutoToggle
+	jsr SetupDCB
+	jsr SIOV
+	bpl OK
+Error
+	jsr Printf
+	.byte 'Error toggling auto-commit!',155,0
+	sec
+	rts
+OK
+	lda Drive
+	cmp #0
+	beq AllDrives
+	jsr MakeDriveID
+	sta DriveID1
+	jsr Printf
+	.byte "Auto-commit toggled on drive %c",155,0
+	.word DriveID1
+	cls
+	rts	
+	jmp About
+AllDrives
+	jsr Printf
+	.byte "Auto-commit toggled on all drives",155,0
+	clc
+	rts
+.endp
+
+
+.proc DateTime
+	lda #DCB.GetTD
+	jsr SetupDCB
+	jsr SIOV
+	bpl DateTimeOK
+	jsr Printf
+	.byte 'Error getting date/time!',155,0
+	sec
+	rts
+DateTimeOK
+	jsr Printf
+	mva IOBuf+2 DTYear
+	mva IOBuf+1 DTMonth
+	mva IOBuf DTDay
+	mva IOBuf+3 DTHour
+	mva IOBuf+4 DTMin
+	mva IOBuf+5 DTSec
+	.byte 'Current date and time is %b-%b-%b %b:%b:%b',155,0
+DTYear .byte 0
+DTMonth .byte 0
+DTDay .byte 0
+DTHour .byte 0
+DTMin .byte 0
+DTSec .byte 0
+	clc
+	rts
+.endp
+
+.proc NotImplemented
+	jsr printf
+	.byte 'Feature not implemented yet',155,0
+	clc
+	rts
+.endp
+
+
+
+
+.proc CLS
+	jsr printf
+	.byte 125,0
+	rts
+.endp
+
+
+
+
+; IO and misc helpers
+.proc CloseChannel
+	tya
+	pha
+	jsr DoCIO
+	.byte 1,12,0,0
+	.word 0,0
+	pla
+	tay
+	rts
+.endp
+
+
+
+.proc Errors
+	jsr CloseChannel
+	sty tmp2
+	cpy #150
+	beq BadPath
+	cpy #170
+	beq BadFile
+	cpy #128
+	beq BreakAbort
+	jsr printf
+	.byte 155,'System error: $%x!',155,0
+	.word tmp2
+	rts
+BadPath
+	jsr printf
+	.byte 155,'Path not found!',155,0
+	rts
+BadFile
+	jsr printf
+	.byte 155,'File not found!',155,0
+	rts
+BreakAbort
+	jsr printf
+	.byte 155,'Break Abort!',155,0
+	rts
+.endp
+
+
 
 
 
@@ -586,6 +691,8 @@ DCBGetDrvNum
 
 	icl 'printf.s'
 
+; Globals
+
 DriveSpec
 	.byte 'D1:',0
 	
@@ -594,62 +701,6 @@ AllSpec
 
 
 
-.proc About
-	jsr printf
-	.byte 'RespeQt Client Terminal ', 155
-	.byte '(c)2018, FJC, (c)2019, JoSch',155
-	.byte 155
-	.byte 'Commands:',155
-	.byte ' DATETIME: Show time/date',155
-	.byte ' UMOUNT <id>',155
-	.byte ' MOUNT <spec[.imgtype]>',155
-	.byte ' SWAP <id> <id>',155
-	.byte ' TOGGLE [d/*]: A.commit (all) disk(s)',155
-	.byte ' CLS',155
-	.byte ' HELP: Show Usage',155
-	.byte ' EXIT',155,155
-	.byte 0
-	rts
-.endp
-
-.proc JumpTable
-	.word CLS-1
-	.word About-1
-	.word Exit-1
-	.word Toggle-1
-	.word DateTime-1
-	.word Umount-1
-	.word Mount-1
-	.word Swap-1
-.endp
-
-
-Commands
-	.word txtCLS
-	.word txtHelp
-	.word txtExit
-	.word txtTOGGLE
-	.word txtDATETIME
-	.word txtUMOUNT
-	.word txtMOUNT
-	.word txtSWAP
-
-txtDATETIME
-	.byte 'DATETIME',0
-txtExit
-	.byte 'EXIT',0
-txtUMOUNT
-	.byte 'UMOUNT',0
-txtMOUNT
-	.byte 'MOUNT',0
-txtSWAP
-	.byte 'SWAP',0
-txtTOGGLE
-	.byte 'TOGGLE',0
-txtCLS
-	.byte 'CLS',0
-txtHelp
-	.byte 'HELP',0
 
 BufOff
 	.ds 1
@@ -662,8 +713,10 @@ InBuff
 FileSpec
 	.ds 64
 
-ArgFlag
-	.byte 0
+ArgumentFlag
+	.byte 0 ; Bit 0 = Is a space after command? 0 = No, 1 = Yes
+ArgumentIndex
+	.byte 0 ; We store the y index for using when no space was given.
 CreateFlag
 	.byte 0
 Slot
