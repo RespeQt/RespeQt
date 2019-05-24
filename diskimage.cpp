@@ -3370,6 +3370,14 @@ QByteArray SimpleDiskImage::readDataFrame(uint size)
         qDebug() << "!u" << tr("[%1] Receiving %2 bytes from Atari").arg(deviceName()).arg(data.length());
         dumpBuffer((unsigned char *) data.data(), data.length());
     }
+#ifndef QT_NO_DEBUG
+    try {
+        SioWorker *sio = dynamic_cast<SioWorker*>(parent());
+        if (sio) {
+            sio->writeSnapshotDataFrame(data);
+        }
+    } catch(...) {}
+#endif
     return data;
 }
 

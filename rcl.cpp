@@ -186,9 +186,7 @@ void RCl::handleCommand(quint8 command, quint16 aux)
           if (aux == 0) {
               QByteArray data(len, 0);
               data = sio->port()->readDataFrame(static_cast<uint>(len));
-#ifndef QT_NO_DEBUG
-              sio->writeSnapshotDataFrame(data);
-#endif
+
               if (data.isEmpty()) {
                   qCritical() << "!e" << tr("[%1] Read data frame failed")
                                 .arg(deviceName());

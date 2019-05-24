@@ -468,7 +468,22 @@ QByteArray StandardSerialPortBackend::readCommandFrame()
                 return data;
             }
 
-            data = readDataFrame(4, false);
+            data = readRawFrame(5, false);
+            if (data.isEmpty()) {
+                return NULL;
+            }
+            quint8 expected = (quint8)data.at(4);
+            quint8 got = sioChecksum(data, 4);
+            if (expected == got) {
+                data.resize(4);
+            } else {
+                qWarning() << "!w" << tr("Command frame checksum error, expected: %1, got: %2. (%3)")
+                                   .arg(expected)
+                                   .arg(got)
+                                   .arg(QString(data.toHex()));
+
+                data.clear();
+            }
 
             if (!data.isEmpty()) {
                 if(mMethod != HANDSHAKE_NO_HANDSHAKE)
@@ -518,6 +533,16 @@ QByteArray StandardSerialPortBackend::readDataFrame(uint size, bool verbose)
     quint8 got = sioChecksum(data, size);
     if (expected == got) {
         data.resize(size);
+
+#ifndef QT_NO_DEBUG
+    try {
+        SioWorker *sio = dynamic_cast<SioWorker*>(parent());
+        if (sio) {
+            sio->writeSnapshotDataFrame(data);
+        }
+    } catch(...) {}
+#endif
+
         return data;
     } else {
         if (verbose) {
@@ -912,6 +937,15 @@ QByteArray AtariSioBackend::readDataFrame(uint size, bool verbose)
         }
         data.clear();
     }
+
+#ifndef QT_NO_DEBUG
+    try {
+        SioWorker *sio = dynamic_cast<SioWorker*>(parent());
+        if (sio) {
+            sio->writeSnapshotDataFrame(data);
+        }
+    } catch(...) {}
+#endif
 
     return data;
 }
