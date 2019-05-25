@@ -157,18 +157,15 @@ Loop2
 	iny
 	bne Loop2
 Match
-	; We reset the argument flag bit 0 for following space
-	lda ArgumentFlag
-	ora #1 ; Preset the flag
-	sta ArgumentFlag
+	; We set the argument flag bit 0 for following space
+	sec
+	ror ArgumentFlag	; set bit 7 of argument flag
 	; Now we look at the next char in the argument buffer for a space
 	lda ArgBuf,y
 	beq MatchExit ; With string end (=0), we handle that like space.
 	cmp #$20 ; Is this space?
-	beq MatchExit ; Space, flag is already cleared, we don't care for the index
-	lda ArgumentFlag
-	and #$FE ; We clear the space flag, we must store the index
-	sta ArgumentFlag
+	beq MatchExit ; Space, flag is already set, we don't care for the index
+	lsr ArgumentFlag	; clear argument flag
 	sty ArgumentIndex
 	
 MatchExit
@@ -432,9 +429,8 @@ txtMOUNTNEW
 .proc Toggle
 ; If the user types the parameter without a space,
 ; we have to check before we fetch another parameter (A!=0, then no space)
-	lda ArgumentFlag
-	bit $1
-	bne FetchParam ; flag was set, so we have to get next parameter
+	bit ArgumentFlag	; test bits 6 and 7 of argument flag
+	bmi FetchParam	; branch if bit 7 set (N = 1)
 	; Now we need to restore the y to get the next char
 	ldy ArgumentIndex
 	jmp CalcDrive
