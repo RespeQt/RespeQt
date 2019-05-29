@@ -29,7 +29,9 @@
 .proc Start
 	jsr About
 
-; Parser 
+; Parser part
+
+; Main input loop
 MainLoop
 	jsr printf
 	.byte '>',0
@@ -175,7 +177,7 @@ MatchExit
 Next
 	inc tmp1
 	lda tmp1
-	cmp #[.len[JumpTable]/2]
+	cmp #[.len[JumpTable]/2] ; We let MADS calculate the number of commands.
 	bcc Loop1
 	sec
 	rts
@@ -285,8 +287,23 @@ Done	; no more args
 .endp
 
 
-
-
+;; When matching commands, we already checked whether a space is trailing or not
+;; When this routine returns Y points to the correct char in ArgBuf
+.proc PrepareNextParam
+; If the user typed the parameter without a space,
+; we have to check before we fetch another parameter (A!=0, then no space)
+	bit ArgumentFlag	; test bits 6 and 7 of argument flag
+	bmi FetchParam	; branch if bit 7 set (N = 1)
+	; Now we need to restore the Y to get the next char
+	ldy ArgumentIndex
+	rts
+ 
+FetchParam
+	; Trailing space, so we fetch the next param
+	jsr GetNextParam
+	ldy #0
+	rts
+.endp	
 
 ;
 ;	Get next byte arg (returned in a,y)
@@ -338,17 +355,13 @@ Done	; no more args
 	.byte 'Commands:',155
 	.byte ' DT: Show time/date',155
 	.byte ' DM fname.ext:   Existing Image Mount',155
-	.byte ' DN fname.ext.x: New Image Mount',155
-	.byte 155
-	.byte ' x: 1:SSSD 2:SSED 3:SSDD',155
-	.byte '    4:DSDD 5:DDHD 6:QDHD',155
-	.byte 155,0
+	.byte ' DN fname.ext.x: New Image Mount',155,0
 	jsr printf
 	.byte ' DU [d/*]: Unmount disk/all disks',155	
 	.byte ' DS d d:  Swap Disks',155
-	.byte ' DA [d/*]: Auto commit disk/all disks',155
+	.byte ' DA [d/*]: Auto commit disk/all disks',155,155
 	.byte ' CLS',155
-	.byte ' ?: Show usage',155
+	.byte ' ? [Command]: Show usage and help',155
 	.byte ' X: Exit CLI',155,155
 	.byte 0
 	rts
@@ -361,7 +374,7 @@ Done	; no more args
 	.word DateTime-1
 	.word Swap-1
 	.word CLS-1
-	.word About-1
+	.word Help-1
 	.word Exit-1
 	.word Toggle-1
 .endp
@@ -396,12 +409,85 @@ txtHelp
 txtMOUNTNEW
 	.byte 'DN',0
 
+CommandHelps
+	.word helpMOUNT-1
+	.word helpMOUNTNEW-1
+	.word helpUMOUNT-1
+	.word helpDATETIME-1
+	.word helpSWAP-1
+	.word helpCLS-1
+	.word helpHelp-1
+	.word helpExit-1
+	.word helpTOGGLE-1
 
+.proc helpMOUNT
+	jsr printf 
+	.byte 'DM fname.ext',155
+	.byte 'Mount the image file in the next free slot',155,0
+	rts
+.endp
+
+.proc helpMOUNTNEW
+	jsr printf 
+	.byte 'DN fname.ext.x',155
+	.byte 'Create a image and mount it in the next free slot',155
+	.byte 155
+	.byte ' x: 1:SSSD 2:SSED 3:SSDD',155
+	.byte '    4:DSDD 5:DDHD 6:QDHD',155,0
+	rts
+.endp
+
+.proc helpUMOUNT
+	jsr printf
+	.byte 'DU [d/*]', 155
+	.byte 'Unmount named slot or all slots',155,0
+	rts
+.endp
+
+
+.proc helpDATETIME
+	jsr printf
+	.byte 'DT',155
+	.byte 'Show time and date from the RespeQt host',155,0
+	rts
+.endp
+
+.proc helpSWAP
+	jsr printf
+	.byte 'DS d d',155
+	.byte 'Swap both slots with each other',155,0
+	rts
+.endp
+
+.proc helpCLS
+	jsr printf
+	.byte 'CLS',155
+	.byte 'Clear the screen',155,0
+	rts
+.endp
+
+.proc helpHelp
+	jmp About
+.endp
+
+.proc helpExit
+	jsr printf
+	.byte 'X',155
+	.byte 'Exit this program',155,0
+	rts
+.endp
+
+.proc helpTOGGLE
+	jsr printf
+	.byte 'DA [d/*]',155
+	.byte 'Auto commit given slot or all slots',155,0
+	rts
+.endp
 
 
 ; Commands
 .proc Exit
-	pla
+	pla ; We still have the main loop address on the stack, so remove it.
 	pla
 	rts
 .endp
@@ -421,25 +507,96 @@ txtMOUNTNEW
 	rts
 .endp
 
-.proc Swap
-	jsr NotImplemented
+
+.proc Help
+	jsr PrepareNextParam
+	; we now use ArgPointer to point into ArgBuf by ArgumentIndex, 
+	; because indirect indexed access is only allowed with Y.
+	; The comparison below has both to be indirect.
+	sty ArgumentIndex
+	clc
+		
+	mva #0 tmp1
+Loop1
+	lda #<ArgBuf
+	adc ArgumentIndex
+	sta ptr2
+	lda #>ArgBuf
+	adc #0
+	sta ptr2+1
+
+	lda tmp1
+	asl
+	tay
+	lda Commands,y
+	sta ptr1
+	lda Commands+1,y
+	sta ptr1+1
+	ldy #0
+Loop2
+	lda (ptr1),y ; Look in the command text table
+	beq Match ; A=0, we reached the end of the command, we ignore the rest of input.
+	cmp (ptr2),y ; Compare that with the argument buffer
+	bne Next
+	iny
+	bne Loop2
+	
+Match
+	; We load the command search index, double it, then index into the help jump table.
+	lda tmp1
+	asl
+	tay
+	lda CommandHelps+1,y
+	pha
+	lda CommandHelps,y
+	pha
+	rts
+	
+Next
+	inc tmp1
+	lda tmp1
+	cmp #[.len[JumpTable]/2] ; We let MADS calculate the number of commands.
+	bcc Loop1
+	
+	jsr printf
+	.byte 'No help for keyword found', 155,0
 	rts
 .endp
 
+.proc Swap
+; We look for two following parameters with or without spaces
+; If we get them, we calculate the drive id.
+	jsr PrepareNextParam
+	jsr GetDrv
+	bcs Error
+	sta DAUX1
+	jsr PrepareNextParam
+	jsr GetDrv
+	bcs Error
+	sta DAUX2
+	lda #DCB.AutoToggle
+	jsr SetupDCB
+	jsr SIOV
+	bpl OK	
+	
+Error
+	jsr Printf
+	.byte "Error swapping disk images!",155,0
+	sec
+	rts
+	
+OK
+	jsr Printf
+	.byte "Swapped drive %c with drive %c.",155,0
+	.word DAUX1, DAUX2
+	clc
+	rts
+.endp
+
+
 .proc Toggle
-; If the user types the parameter without a space,
-; we have to check before we fetch another parameter (A!=0, then no space)
-	bit ArgumentFlag	; test bits 6 and 7 of argument flag
-	bmi FetchParam	; branch if bit 7 set (N = 1)
-	; Now we need to restore the y to get the next char
-	ldy ArgumentIndex
-	jmp CalcDrive
- 
-FetchParam
-	; Trailing space, so we fetch the next param
-	jsr GetNextParam
-	ldy #0
-CalcDrive
+	jsr PrepareNextParam
+; Now calculate which drive id was given
 	jsr GetDrvWC
 	bcs Error
 	sta DAUX1
@@ -463,7 +620,6 @@ OK
 	.word DriveID1
 	cls
 	rts	
-	jmp About
 AllDrives
 	jsr Printf
 	.byte "Auto-commit toggled on all drives",155,0
