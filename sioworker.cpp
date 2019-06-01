@@ -278,7 +278,7 @@ QString SioWorker::guessDiskCommand(quint8 command, quint16 aux)
     case 0x4F:	return tr("Set PERCOM Block or Super Archiver Open CHIP");
     case 0x50:	return tr("Put Sector (no verify)");
     case 0x51:	return tr("Happy Execute code");
-    case 0x52:	return tr("Read Sector");
+    case 0x524:	return tr("Read Sector");
     case 0x53:	return tr("Get Status");
     case 0x54:	return tr("Super Archiver Get RAM Buffer");
     case 0x55:	return tr("Happy Execute code");

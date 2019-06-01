@@ -23,13 +23,13 @@
 #include <QDesktopServices>
 #include <QUrl>
 
-char RCl::g_rclSlotNo;
+char RCl::rclSlotNo;
 
 // RespeQt Client ()
 
 void RCl::handleCommand(quint8 command, quint16 aux)
 {
-    QByteArray data(5, 0);
+    QByteArray data(6, 0);
     QDateTime dateTime = QDateTime::currentDateTime();
 
     switch (command) {
@@ -56,9 +56,6 @@ void RCl::handleCommand(quint8 command, quint16 aux)
 
       case 0x94 :   // Swap Disks
          {
-            if (!sio->port()->writeCommandAck()) {
-                return;
-            }
             qint8 swapDisk1, swapDisk2;
             swapDisk1 = static_cast<qint8>(aux / 256);
             swapDisk2 = static_cast<qint8>(aux % 256);
@@ -76,8 +73,9 @@ void RCl::handleCommand(quint8 command, quint16 aux)
                 respeqtSettings->swapImages(swapDisk1 - 1, swapDisk2 - 1);
                 qDebug() << "!n" << tr("[%1] Swapped disk %2 with disk %3.")
                                 .arg(deviceName())
-                                .arg(swapDisk2 + 1)
-                                .arg(swapDisk1 + 1);
+                                .arg(swapDisk2)
+                                .arg(swapDisk1);
+                sio->port()->writeCommandAck();
             } else {
                 sio->port()->writeCommandNak();
                 qDebug() << "!e" << tr("[%1] Invalid swap request for drives: (%2)-(%3).")
@@ -91,9 +89,6 @@ void RCl::handleCommand(quint8 command, quint16 aux)
 
       case 0x95 :   // Unmount Disk(s)
        {
-          if (!sio->port()->writeCommandAck()) {
-              return;
-          }
           qint8 unmountDisk;
           unmountDisk = static_cast<qint8>(aux / 256);
           if (unmountDisk == -6)
@@ -124,6 +119,7 @@ void RCl::handleCommand(quint8 command, quint16 aux)
                       }
                       qDebug() << "!n" << tr("[%1] ALL images were remotely unmounted")
                                 .arg(deviceName());
+                      sio->port()->writeCommandAck();
                   } else {
                       sio->port()->writeCommandNak();
                       qDebug() << "!e" << tr("[%1] Can not remotely unmount ALL images due to pending changes.")
@@ -147,8 +143,8 @@ void RCl::handleCommand(quint8 command, quint16 aux)
                                   .arg(deviceName())
                                   .arg(unmountDisk);
                   }
+                  sio->port()->writeCommandAck();
                 }
-
               } else {
                   sio->port()->writeCommandNak();
                   qDebug() << "!e" << tr("[%1] Invalid drive number: %2 for remote unmount")
@@ -310,7 +306,7 @@ void RCl::handleCommand(quint8 command, quint16 aux)
 
               // Return the last mounted drive number
               QByteArray data(1,0);
-              data[0] = g_rclSlotNo;
+              data[0] = rclSlotNo;
               sio->port()->writeComplete();
               sio->port()->writeDataFrame(data);
           }
@@ -319,27 +315,26 @@ void RCl::handleCommand(quint8 command, quint16 aux)
 
       case 0x98 :   // Auto-Commit toggle
         {
-            if (!sio->port()->writeCommandAck()) {
-                return;
-            }
             qint8 commitDisk;
             commitDisk = static_cast<qint8>(aux % 256);
+            qDebug() << "!n"<<commitDisk<<" <- "<<aux;
             if (commitDisk > 9)
                 commitDisk -= 16;
 
-            if (commitDisk != -6 && (commitDisk <0 || commitDisk > 14)) {
+            if (commitDisk != -6 && (commitDisk < 0 || commitDisk > 14)) {
                 sio->port()->writeCommandNak();
                 return;
             }
+
             // All disks or a given disk
-            if (commitDisk == -6) {
+            if (commitDisk == -6 || commitDisk == 0) {
                 for (int i = 0; i < 15; i++) {
                     emit toggleAutoCommit(i);
                 }
             } else {
                 emit toggleAutoCommit(commitDisk - 1);
             }
-
+            sio->port()->writeCommandAck();
             sio->port()->writeComplete();
         }
         break;
@@ -357,7 +352,7 @@ void RCl::handleCommand(quint8 command, quint16 aux)
 // Get the next slot number available for mounting a disk image
 void RCl::gotNewSlot(int slot)
 {
-   g_rclSlotNo = static_cast<char>(slot);
+   rclSlotNo = static_cast<char>(slot);
 
    // Ask the MainWindow to mount the file
    emit mountFile(slot, imageFileName);

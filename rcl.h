@@ -33,7 +33,7 @@ signals:
 
 private:
     QString imageFileName;
-    static char g_rclSlotNo;
+    static char rclSlotNo;
 };
 
 #endif // RCL_H

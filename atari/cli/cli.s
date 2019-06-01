@@ -186,22 +186,8 @@ Next
 
 
 .proc GetNextFilename
-	jsr GetNextParam
 	bcs Done
-	ldy #2
-@
-	lda ArgBuf,y
-	cmp #':'
-	beq FoundDev
-	dey
-	bpl @-
-	
-	jsr AddDefDrive
-	jmp CopySpec
-	
-FoundDev
-	ldy #0
-CopySpec
+
 	ldx #$ff
 @
 	inx
@@ -337,12 +323,15 @@ FetchParam
 //
 //	Make drive ID
 //	Pass drive number in A
-//	This is unexpectedly simple since drive letters and numbers all have the same transition applied
 //
 
 .proc MakeDriveID
 	clc
 	adc #'0'	; everything gets $30 added
+	cmp #':'
+	bmi NotLetter
+	adc #6
+NotLetter
 	rts
 .endp
 
@@ -493,7 +482,48 @@ CommandHelps
 .endp
 
 .proc Mount
-	jsr NotImplemented
+; We look for two following parameters with or without spaces
+; If we get them, we calculate the drive id.
+	jsr PrepareNextParam
+	jsr GetNextFilename
+	
+	ldy #$FF	
+CopyLoop ; Now copy the FileSpec into IOBuf for DCB
+	iny
+	mva FileSpec,y IOBuf,y
+	bne CopyLoop
+	
+	lda #DCB.MOUNT
+	jsr SetupDCB
+	mva #0 DAUX1
+	sta DAUX2
+	jsr SIOV
+	bmi Error
+	
+	; We fetch the last mounted slot
+	lda #DCB.GetDrvNum
+	jsr SetupDCB
+	jsr SIOV
+	bmi Error
+	
+	lda IOBuf
+	clc
+	adc #1
+	jsr MakeDriveID
+	sta IOBuf
+
+	jsr printf
+	.byte 'Image %s was successfully mounted on slot %c',155,0
+	.word FileSpec, IOBuf
+
+	clc
+	rts
+	
+Error	
+	jsr Printf
+	.byte 'Error while mounting!',155,0
+
+	sec
 	rts
 .endp
 
@@ -503,7 +533,26 @@ CommandHelps
 .endp
 
 .proc Umount
-	jsr NotImplemented
+	jsr PrepareNextParam
+	jsr GetDrvWC
+	bcs Error
+
+	sta temp1
+	lda #DCB.Unmount
+	jsr SetupDCB
+	mva temp1 DAUX2
+	jsr SIOV
+	bmi Error
+	
+	jsr Printf
+	.byte 'Unmounted',155,0
+	clc
+	rts
+
+Error
+	jsr Printf
+	.byte 'Error unmounting slot(s)!',155,0	
+	sec
 	rts
 .endp
 
@@ -569,26 +618,34 @@ Next
 	jsr PrepareNextParam
 	jsr GetDrv
 	bcs Error
-	sta DAUX1
+	sta tmp1
 	jsr PrepareNextParam
 	jsr GetDrv
 	bcs Error
-	sta DAUX2
-	lda #DCB.AutoToggle
+	sta tmp2
+	lda #DCB.Swap
 	jsr SetupDCB
+	mva tmp1 DAUX1
+	mva tmp2 DAUX2
 	jsr SIOV
 	bpl OK	
 	
 Error
 	jsr Printf
-	.byte "Error swapping disk images!",155,0
+	.byte 'Error swapping disk images!',155,0
 	sec
 	rts
 	
 OK
+	lda DAUX1
+	jsr MakeDriveID
+	sta tmp1
+	lda DAUX2
+	jsr MakeDriveID
+	sta tmp2
 	jsr Printf
-	.byte "Swapped drive %c with drive %c.",155,0
-	.word DAUX1, DAUX2
+	.byte 'Swapped drive %c with drive %c.',155,0
+	.word tmp1, tmp2
 	clc
 	rts
 .endp
@@ -599,9 +656,10 @@ OK
 ; Now calculate which drive id was given
 	jsr GetDrvWC
 	bcs Error
-	sta DAUX1
+	sta tmp1
 	lda #DCB.AutoToggle
 	jsr SetupDCB
+	mva tmp1 DAUX1
 	jsr SIOV
 	bpl OK
 Error
@@ -610,19 +668,19 @@ Error
 	sec
 	rts
 OK
-	lda Drive
+	lda DAUX1
 	cmp #0
 	beq AllDrives
 	jsr MakeDriveID
 	sta DriveID1
 	jsr Printf
-	.byte "Auto-commit toggled on drive %c",155,0
+	.byte 'Auto-commit toggled on drive %c',155,0
 	.word DriveID1
-	cls
+	clc
 	rts	
 AllDrives
 	jsr Printf
-	.byte "Auto-commit toggled on all drives",155,0
+	.byte 'Auto-commit toggled on all drives',155,0
 	clc
 	rts
 .endp
@@ -639,19 +697,8 @@ AllDrives
 	rts
 DateTimeOK
 	jsr Printf
-	mva IOBuf+2 DTYear
-	mva IOBuf+1 DTMonth
-	mva IOBuf DTDay
-	mva IOBuf+3 DTHour
-	mva IOBuf+4 DTMin
-	mva IOBuf+5 DTSec
 	.byte 'Current date and time is %b-%b-%b %b:%b:%b',155,0
-DTYear .byte 0
-DTMonth .byte 0
-DTDay .byte 0
-DTHour .byte 0
-DTMin .byte 0
-DTSec .byte 0
+	.word IOBuf+2, IOBuf+1, IOBuf, IOBuf+3, IOBuf+4, IOBuf+5
 	clc
 	rts
 .endp
@@ -735,7 +782,7 @@ Loop
 	dex
 	dey
 	bpl Loop
-	mva rcldev DDevic	; ddevic and dunit are common to all
+	mva #rcldev DDevic	; ddevic and dunit are common to all
 	mva #$01 DUnit
 	rts
 DCBIndex
@@ -858,8 +905,8 @@ BufOff
 	.ds 1
 ArgBuf
 	.ds 64
-;Filename
-;	.ds 64
+Filename
+	.ds 64
 InBuff
 	.ds 64
 FileSpec
@@ -879,8 +926,7 @@ DriveID1
 	.byte 0
 DriveID2
 	.byte 0
-Filename
-	.ds 16
+
 	
 IOBuf
 	.ds 256
