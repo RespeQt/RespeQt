@@ -158,7 +158,7 @@ void RCl::handleCommand(quint8 command, quint16 aux)
       case 0x96 :   // Mount Disk Image
       case 0x97 :   // Create and Mount a new Disk Image
        {
-          if (!sio->port()->writeCommandAck()) {
+          if (!sio->port()->writeCommandAck()) { // TODO MOVE
               return;
           }
           // If no Folder Image has ever been mounted abort the command as we won't
@@ -299,16 +299,24 @@ void RCl::handleCommand(quint8 command, quint16 aux)
 
               imageFileName = "*" + imageFileName;
 
+
               // Ask the MainWindow for the next available slot number
+              mutex.lock();
               emit findNewSlot(0, true);
 
           } else {
 
-              // Return the last mounted drive number
-              QByteArray data(1,0);
-              data[0] = rclSlotNo;
-              sio->port()->writeComplete();
-              sio->port()->writeDataFrame(data);
+              if (mutex.tryLock())
+              {
+                  // Return the last mounted drive number
+                  QByteArray data(1,0);
+                  data[0] = rclSlotNo;
+                  sio->port()->writeComplete();
+                  sio->port()->writeDataFrame(data);
+                  mutex.lock();
+              } else {
+                  sio->port()->writeCommandNak();
+              }
           }
        }
        break;
@@ -353,6 +361,7 @@ void RCl::handleCommand(quint8 command, quint16 aux)
 void RCl::gotNewSlot(int slot)
 {
    rclSlotNo = static_cast<char>(slot);
+   mutex.lock();
 
    // Ask the MainWindow to mount the file
    emit mountFile(slot, imageFileName);

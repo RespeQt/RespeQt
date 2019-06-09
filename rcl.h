@@ -19,7 +19,7 @@ class RCl: public SioDevice
     Q_OBJECT
 
 public:
-    RCl(SioWorker *worker): SioDevice(worker) {}
+    RCl(SioWorker *worker): SioDevice(worker), mutex() {}
     void handleCommand(quint8 command, quint16 aux);
 
 public slots:
@@ -34,6 +34,7 @@ signals:
 private:
     QString imageFileName;
     static char rclSlotNo;
+    QMutex mutex;
 };
 
 #endif // RCL_H
