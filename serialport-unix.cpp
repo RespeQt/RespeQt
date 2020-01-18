@@ -298,7 +298,7 @@ bool StandardSerialPortBackend::setSpeed(int speed)
     /* Set serial port state */
     if (tcsetattr(mHandle, TCSANOW, &tios) != 0) {
         qCritical() << "!e" << tr("Cannot set serial port speed to %1: %2")
-                       .arg(speed)
+                       .arg(19200)
                        .arg(lastErrorMessage());
         return false;
     }
