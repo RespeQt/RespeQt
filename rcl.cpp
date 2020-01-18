@@ -311,9 +311,9 @@ void RCl::handleCommand(quint8 command, quint16 aux)
                   // Return the last mounted drive number
                   QByteArray data(1,0);
                   data[0] = rclSlotNo;
+                  mutex.unlock();
                   sio->port()->writeComplete();
                   sio->port()->writeDataFrame(data);
-                  mutex.lock();
               } else {
                   sio->port()->writeCommandNak();
               }
@@ -360,8 +360,9 @@ void RCl::handleCommand(quint8 command, quint16 aux)
 // Get the next slot number available for mounting a disk image
 void RCl::gotNewSlot(int slot)
 {
-   rclSlotNo = static_cast<char>(slot);
    mutex.lock();
+   rclSlotNo = static_cast<char>(slot);
+   mutex.unlock();
 
    // Ask the MainWindow to mount the file
    emit mountFile(slot, imageFileName);
@@ -373,7 +374,7 @@ void RCl::fileMounted(bool mounted)
         sio->port()->writeComplete();
         qDebug() << "!n" << tr("[%1] Image %2 mounted")
                    .arg(deviceName())
-                    .arg(imageFileName.mid(1,imageFileName.size()-1));
+                   .arg(imageFileName.mid(1,imageFileName.size()-1));
     } else {
        sio->port()->writeDataNak();
     }
