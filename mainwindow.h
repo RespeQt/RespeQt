@@ -57,7 +57,7 @@ public slots:
     void show();
     int firstEmptyDiskSlot(int startFrom = 0, bool createOne = true);       //
     void mountFileWithDefaultProtection(int no, const QString &fileName);   //
-    void autoCommit(int no);                                                //
+    void autoCommit(int no, bool st);                                                //
     void openRecent();
 
 private:
@@ -67,7 +67,7 @@ private:
     bool shownFirstTime;
     PrinterWidget* printerWidgets[PRINTER_COUNT]; //
     DriveWidget* diskWidgets[DISK_COUNT];    //
-    InfoWidget* infoWidget;
+    // InfoWidget* infoWidget;
 
     QLabel *speedLabel, *onOffLabel, *prtOnOffLabel, *netLabel, *clearMessagesLabel;  //
 #ifndef Q_NO_DEBUG

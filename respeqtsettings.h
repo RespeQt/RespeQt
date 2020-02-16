@@ -128,6 +128,9 @@ public:
     QString lastCasDir();
     void setLastCasDir(const QString &dir);
 
+    QString lastRclDir();
+    void setRclDir(const QString &dir);
+
     // Set and restore last mainwindow position and size //
     int lastVerticalPos();
     void setLastVerticalPos(int lastVpos);
@@ -344,6 +347,8 @@ private:
 
     QString mAtariSioDriverName;
     int mAtariSioHandshakingMethod;
+
+    QString mRclDir;
 
     int mBackend;
 #ifndef QT_NO_DEBUG

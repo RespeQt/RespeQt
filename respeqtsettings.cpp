@@ -104,7 +104,7 @@ RespeqtSettings::RespeqtSettings()
     mLastCasDir = mSettings->value("LastCasDir", "").toString();
     
     mI18nLanguage = mSettings->value("I18nLanguage", "auto").toString();
-
+    mRclDir = mSettings->value("LastRclDir","").toString();
     mMinimizeToTray = mSettings->value("MinimizeToTray", false).toBool();
     msaveWindowsPos = mSettings->value("SaveWindowsPosSize", true).toBool();
     mFilterUnderscore = mSettings->value("FilterUnderscore", true).toBool();
@@ -160,6 +160,8 @@ RespeqtSettings::RespeqtSettings()
     mD2PowerOnWithDiskInserted = mSettings->value("D2PowerOnWithDiskInserted", false).toBool();
     mD3PowerOnWithDiskInserted = mSettings->value("D3PowerOnWithDiskInserted", false).toBool();
     mD4PowerOnWithDiskInserted = mSettings->value("D4PowerOnWithDiskInserted", false).toBool();
+
+
 #ifdef Q_OS_MAC
     mNativeMenu = mSettings->value("NativeMenu", false).toBool();
 #endif
@@ -189,7 +191,7 @@ void RespeqtSettings::saveSessionToFile(const QString &fileName)
     }
 #endif
 
-    s.beginGroup("RespeQt");
+        s.beginGroup("RespeQt");
         s.setValue("Backend", mBackend);
         s.setValue("AtariSioDriverName", mAtariSioDriverName);
         s.setValue("AtariSioHandshakingMethod", mAtariSioHandshakingMethod);
@@ -259,6 +261,7 @@ void RespeqtSettings::saveSessionToFile(const QString &fileName)
         s.setValue("D3PowerOnWithDiskInserted", mD3PowerOnWithDiskInserted);
         s.setValue("D4PowerOnWithDiskInserted", mD4PowerOnWithDiskInserted);
         s.setValue("RawPrinterName", mRawPrinterName);
+        s.setValue("LastRclDir",mRclDir);
 #ifdef Q_OS_MAC
         s.setValue("NativeMenu", mNativeMenu);
 #endif
@@ -293,6 +296,7 @@ void RespeqtSettings::saveSessionToFile(const QString &fileName)
         mSerialPortName = s.value("SerialPortName", StandardSerialPortBackend::defaultPortName()).toString();
         mSerialPortHandshakingMethod = s.value("HandshakingMethod", 0).toInt();
         mSerialPortTriggerOnFallingEdge = s.value("FallingEdge", false).toBool();
+        mRclDir = mSettings->value("LastRclDir","").toString();
         mSerialPortDTRControlEnable = s.value("DTRControlEnable", false).toBool();
         mSerialPortWriteDelay = s.value("WriteDelay", 1).toInt();
         mSerialPortCompErrDelay = s.value("CompErrDelay", 1).toInt();
@@ -356,6 +360,7 @@ void RespeqtSettings::saveSessionToFile(const QString &fileName)
         mD3PowerOnWithDiskInserted = s.value("D3PowerOnWithDiskInserted", false).toBool();
         mD4PowerOnWithDiskInserted = s.value("D4PowerOnWithDiskInserted", false).toBool();
         mRawPrinterName = s.value("RawPrinterName", "").toString();
+
 #ifdef Q_OS_MAC
         mNativeMenu = s.value("NativeMenu", false).toBool();
 #endif
@@ -516,6 +521,17 @@ void RespeqtSettings::setBackend(int backend)
 {   
     mBackend = backend;
     if(mSessionFileName == "") mSettings->setValue("Backend", mBackend);
+}
+
+QString RespeqtSettings::lastRclDir()
+{
+    return mRclDir;
+}
+
+void RespeqtSettings::setRclDir(const QString &dir)
+{
+    mRclDir = dir;
+    mSettings->setValue("LastRclDir", mRclDir);
 }
 
 bool RespeqtSettings::useHighSpeedExeLoader()

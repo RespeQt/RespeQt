@@ -59,6 +59,9 @@ QString FolderImage::longName(QString &lastMountedFolder, QString &atariFileName
      }
      return NULL;
 }
+
+
+
 void FolderImage::buildDirectory()
 {
     QFileInfoList infos = dir.entryInfoList(QDir::Files,  QDir::Name);
