@@ -49,6 +49,7 @@ public:
     bool writeSector(quint16 sector, const QByteArray &data);
     bool format(const DiskGeometry& geo);
     QString longName (QString &lastMountedFolder, QString &atariFileName);   // 
+
     virtual QString description() const {return tr("Folder image");}
 };
     extern FolderImage *folderImage;

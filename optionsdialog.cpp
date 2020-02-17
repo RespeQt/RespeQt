@@ -92,6 +92,7 @@ OptionsDialog::OptionsDialog(QWidget *parent) :
     m_ui->trackLayout->setChecked(respeqtSettings->isTrackLayout());
     m_ui->useLargerFont->setChecked(respeqtSettings->useLargeFont());
     m_ui->enableShade->setChecked(respeqtSettings->enableShade());
+    m_ui->RclNameEdit->setText(respeqtSettings->lastRclDir());
 #ifdef Q_OS_MAC
     m_ui->useNativeMenu->setChecked(respeqtSettings->nativeMenu());
 #endif
@@ -328,6 +329,7 @@ void OptionsDialog::OptionsDialog_accepted()
     respeqtSettings->setTrackLayout(m_ui->trackLayout->isChecked());
     respeqtSettings->setUseLargeFont(m_ui->useLargerFont->isChecked());
     respeqtSettings->setEnableShade(m_ui->enableShade->isChecked());
+    respeqtSettings->setRclDir(m_ui->RclNameEdit->text());
 
     int backend = SERIAL_BACKEND_STANDARD;
     if (itemAtariSio->checkState(0) == Qt::Checked)
@@ -448,4 +450,18 @@ void OptionsDialog::on_button_atarifixed_clicked()
         m_ui->fontSample->setFont(newFont);
         respeqtSettings->setAtariFixedFontFamily(newFont.family());
     }
+}
+
+void OptionsDialog::on_buttonRclFolder_clicked()
+{
+     QString dir;
+     dir = respeqtSettings->lastRclDir();
+     QString fileName = QFileDialog::getExistingDirectory(this, tr("Selec RCL image folder"), dir);
+     fileName = QDir::fromNativeSeparators(fileName);    //
+     if (fileName.isEmpty()) {
+         return;
+     }
+     respeqtSettings->setRclDir(fileName);
+     m_ui->RclNameEdit->setText(fileName);
+
 }

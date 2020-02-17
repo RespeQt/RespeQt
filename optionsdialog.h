@@ -59,6 +59,7 @@ private slots:
     void on_actionSelect1050TurboFirmware_triggered();
     void on_actionSelect1050DuplicatorFirmware_triggered();
     void on_button_atarifixed_clicked();
+    void on_buttonRclFolder_clicked();
 };
 
 #endif // OPTIONSDIALOG_H

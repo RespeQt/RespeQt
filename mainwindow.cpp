@@ -354,7 +354,7 @@ MainWindow::MainWindow(QWidget *parent)
     connect (this, SIGNAL(newSlot(int)), rcl, SLOT(gotNewSlot(int)));
     connect (rcl, SIGNAL(mountFile(int,QString)), this, SLOT(mountFileWithDefaultProtection(int,QString)));
     connect (this, SIGNAL(fileMounted(bool)), rcl, SLOT(fileMounted(bool)));
-    connect (rcl, SIGNAL(toggleAutoCommit(int)), this, SLOT(autoCommit(int)));
+    connect (rcl, SIGNAL(toggleAutoCommit(int, bool)), this, SLOT(autoCommit(int, bool)));
 }
 
 MainWindow::~MainWindow()
@@ -377,6 +377,9 @@ MainWindow::~MainWindow()
 
 void MainWindow::createDeviceWidgets()
 {
+
+    ui->rightColumn->setAlignment(Qt::AlignTop);
+
     for (int i = 0; i < DISK_COUNT; i++) {      //
         DriveWidget* deviceWidget = new DriveWidget(i);
 
@@ -408,22 +411,19 @@ void MainWindow::createDeviceWidgets()
         connect(this, SIGNAL(setFont(const QFont&)),deviceWidget, SLOT(setFont(const QFont&)));
     }
 
-    /* Add info widget for symmetry */
-    this->infoWidget = new InfoWidget();
-    ui->rightColumn->addWidget( infoWidget );
+
 
     for (int i = 0; i < PRINTER_COUNT; i++) {      //
         PrinterWidget* printerWidget = new PrinterWidget(i);
-
         if (i<2) {
-            ui->leftColumn->addWidget( printerWidget );
+            ui->leftColumn2->addWidget( printerWidget );
         } else {
-            ui->rightColumn->addWidget( printerWidget );
+            ui->rightColumn2->addWidget( printerWidget );
         }
-
         printerWidget->setup();
         printerWidgets[i] = printerWidget;
    }
+
 
     changeFonts();
 }
@@ -844,7 +844,7 @@ void MainWindow::showHideDrives()
         printerWidgets[i]->setVisible(g_D9DOVisible);
     }
 
-    infoWidget->setVisible(g_D9DOVisible);
+    // infoWidget->setVisible(g_D9DOVisible);
 
     if( g_D9DOVisible ) {
         ui->actionHideShowDrives->setText(QApplication::translate("MainWindow", "Hide drives D9-DO", 0));
@@ -1329,10 +1329,8 @@ void MainWindow::mountFileWithDefaultProtection(int no, const QString &fileName)
     atariFileName = fileName;
 
     if(atariFileName.left(1) == "*") {
-        FolderImage fi(sio);
-        atariFileName = atariFileName.mid(1);
-        path = respeqtSettings->lastFolderImageDir();
-        atariLongName = fi.longName(path, atariFileName);
+        atariLongName = atariFileName.mid(1);
+        QString path = respeqtSettings->lastRclDir();
         if(atariLongName == "") {
             sio->port()->writeDataNak();
             return;
@@ -1623,11 +1621,12 @@ void MainWindow::saveDisk(int no)
     }
 }
 //
-void MainWindow::autoCommit(int no)
+void MainWindow::autoCommit(int no, bool st)
 {
     if( no < DISK_COUNT )
     {
-        diskWidgets[no]->triggerAutoSaveClickIfEnabled();
+        if ( (diskWidgets[no]->isAutoSaveEnabled() && st) || (!diskWidgets[no]->isAutoSaveEnabled() && !st) )
+                          diskWidgets[no]->triggerAutoSaveClickIfEnabled();
     }
 }
 

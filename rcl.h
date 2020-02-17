@@ -21,6 +21,8 @@ class RCl: public SioDevice
 public:
     RCl(SioWorker *worker): SioDevice(worker) {}
     void handleCommand(quint8 command, quint16 aux);
+    QString toAtariFileName(QString dosFileName);
+    QString toDosFileName(QString atariFileName);
 
 public slots:
     void gotNewSlot (int slot);                         // 
@@ -29,7 +31,7 @@ public slots:
 signals:
     void findNewSlot (int startFrom, bool createOne);
     void mountFile (int no, const QString fileName);
-    void toggleAutoCommit (int no);
+    void toggleAutoCommit (int no, bool st);
 
 private:
     QString imageFileName;
