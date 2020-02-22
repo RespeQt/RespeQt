@@ -90,6 +90,7 @@ OptionsDialog::OptionsDialog(QWidget *parent) :
     m_ui->spyMode->setChecked(respeqtSettings->isSpyMode());
     m_ui->commandName->setChecked(respeqtSettings->isCommandName());
     m_ui->trackLayout->setChecked(respeqtSettings->isTrackLayout());
+    m_ui->disassembleUploadedCode->setChecked(respeqtSettings->disassembleUploadedCode());
     m_ui->useLargerFont->setChecked(respeqtSettings->useLargeFont());
     m_ui->enableShade->setChecked(respeqtSettings->enableShade());
     m_ui->RclNameEdit->setText(respeqtSettings->lastRclDir());
@@ -327,6 +328,7 @@ void OptionsDialog::OptionsDialog_accepted()
     respeqtSettings->setSpyMode(m_ui->spyMode->isChecked());
     respeqtSettings->setCommandName(m_ui->commandName->isChecked());
     respeqtSettings->setTrackLayout(m_ui->trackLayout->isChecked());
+    respeqtSettings->setDisassembleUploadedCode(m_ui->disassembleUploadedCode->isChecked());
     respeqtSettings->setUseLargeFont(m_ui->useLargerFont->isChecked());
     respeqtSettings->setEnableShade(m_ui->enableShade->isChecked());
     respeqtSettings->setRclDir(m_ui->RclNameEdit->text());
