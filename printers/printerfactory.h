@@ -13,15 +13,15 @@ namespace Printers {
     {
     private:
         template<class TDerived>
-        static BasePrinter* creator(SioWorker *worker)
+        static BasePrinterPtr creator(SioWorkerPtr worker)
         {
-            return new TDerived(worker);
+            return std::make_shared<TDerived>(worker);
         }
 
         // Instanciation maps
-        typedef BasePrinter* (*Creator)(SioWorker *worker);
-        typedef QPair<QString, Creator> CreatorPair;
-        typedef QVector<CreatorPair> CreatorVector;
+        using Creator = BasePrinterPtr(SioWorkerPtr worker);
+        using CreatorPair = std::pair<QString, Creator*>;
+        using CreatorVector = std::vector<CreatorPair>;
         CreatorVector creatorFunctions;
 
         static PrinterFactory* sInstance;
@@ -40,21 +40,20 @@ namespace Printers {
         template<class TDerived>
         void registerPrinter(QString label)
         {
-            static_assert (std::is_base_of<BasePrinter, TDerived>::value, "PrinterFactory::registerPrinter doesn't accept this type because doesn't derive from base class");
-            creatorFunctions.append(CreatorPair(label, &creator<TDerived>));
+            static_assert(std::is_base_of<BasePrinter, TDerived>::value, "PrinterFactory::registerPrinter doesn't accept this type because it doesn't derive from base class");
+            creatorFunctions.push_back(CreatorPair(label, &creator<TDerived>));
         }
 
-        BasePrinter* createPrinter(QString label, SioWorker *worker) const
+        BasePrinterPtr createPrinter(QString label, SioWorkerPtr worker) const
         {
-            CreatorVector::const_iterator it;
-            for(it = creatorFunctions.begin(); it != creatorFunctions.end(); ++it)
+            for(auto it : creatorFunctions)
             {
-                if (it->first == label)
+                if (it.first == label)
                 {
-                    return it->second(worker);
+                    return it.second(worker);
                 }
             }
-            return Q_NULLPTR;
+            return nullptr;
         }
 
         int numRegisteredPrinters() const
@@ -65,10 +64,9 @@ namespace Printers {
         const QVector<QString> getPrinterNames() const
         {
             QVector<QString> names;
-            CreatorVector::const_iterator it;
-            for(it = creatorFunctions.begin(); it != creatorFunctions.end(); ++it)
+            for(auto it : creatorFunctions)
             {
-                names.append(it->first);
+                names.append(it.first);
             }
             return names;
         }

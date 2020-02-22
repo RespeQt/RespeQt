@@ -5,10 +5,14 @@
 #include <QRect>
 #include <QPaintDevice>
 #include <math.h>
+#include <memory>
 #include "sioworker.h"
 
 namespace Printers
 {
+    class NativeOutput;
+    using NativeOutputPtr = std::shared_ptr<NativeOutput>;
+
     class NativeOutput
     {
     public:

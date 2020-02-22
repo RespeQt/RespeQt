@@ -10,7 +10,7 @@
 
 extern quint8 HAPPY_SIGNATURE[9];
 
-FirmwareDiskImage::FirmwareDiskImage(SioWorker *worker, eHARDWARE eHardware, QString &hardwareName, Rom *rom, int iRpm, bool powerOnWithDiskInserted)
+FirmwareDiskImage::FirmwareDiskImage(SioWorkerPtr worker, eHARDWARE eHardware, QString &hardwareName, Rom *rom, int iRpm, bool powerOnWithDiskInserted)
     : SimpleDiskImage(worker)
 {
     m_hardwareName = hardwareName;

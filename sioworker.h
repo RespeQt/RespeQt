@@ -19,8 +19,9 @@
 #endif
 
 #include "serialport.h"
+#include <memory>
 
-enum SIO_CDEVIC
+enum SIO_CDEVIC:quint8
 {
     DISK_BASE_CDEVIC = 0x31,
     PRINTER_BASE_CDEVIC = 0x40,
@@ -30,7 +31,7 @@ enum SIO_CDEVIC
     PCLINK_CDEVIC = 0x6F
 };
 
-enum SIO_DEVICE_COUNT
+enum SIO_DEVICE_COUNT:quint8
 {
     DISK_COUNT = 15,
     PRINTER_COUNT = 4,
@@ -38,6 +39,7 @@ enum SIO_DEVICE_COUNT
 };
 
 class SioWorker;
+using SioWorkerPtr = std::shared_ptr<SioWorker>;
 
 class SioDevice : public QObject
 {
@@ -46,9 +48,9 @@ class SioDevice : public QObject
 protected:
     int m_deviceNo;
     QMutex mLock;
-    SioWorker *sio;
+    SioWorkerPtr sio;
 public:
-    SioDevice(SioWorker *worker);
+    SioDevice(SioWorkerPtr worker);
     virtual ~SioDevice();
     virtual void handleCommand(quint8 command, quint16 aux) = 0;
     virtual QString deviceName();

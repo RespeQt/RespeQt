@@ -8,7 +8,7 @@ namespace Printers
     class Centronics : public BasePrinter
     {
     public:
-        Centronics(SioWorker *sio);
+        Centronics(SioWorkerPtr sio);
 
         virtual const QChar translateAtascii(const unsigned char b);
     };

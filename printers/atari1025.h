@@ -14,7 +14,7 @@ namespace Printers
     {
         Q_OBJECT
     public:
-        Atari1025(SioWorker *worker);
+        Atari1025(SioWorkerPtr worker);
 
         virtual void setupFont();
         static QString typeName()

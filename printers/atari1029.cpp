@@ -4,7 +4,7 @@
 
 namespace Printers
 {
-    Atari1029::Atari1029(SioWorker *worker)
+    Atari1029::Atari1029(SioWorkerPtr worker)
         : AtariPrinter(worker),
           mESC(false),
           mElongatedMode(false)

@@ -5,10 +5,15 @@
 
 namespace Printers
 {
+    enum class Colors1020
+    {
+        BLACK, BLUE, RED, GREEN
+    };
+
     class Atari1020 : public AtariPrinter
     {
     public:
-        Atari1020(SioWorker *sio);
+        Atari1020(SioWorkerPtr sio);
 
         virtual bool handleBuffer(QByteArray &buffer, unsigned int len);
         virtual void setupFont();
@@ -20,12 +25,6 @@ namespace Printers
         }
 
     protected:
-        static const unsigned char BLACK;
-        static const unsigned char BLUE;
-        static const unsigned char RED;
-        static const unsigned char GREEN;
-
-        static std::map<unsigned char, QColor> sColorMapping;
         bool mGraphicsMode, mEsc;
         QPointF mPenPoint;
         bool mPrintText;

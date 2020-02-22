@@ -11,7 +11,7 @@ namespace Printers
     {
         Q_OBJECT
     public:
-        AtariPrinter(SioWorker *worker);
+        AtariPrinter(SioWorkerPtr worker);
 
         bool internationalMode() const { return mInternational; }
         void setInternationalMode(bool internationalMode) { mInternational = internationalMode; }

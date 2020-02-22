@@ -11,7 +11,7 @@
 namespace Printers
 {
 
-    Passthrough::Passthrough(SioWorker *sio)
+    Passthrough::Passthrough(SioWorkerPtr sio)
         : BasePrinter(sio)
     {}
 
@@ -30,7 +30,7 @@ namespace Printers
     {
         RawOutput *output;
         try {
-            output = dynamic_cast<RawOutput*>(mOutput);
+            output = dynamic_cast<RawOutput*>(mOutput.get());
             if (output == Q_NULLPTR)
                 return false;
         } catch(...)

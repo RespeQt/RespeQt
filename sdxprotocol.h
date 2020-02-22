@@ -29,7 +29,7 @@ class SDXProtocol : public SioDevice
     Q_OBJECT
 
 public:
-    SDXProtocol(SioWorker *worker);
+    SDXProtocol(SioWorkerPtr worker);
 };
 
 #endif // SDXPROTOCOLS_H

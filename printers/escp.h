@@ -8,7 +8,7 @@ namespace Printers
     class Escp : public Centronics
     {
     public:
-        Escp(SioWorker *sio);
+        Escp(SioWorkerPtr sio);
 
         virtual bool handleBuffer(QByteArray &buffer, unsigned int len);
 

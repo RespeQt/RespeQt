@@ -17,7 +17,7 @@ class PCLINK: public SDXProtocol
     Q_OBJECT
 
 public:
-    PCLINK(SioWorker *worker);
+    PCLINK(SioWorkerPtr worker);
     ~PCLINK();
     void handleCommand(quint8 command, quint16 aux);
     // links are numbered from 1 to 15

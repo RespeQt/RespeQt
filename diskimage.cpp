@@ -532,7 +532,7 @@ bool Board::hasHappySignature()
 
 /* SimpleDiskImage */
 
-SimpleDiskImage::SimpleDiskImage(SioWorker *worker)
+SimpleDiskImage::SimpleDiskImage(SioWorkerPtr worker)
     : SioDevice(worker)
 {
     m_editDialog = 0;

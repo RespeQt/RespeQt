@@ -2,7 +2,7 @@
 
 namespace Printers
 {
-    Escp::Escp(SioWorker *sio)
+    Escp::Escp(SioWorkerPtr sio)
         : Centronics(sio)
     {
         initPrinter();

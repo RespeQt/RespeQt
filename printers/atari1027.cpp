@@ -4,7 +4,7 @@
 
 namespace Printers
 {
-    Atari1027::Atari1027(SioWorker *worker)
+    Atari1027::Atari1027(SioWorkerPtr worker)
         : AtariPrinter(worker),
           mESC(false)
     {}

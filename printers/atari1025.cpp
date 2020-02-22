@@ -4,7 +4,7 @@
 
 namespace Printers
 {
-    Atari1025::Atari1025(SioWorker *worker)
+    Atari1025::Atari1025(SioWorkerPtr worker)
         : AtariPrinter(worker),
           mESC(false),
           mCPI(10),

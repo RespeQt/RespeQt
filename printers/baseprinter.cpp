@@ -8,7 +8,7 @@
 
 namespace Printers
 {
-    BasePrinter::BasePrinter(SioWorker *worker)
+    BasePrinter::BasePrinter(SioWorkerPtr worker)
         : SioDevice(worker),
           mOutput(Q_NULLPTR)
     {}
@@ -99,7 +99,7 @@ namespace Printers
         }
     }
 
-    void BasePrinter::setOutput(NativeOutput *output)
+    void BasePrinter::setOutput(NativeOutputPtr output)
     {
         if (mOutput != output)
         {
@@ -107,7 +107,6 @@ namespace Printers
             {
                 mOutput->endOutput();
             }
-            delete mOutput;
         }
         mOutput = output;
         setupOutput();

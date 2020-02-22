@@ -15,11 +15,14 @@
 
 namespace Printers
 {
+    class BasePrinter;
+    using BasePrinterPtr = std::shared_ptr<BasePrinter>;
+
     class BasePrinter : public SioDevice
     {
         Q_OBJECT
     public:
-        BasePrinter(SioWorker *worker);
+        BasePrinter(SioWorkerPtr worker);
         virtual ~BasePrinter();
 
         virtual void handleCommand(quint8 command, quint16 aux);
@@ -27,8 +30,8 @@ namespace Printers
 
         virtual const QChar translateAtascii(const unsigned char b);
 
-        NativeOutput *output() const { return mOutput; }
-        void setOutput(NativeOutput *output);
+        NativeOutputPtr output() const { return mOutput; }
+        void setOutput(NativeOutputPtr output);
 
         static QString typeName()
         {
@@ -42,7 +45,7 @@ namespace Printers
         virtual void setupOutput();
 
         Atascii mAtascii;
-        NativeOutput *mOutput;
+        NativeOutputPtr mOutput;
 
     private:
         char m_lastOperation;

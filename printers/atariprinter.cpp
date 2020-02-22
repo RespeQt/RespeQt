@@ -2,7 +2,7 @@
 
 namespace Printers
 {
-    AtariPrinter::AtariPrinter(SioWorker *worker)
+    AtariPrinter::AtariPrinter(SioWorkerPtr worker)
         : BasePrinter(worker),
         mInternational(false)
     {}

@@ -51,6 +51,7 @@
 #include <QHBoxLayout>
 #include <QPrinterInfo>
 #include <typeinfo>
+#include <memory>
 
 #include "atarifilesystem.h"
 #include "miscutils.h"
@@ -310,10 +311,10 @@ MainWindow::MainWindow(QWidget *parent)
     }
 
     /* Connect SioWorker signals */
-    sio = new SioWorker();
-    connect(sio, SIGNAL(started()), this, SLOT(sioStarted()));
-    connect(sio, SIGNAL(finished()), this, SLOT(sioFinished()));
-    connect(sio, SIGNAL(statusChanged(QString)), this, SLOT(sioStatusChanged(QString)));
+    sio = std::make_shared<SioWorker>();
+    connect(sio.get(), SIGNAL(started()), this, SLOT(sioStarted()));
+    connect(sio.get(), SIGNAL(finished()), this, SLOT(sioFinished()));
+    connect(sio.get(), SIGNAL(statusChanged(QString)), this, SLOT(sioStatusChanged(QString)));
     shownFirstTime = true;
 
     PCLINK* pclink = new PCLINK(sio);
@@ -364,7 +365,6 @@ MainWindow::~MainWindow()
     }
 
     delete respeqtSettings;
-    delete sio;
 
     delete ui;
 

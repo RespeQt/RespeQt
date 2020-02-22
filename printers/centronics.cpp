@@ -2,7 +2,7 @@
 
 namespace Printers
 {
-    Centronics::Centronics(SioWorker *sio)
+    Centronics::Centronics(SioWorkerPtr sio)
         : BasePrinter(sio)
     {}
 

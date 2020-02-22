@@ -9,18 +9,7 @@
 
 namespace Printers
 {
-    const unsigned char Atari1020::BLACK = 0;
-    const unsigned char Atari1020::BLUE = 1;
-    const unsigned char Atari1020::RED = 3;
-    const unsigned char Atari1020::GREEN = 2;
-    std::map<unsigned char, QColor> Atari1020::sColorMapping = {
-        { Atari1020::BLACK, QColor("black") },
-        { Atari1020::BLUE, QColor("blue") },
-        { Atari1020::RED, QColor("red") },
-        { Atari1020::GREEN, QColor("green") }
-    };
-
-    Atari1020::Atari1020(SioWorker *sio)
+    Atari1020::Atari1020(SioWorkerPtr sio)
         : AtariPrinter(sio),
           mGraphicsMode(false),
           mEsc(false),
@@ -52,7 +41,7 @@ namespace Printers
             font->setUnderline(false);
             mOutput->setFont(font);
             mOutput->calculateFixedFontSize(80);
-            mOutput->setPen(sColorMapping.at(0));
+            mOutput->setPen(QColor("black"));
         }
     }
 
@@ -165,7 +154,25 @@ namespace Printers
                 unsigned char next = static_cast<unsigned char>(buffer.at(static_cast<int>(i + 1)));
                 if (next >= '0' && next <= '3')
                 {
-                    mOutput->setPen(sColorMapping[next - '0']);
+                    QColor temp("black");
+                    switch(next)
+                    {
+                        default:
+                        case '0':
+                            temp = QColor("black");
+                            break;
+                        case '1':
+                            temp = QColor("blue");
+                            break;
+                        case '2':
+                            temp = QColor("green");
+                            break;
+                        case '3':
+                            temp = QColor("red");
+                            break;
+                    }
+
+                    mOutput->setPen(temp);
                     i++;
                 } else
                     handlePrintableCodes(b);

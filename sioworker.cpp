@@ -20,7 +20,7 @@
 #endif
 
 /* SioDevice */
-SioDevice::SioDevice(SioWorker *worker)
+SioDevice::SioDevice(SioWorkerPtr worker)
         :QObject()
 {
     sio = worker;

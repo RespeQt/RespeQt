@@ -19,7 +19,7 @@ class RCl: public SioDevice
     Q_OBJECT
 
 public:
-    RCl(SioWorker *worker): SioDevice(worker), mutex() {}
+    RCl(SioWorkerPtr worker): SioDevice(worker), mutex() {}
     void handleCommand(quint8 command, quint16 aux);
 
 public slots:

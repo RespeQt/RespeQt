@@ -63,7 +63,7 @@ public slots:
 private:
     int untitledName;
     Ui::MainWindow *ui;
-    SioWorker *sio;
+    SioWorkerPtr sio;
     bool shownFirstTime;
     PrinterWidget* printerWidgets[PRINTER_COUNT]; //
     DriveWidget* diskWidgets[DISK_COUNT];    //
