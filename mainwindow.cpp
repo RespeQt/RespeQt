@@ -177,7 +177,7 @@ MainWindow::MainWindow(QWidget *parent)
     ui->setupUi(this);
 
     /* Setup the printer factory */
-    Printers::PrinterFactory* pfactory = Printers::PrinterFactory::instance();
+    auto& pfactory = Printers::PrinterFactory::instance();
     pfactory->registerPrinter<Printers::Atari1020>(Printers::Atari1020::typeName());
     pfactory->registerPrinter<Printers::Atari1025>(Printers::Atari1025::typeName());
     pfactory->registerPrinter<Printers::Atari1027>(Printers::Atari1027::typeName());
@@ -185,7 +185,7 @@ MainWindow::MainWindow(QWidget *parent)
     pfactory->registerPrinter<Printers::Passthrough>(Printers::Passthrough::typeName());
 
     /* Setup the output factory */
-    Printers::OutputFactory* ofactory = Printers::OutputFactory::instance();
+    auto& ofactory = Printers::OutputFactory::instance();
     ofactory->registerOutput<Printers::SVGOutput>(Printers::SVGOutput::typeName());
     ofactory->registerOutput<Printers::TextPrinterWindow>(Printers::TextPrinterWindow::typeName());
     ofactory->registerOutput<Printers::RawOutput>(Printers::RawOutput::typeName());

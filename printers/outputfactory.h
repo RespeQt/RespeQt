@@ -23,15 +23,15 @@ namespace Printers {
         using CreatorVector = QVector<CreatorPair>;
         CreatorVector creatorFunctions;
 
-        static OutputFactory* sInstance;
+        static std::unique_ptr<OutputFactory> sInstance;
         OutputFactory() {}
 
     public:
-        static OutputFactory* instance()
+        static std::unique_ptr<OutputFactory>& instance()
         {
-            if (sInstance == Q_NULLPTR)
+            if (sInstance == nullptr)
             {
-                sInstance = new OutputFactory();
+                sInstance.reset(new OutputFactory());
             }
             return sInstance;
         }

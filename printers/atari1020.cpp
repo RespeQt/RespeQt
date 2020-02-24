@@ -6,12 +6,13 @@
 #include <stdexcept>
 #include <QFontDatabase>
 #include <QPoint>
+#include <QException>
 
 namespace Printers
 {
     Atari1020::Atari1020(SioWorkerPtr sio)
         : AtariPrinter(sio),
-          mGraphicsMode(false),
+          mGraphicsMode(true),
           mEsc(false),
           mPrintText(false),
           mTextOrientation(0)
@@ -78,6 +79,10 @@ namespace Printers
                     {
                         mEsc = false;
                         handlePrintableCodes(27);
+                    } else if (b == 7) // CTRL+G: Enter Graphics Mode
+                    {
+                        mGraphicsMode = true;
+                        mEsc = true;
                     } else if (b == 16) // CTRL+P: 20 characters
                     {
                         mOutput->calculateFixedFontSize(20);
@@ -220,11 +225,14 @@ namespace Printers
 
                         unsigned int endx, endy;
                         int x = fetchIntFromBuffer(buffer, len, i, endx);
-                        if (buffer.at(static_cast<int>(endx) + 1) != ',')
+                        if (buffer.at(static_cast<int>(endx)) != ',')
+                        {
                             throw new std::invalid_argument("expected ,");
+                        }
                         if (x < 0 || x > 480)
+                        {
                             throw new std::invalid_argument("x coordinate out of range");
-
+                        }
                         int y = fetchIntFromBuffer(buffer, len, endx + 1, endy);
                         if (y < -999 && y > 999)
                             throw new std::invalid_argument("y coordinate out of range");
@@ -255,6 +263,11 @@ namespace Printers
                         }
 
                         b = static_cast<unsigned char>(buffer.at(static_cast<int>(i) + 1));
+                    } catch(std::exception& e)
+                    {
+                        qDebug() << "!n std::exception: " << e.what();
+                        handlePrintableCodes(b);
+                        break;
                     } catch(...)
                     {
                         qDebug() << "!n" << tr("[%1] parsing error for draw command").arg(deviceName());

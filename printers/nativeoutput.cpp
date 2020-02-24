@@ -42,6 +42,10 @@ namespace Printers
 
     void NativeOutput::calculateFixedFontSize(uint8_t charsPerLine)
     {
+        if (font() == Q_NULLPTR)
+        {
+            return;
+        }
         qreal painterWidth = mBoundingBox.right() - mBoundingBox.left();
         qreal oldFontSize = font()->pointSizeF();
         int oldWidth;

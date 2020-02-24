@@ -37,7 +37,7 @@ void PrinterWidget::setup()
     ui->atariPrinters->clear();
     std::map<QString, int> list;
     ui->atariPrinters->addItem(tr("None"), -1);
-    Printers::PrinterFactory* factory = Printers::PrinterFactory::instance();
+    auto& factory = Printers::PrinterFactory::instance();
     const QVector<QString> pnames = factory->getPrinterNames();
     QVector<QString>::const_iterator it;
     for(it = pnames.begin(); it != pnames.end(); ++it)
@@ -106,7 +106,7 @@ bool PrinterWidget::selectPrinter()
         mPrinter = nullptr;
     }
     if (mSio) {
-       Printers::PrinterFactory* factory = Printers::PrinterFactory::instance();
+       auto& factory = Printers::PrinterFactory::instance();
        Printers::BasePrinterPtr newPrinter = factory->createPrinter(ui->atariPrinters->currentText(), mSio);
        if (newPrinter != nullptr)
        {
@@ -170,7 +170,7 @@ void PrinterWidget::on_actionConnectPrinter_triggered()
         try {
             Printers::Passthrough *ptemp = dynamic_cast<Printers::Passthrough*>(mPrinter.get());
             Printers::RawOutput *otemp = dynamic_cast<Printers::RawOutput*>(mDevice.get());
-            if (ptemp == nullptr || otemp == nullptr)
+            if (ptemp != nullptr && otemp != nullptr)
             {
                 QMessageBox::critical(this, tr("Printer emulation"), tr("You are not allowed to use the passthrough emulation without an raw output."));
                 on_actionDisconnectPrinter_triggered();

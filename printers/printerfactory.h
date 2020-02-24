@@ -4,6 +4,7 @@
 #include <QVector>
 #include <QPair>
 #include <QString>
+#include <memory>
 #include "sioworker.h"
 #include "baseprinter.h"
 
@@ -24,15 +25,15 @@ namespace Printers {
         using CreatorVector = std::vector<CreatorPair>;
         CreatorVector creatorFunctions;
 
-        static PrinterFactory* sInstance;
+        static std::unique_ptr<PrinterFactory> sInstance;
         PrinterFactory() {}
 
     public:
-        static PrinterFactory* instance()
+        static std::unique_ptr<PrinterFactory>& instance()
         {
-            if (sInstance == Q_NULLPTR)
+            if (sInstance == nullptr)
             {
-                sInstance = new PrinterFactory();
+                sInstance.reset(new PrinterFactory());
             }
             return sInstance;
         }
