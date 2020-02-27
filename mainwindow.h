@@ -59,6 +59,8 @@ public slots:
     void mountFileWithDefaultProtection(int no, const QString &fileName);   //
     void autoCommit(int no, bool st);                                                //
     void openRecent();
+    void bootExeTriggered(const QString &fileName);
+
 
 private:
     int untitledName;

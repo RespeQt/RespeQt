@@ -20,15 +20,15 @@ Start
 	jsr printf
 	.byte 125,155,'RespeQt Client        Version 0.1  ',155
 	.byte         '                  for RespeQt 5.x ',155,155,155
-	.byte 'A List Slots    G Auto Commit On',155
-	.byte 'B Mount Disk    H Auto Commit Off',155
-	.byte 'C Create Disk   I List Host Images  ',155,0
-	jsr printf
-	.byte 'D UnMount Disk  J Set Date',155
-	.byte 'E Save Disk     K TD Line On',155
-	.byte 'F Swap Slot     L TD Line Off',155
-	.byte '                M Exit to Dos',155
-	.byte '                N Cold Reboot',155,0
+	.byte 'A List Slots     I List Host Images',155
+	.byte 'B Mount Disk     J Auto Commit On',155
+	.byte 'C Create Disk    K Auto Commit Off',155,0
+    jsr printf
+    .byte 'D UnMount Disk   L Set Date',155
+	.byte 'E Save Disk      M TD Line On',155	
+	.byte 'F Swap Slot      N TD Line Off',155
+	.byte 'G Boot Disk      O Exit to Dos',155
+	.byte 'H Boot XEX/Exe   P Cold Reboot',155,0
 	
 Main	
     jsr printf
@@ -38,7 +38,7 @@ Main
 	jsr ToUpper
 	
 	cmp #'A'
-    jeq SlotName 
+    jeq SlotName    
     cmp #'B'
     jeq Mount
     cmp #'C'
@@ -49,21 +49,25 @@ Main
     jeq Save    
     cmp #'F'
     jeq Swap
-    cmp #'G'    
-    jeq CommitOn
-    cmp #'H'    
-    jeq CommitOff  
+    cmp #'G'
+    jeq BootATR
+    cmp #'H'
+    jeq BootXEX
     cmp #'I'    
     jeq ListDir   
-    cmp #'J'
-    jeq GetTD
-    cmp #'K'
-    jeq GetTDOn
+    cmp #'J'    
+    jeq CommitOn
+    cmp #'K'    
+    jeq CommitOff  
     cmp #'L'
+    jeq GetTD
+    cmp #'M'
+    jeq GetTDOn
+    cmp #'N'
     jeq GetTDOff
-	cmp #'M'
+	cmp #'O'
     jeq Exit
-	cmp #'N'
+	cmp #'P'
     jeq Reboot
 
     
@@ -134,7 +138,63 @@ jsr Printf
 	rts	
 .endp
 
+//
+//	Mount disk and boot!
+//
+.proc BootATR
+	lda #0
+	sta ArgFlag
+	clc
+	jmp MountAndBoot
+.endp
 
+.proc BootXEX
+	lda #1
+	sta ArgFlag
+	clc
+.endp
+
+.proc  MountAndBoot
+    jsr printf
+	.byte 155,'Enter [FILENAME.EXT] : ',0
+    jsr input
+    jcs main
+    cpy #03
+    jmi main    
+    ldx #0
+loopB   
+    lda InputBuf,x
+	cmp #155
+    beq AllDoneB
+StoreB        
+    jsr ToUpper	
+    sta IOBuf,x
+    inx
+    bne LoopB
+AllDoneB
+	lda #0
+	sta IOBuf,x       	
+	lda #DCB.MountAndBoot	
+	mvx ArgFlag DAUX2
+	jsr SetUpDCB
+	mva ArgFlag DAUX2
+	jsr SIOV
+	bpl OKB
+	jsr Printf
+	.byte 155,'Error mounting image!',155,0
+	sec
+	jmp main
+OKB			; image mounted
+
+	jsr Printf
+	.byte 155,'Ready to reboot - press return'
+	.byte 155,'You may need to press [Option]:  ',0	
+	jsr Input1
+	jmp $E477
+.endp
+
+
+//------------------------------------------------------
 //
 //	Mount disk
 //
@@ -166,7 +226,7 @@ jsr Printf
 .proc DoMount
     ldy #0
     sty  ArgFlag
-noDot
+noDot1
     jsr printf
 	.byte 155,'Enter [FILENAME.EXT] : ',0
     jsr input
@@ -176,15 +236,15 @@ noDot
     ldx #0
 loop1    
     cpx #13
-    beq noDot
+    beq noDot1
     lda InputBuf,x
 	cmp #155
     beq FlFin1
     cmp #'.'
-    bne Store
+    bne Store1
     ldy #01
     sty ArgFlag
-Store        
+Store1        
     jsr ToUpper	
     sta IOBuf,x
     inx
@@ -192,17 +252,17 @@ Store
 FlFin1
     ldy ArgFlag
     cpy #0
-    beq noDot
+    beq noDot1
     ldy CreateFlag
     cpy #0
-    beq AllDone
+    beq AllDone1
     lda #'.' 
     sta IOBuf,x
     inx
     tya
     sta IOBuf,x
     inx
-AllDone
+AllDone1
 	lda #0
 	sta IOBuf,x       	
 	lda #DCB.Mount
@@ -406,6 +466,7 @@ AllDrives
 	jmp main
 	.endp
 
+
 //
 //  List pth folder 
 //
@@ -413,31 +474,60 @@ AllDrives
 .proc ListDir
     ldx #$00
     stx lp
-loopb    
-    lda #DCB.GetDR
+    
+//--------------------
+
+    jsr printf
+	.byte 155,'Filter [*file spec*]: ',0
+    jsr input
+    jcs main
+    ldx #0
+loop2    
+    lda InputBuf,x
+	cmp #155
+    beq FlFin2
+    jsr ToUpper	
+    sta IOBuf,x
+    inx
+    bne Loop2
+FlFin2
+	lda #0
+	sta IOBuf,x   
+    
+    lda #DCB.PutDR
     jsr SetUpDCB
-    mva lp DAUX1
     jsr SIOV
-    bpl OKb
+    bpl list2
     jsr Printf
     .byte 155,'No server response!',155,0
     sec
     jmp Main
-OKb
+list2    
+    lda #DCB.GetDR
+    jsr SetUpDCB
+    mva lp   DAUX1
+    mva #$01 DAUX2
+    jsr SIOV
+    bpl OK2a
+    jsr Printf
+    .byte 155,'No server response!',155,0
+    sec
+    jmp Main
+OK2a
     jsr Printf
    .byte 155,'%s',155,0
    .word IOBuf
 	ldx lp
 	cpx #00
-	beq doneb
+	beq allDone2a
 	jsr Printf
 	.byte ' * more..(q=quit)',0
 	jsr getkey
 	jsr ToUpper
 	cmp #'Q'
-	beq doneb
-	jmp loopb
-doneb	
+	beq allDone2a
+	jmp list2
+allDone2a	
 	clc
 	jmp Main	
 .endp
@@ -677,7 +767,8 @@ Abort
 
 .proc Reboot
 	jsr Printf
-	.byte 155,'Press Y to reboot: ',0
+	.byte 155,'Press Y to reboot'
+	.byte 155,'You may need to press [Option]:  ',0	
 	jsr Input1
 	cmp #'Y'
 	jne main
@@ -713,19 +804,26 @@ Loop
 	mva #$01 DUnit
 	rts
 DCBIndex
-	.byte 9,19,29,39,49,59,69,79,89,99
+	.byte 9,19,29,39,49,59,69,79,89,99,109,119
 .endp
 	
 	icl 'printf.asm'
 
 DCBTable
+DCBPutDR
+	.byte Cmd.GetDR
+	.byte $80
+	.word IOBuf
+	.byte $06,$00
+	.word $20	
+	.byte $00,$00
 DCBGetDR
-	.byte Cmd.GetDR	  ; command
-	.byte $40		  ; dstats
-	.word IOBuf       ; buffer address
-	.byte $06,$00	  ; timeout, dunuse
-	.word $FF		  ; buffer length
-	.byte $00,$00	  ; aux1, aux2
+	.byte Cmd.GetDR	  
+	.byte $40		   
+	.word IOBuf        
+	.byte $08,$00	   
+	.word $FF		  
+	.byte $00,$00	  
 DCBGetSL
 	.byte Cmd.GetSL	  
 	.byte $40		  
@@ -788,6 +886,13 @@ DCBSave
 	.word IOBuf
 	.byte $06,$00
 	.word 0
+	.byte $00,$00	
+DCBMountAndBoot
+	.byte Cmd.MountAndBoot
+	.byte $80
+	.word IOBuf
+	.byte $06,$00
+	.word $0C
 	.byte $00,$00	
 
 Symbol

@@ -36,50 +36,80 @@ void RCl::handleCommand(quint8 command, quint16 aux)
 
     switch (command) {
 
+
+
     case 0x91 : // list rcl folder(up to 250 files)
     {
         if (!sio->port()->writeCommandAck()) {
             return;
         }
+
+        quint8 list   = (aux  / 256);
         quint8 offset = (aux  % 256);
-        quint8 index  = 0;
-        QString pth = respeqtSettings->lastRclDir();
-        QDir dir(pth);
-        QStringList filters;
-        filters << "*.atr" << "*.xfd" << "*.atx" << "*.pro";
-        dir.setNameFilters(filters);
-        QFileInfoList list = dir.entryInfoList();
 
-        if(offset == 0) {
-            QByteArray fn  = ("Path: " + pth).toUtf8();
-            for(int n = 0; n < fn.length() && n < 37; n++)
-                ddata[index++] = fn[n] & 0xff;
-            ddata[index++] = 155;
+        if(!list) {
+            QByteArray ddata = sio->port()->readDataFrame(32);
+            if (ddata.isEmpty()) {
+                qCritical() << "!e" << tr("[%1] Read data frame failed")
+                               .arg(deviceName());
+                sio->port()->writeDataNak();
+                sio->port()->writeError();
+                g_fileFilter = "*";
+                return;
+            }
+            sio->port()->writeDataAck();
+            sio->port()->writeComplete();
+            g_fileFilter = ddata;
+            qCritical() << "!i" << tr("[%1] List filter set: [%2]")
+                           .arg(deviceName())
+                           .arg(g_fileFilter);
+            return;
         }
+        else
+        {
+            QByteArray  ddata(255, 0);
+            quint8 index  = 0;
+            QString pth = respeqtSettings->lastRclDir();
+            QDir dir(pth);
+            QStringList filters;
+            QString fileFilter = g_fileFilter.trimmed();
+            (fileFilter == "*" || fileFilter == "") ?
+                        filters <<"*.atr"<<"*.xfd"<<"*.atx"<<"*.pro"<<"*.xex"<<"*.exe"<<"*.com"  :
+                        filters <<(fileFilter+".atr")<<(fileFilter+".xfd")<<(fileFilter+".atx")<<(fileFilter+"+.pro")<<(fileFilter+".xex")<<(fileFilter+"+.exe")<<(fileFilter+"+.com");
 
-        for (quint8 i = offset; i < list.size() && i < 250;  ++i) {
-            QFileInfo fileInfo = list.at(i);
-            QString dosfilname = fileInfo.fileName();
-            QString atarifilname = toAtariFileName(dosfilname);
-            QByteArray fn  = (" "+ atarifilname).toUtf8();
-            if(index + fn.length() < 252) {
-                for(int n = 0; n < fn.length(); n++)
+            dir.setNameFilters(filters);
+            QFileInfoList list = dir.entryInfoList();
+            if(offset == 0) {
+                QByteArray fn  = ("Path: " + pth).toUtf8();
+                for(int n = 0; n < fn.length() && n < 37; n++)
                     ddata[index++] = fn[n] & 0xff;
                 ddata[index++] = 155;
-                ddata[254] =  0x00;
-            } else  {
-                ddata[254] =  i;
-                break;
             }
+
+            for (quint8 i = offset; i < list.size() && i < 250;  ++i) {
+                QFileInfo fileInfo = list.at(i);
+                QString dosfilname = fileInfo.fileName();
+                QString atarifilname = toAtariFileName(dosfilname);
+                QByteArray fn  = (" "+ atarifilname).toUtf8();
+                if(index + fn.length() < 252) {
+                    for(int n = 0; n < fn.length(); n++)
+                        ddata[index++] = fn[n] & 0xff;
+                    ddata[index++] = 155;
+                    ddata[254] =  0x00;
+                } else  {
+                    ddata[254] =  i;
+                    break;
+                }
+            }
+
+            for(int n = index; n < 253 ; n++) ddata[index++] = 0x00;
+            sio->port()->writeComplete();
+            sio->port()->writeDataFrame(ddata);
+            return;
         }
-
-        for(int n = index; n < 253 ; n++) ddata[index++] = 0x00;
-        sio->port()->writeComplete();
-        sio->port()->writeDataFrame(ddata);
-        return;
-
     }
         break;
+
 
     case 0x92 :   // get slots filename
     {
@@ -481,6 +511,54 @@ void RCl::handleCommand(quint8 command, quint16 aux)
     }
         break;
 
+    case 0x9A :   // Mount slot and boot
+    {
+        if (!sio->port()->writeCommandAck()) {
+            return;
+        }
+
+        bool isPrgXEX = (aux/256)?false:true;
+        // If no Folder Image has ever been mounted abort the command as we won't
+        // know which folder to use to remotely create/mount an image file.
+        if(respeqtSettings->lastRclDir() == "") {
+            qCritical() << "!e" << tr("[%1] RespeQt can't determine the folder where the image file must be created/mounted!")
+                           .arg(deviceName());
+            qCritical() << "!e" << tr("[%1] Mount a Folder Image at least once before issuing a remote mount command.")
+                           .arg(deviceName());
+            sio->port()->writeDataNak();
+            sio->port()->writeError();
+            return;
+        }
+        // Get the name of the image file
+
+
+        QByteArray data(12, 0);
+        data = sio->port()->readDataFrame(12);
+        if (data.isEmpty()) {
+            qCritical() << "!e" << tr("[%1] Read data frame failed")
+                           .arg(deviceName());
+            sio->port()->writeDataNak();
+            sio->port()->writeError();
+            return;
+        }
+
+        sio->port()->writeDataAck();
+        sio->port()->writeComplete();
+
+        imageFileName = data;
+        if(isPrgXEX) {
+            imageFileName = "*" + toDosFileName(imageFileName);
+            emit mountFile(0,imageFileName);
+        }
+        else
+        {
+            imageFileName = toDosFileName(imageFileName);
+            emit bootExe(imageFileName);
+        }
+    }
+        break;
+
+
     default :
         // Invalid Command
         sio->port()->writeCommandNak();
@@ -535,7 +613,7 @@ QString RCl::toDosFileName(QString atariFileName)
     QString pth = respeqtSettings->lastRclDir();
     QDir dir(pth);
     QStringList filters;
-    filters << "*.atr" << "*.xfd" << "*.atx" << "*.pro";
+    filters <<"*.atr"<<"*.xfd" <<"*.atx"<<"*.pro"<<"*.xex"<<"*.exe"<<"*.com";
     dir.setNameFilters(filters);
     QFileInfoList list = dir.entryInfoList();
     for (quint8 i = 0; i < list.size(); ++i) {
