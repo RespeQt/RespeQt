@@ -3,7 +3,7 @@
 // (c) 2018 Eric BACHER
 //
 
-#include <stdio.h>
+#include <cstdio>
 #include "Emulator.h"
 #include "Atari1050Speedy.hpp"
 #include "Riot1050.hpp"

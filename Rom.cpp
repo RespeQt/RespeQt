@@ -5,33 +5,33 @@
 
 #include <QFile>
 
-#include <string.h>
-#include <stdio.h>
-#include <stdlib.h>
+#include <cstring>
+#include <cstdio>
+#include <cstdlib>
 #include "Rom.hpp"
 
 Rom::Rom(QString romName)
 {
     m_romName = romName;
-	m_firmware = NULL;
-	m_symbols = NULL;
+    m_firmware = nullptr;
+    m_symbols = nullptr;
 }
 
 Rom::~Rom()
 {
 	free(m_firmware);
-	m_firmware = NULL;
+    m_firmware = nullptr;
 	struct ROM_SYMBOLS *head = m_symbols;
 	while (head) {
 		struct ROM_SYMBOLS *next = head->next;
         if (head->displayed) {
             free(head->displayed);
-            head->displayed = NULL;
+            head->displayed = nullptr;
         }
 		free(head);
 		head = next;
 	}
-	m_symbols = NULL;
+    m_symbols = nullptr;
 }
 
 unsigned char *Rom::LoadBinary(QString filename, int *size)
@@ -39,7 +39,7 @@ unsigned char *Rom::LoadBinary(QString filename, int *size)
     QFile *firmwareFile = new QFile(filename);
     if (!firmwareFile->open(QFile::ReadOnly)) {
         delete firmwareFile;
-        return NULL;
+        return nullptr;
     }
     QByteArray array = firmwareFile->readAll();
     firmwareFile->close();
@@ -62,11 +62,11 @@ unsigned char *Rom::LoadBinary(QString filename, int *size)
  */
 struct ROM_SYMBOLS *Rom::LoadSymbolFile(QString filename)
 {
-	struct ROM_SYMBOLS *head = NULL;
+    struct ROM_SYMBOLS *head = nullptr;
     QFile *symbolFile = new QFile(filename);
     if (!symbolFile->open(QFile::ReadOnly | QFile::Text)) {
         delete symbolFile;
-        return NULL;
+        return nullptr;
     }
     char buf[80];
     int nbRead = 0;
@@ -161,7 +161,7 @@ struct ROM_SYMBOLS *Rom::LoadSymbolFile(QString filename)
                         memset(sym->displayed, 0, size);
                     }
                     else {
-                        sym->displayed = NULL;
+                        sym->displayed = nullptr;
                     }
                     sym->next = head;
 					head = sym;
@@ -208,19 +208,19 @@ void Rom::WriteRegister(unsigned short, unsigned char)
 char *Rom::GetAddressLabel(unsigned short addr)
 {
 	struct ROM_SYMBOLS *head = m_symbols;
-	while (head != NULL) {
+    while (head != nullptr) {
 		if ((head->name[0] != '#') && (head->address == addr)) {
 			return head->name;
 		}
 		head = head->next;
 	}
-	return NULL;
+    return nullptr;
 }
 
 bool Rom::IsAddressSkipped(unsigned short addr)
 {
 	struct ROM_SYMBOLS *head = m_symbols;
-	while (head != NULL) {
+    while (head != nullptr) {
 		if ((head->name[0] == '#') && (head->name[1] == 's') && (addr >= head->address) && (addr <= head->address2)) {
             if (head->displayed) {
                 if (m_lastSkip != head) {
@@ -235,19 +235,19 @@ bool Rom::IsAddressSkipped(unsigned short addr)
                 head->displayed[addr - head->address] = 0xFF;
                 return false;
             }
-            m_lastSkip = NULL;
+            m_lastSkip = nullptr;
             return true;
 		}
 		head = head->next;
 	}
-    m_lastSkip = NULL;
+    m_lastSkip = nullptr;
     return false;
 }
 
 bool Rom::IsCommandActive(unsigned char command, unsigned short aux)
 {
 	struct ROM_SYMBOLS *head = m_symbols;
-	while (head != NULL) {
+    while (head != nullptr) {
 		if (head->name[0] == '#') {
 			if (head->name[1] == 'c') {
 				if (head->address == (unsigned short) command) {

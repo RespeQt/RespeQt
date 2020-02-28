@@ -46,7 +46,7 @@ class MainWindow : public QMainWindow
     Q_OBJECT
 
 public:
-    MainWindow(QWidget *parent = Q_NULLPTR);
+    MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
     QString g_sessionFile;
     QString g_sessionFilePath;

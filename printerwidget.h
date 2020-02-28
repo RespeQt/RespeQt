@@ -16,7 +16,7 @@ class PrinterWidget : public QFrame
     Q_OBJECT
 
 public:
-    explicit PrinterWidget(int printerNum, QWidget *parent = Q_NULLPTR);
+    explicit PrinterWidget(int printerNum, QWidget *parent = nullptr);
     ~PrinterWidget();
 
     int getPrinterNumber() const { return printerNo_; }

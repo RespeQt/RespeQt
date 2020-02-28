@@ -51,9 +51,9 @@ TextPrinterWindow::TextPrinterWindow(QWidget *parent) :
     connect(ui->asciiFontName, &QFontComboBox::currentFontChanged, this, &TextPrinterWindow::asciiFontChanged);
     connect(this, &TextPrinterWindow::textPrint, this, &TextPrinterWindow::print);
 
-    mFont = Q_NULLPTR;
-    mDevice = Q_NULLPTR;
-    mPainter = Q_NULLPTR;
+    mFont.reset();
+    mDevice.reset();
+    mPainter.reset();
 }
 
 TextPrinterWindow::~TextPrinterWindow()
@@ -233,7 +233,7 @@ void TextPrinterWindow::on_actionPrint_triggered()
 void TextPrinterWindow::on_actionSave_triggered()
 {
     QString fileName = QFileDialog::getSaveFileName(this, tr("Save printer text output"), respeqtSettings->lastPrinterTextDir(),
-                                                    tr("Text files (*.txt);;All files (*)"), Q_NULLPTR);
+                                                    tr("Text files (*.txt);;All files (*)"), nullptr);
     if (fileName.isEmpty()) {
         return;
     }

@@ -16,9 +16,9 @@ RamUnderRomArchiver::RamUnderRomArchiver(Rom *rom, Ram *ram, RiotDevices *riot)
 
 RamUnderRomArchiver::~RamUnderRomArchiver()
 {
-    m_rom = NULL;
-    m_ram = NULL;
-    m_riot = NULL;
+    m_rom = nullptr;
+    m_ram = nullptr;
+    m_riot = nullptr;
 }
 
 unsigned char RamUnderRomArchiver::ReadRegister(unsigned short addr)

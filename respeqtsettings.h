@@ -150,16 +150,16 @@ public:
 
     // Set and restore last printwindow position and size //
     int lastPrtVerticalPos();
-    void setLastPrtVerticalPos(int lastVpos);
+    void setLastPrtVerticalPos(int lastPrtVpos);
 
     int lastPrtHorizontalPos();
-    void setLastPrtHorizontalPos(int lastHpos);
+    void setLastPrtHorizontalPos(int lastPrtHpos);
 
     int lastPrtWidth();
-    void setLastPrtWidth(int lastW);
+    void setLastPrtWidth(int lastPrtW);
 
     int lastPrtHeight();
-    void setLastPrtHeight(int lastH);
+    void setLastPrtHeight(int lastPrtH);
 
     QString i18nLanguage();
     void setI18nLanguage(const QString &lang);

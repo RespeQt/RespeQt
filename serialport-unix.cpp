@@ -19,9 +19,9 @@
 #include <QTime>
 #include <QtDebug>
 
-#include <string.h>
+#include <cstring>
 #include <fcntl.h>
-#include <errno.h>
+#include <cerrno>
 #include <sys/types.h>
 #include <unistd.h>
 #ifdef Q_OS_UNIX
@@ -470,7 +470,7 @@ QByteArray StandardSerialPortBackend::readCommandFrame()
 
             data = readRawFrame(5, false);
             if (data.isEmpty()) {
-                return NULL;
+                return nullptr;
             }
             quint8 expected = (quint8)data.at(4);
             quint8 got = sioChecksum(data, 4);
@@ -527,7 +527,7 @@ QByteArray StandardSerialPortBackend::readDataFrame(uint size, bool verbose)
 {
     QByteArray data = readRawFrame(size + 1, verbose);
     if (data.isEmpty()) {
-        return NULL;
+        return nullptr;
     }
     quint8 expected = (quint8)data.at(size);
     quint8 got = sioChecksum(data, size);
@@ -881,7 +881,7 @@ QByteArray AtariSioBackend::readCommandFrame()
     FD_ZERO(&read_set);
     FD_SET(mCancelHandles[0], &read_set);
 
-    ret = select(maxfd+1, &read_set, NULL, &except_set, 0);
+    ret = select(maxfd+1, &read_set, nullptr, &except_set, 0);
     if (ret == -1 || ret == 0) {
         return data;
     }

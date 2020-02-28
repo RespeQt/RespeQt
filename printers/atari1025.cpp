@@ -1,6 +1,6 @@
 #include "atari1025.h"
 #include "respeqtsettings.h"
-#include <stdlib.h>
+#include <cstdlib>
 
 namespace Printers
 {
@@ -16,7 +16,7 @@ namespace Printers
     {
         if (mOutput)
         {
-            QFont *font = new QFont(respeqtSettings->atariFixedFontFamily(), 12);
+            QFontPtr font = QFontPtr::create(respeqtSettings->atariFixedFontFamily(), 12);
             font->setUnderline(false);
             mOutput->setFont(font);
             mOutput->calculateFixedFontSize(mLineChars);
@@ -53,7 +53,7 @@ namespace Printers
                 case 155: // EOL
                 {
                     mESC = false;
-                    QFont *font = mOutput->font();
+                    QFontPtr font = mOutput->font();
                     font->setUnderline(false);
                     mOutput->setFont(font);
                     mOutput->newLine();

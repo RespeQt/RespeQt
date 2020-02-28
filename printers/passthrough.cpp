@@ -1,9 +1,9 @@
 #include "passthrough.h"
 #include "logdisplaydialog.h"
-#include "math.h"
 #include "respeqtsettings.h"
 #include "rawoutput.h"
 
+#include <cmath>
 #include <stdexcept>
 #include <QFontDatabase>
 #include <QPoint>
@@ -28,10 +28,10 @@ namespace Printers
 
     bool Passthrough::handleBuffer(QByteArray &buffer, unsigned int len)
     {
-        RawOutput *output;
+        QSharedPointer<RawOutput> output;
         try {
-            output = dynamic_cast<RawOutput*>(mOutput.get());
-            if (output == Q_NULLPTR)
+            output = qSharedPointerDynamicCast<RawOutput>(mOutput);
+            if (output == nullptr)
                 return false;
         } catch(...)
         {

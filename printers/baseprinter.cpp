@@ -10,7 +10,7 @@ namespace Printers
 {
     BasePrinter::BasePrinter(SioWorkerPtr worker)
         : SioDevice(worker),
-          mOutput(Q_NULLPTR)
+          mOutput(nullptr)
     {}
 
     BasePrinter::~BasePrinter()

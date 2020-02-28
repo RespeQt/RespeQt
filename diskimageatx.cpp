@@ -535,7 +535,7 @@ bool SimpleDiskImage::readHappyAtxSectorAtPosition(int trackNumber, int sectorNu
         index = 0;
         for (int i = 0; i < m_atxTrackInfo[trackNumber].size(); i++) {
             AtxSectorInfo *sectorInfo = m_atxTrackInfo[trackNumber].at(i);
-            if ((sectorInfo != NULL) && (sectorInfo->sectorNumber() == afterSectorNumber)) {
+            if ((sectorInfo != nullptr) && (sectorInfo->sectorNumber() == afterSectorNumber)) {
                 index = (i + 1) % m_atxTrackInfo[trackNumber].size();
                 break;
             }
@@ -544,11 +544,11 @@ bool SimpleDiskImage::readHappyAtxSectorAtPosition(int trackNumber, int sectorNu
 
     // find the next sector matching the requested sector number
     m_wd1771Status = 0xEF;
-    AtxSectorInfo *sectorInfo = NULL;
+    AtxSectorInfo *sectorInfo = nullptr;
     for (int i = 0; i < m_atxTrackInfo[trackNumber].size(); i++) {
         int indexInTrack = index % m_atxTrackInfo[trackNumber].size();
         AtxSectorInfo *currentSectorInfo = m_atxTrackInfo[trackNumber].at(indexInTrack);
-        if ((currentSectorInfo != NULL) && (currentSectorInfo->sectorNumber() == sectorNumber)) {
+        if ((currentSectorInfo != nullptr) && (currentSectorInfo->sectorNumber() == sectorNumber)) {
             sectorInfo = currentSectorInfo;
             m_wd1771Status = sectorInfo->wd1771Status();
             break;
@@ -557,7 +557,7 @@ bool SimpleDiskImage::readHappyAtxSectorAtPosition(int trackNumber, int sectorNu
             index++;
         }
     }
-    if ((sectorInfo == NULL) || ((sectorInfo->wd1771Status() & 0x10) == 0)) {
+    if ((sectorInfo == nullptr) || ((sectorInfo->wd1771Status() & 0x10) == 0)) {
         qWarning() << "!w" << tr("[%1] Sector %2 ($%3) not found starting at index %4")
                       .arg(deviceName())
                       .arg(sectorNumber)
@@ -597,7 +597,7 @@ bool SimpleDiskImage::readHappyAtxSkewAlignment(bool happy1050)
     }
     quint8 previousSector = 0xFF - m_board.m_happyRam[0x3CA];
     AtxSectorInfo *previousSectorInfo = m_atxTrackInfo[previousTrack].find(previousSector, 0);
-    if (previousSectorInfo == NULL) {
+    if (previousSectorInfo == nullptr) {
         qWarning() << "!w" << tr("[%1] Sector %2 ($%3) not found in track %4 ($%5)")
                       .arg(deviceName())
                       .arg(previousSector)
@@ -608,7 +608,7 @@ bool SimpleDiskImage::readHappyAtxSkewAlignment(bool happy1050)
     }
     quint8 currentSector = 0xFF - m_board.m_happyRam[0x3CC];
     AtxSectorInfo *currentSectorInfo = m_atxTrackInfo[currentTrack].find(currentSector, 0);
-    if (currentSectorInfo == NULL) {
+    if (currentSectorInfo == nullptr) {
         qWarning() << "!w" << tr("[%1] Sector %2 ($%3) not found in track %4 ($%5)")
                       .arg(deviceName())
                       .arg(currentSector)
@@ -746,7 +746,7 @@ bool SimpleDiskImage::writeHappyAtxSectors(int trackNumber, int afterSectorNumbe
         // try to find the index of the specified sector in the track
         for (int i = 0; i < m_atxTrackInfo[trackNumber].size(); i++) {
             AtxSectorInfo *sectorInfo = m_atxTrackInfo[trackNumber].at(i);
-            if ((sectorInfo != NULL) && (sectorInfo->sectorNumber() == afterSectorNumber)) {
+            if ((sectorInfo != nullptr) && (sectorInfo->sectorNumber() == afterSectorNumber)) {
                 position = sectorInfo->sectorPosition();
                 break;
             }
@@ -762,7 +762,7 @@ bool SimpleDiskImage::writeHappyAtxSectors(int trackNumber, int afterSectorNumbe
             m_board.m_happyRam[startOffset + 0x14 + index] = 0xEF;
             if ((sectorNumber > 0) && (sectorNumber <= m_geometry.sectorsPerTrack())) {
                 AtxSectorInfo *sectorInfo = m_atxTrackInfo[trackNumber].find(sectorNumber, position);
-                if (sectorInfo != NULL) {
+                if (sectorInfo != nullptr) {
                     quint8 writeCommand = m_board.m_happyRam[startOffset + 0x4A + index];
                     int dataOffset = startData + (index * 128);
                     quint8 dataMark = (writeCommand << 5) | 0x9F;
@@ -969,7 +969,7 @@ bool SimpleDiskImage::readAtxSectorUsingIndex(quint16 aux, QByteArray &data)
     }
     int indexInTrack = (int)(quint32)mapping[index];
     AtxSectorInfo *sectorInfo = m_atxTrackInfo[m_trackNumber].at(indexInTrack);
-    if (sectorInfo == NULL) {
+    if (sectorInfo == nullptr) {
         qWarning() << "!w" << tr("[%1] no sector found at index %2 in track %3")
                       .arg(deviceName())
                       .arg(indexInTrack)
@@ -1040,7 +1040,7 @@ bool SimpleDiskImage::readAtxSector(quint16 aux, QByteArray &data)
     qint64 sectorDistanceInMicroSeconds = currentDistanceInMicroSeconds;
     int relativeSector = ((sector - 1) % m_geometry.sectorsPerTrack()) + 1;
     AtxSectorInfo *sectorInfo = m_atxTrackInfo[newTrack].find(relativeSector, (quint16)(currentDistanceInMicroSeconds >> 3));
-    if (sectorInfo == NULL) {
+    if (sectorInfo == nullptr) {
         m_driveStatus = 0x10;
         m_wd1771Status = 0xEF;
 
@@ -1215,20 +1215,20 @@ bool SimpleDiskImage::readAtxSkewAlignment(quint16 aux, QByteArray &data, bool t
         int secondTrackSectorCount = m_atxTrackInfo[secondTrack].size();
         quint8 nbSectorsToFind = data[3];
         for (int startIndex = 0; startIndex < firstTrackSectorCount; startIndex++) {
-            AtxSectorInfo *firstTrackSectorInfo = NULL;
+            AtxSectorInfo *firstTrackSectorInfo = nullptr;
             for (int i = 0; i <= nbSectorsToFind; i++) {
                 int index = (startIndex + i) % firstTrackSectorCount;
                 firstTrackSectorInfo = m_atxTrackInfo[firstTrack].at(index);
-                if (firstTrackSectorInfo == NULL) {
+                if (firstTrackSectorInfo == nullptr) {
                     break;
                 }
                 quint8 sectorNumber = data[5 + (i % nbSectorsToFind)];
                 if (sectorNumber != firstTrackSectorInfo->sectorNumber()) {
-                    firstTrackSectorInfo = NULL;
+                    firstTrackSectorInfo = nullptr;
                     break;
                 }
             }
-            if (firstTrackSectorInfo != NULL) {
+            if (firstTrackSectorInfo != nullptr) {
 
                 // now find the byte offset in the first track of this first sector and add the seek time
                 // add the time to change track and issue another read sector command: 115319 microseconds for one track difference
@@ -1323,7 +1323,7 @@ qWarning() << "!w" << tr("[%1] track $%2 - $%3 $%4 $%5 - %6 | %7 - %8 | %9 $%10 
 
         // find position of the first sector
         AtxSectorInfo *firstTrackSectorInfo = m_atxTrackInfo[firstTrack].find(data[3], 0);
-        if (firstTrackSectorInfo == NULL) {
+        if (firstTrackSectorInfo == nullptr) {
             return false;
         }
         quint16 firstSectorPosition = firstTrackSectorInfo->sectorPosition();
@@ -1335,7 +1335,7 @@ qWarning() << "!w" << tr("[%1] track $%2 - $%3 $%4 $%5 - %6 | %7 - %8 | %9 $%10 
 
         // now find the sector in the second track from the current rotation angle
         AtxSectorInfo *secondTrackSectorInfo = m_atxTrackInfo[secondTrack].find(data[4], firstSectorPosition);
-        if (secondTrackSectorInfo == NULL) {
+        if (secondTrackSectorInfo == nullptr) {
             return false;
         }
         quint16 secondSectorPosition = (secondTrackSectorInfo->sectorPosition() + (154 << 3) + 1244) % 26042;
@@ -1653,7 +1653,7 @@ bool SimpleDiskImage::writeAtxSectorUsingIndex(quint16 aux, const QByteArray &da
 
     // check that the sector number in the track matches the sector number in the sector list
     AtxSectorInfo *sectorInfo = m_atxTrackInfo[m_trackNumber].at(indexInTrack);
-    if (sectorInfo == NULL) {
+    if (sectorInfo == nullptr) {
         qWarning() << "!w" << tr("[%1] no sector found at index %2 in track %3")
                       .arg(deviceName())
                       .arg(indexInTrack)
@@ -1746,7 +1746,7 @@ bool SimpleDiskImage::writeFuzzyAtxSector(quint16 aux, const QByteArray &data)
     // get sector definition for this sector number
     int relativeSector = ((sector - 1) % m_geometry.sectorsPerTrack()) + 1;
     AtxSectorInfo *sectorInfo = m_atxTrackInfo[newTrack].find(relativeSector, (quint16)(distance >> 3));
-    if (sectorInfo == NULL) {
+    if (sectorInfo == nullptr) {
         m_driveStatus = 0x10;
         m_wd1771Status = 0xEF;
         qCritical() << "!e" << tr("[%1] Sector %2 does not exist in ATX file")
@@ -1826,7 +1826,7 @@ bool SimpleDiskImage::writeAtxSector(quint16 aux, const QByteArray &data)
     int relativeSector = ((sector - 1) % m_geometry.sectorsPerTrack()) + 1;
     quint16 sectorLength = 0;
     AtxSectorInfo *sectorInfo = m_atxTrackInfo[newTrack].find(relativeSector, (quint16)(distance >> 3));
-    if (sectorInfo == NULL) {
+    if (sectorInfo == nullptr) {
         m_driveStatus = 0x10;
         m_wd1771Status = 0xEF;
         qCritical() << "!e" << tr("[%1] Sector %2 does not exist in ATX file")
@@ -1919,7 +1919,7 @@ bool SimpleDiskImage::findMappingInAtxTrack(int nbSectors, QByteArray &mapping)
             for (int sectorIndex = 0; sectorIndex < nbSectors; sectorIndex++) {
                 int indexInRam = (sectorStartIndex + sectorIndex) % nbSectors;
                 AtxSectorInfo *sectorInfo = m_atxTrackInfo[m_trackNumber].at(indexInTrack);
-                if (sectorInfo == NULL) {
+                if (sectorInfo == nullptr) {
                     match = false;
                     break;
                 }
@@ -2107,7 +2107,7 @@ AtxSectorInfo* AtxTrackInfo::find(quint8 sectorNumber, quint16 distance)
 			}
 		}
 	}
-	return NULL;
+    return nullptr;
 }
 
 int AtxTrackInfo::duplicateIndex(AtxSectorInfo *sectorInfo, int sectorNumber)

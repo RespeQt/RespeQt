@@ -131,7 +131,7 @@ void MainWindow::doLogMessage(int type, const QString &msg)
     emit logMessage(type, msg);
 }
 
-MainWindow *MainWindow::instance = NULL;
+MainWindow *MainWindow::instance = nullptr;
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent), ui(new Ui::MainWindow),
@@ -148,7 +148,7 @@ MainWindow::MainWindow(QWidget *parent)
     qInstallMessageHandler(logMessageOutput);
     qDebug() << "!d" << tr("RespeQt started at %1.").arg(QDateTime::currentDateTime().toString());
     
-    logWindow_ = NULL;
+    logWindow_ = nullptr;
 
     /* Remove old temporaries */
     QDir tempDir = QDir::temp();
@@ -653,7 +653,7 @@ void MainWindow::closeEvent(QCloseEvent *event)
 
     //
     delete docDisplayWindow;
-    docDisplayWindow = NULL;
+    docDisplayWindow = nullptr;
 
     for (int i = DISK_BASE_CDEVIC; i < (DISK_BASE_CDEVIC+DISK_COUNT); i++) {
         SimpleDiskImage *s = qobject_cast <SimpleDiskImage*> (sio->getDevice(i));
@@ -726,7 +726,7 @@ bool MainWindow::eventFilter(QObject * /*obj*/, QEvent *event)
 
 void MainWindow::on_actionLogWindow_triggered()
 {
-    if (logWindow_ == NULL )
+    if (logWindow_ == nullptr)
     {
         logWindow_ = new LogDisplayDialog(this);
         int x, y, w, h;
@@ -1342,13 +1342,13 @@ void MainWindow::mountFileWithDefaultProtection(int no, const QString &fileName)
     }
 
     const RespeqtSettings::ImageSettings* imgSetting = respeqtSettings->getImageSettingsFromName(atariFileName);
-    bool prot = (imgSetting!=NULL) && imgSetting->isWriteProtected;
+    bool prot = (imgSetting!=nullptr) && imgSetting->isWriteProtected;
     mountFile(no, atariFileName, prot);
 }
 
 void MainWindow::mountFile(int no, const QString &fileName, bool /*prot*/)
 {
-    SimpleDiskImage *disk = NULL;
+    SimpleDiskImage *disk = nullptr;
     bool isDir = false;
 
     if (fileName.isEmpty()) {
@@ -1367,17 +1367,17 @@ void MainWindow::mountFile(int no, const QString &fileName, bool /*prot*/)
 
     if (disk) {
         SimpleDiskImage *oldDisk = qobject_cast <SimpleDiskImage*> (sio->getDevice(no + DISK_BASE_CDEVIC));
-        Board *board = oldDisk != NULL ? oldDisk->getBoardInfo() : NULL;
+        Board *board = oldDisk != nullptr ? oldDisk->getBoardInfo() : nullptr;
         if (!disk->open(fileName, type) || !ejectImage(no) ) {
             respeqtSettings->unmountImage(no);
             delete disk;
-            if (board != NULL) {
+            if (board != nullptr) {
                 delete board;
             }
             if(g_rclFileName.left(1) == "*") emit fileMounted(false);  //
             return;
         }
-        else if (board != NULL) {
+        else if (board != nullptr) {
             disk->setBoardInfo(board);
             delete board;
         }
@@ -1386,7 +1386,7 @@ void MainWindow::mountFile(int no, const QString &fileName, bool /*prot*/)
 
         try {
             PCLINK* pclink = dynamic_cast<PCLINK*>(sio->getDevice(PCLINK_CDEVIC));
-            if(pclink != Q_NULLPTR && (isDir || pclink->hasLink(no+1)))
+            if(pclink != nullptr && (isDir || pclink->hasLink(no+1)))
             {
                 sio->uninstallDevice(PCLINK_CDEVIC);
                 if(isDir)

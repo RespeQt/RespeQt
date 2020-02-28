@@ -1,13 +1,13 @@
-#include "math.h"
+#include <cmath>
 #include "nativeoutput.h"
 #include "logdisplaydialog.h"
 
 namespace Printers
 {
     NativeOutput::NativeOutput():
-        mPainter(Q_NULLPTR),
-        mDevice(Q_NULLPTR),
-        mFont(Q_NULLPTR),
+        mPainter(nullptr),
+        mDevice(nullptr),
+        mFont(nullptr),
         mX(0), mY(0),
         mCharsPerLine(80),
         mCharCount(0),
@@ -24,9 +24,9 @@ namespace Printers
     }
 
     bool NativeOutput::beginOutput() {
-        mPainter = new QPainter();
+        mPainter = QPainterPtr::create();
         mPainter->setRenderHint(QPainter::Antialiasing);
-        mPainter->begin(mDevice);
+        mPainter->begin(mDevice.data());
         setFont(mFont);
         updateBoundingBox();
         return true;
@@ -42,7 +42,7 @@ namespace Printers
 
     void NativeOutput::calculateFixedFontSize(uint8_t charsPerLine)
     {
-        if (font() == Q_NULLPTR)
+        if (font() == nullptr)
         {
             return;
         }
@@ -68,11 +68,10 @@ namespace Printers
         mCharsPerLine = charsPerLine;
     }
 
-    void NativeOutput::setFont(QFont *font)
+    void NativeOutput::setFont(QFontPtr font)
     {
         if (font != mFont)
         {
-            delete mFont;
             mFont = font;
         }
         if (mFont && mPainter)
@@ -99,34 +98,10 @@ namespace Printers
 
     void NativeOutput::printString(const QString &s)
     {
-        QString::const_iterator cit;
-        for(cit = s.cbegin(); cit != s.cend(); ++cit)
+        for(auto cit: s)
         {
-            printChar(*cit);
+            printChar(cit);
         }
-    }
-
-    void NativeOutput::drawLine(const QPointF &p1, const QPointF &p2)
-    {
-        mPainter->drawLine(p1, p2);
-    }
-
-    void NativeOutput::setPen(const QColor &color)
-    {
-        if (mPainter)
-        {
-            mPainter->setPen(color);
-        }
-    }
-
-    void NativeOutput::setPen(const QPen &pen)
-    {
-        mPainter->setPen(pen);
-    }
-
-    void NativeOutput::setPen(Qt::PenStyle style)
-    {
-        mPainter->setPen(style);
     }
 
     void NativeOutput::newLine(bool linefeed)
@@ -149,22 +124,6 @@ namespace Printers
             mY = static_cast<int>(trunc(mBoundingBox.top()));
         } else {
             mY += lineSpacing;
-        }
-    }
-
-    void NativeOutput::translate(const QPointF &offset)
-    {
-        if (mPainter)
-        {
-            mPainter->translate(offset);
-        }
-    }
-
-    void NativeOutput::setWindow(QRect const&window)
-    {
-        if (mPainter)
-        {
-            mPainter->setWindow(window);
         }
     }
 

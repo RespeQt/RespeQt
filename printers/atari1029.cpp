@@ -1,6 +1,6 @@
 #include "atari1029.h"
 #include "respeqtsettings.h"
-#include <stdlib.h>
+#include <cstdlib>
 
 namespace Printers
 {
@@ -14,7 +14,7 @@ namespace Printers
     {
         if (mOutput)
         {
-            QFont *font = new QFont(respeqtSettings->atariFixedFontFamily(), 12);
+            QFontPtr font = QFontPtr::create(respeqtSettings->atariFixedFontFamily(), 12);
             font->setUnderline(false);
             mOutput->setFont(font);
             mOutput->calculateFixedFontSize(80);
@@ -53,7 +53,7 @@ namespace Printers
                     {
                         mESC = false;
                         setElongatedMode(false);
-                        QFont *font = mOutput->font();
+                        QFontPtr font = mOutput->font();
                         font->setUnderline(false);
                         mOutput->setFont(font);
                         mOutput->newLine();
@@ -95,7 +95,7 @@ namespace Printers
         switch(b) {
             case 25: // CTRL+Y starts underline mode
             {
-                QFont *font = mOutput->font();
+                QFontPtr font = mOutput->font();
                 font->setUnderline(true);
                 mOutput->setFont(font);
                 mESC = false;
@@ -104,7 +104,7 @@ namespace Printers
             }
             case 26: // CTRL+Z ends underline mode
             {
-                QFont *font = mOutput->font();
+                QFontPtr font = mOutput->font();
                 font->setUnderline(false);
                 mOutput->setFont(font);
                 mESC = false;

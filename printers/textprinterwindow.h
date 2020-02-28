@@ -22,7 +22,7 @@ namespace Printers {
 class TextPrinterWindow : public QMainWindow, public NativeOutput {
     Q_OBJECT
 public:
-    explicit TextPrinterWindow(QWidget *parent = Q_NULLPTR);
+    explicit TextPrinterWindow(QWidget *parent = nullptr);
     ~TextPrinterWindow();
 
     virtual void newLine(bool linefeed = false);
@@ -38,7 +38,7 @@ public:
     virtual void setPen(const QPen &) {}
     virtual int dpiX() { return 1; }
     virtual const QPen &pen() const { return mPen; }
-    virtual void setFont(QFont *) {}
+    virtual void setFont(QFontPtr) {}
     virtual void translate(const QPointF &) {}
     virtual void drawLine(const QPointF &, const QPointF &) {}
     virtual void calculateFixedFontSize(uint8_t) {}

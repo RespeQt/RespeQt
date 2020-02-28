@@ -16,7 +16,7 @@ namespace Printers {
         template<class TDerived>
         static BasePrinterPtr creator(SioWorkerPtr worker)
         {
-            return std::make_shared<TDerived>(worker);
+            return QSharedPointer<TDerived>::create(worker);
         }
 
         // Instanciation maps
@@ -54,7 +54,7 @@ namespace Printers {
                     return it.second(worker);
                 }
             }
-            return nullptr;
+            throw new std::invalid_argument("Unknown printer label given.");
         }
 
         int numRegisteredPrinters() const

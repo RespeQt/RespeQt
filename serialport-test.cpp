@@ -33,7 +33,7 @@ bool TestSerialPortBackend::open()
     // Open XML and parse it
     if (mTestFilename.size() == 0) return false;
 
-    QFile *file = new QFile(mTestFilename);
+    auto *file = new QFile(mTestFilename);
     if (!file->exists()) return false;
     file->open(QIODevice::Text|QFile::ReadOnly);
 

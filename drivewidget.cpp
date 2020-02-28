@@ -85,7 +85,7 @@ void DriveWidget::setup()
 
 void DriveWidget::updateFromImage(SimpleDiskImage *diskImage)
 {
-    if (diskImage == NULL)
+    if (diskImage == nullptr)
     {
         showAsEmpty();
         return;
@@ -104,7 +104,7 @@ void DriveWidget::updateFromImage(SimpleDiskImage *diskImage)
     ui->actionToggleHappy->setChecked(diskImage->isHappyEnabled());
     ui->actionToggleChip->setChecked(diskImage->isChipOpen());
 
-    bool enableEdit = diskImage->editDialog() != NULL;
+    bool enableEdit = diskImage->editDialog() != nullptr;
     ui->actionEditDisk->setChecked(enableEdit);
 
 

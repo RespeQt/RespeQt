@@ -14,7 +14,7 @@ namespace Printers {
         template<class TDerived>
         static NativeOutputPtr creator()
         {
-            return std::make_shared<TDerived>();
+            return QSharedPointer<TDerived>::create();
         }
 
         // Instanciation maps
@@ -52,7 +52,7 @@ namespace Printers {
                     return it.second();
                 }
             }
-            return nullptr;
+            throw new std::invalid_argument("Unknown output label given.");
         }
 
         int numRegisteredOutputs() const

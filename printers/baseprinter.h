@@ -12,12 +12,10 @@
 #include <QPainter>
 #include <QFont>
 #include <QFontMetrics>
+#include <QSharedData>
 
 namespace Printers
 {
-    class BasePrinter;
-    using BasePrinterPtr = std::shared_ptr<BasePrinter>;
-
     class BasePrinter : public SioDevice
     {
         Q_OBJECT
@@ -32,6 +30,7 @@ namespace Printers
 
         NativeOutputPtr output() const { return mOutput; }
         void setOutput(NativeOutputPtr output);
+        void resetOutput() { mOutput.reset(); }
 
         static QString typeName()
         {
@@ -51,5 +50,7 @@ namespace Printers
         char m_lastOperation;
 
     };
+
+    using BasePrinterPtr = QSharedPointer<BasePrinter>;
 }
 #endif // BASEPRINTER_H

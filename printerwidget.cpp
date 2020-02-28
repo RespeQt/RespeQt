@@ -9,14 +9,15 @@
 #include <QVector>
 #include <QString>
 #include <QMessageBox>
+#include <memory>
 
 PrinterWidget::PrinterWidget(int printerNum, QWidget *parent)
    : QFrame(parent)
    , ui(new Ui::PrinterWidget)
    , printerNo_(printerNum)
-   , mPrinter(Q_NULLPTR)
-   , mDevice(Q_NULLPTR)
-   , mSio(Q_NULLPTR)
+   , mPrinter(nullptr)
+   , mDevice(nullptr)
+   , mSio(nullptr)
    , mInitialized(false)
 {
     ui->setupUi(this);
@@ -103,14 +104,14 @@ bool PrinterWidget::selectPrinter()
     // If we select a new printer, end the printing job of the old printer
     if (mPrinter)
     {
-        mPrinter = nullptr;
+        mPrinter.reset();
     }
     if (mSio) {
        auto& factory = Printers::PrinterFactory::instance();
        Printers::BasePrinterPtr newPrinter = factory->createPrinter(ui->atariPrinters->currentText(), mSio);
        if (newPrinter != nullptr)
        {
-           mSio->installDevice(static_cast<quint8>(PRINTER_BASE_CDEVIC + printerNo_), newPrinter.get());
+           mSio->installDevice(static_cast<quint8>(PRINTER_BASE_CDEVIC + printerNo_), newPrinter.data());
            mPrinter = newPrinter;
            respeqtSettings->setPrinterName(printerNo_, ui->atariPrinters->currentText());
            return true;
@@ -127,17 +128,17 @@ bool PrinterWidget::selectOutput()
     }
     if (mDevice != nullptr)
     {
-        mDevice = nullptr;
+        mDevice.reset();
     }
 
     QString label = ui->outputSelection->currentText();
     Printers::NativeOutputPtr output = Printers::OutputFactory::instance()->createOutput(label);
     // Try to cast to NativePrinter, if successful set printer name;
-    Printers::NativePrinter *printoutput = dynamic_cast<Printers::NativePrinter*>(output.get());
-    if (printoutput != Q_NULLPTR)
+    auto printoutput = qSharedPointerDynamicCast<Printers::NativePrinter>(output);
+    if (printoutput != nullptr)
         printoutput->printer()->setPrinterName(label);
 
-    if (output != Q_NULLPTR)
+    if (output != nullptr)
     {
         if (output->setupOutput())
         {
@@ -168,9 +169,9 @@ void PrinterWidget::on_actionConnectPrinter_triggered()
     if (mPrinter != nullptr && mDevice != nullptr)
     {
         try {
-            Printers::Passthrough *ptemp = dynamic_cast<Printers::Passthrough*>(mPrinter.get());
-            Printers::RawOutput *otemp = dynamic_cast<Printers::RawOutput*>(mDevice.get());
-            if (ptemp != nullptr && otemp != nullptr)
+            auto ptemp = qSharedPointerDynamicCast<Printers::Passthrough>(mPrinter);
+            auto otemp = qSharedPointerDynamicCast<Printers::RawOutput>(mDevice);
+            if (!ptemp.isNull() && !otemp.isNull())
             {
                 QMessageBox::critical(this, tr("Printer emulation"), tr("You are not allowed to use the passthrough emulation without an raw output."));
                 on_actionDisconnectPrinter_triggered();
@@ -198,9 +199,9 @@ void PrinterWidget::on_actionDisconnectPrinter_triggered()
     {
         // mPrinter->setOutput delete the output device,
         // so we don't need an explicit delete
-        mPrinter->setOutput(nullptr);
+        mPrinter->resetOutput();
     }
-    mDevice = nullptr;
+    mDevice.reset();
 
     ui->outputSelection->setEnabled(true);
     ui->atariPrinters->setEnabled(true);

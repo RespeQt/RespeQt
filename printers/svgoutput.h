@@ -2,8 +2,11 @@
 #define SVGOUTPUT_H
 
 #include "nativeoutput.h"
-
+#include <memory>
 #include <QSvgGenerator>
+#include <QSharedPointer>
+
+using QSvgGeneratorPtr = QSharedPointer<QSvgGenerator>;
 
 namespace Printers
 {
@@ -12,8 +15,8 @@ namespace Printers
     public:
         SVGOutput();
         virtual ~SVGOutput();
-        QSvgGenerator *svg() {
-            return dynamic_cast<QSvgGenerator*>(mDevice);
+        QSvgGeneratorPtr svg() {
+            return qSharedPointerDynamicCast<QSvgGenerator>(mDevice);
         }
 
         void setFileName(const QString &filename) { svg()->setFileName(filename); }

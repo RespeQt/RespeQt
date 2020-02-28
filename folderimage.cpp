@@ -57,7 +57,7 @@ QString FolderImage::longName(QString &lastMountedFolder, QString &atariFileName
                 return atariFiles[i].longName;
         }
      }
-     return NULL;
+     return nullptr;
 }
 void FolderImage::buildDirectory()
 {

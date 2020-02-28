@@ -6,8 +6,8 @@
 // All undocumented op-codes are implemented
 //
 
-#include <stdio.h>
-#include <string.h>
+#include <cstdio>
+#include <cstring>
 #include "Cpu6502.hpp"
 
 // test if there is a page change
@@ -3749,7 +3749,7 @@ char *Cpu6502::GetAddressLabel(unsigned short addr)
 char *Cpu6502::GetAddressOrLabel(unsigned short addr)
 {
 	char *label = GetAddressLabel(addr);
-	if (label != NULL) {
+    if (label != nullptr) {
 		return label;
 	}
 	else {
@@ -3766,7 +3766,7 @@ char *Cpu6502::GetAddressLabelAllBanks(unsigned short addr)
 char *Cpu6502::GetAddressOrLabelAllBanks(unsigned short addr)
 {
     char *label = GetAddressLabelAllBanks(addr);
-    if (label != NULL) {
+    if (label != nullptr) {
         return label;
     }
     else {
@@ -3804,7 +3804,7 @@ unsigned short Cpu6502::BuildTrace(char *buffer)
 	}
 	char *label = GetAddressLabel(m_PC);
 	int lenLabel = 0;
-    if (label != NULL) {
+    if (label != nullptr) {
 		strcpy(p, label);
 		lenLabel = strlen(label);
 		p += lenLabel;
@@ -3819,8 +3819,8 @@ unsigned short Cpu6502::BuildTrace(char *buffer)
 	p += 3;
 	*p++ = ' ';
 	unsigned short addr = 0xFFFF;
-	char *secondLabel = NULL;
-    char *thirdLabel = NULL;
+    char *secondLabel = nullptr;
+    char *thirdLabel = nullptr;
     MODE_ENUM wMode = m_cpuType == CPU_6502 ? tabOpcode02[opCode].wMode : tabOpcodeC02[opCode].wMode;
     switch (wMode) {
 	case MODE_IMMEDIATE:
@@ -3903,7 +3903,7 @@ unsigned short Cpu6502::BuildTrace(char *buffer)
 		addr = (((unsigned short)opCodes[1]) & 0x00FF) | ((((unsigned short)opCodes[2]) << 8) & 0xFF00);
 		*p++ = '(';
 		secondLabel = GetAddressOrLabel(addr);
-		if (secondLabel != NULL) {
+        if (secondLabel != nullptr) {
 			strcpy(p, secondLabel);
 		}
 		else {
@@ -3982,7 +3982,7 @@ int Cpu6502::BuildInstruction(char *buffer, unsigned char *data, int lenData, un
 	}
 	char *label = GetAddressLabel(address);
 	int lenLabel = 0;
-    if (label != NULL) {
+    if (label != nullptr) {
 		strcpy(p, label);
 		lenLabel = strlen(label);
 		p += lenLabel;
@@ -3997,8 +3997,8 @@ int Cpu6502::BuildInstruction(char *buffer, unsigned char *data, int lenData, un
 	p += 3;
 	*p++ = ' ';
 	unsigned short addr = 0xFFFF;
-	char *secondLabel = NULL;
-    char *thirdLabel = NULL;
+    char *secondLabel = nullptr;
+    char *thirdLabel = nullptr;
     MODE_ENUM wMode = m_cpuType == CPU_6502 ? tabOpcode02[opCode].wMode : tabOpcodeC02[opCode].wMode;
     switch (wMode) {
 	case MODE_IMMEDIATE:
@@ -4075,7 +4075,7 @@ int Cpu6502::BuildInstruction(char *buffer, unsigned char *data, int lenData, un
 		addr = (((unsigned short)opCodes[1]) & 0x00FF) | ((((unsigned short)opCodes[2]) << 8) & 0xFF00);
 		*p++ = '(';
         secondLabel = GetAddressOrLabelAllBanks(addr);
-		if (secondLabel != NULL) {
+        if (secondLabel != nullptr) {
 			strcpy(p, secondLabel);
 		}
 		else {

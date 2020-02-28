@@ -1,13 +1,13 @@
 #include "svgoutput.h"
 #include "mainwindow.h"
-#include <math.h>
+#include <cmath>
 #include <QFileDialog>
 
 namespace Printers {
     SVGOutput::SVGOutput()
         :NativeOutput()
     {
-        mDevice = new QSvgGenerator();
+        mDevice = QSvgGeneratorPtr::create();
         mBoundingBox = QRectF(0, 0, 2000, 1000000);
     }
 
