@@ -1,6 +1,3 @@
-;  rlc.inc - RespeQt client includes
-;
-;  Copyright (c) 2016 by Jonathan Halliday <fjc@atari8.co.uk>
 ;
 ;  This program is free software; you can redistribute it and/or modify
 ;  it under the terms of the GNU General Public License as published by
@@ -53,15 +50,22 @@ I_TDON	equ $FFC6
 
 
 	.enum Cmd
-GetTD		= $93
-Swap		= $94
-Unmount		= $95
-Mount		= $96
+GetDR           = $91	
+GetSL           = $92
+GetTD	        = $93
+Swap	     	= $94
+Unmount		    = $95
+Mount		    = $96
 CreateAndMount	= $97
-AutoToggle	= $98
+AutoToggle	    = $98
+Save            = $99
+MountAndBoot    = $9A   
 	.ende
-	
+
 	.enum DCB
+PutDR	
+GetDR	
+GetSL
 GetTD
 Swap
 Unmount
@@ -69,14 +73,15 @@ Mount
 CreateAndMount
 AutoToggle
 GetDrvNum
+Save
+MountAndBoot
 	.ende
-	
-	
+
+
 comfnam	equ $21
 comtab	equ $0A
-	
+
 	org $80
-	
 Temp1		.ds 2
 Temp2		.ds 2
 Temp3		.ds 2
@@ -86,22 +91,18 @@ ArgIndex	.ds 1
 FieldWidth	.ds 1
 StringIndex	.ds 1
 
-	
 .macro ldxy
 	ldx #< :1
 	ldy #> :1
 .endm
-	
-	
+
 .macro ldax
 	lda #< :1
 	ldx #> :1
 .endm
 
-
 .macro stax
 	sta :1
 	stx :1+1
 .endm
-
 

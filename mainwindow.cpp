@@ -355,6 +355,7 @@ MainWindow::MainWindow(QWidget *parent)
     connect (rcl, SIGNAL(mountFile(int,QString)), this, SLOT(mountFileWithDefaultProtection(int,QString)));
     connect (this, SIGNAL(fileMounted(bool)), rcl, SLOT(fileMounted(bool)));
     connect (rcl, SIGNAL(toggleAutoCommit(int, bool)), this, SLOT(autoCommit(int, bool)));
+    connect (rcl, SIGNAL(bootExe(QString)), this, SLOT(bootExeTriggered(QString)));
 }
 
 MainWindow::~MainWindow()
@@ -1317,6 +1318,16 @@ void MainWindow::bootExe(const QString &fileName)
 void MainWindow::keepBootExeOpen()
 {
     bootExe(g_exefileName);
+}
+
+void MainWindow::bootExeTriggered(const QString &fileName)
+{
+    QString path = respeqtSettings->lastRclDir();
+    g_exefileName = path + "/" + fileName;
+    if (!g_exefileName.isEmpty()) {
+        respeqtSettings->setLastExeDir(QFileInfo(g_exefileName).absolutePath());
+        bootExe(g_exefileName);
+    }
 }
 
 void MainWindow::mountFileWithDefaultProtection(int no, const QString &fileName)
