@@ -10,7 +10,7 @@ namespace Printers
 {
     BasePrinter::BasePrinter(SioWorkerPtr worker)
         : SioDevice(worker),
-          mOutput(nullptr)
+          mOutput()
     {}
 
     BasePrinter::~BasePrinter()
@@ -101,18 +101,19 @@ namespace Printers
 
     void BasePrinter::setOutput(NativeOutputPtr output)
     {
-        if (mOutput != output)
+        if (mOutput && mOutput != output)
         {
-            if (mOutput)
-            {
-                mOutput->endOutput();
-            }
+            mOutput->endOutput();
         }
         mOutput = output;
-        setupOutput();
-        setupFont();
     }
 
     void BasePrinter::setupOutput()
     {}
+
+    void BasePrinter::resetOutput()
+    {
+        mOutput->setPrinter(QWeakPointer<BasePrinter>());
+        mOutput.reset();
+    }
 }

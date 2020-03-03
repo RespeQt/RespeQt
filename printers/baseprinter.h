@@ -1,10 +1,6 @@
 #ifndef BASEPRINTER_H
 #define BASEPRINTER_H
 
-#include "sioworker.h"
-#include "atascii.h"
-#include "nativeoutput.h"
-
 #include <QByteArray>
 #include <QPainter>
 #include <QPrinter>
@@ -13,6 +9,19 @@
 #include <QFont>
 #include <QFontMetrics>
 #include <QSharedData>
+
+// We need a forward class definition,
+//because we reference BasePrinter in NativeOutput
+namespace Printers
+{
+    class BasePrinter;
+    using BasePrinterPtr = QSharedPointer<BasePrinter>;
+    using BasePrinterWPtr = QWeakPointer<BasePrinter>;
+}
+
+#include "sioworker.h"
+#include "atascii.h"
+#include "nativeoutput.h"
 
 namespace Printers
 {
@@ -30,7 +39,9 @@ namespace Printers
 
         NativeOutputPtr output() const { return mOutput; }
         void setOutput(NativeOutputPtr output);
-        void resetOutput() { mOutput.reset(); }
+        void resetOutput();
+        virtual void setupFont() {}
+        virtual void setupOutput();
 
         static QString typeName()
         {
@@ -38,11 +49,6 @@ namespace Printers
         }
 
     protected:
-        // This should be static methods, because they are called
-        // from the constructor
-        virtual void setupFont() {}
-        virtual void setupOutput();
-
         Atascii mAtascii;
         NativeOutputPtr mOutput;
 
@@ -50,7 +56,5 @@ namespace Printers
         char m_lastOperation;
 
     };
-
-    using BasePrinterPtr = QSharedPointer<BasePrinter>;
 }
 #endif // BASEPRINTER_H

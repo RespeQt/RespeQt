@@ -22,7 +22,7 @@ namespace Printers
     void Atari1020::setupOutput()
     {
         AtariPrinter::setupOutput();
-        if (mOutput)
+        if (mOutput && mOutput->painter())
         {
             mOutput->painter()->setWindow(QRect(0, -999, 480, 1000));
         }
@@ -43,7 +43,10 @@ namespace Printers
             font->setUnderline(false);
             mOutput->setFont(font);
             mOutput->calculateFixedFontSize(80);
-            mOutput->painter()->setPen(QColor("black"));
+            if (mOutput->painter())
+            {
+                mOutput->painter()->setPen(QColor("black"));
+            }
         }
     }
 

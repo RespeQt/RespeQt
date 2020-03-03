@@ -5,9 +5,21 @@
 #include <QRect>
 #include <QPaintDevice>
 #include <QSharedPointer>
-#include <math.h>
+#include <QWeakPointer>
+#include <cmath>
 #include <memory>
+
+// We need a forward class definition,
+//because we reference NativeOutput in BasePrinter
+namespace Printers
+{
+    class NativeOutput;
+    using NativeOutputPtr = QSharedPointer<NativeOutput>;
+    using NativeOutputWPtr = QWeakPointer<NativeOutput>;
+}
+
 #include "sioworker.h"
+#include "baseprinter.h"
 
 using QPaintDevicePtr = QSharedPointer<QPaintDevice>;
 using QPainterPtr = QSharedPointer<QPainter>;
@@ -39,13 +51,16 @@ namespace Printers
         virtual int dpiX() { return mDevice->logicalDpiX(); }
         virtual void setFont(QFontPtr font);
         QFontPtr font() const { return mFont; }
-        QPaintDevicePtr device() { return mDevice; }
-        QPainterPtr painter() { return mPainter; }
+        QPaintDevicePtr device() const { return mDevice; }
+        QPainterPtr painter() const { return mPainter; }
         virtual void calculateFixedFontSize(uint8_t line_char_count);
-        int x() { return mX; }
-        int y() { return mY; }
+        int x() const { return mX; }
+        int y() const { return mY; }
         void setX(int x) { mX = x; }
         void setY(int y) { mY = y; }
+
+        void setPrinter(BasePrinterWPtr printer);
+        BasePrinterWPtr printer() const { return mPrinter; }
 
         static QString typeName()
         {
@@ -63,10 +78,9 @@ namespace Printers
         uint8_t mLPIMode;
         bool mCharMode;
         uint32_t hResolution, vResolution;
+        BasePrinterWPtr mPrinter;
 
         virtual void updateBoundingBox() = 0;
     };
-
-    using NativeOutputPtr = QSharedPointer<NativeOutput>;
 }
 #endif // NATIVEOUTPUT_H

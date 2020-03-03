@@ -13,7 +13,8 @@ namespace Printers
         mCharCount(0),
         mLPIMode(0),
         mCharMode(true),
-        hResolution(0), vResolution(0)
+        hResolution(0), vResolution(0),
+        mPrinter()
     {
         calculateFixedFontSize(mCharsPerLine);
     }
@@ -29,6 +30,15 @@ namespace Printers
         mPainter->begin(mDevice.data());
         setFont(mFont);
         updateBoundingBox();
+        if (mPrinter)
+        {
+            BasePrinterPtr temp = mPrinter.lock();
+            if (temp)
+            {
+                temp->setupOutput();
+                temp->setupFont();
+            }
+        }
         return true;
     }
 
@@ -50,7 +60,7 @@ namespace Printers
         qreal oldFontSize = font()->pointSizeF();
         int oldWidth;
 
-        // Loop
+        // Loop to approximate correct font size
         for (int i=0 ; i<3 ; i++)
         {
             QFontMetrics metrics(*mFont);
@@ -134,5 +144,13 @@ namespace Printers
         else
             mPainter->setPen(QColor("white"));
         mPainter->drawPoint(p);
+    }
+
+    void NativeOutput::setPrinter(QWeakPointer<BasePrinter> printer)
+    {
+        if (printer)
+        {
+            mPrinter = printer;
+        }
     }
 }

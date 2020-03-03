@@ -108,8 +108,8 @@ bool PrinterWidget::selectPrinter()
     }
     if (mSio) {
        auto& factory = Printers::PrinterFactory::instance();
-       Printers::BasePrinterPtr newPrinter = factory->createPrinter(ui->atariPrinters->currentText(), mSio);
-       if (newPrinter != nullptr)
+       auto newPrinter = factory->createPrinter(ui->atariPrinters->currentText(), mSio);
+       if (newPrinter)
        {
            mSio->installDevice(static_cast<quint8>(PRINTER_BASE_CDEVIC + printerNo_), newPrinter.data());
            mPrinter = newPrinter;
@@ -126,19 +126,19 @@ bool PrinterWidget::selectOutput()
     {
         return false;
     }
-    if (mDevice != nullptr)
+    if (!mDevice.isNull())
     {
         mDevice.reset();
     }
 
     QString label = ui->outputSelection->currentText();
-    Printers::NativeOutputPtr output = Printers::OutputFactory::instance()->createOutput(label);
+    auto output = Printers::OutputFactory::instance()->createOutput(label);
     // Try to cast to NativePrinter, if successful set printer name;
     auto printoutput = qSharedPointerDynamicCast<Printers::NativePrinter>(output);
-    if (printoutput != nullptr)
+    if (printoutput)
         printoutput->printer()->setPrinterName(label);
 
-    if (output != nullptr)
+    if (output)
     {
         if (output->setupOutput())
         {
@@ -166,7 +166,7 @@ void PrinterWidget::on_actionConnectPrinter_triggered()
          return;
     }
 
-    if (mPrinter != nullptr && mDevice != nullptr)
+    if (mPrinter && mDevice)
     {
         try {
             auto ptemp = qSharedPointerDynamicCast<Printers::Passthrough>(mPrinter);
@@ -181,6 +181,7 @@ void PrinterWidget::on_actionConnectPrinter_triggered()
         {}
 
         mPrinter->setOutput(mDevice);
+        mDevice->setPrinter(mPrinter);
         if (!mPrinter->output()->beginOutput())
         {
             QMessageBox::critical(this, tr("Beginning output"), tr("The output device couldn't start."));
@@ -195,14 +196,6 @@ void PrinterWidget::on_actionConnectPrinter_triggered()
 
 void PrinterWidget::on_actionDisconnectPrinter_triggered()
 {
-    if (mPrinter)
-    {
-        // mPrinter->setOutput delete the output device,
-        // so we don't need an explicit delete
-        mPrinter->resetOutput();
-    }
-    mDevice.reset();
-
     ui->outputSelection->setEnabled(true);
     ui->atariPrinters->setEnabled(true);
     ui->actionDisconnectPrinter->setEnabled(false);
