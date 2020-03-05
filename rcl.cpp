@@ -680,7 +680,7 @@ QString RCl::toDosFileName(QString atariFileName)
     filters <<"*.atr"<<"*.xfd" <<"*.atx"<<"*.pro"<<"*.xex"<<"*.exe"<<"*.com";
     dir.setNameFilters(filters);
     QFileInfoList list = dir.entryInfoList();
-    for (quint8 i = 0; i < list.size(); ++i) {
+    for (quint64 i = 0; i < list.size(); ++i) {
         QFileInfo fileInfo = list.at(i);
         QString dosFilename = fileInfo.fileName();
         if(toAtariFileName(dosFilename) == atariFileName)
