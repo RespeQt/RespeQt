@@ -355,6 +355,8 @@ MainWindow::MainWindow(QWidget *parent)
     connect (rcl, SIGNAL(mountFile(int,QString)), this, SLOT(mountFileWithDefaultProtection(int,QString)));
     connect (this, SIGNAL(fileMounted(bool)), rcl, SLOT(fileMounted(bool)));
     connect (rcl, SIGNAL(toggleAutoCommit(int, bool)), this, SLOT(autoCommit(int, bool)));
+    connect (rcl, SIGNAL(toggleHappy(int, bool)), this, SLOT(happy(int, bool)));
+    connect (rcl, SIGNAL(toggleChip(int, bool)), this, SLOT(chip(int, bool)));
     connect (rcl, SIGNAL(bootExe(QString)), this, SLOT(bootExeTriggered(QString)));
 }
 
@@ -1359,6 +1361,7 @@ void MainWindow::mountFile(int no, const QString &fileName, bool /*prot*/)
 {
     SimpleDiskImage *disk = NULL;
     bool isDir = false;
+    bool ask   = true;
 
     if (fileName.isEmpty()) {
         if(g_rclFileName.left(1) == "*") emit fileMounted(false);
@@ -1377,7 +1380,8 @@ void MainWindow::mountFile(int no, const QString &fileName, bool /*prot*/)
     if (disk) {
         SimpleDiskImage *oldDisk = qobject_cast <SimpleDiskImage*> (sio->getDevice(no + DISK_BASE_CDEVIC));
         Board *board = oldDisk != NULL ? oldDisk->getBoardInfo() : NULL;
-        if (!disk->open(fileName, type) || !ejectImage(no) ) {
+        if(g_rclFileName.left(1) == "*") ask = false;
+        if (!disk->open(fileName, type) || !ejectImage(no, ask) ) {
             respeqtSettings->unmountImage(no);
             delete disk;
             if (board != NULL) {
@@ -1638,6 +1642,26 @@ void MainWindow::autoCommit(int no, bool st)
     {
         if ( (diskWidgets[no]->isAutoSaveEnabled() && st) || (!diskWidgets[no]->isAutoSaveEnabled() && !st) )
                           diskWidgets[no]->triggerAutoSaveClickIfEnabled();
+    }
+}
+
+
+void MainWindow::happy(int no, bool st)
+{
+    if( no < DISK_COUNT )
+    {
+        if ( (diskWidgets[no]->isHappyEnabled() && st) || (!diskWidgets[no]->isHappyEnabled() && !st) )
+                          diskWidgets[no]->triggerHappyClickIfEnabled();
+    }
+}
+
+
+void MainWindow::chip(int no, bool st)
+{
+    if( no < DISK_COUNT )
+    {
+        if ( (diskWidgets[no]->isChipEnabled() && st) || (!diskWidgets[no]->isChipEnabled() && !st) )
+                          diskWidgets[no]->triggerChipClickIfEnabled();
     }
 }
 

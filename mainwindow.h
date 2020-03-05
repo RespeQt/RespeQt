@@ -57,7 +57,9 @@ public slots:
     void show();
     int firstEmptyDiskSlot(int startFrom = 0, bool createOne = true);       //
     void mountFileWithDefaultProtection(int no, const QString &fileName);   //
-    void autoCommit(int no, bool st);                                                //
+    void autoCommit(int no, bool st);       //
+    void happy(int no, bool st);       //
+    void chip(int no, bool st);       //
     void openRecent();
     void bootExeTriggered(const QString &fileName);
 

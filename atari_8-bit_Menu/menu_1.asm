@@ -60,6 +60,8 @@ CreateAndMount	= $97
 AutoToggle	    = $98
 Save            = $99
 MountAndBoot    = $9A   
+HappyToggle	    = $9B
+ChipToggle	    = $9C
 	.ende
 
 	.enum DCB
@@ -75,6 +77,8 @@ AutoToggle
 GetDrvNum
 Save
 MountAndBoot
+HappyToggle
+ChipToggle
 	.ende
 
 

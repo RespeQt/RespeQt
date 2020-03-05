@@ -13,22 +13,21 @@
 ;  along with this program; if not, write to the Free Software
 ;  Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 ;
-	icl 'equ.asm'
-
-	org $4000
-Start
+ 
+Menu
 	jsr printf
-	.byte 125,155,'RespeQt Client        Version 0.1  ',155
-	.byte         '                  for RespeQt 5.x ',155,155,155
-	.byte 'A List Slots     I List Host Images',155
-	.byte 'B Mount Disk     J Auto Commit On',155
-	.byte 'C Create Disk    K Auto Commit Off',155,0
-    jsr printf
-    .byte 'D UnMount Disk   L Set Date',155
-	.byte 'E Save Disk      M TD Line On',155	
-	.byte 'F Swap Slot      N TD Line Off',155
-	.byte 'G Boot Disk      O Exit to Dos',155
-	.byte 'H Boot XEX/Exe   P Cold Reboot',155,0
+	.byte 'A List Slots     K List Host Images',155
+	.byte 'B Mount Disk     L Auto Commit On',155
+	.byte 'C Create Disk    M Auto Commit Off',155
+    .byte 'D UnMount Disk   N Happy Disk On',155
+	.byte 'E Save Disk      O Happy Disk Off',155,0	
+	jsr printf 
+	.byte 'F Swap Slot      P Chip On',155 
+	.byte 'G Boot Disk      Q Chip Off',155
+	.byte 'H Boot XEX/Exe   R TD Line On',155
+	.byte 'I Exit to Dos    S TD Line Off',155
+	.byte 'J Cold Reboot    T Set Date',155,0 
+
 	
 Main	
     jsr printf
@@ -37,41 +36,55 @@ Main
 	bcs Main	
 	jsr ToUpper
 	
-	cmp #'A'
+	cmp #'A'     	// A List Slots 
     jeq SlotName    
-    cmp #'B'
+    cmp #'B'		// B Mount Disk  
     jeq Mount
-    cmp #'C'
+    cmp #'C'		// C Create Disk
     jeq CreateAndMount	
-	cmp #'D'
+	cmp #'D'		// D UnMount Disk 
     jeq UnMount
-	cmp #'E'
+	cmp #'E'		// E Save Disk 		
     jeq Save    
-    cmp #'F'
+    cmp #'F'		// F Swap Slot 
     jeq Swap
-    cmp #'G'
+    cmp #'G'		// G Boot Disk
     jeq BootATR
-    cmp #'H'
+    cmp #'H'		// H Boot XEX/Exe
     jeq BootXEX
-    cmp #'I'    
-    jeq ListDir   
-    cmp #'J'    
-    jeq CommitOn
-    cmp #'K'    
-    jeq CommitOff  
-    cmp #'L'
-    jeq GetTD
-    cmp #'M'
-    jeq GetTDOn
-    cmp #'N'
-    jeq GetTDOff
-	cmp #'O'
-    jeq Exit
-	cmp #'P'
+    cmp #'I'    	// I Exit to Dos 
+    jeq Exit   
+    cmp #'J'    	// J Cold Reboot
     jeq Reboot
+    cmp #'K'    	// K List Host Images
+    jeq ListDir  
+    cmp #'L'		// L Auto Commit On		
+    jeq CommitOn
+    cmp #'M'		// M Auto Commit Off
+    jeq Commitoff
+    cmp #'N'		// Happy Disk On
+    jeq HappyOn
+	cmp #'O'		// Happy Disk Off
+    jeq Happyoff
+	cmp #'P'		// P Chip On 
+    jeq ChipOn
+	cmp #'Q'		// Q Chip Off
+    jeq Chipoff
+	cmp #'R'		// R TD Line On
+    jeq GetTDOn
+	cmp #'S'		// R TD Line Off
+    jeq GetTDOff
+	cmp #'T'		// Set Date
+    jeq GetTD
 
-    
 	jmp Start
+	
+	
+.proc init
+      rts
+.endp  	
+	
+	
 
 //	
 //  get disk in slot
@@ -117,8 +130,6 @@ OneSlot
     jmp Main
 .endp
 
-
-
 .proc getSlotFileName
    lda #DCB.GetSL
    jsr SetUpDCB
@@ -156,7 +167,7 @@ jsr Printf
 
 .proc  MountAndBoot
     jsr printf
-	.byte 155,'Enter [FILENAME.EXT] : ',0
+	.byte 155,'Enter [FILENAME.EXT]: ',0
     jsr input
     jcs main
     cpy #03
@@ -165,17 +176,18 @@ jsr Printf
 loopB   
     lda InputBuf,x
 	cmp #155
-    beq AllDoneB
+    beq doMountAndBoot
 StoreB        
     jsr ToUpper	
     sta IOBuf,x
     inx
-    bne LoopB
-AllDoneB
+    bne loopB
+.endp 
+   
+.proc doMountAndBoot
 	lda #0
 	sta IOBuf,x       	
 	lda #DCB.MountAndBoot	
-	mvx ArgFlag DAUX2
 	jsr SetUpDCB
 	mva ArgFlag DAUX2
 	jsr SIOV
@@ -185,10 +197,9 @@ AllDoneB
 	sec
 	jmp main
 OKB			; image mounted
-
 	jsr Printf
-	.byte 155,'Ready to reboot - press return'
-	.byte 155,'You may need to press [Option]:  ',0	
+	.byte 155,155,' Ready to reboot! - press [Return]'
+	.byte 155,    '  You may need to press [Option]: ',0	
 	jsr Input1
 	jmp $E477
 .endp
@@ -228,7 +239,7 @@ OKB			; image mounted
     sty  ArgFlag
 noDot1
     jsr printf
-	.byte 155,'Enter [FILENAME.EXT] : ',0
+	.byte 155,'Enter [FILENAME.EXT]: ',0
     jsr input
     jcs main
     cpy #03
@@ -308,7 +319,7 @@ OK4
 //
 .proc UnMount
     jsr printf
-	.byte 155,'Enter Slot [1-9] [J-O] [*] : ',0
+	.byte 155,'Enter Slot [1-9] [J-O] [*]: ',0
     jsr input1
     jcs main
     jsr toUpper
@@ -348,7 +359,7 @@ AllDrives
 //
 .proc Save
     jsr printf
-	.byte 155,'Enter Slot [1-9] [J-O] [*] : ',0
+	.byte 155,'Enter Slot [1-9] [J-O] [*]: ',0
     jsr input1
     jcs main
     jsr toUpper
@@ -378,7 +389,7 @@ OK7
 //
 .proc Swap
     jsr printf
-    .byte 155,'Enter Slot 1  [1-9] [J-O] : ',0
+    .byte 155,'Enter Slot 1  [1-9] [J-O]: ',0
     jsr input1
     jcs main
     jsr toUpper
@@ -389,7 +400,7 @@ OK7
 	sta DriveID1
 
     jsr printf
-    .byte 155,'Enter Slot 2  [1-9] [J-O] : ',0
+    .byte 155,'Enter Slot 2  [1-9] [J-O]: ',0
     jsr input1
     jcs main
     jsr toUpper
@@ -430,7 +441,7 @@ OK1
 .proc ToggleCommit
     sty ArgFlag
     jsr printf
-	.byte 155,'Enter Slot [1-9] [J-O] [*] : ',0
+	.byte 155,'Enter Slot [1-9] [J-O] [*]: ',0
     jsr input1
     jcs main
     jsr toUpper 
@@ -468,17 +479,114 @@ AllDrives
 
 
 //
+//  Toggle happy
+//
+.proc HappyOn
+      LDY #01
+      jmp ToggleHappy
+.endp      
+.proc Happyoff
+      LDY #00
+.endp      
+.proc ToggleHappy
+    sty ArgFlag
+    jsr printf
+	.byte 155,'Enter Slot [1-9] [J-O] [*]: ',0
+    jsr input1
+    jcs main
+    jsr toUpper 
+	jsr GetDrvWC
+	jcs main
+	sta Drive
+	lda #DCB.HappyToggle
+	jsr SetUpDCB
+	mva Drive DAUX1 
+	mva ArgFlag DAUX2
+	jsr SIOV
+	bpl OK2
+	jsr Printf
+	.byte 155,'Error toggling Happy drive!',155,0
+	sec
+	jmp Main
+OK2
+	lda Drive
+	cmp #-6
+	beq AllDrives
+	jsr MakeDriveID
+	sta DriveID1
+	jsr Printf
+	.byte 155,'Happy drive toggled on drive %c',155,0
+	.word DriveID1
+	clc
+	jmp main
+	
+AllDrives
+	jsr Printf
+	.byte 155,'Happy drive toggled on all drives',155,0
+	clc
+	jmp main
+	.endp
+
+
+//
+//  Toggle chip
+//
+.proc ChipOn
+      LDY #01
+      jmp ToggleChip
+.endp      
+.proc Chipoff
+      LDY #00
+.endp      
+.proc ToggleChip
+    sty ArgFlag
+    jsr printf
+	.byte 155,'Enter Slot [1-9] [J-O] [*]: ',0
+    jsr input1
+    jcs main
+    jsr toUpper 
+	jsr GetDrvWC
+	jcs main
+	sta Drive
+	lda #DCB.ChipToggle
+	jsr SetUpDCB
+	mva Drive DAUX1 
+	mva ArgFlag DAUX2
+	jsr SIOV
+	bpl OK2
+	jsr Printf
+	.byte 155,'Error toggling Chip drive!',155,0
+	sec
+	jmp Main
+OK2
+	lda Drive
+	cmp #-6
+	beq AllDrives
+	jsr MakeDriveID
+	sta DriveID1
+	jsr Printf
+	.byte 155,'Chip drive toggled on drive %c',155,0
+	.word DriveID1
+	clc
+	jmp main
+	
+AllDrives
+	jsr Printf
+	.byte 155,'Chip drive toggled on all drives',155,0
+	clc
+	jmp main
+	.endp
+
+//
 //  List pth folder 
 //
 // 
 .proc ListDir
     ldx #$00
     stx lp
-    
-//--------------------
-
+ 
     jsr printf
-	.byte 155,'Filter [*file spec*]: ',0
+	.byte 155,'Enter File Filter [fn*]: ',0
     jsr input
     jcs main
     ldx #0
@@ -517,19 +625,66 @@ OK2a
     jsr Printf
    .byte 155,'%s',155,0
    .word IOBuf
-	ldx lp
-	cpx #00
-	beq allDone2a
 	jsr Printf
-	.byte ' * more..(q=quit)',0
+	.byte 'Select [A-P][Q]=quit [Return]=more: ',0
 	jsr getkey
 	jsr ToUpper
 	cmp #'Q'
-	beq allDone2a
-	jmp list2
-allDone2a	
+	beq allDone2
+	cmp #155
+	beq next2
+    jsr ioBufLookup	
+    jcc doMountAndBoot
+next2       
+ 	ldx lp
+ 	cpx #00
+ 	jne list2 
+allDone2
 	clc
 	jmp Main	
+.endp
+
+
+.proc ioBufLookup
+    sta SelectB
+    sec
+	ldx #0
+	ldy #0
+loop
+    lda IOBuf,y
+    cmp #155
+    beq fin1
+	iny
+    bne Loop
+    jmp abort
+fin1      	// check an option -  skip the space 1
+    cmp #0
+    beq abort
+	iny
+	lda IOBuf,y  
+    cmp #0
+    beq abort
+    iny
+    lda IOBuf,y
+    cmp SelectB
+    bne loop
+    iny			// skip  skip the space 2
+    iny
+loop2    
+    lda IOBuf,y
+    cmp #155 
+    beq alldone       
+    sta IOBuf,x
+    iny
+    inx
+    bne loop2 
+alldone    
+    lda #0
+    sta IOBuf,x
+	sta ArgFlag
+    clc
+abort
+    rts 
 .endp
 
 
@@ -550,10 +705,10 @@ allDone2a
     jsr isSparta
     jcs main
 	jsr SetTD
-	bcs Abort
+	bcs Abort1
 	ldy #1
 	jsr TDLineOnOff
-Abort
+Abort1
 	jmp Main
 .endp
 
@@ -565,10 +720,10 @@ Abort
     jsr isSparta
     jcs main
 	jsr SetTD
-	bcs Abort
+	bcs Abort2
 	ldy #0
 	jsr TDLineOnOff
-Abort	
+Abort2	
     jmp Main
  .endp 
 
@@ -751,13 +906,11 @@ Bad
 Abort
 	rts
 .endp
-	
- 	
-		
+
 .proc Exit
 	jsr Printf
 	.byte 155,'Press a key to quit',155,0
-	jmp GetKey
+	jmp (DOSVEC)
 .endp
 
 	
@@ -803,11 +956,10 @@ Loop
 	mva #$46 DDevic	; ddevic and dunit are common to all
 	mva #$01 DUnit
 	rts
+
 DCBIndex
-	.byte 9,19,29,39,49,59,69,79,89,99,109,119
+	.byte 9,19,29,39,49,59,69,79,89,99,109,119,129,139
 .endp
-	
-	icl 'printf.asm'
 
 DCBTable
 DCBPutDR
@@ -893,32 +1045,22 @@ DCBMountAndBoot
 	.word IOBuf
 	.byte $06,$00
 	.word $0C
-	.byte $00,$00	
+	.byte $00,$00
+DCBHappyToggle
+	.byte Cmd.HappyToggle
+	.byte $00
+	.word IOBuf
+	.byte $06,$00
+	.word 0
+	.byte $00,$00		
+DCBChipToggle
+	.byte Cmd.ChipToggle
+	.byte $00
+	.word IOBuf
+	.byte $06,$00
+	.word 0
+	.byte $00,$00		
 
 Symbol
 	.byte 'I_TDON  ',0
-
- 	
-ArgFlag
-	.byte 0
-CreateFlag
-	.byte 0
-Slot
-	.byte 0
-Drive
-	.byte 0
-DriveID1
-	.byte 0
-DriveID2
-	.byte 0
-Path 
-	.ds 22
-Filename
-	.ds 16		
-IOBuf
-	.ds 254
-lp
-    .ds   1	
-	
-	run Start
 	
