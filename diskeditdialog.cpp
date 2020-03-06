@@ -282,44 +282,44 @@ void MyModel::sort(int column, Qt::SortOrder order)
     switch (column) {
         case 0:
             if (order == Qt::AscendingOrder) {
-                qStableSort(entries.begin(), entries.end(), atariDirEntryNoLessThan);
+                std::stable_sort(entries.begin(), entries.end(), atariDirEntryNoLessThan);
             } else {
-                qStableSort(entries.begin(), entries.end(), atariDirEntryNoGreaterThan);
+                std::stable_sort(entries.begin(), entries.end(), atariDirEntryNoGreaterThan);
             }
             break;
         case 1:
             if (order == Qt::AscendingOrder) {
-                qStableSort(entries.begin(), entries.end(), atariDirEntryNameLessThan);
+                std::stable_sort(entries.begin(), entries.end(), atariDirEntryNameLessThan);
             } else {
-                qStableSort(entries.begin(), entries.end(), atariDirEntryNameGreaterThan);
+                std::stable_sort(entries.begin(), entries.end(), atariDirEntryNameGreaterThan);
             }
             break;
         case 2:
             if (order == Qt::AscendingOrder) {
-                qStableSort(entries.begin(), entries.end(), atariDirEntryExtensionLessThan);
+                std::stable_sort(entries.begin(), entries.end(), atariDirEntryExtensionLessThan);
             } else {
-                qStableSort(entries.begin(), entries.end(), atariDirEntryExtensionGreaterThan);
+                std::stable_sort(entries.begin(), entries.end(), atariDirEntryExtensionGreaterThan);
             }
             break;
         case 3:
             if (order == Qt::AscendingOrder) {
-                qStableSort(entries.begin(), entries.end(), atariDirEntrySizeLessThan);
+                std::stable_sort(entries.begin(), entries.end(), atariDirEntrySizeLessThan);
             } else {
-                qStableSort(entries.begin(), entries.end(), atariDirEntrySizeGreaterThan);
+                std::stable_sort(entries.begin(), entries.end(), atariDirEntrySizeGreaterThan);
             }
             break;
         case 4:
             if (order == Qt::AscendingOrder) {
-                qStableSort(entries.begin(), entries.end(), atariDirEntryDateLessThan);
+                std::stable_sort(entries.begin(), entries.end(), atariDirEntryDateLessThan);
             } else {
-                qStableSort(entries.begin(), entries.end(), atariDirEntryDateGreaterThan);
+                std::stable_sort(entries.begin(), entries.end(), atariDirEntryDateGreaterThan);
             }
             break;
         case 5:
             if (order == Qt::AscendingOrder) {
-                qStableSort(entries.begin(), entries.end(), atariDirEntryNotesLessThan);
+                std::stable_sort(entries.begin(), entries.end(), atariDirEntryNotesLessThan);
             } else {
-                qStableSort(entries.begin(), entries.end(), atariDirEntryNotesGreaterThan);
+                std::stable_sort(entries.begin(), entries.end(), atariDirEntryNotesGreaterThan);
             }
             break;
     }

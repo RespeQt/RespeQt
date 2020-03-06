@@ -897,7 +897,7 @@ bool SimpleDiskImage::open(const QString &fileName, FileTypes::FileType type)
             }
             if (imageList.size() > 1) {
                 m_numberOfSides = imageList.size();
-                qSort(imageList.begin(), imageList.end(), qLess<QString>());
+                std::sort(imageList.begin(), imageList.end(), std::less<QString>());
                 int currentIndex = 0;
                 foreach(QString otherFileName, imageList) {
                     if (otherFileName == fileName) {
