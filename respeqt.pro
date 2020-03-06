@@ -201,6 +201,8 @@ OTHER_FILES += \
     about.html \
     compile.txt
 
+# To update translations:
+# lupdate respeqt.pro; lrelease i18n/respeqt_*.ts
 TRANSLATIONS = \
     i18n/respeqt_de.ts \
     i18n/respeqt_es.ts \
