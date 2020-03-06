@@ -33,11 +33,14 @@ public:
     void showAsImageMounted(const QString &fileName, const QString &description, bool editEnabled, bool enableSave, bool leverOpen, bool happyEnabled, bool chipOpen, bool severalSides);
 
     void updateFromImage(SimpleDiskImage* diskImage);
-
     bool isAutoSaveEnabled();
+    bool isHappyEnabled();
+    bool isChipEnabled();
     void setLabelToolTips(const QString &one, const QString &two, const QString &three);
 
     void triggerAutoSaveClickIfEnabled();
+    void triggerHappyClickIfEnabled();
+    void triggerChipClickIfEnabled();
 
 signals:
     void actionMountDisk(int deviceId);

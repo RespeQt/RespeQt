@@ -75,23 +75,24 @@ void RCl::handleCommand(quint8 command, quint16 aux)
             QString fileFilter = g_fileFilter.trimmed();
             (fileFilter == "*" || fileFilter == "") ?
                         filters <<"*.atr"<<"*.xfd"<<"*.atx"<<"*.pro"<<"*.xex"<<"*.exe"<<"*.com"  :
-                        filters <<(fileFilter+".atr")<<(fileFilter+".xfd")<<(fileFilter+".atx")<<(fileFilter+"+.pro")<<(fileFilter+".xex")<<(fileFilter+"+.exe")<<(fileFilter+"+.com");
+                                  filters <<(fileFilter+".atr")<<(fileFilter+".xfd")<<(fileFilter+".atx")<<(fileFilter+"+.pro")<<(fileFilter+".xex")<<(fileFilter+"+.exe")<<(fileFilter+"+.com");
 
             dir.setNameFilters(filters);
             QFileInfoList list = dir.entryInfoList();
-            if(offset == 0) {
-                QByteArray fn  = ("Path: " + pth).toUtf8();
-                for(int n = 0; n < fn.length() && n < 37; n++)
-                    ddata[index++] = fn[n] & 0xff;
-                ddata[index++] = 155;
-            }
+
+            QByteArray fn  = ("Path: " + pth).toUtf8();
+            for(int n = 0; n < fn.length() && n < 37; n++)
+                ddata[index++] = fn[n] & 0xff;
+
+            ddata[index++] = 155;
 
             for (quint8 i = offset; i < list.size() && i < 250;  ++i) {
                 QFileInfo fileInfo = list.at(i);
                 QString dosfilname = fileInfo.fileName();
                 QString atarifilname = toAtariFileName(dosfilname);
-                QByteArray fn  = (" "+ atarifilname).toUtf8();
-                if(index + fn.length() < 252) {
+                QString atariFilenum = QString(QChar::fromLatin1(i-offset+0x41));
+                QByteArray fn  = (" "+atariFilenum+" "+ atarifilname).toUtf8();
+                if(index + fn.length() < 252  && i-offset < 16) {
                     for(int n = 0; n < fn.length(); n++)
                         ddata[index++] = fn[n] & 0xff;
                     ddata[index++] = 155;
@@ -511,6 +512,8 @@ void RCl::handleCommand(quint8 command, quint16 aux)
     }
         break;
 
+
+
     case 0x9A :   // Mount slot and boot
     {
         if (!sio->port()->writeCommandAck()) {
@@ -555,6 +558,67 @@ void RCl::handleCommand(quint8 command, quint16 aux)
             imageFileName = toDosFileName(imageFileName);
             emit bootExe(imageFileName);
         }
+    }
+        break;
+
+
+    case 0x9B :   // happy toggle
+    {
+        if (!sio->port()->writeCommandAck()) {
+            return;
+        }
+        qint8 happyDisk;
+        bool happyOnOff;
+        happyDisk = aux % 256 - 1;
+        happyOnOff = (aux/256)?false:true;
+
+        if (happyDisk > 9) happyDisk -= 16;
+        if (happyDisk != -7 && (happyDisk <0 || happyDisk > 14)) {
+            sio->port()->writeCommandNak();
+            return;
+        }
+
+        // All disks or a given disk
+        if (happyDisk == -7) {
+            for (int i = 0; i < 15; i++) {
+                emit toggleHappy(i, happyOnOff);
+            }
+        } else {
+            emit toggleHappy(happyDisk, happyOnOff);
+        }
+
+        sio->port()->writeComplete();
+    }
+        break;
+
+
+
+    case 0x9C :   //  chip toggle
+    {
+        if (!sio->port()->writeCommandAck()) {
+            return;
+        }
+        qint8 chipDisk;
+        bool chipOnOff;
+        chipDisk = aux % 256 - 1;
+        chipOnOff = (aux/256)?false:true;
+
+        if (chipDisk > 9) chipDisk -= 16;
+        if (chipDisk != -7 && (chipDisk <0 || chipDisk > 14)) {
+            sio->port()->writeCommandNak();
+            return;
+        }
+
+        // All disks or a given disk
+        if (chipDisk == -7) {
+            for (int i = 0; i < 15; i++) {
+                emit toggleChip(i, chipOnOff);
+            }
+        } else {
+            emit toggleChip(chipDisk, chipOnOff);
+        }
+
+        sio->port()->writeComplete();
     }
         break;
 
@@ -616,7 +680,7 @@ QString RCl::toDosFileName(QString atariFileName)
     filters <<"*.atr"<<"*.xfd" <<"*.atx"<<"*.pro"<<"*.xex"<<"*.exe"<<"*.com";
     dir.setNameFilters(filters);
     QFileInfoList list = dir.entryInfoList();
-    for (quint8 i = 0; i < list.size(); ++i) {
+    for (quint64 i = 0; i < list.size(); ++i) {
         QFileInfo fileInfo = list.at(i);
         QString dosFilename = fileInfo.fileName();
         if(toAtariFileName(dosFilename) == atariFileName)

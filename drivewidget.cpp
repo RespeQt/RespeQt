@@ -124,6 +124,15 @@ void DriveWidget::triggerAutoSaveClickIfEnabled()
     if(ui->autoSave->isEnabled()) ui->autoSave->click();
 }
 
+void DriveWidget::triggerHappyClickIfEnabled()
+{
+    if(ui->buttonToggleHappy->isEnabled()) ui->buttonToggleHappy->click();
+}
+
+void DriveWidget::triggerChipClickIfEnabled()
+{
+    if(ui->buttonToggleChip->isEnabled()) ui->buttonToggleChip->click();
+}
 
 void DriveWidget::showAsEmpty()
 {
@@ -207,6 +216,16 @@ void DriveWidget::showAsImageMounted(const QString &fileName, const QString &des
 bool DriveWidget::isAutoSaveEnabled()
 {
     return ui->actionAutoSave->isChecked();
+}
+
+bool DriveWidget::isHappyEnabled()
+{
+    return ui->actionToggleHappy->isChecked();
+}
+
+bool DriveWidget::isChipEnabled()
+{
+    return ui->actionToggleChip->isChecked();
 }
 
 

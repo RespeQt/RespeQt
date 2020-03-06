@@ -33,6 +33,8 @@ signals:
     void findNewSlot (int startFrom, bool createOne);
     void mountFile (int no, const QString fileName);
     void toggleAutoCommit (int no, bool st);
+    void toggleHappy (int no, bool st);
+    void toggleChip (int no, bool st);
     void bootExe (const QString fileName);
 
 private:

@@ -99,12 +99,6 @@ Return
 	.endp
 	
 
-	
-	
-
-
-
-
 	.proc PrintfAX
 	stax Temp1
 NoAX
@@ -414,6 +408,5 @@ ok1
 	rts
 	.endp
 	
-InputBuf
-	.ds 255
+
 	
