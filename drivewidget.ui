@@ -343,6 +343,31 @@
     </widget>
    </item>
    <item>
+    <widget class="QToolButton" name="buttonToggleOSB">
+     <property name="enabled">
+      <bool>true</bool>
+     </property>
+     <property name="minimumSize">
+      <size>
+       <width>21</width>
+       <height>25</height>
+      </size>
+     </property>
+     <property name="maximumSize">
+      <size>
+       <width>21</width>
+       <height>25</height>
+      </size>
+     </property>
+     <property name="popupMode">
+      <enum>QToolButton::DelayedPopup</enum>
+     </property>
+     <property name="autoRaise">
+      <bool>false</bool>
+     </property>
+    </widget>
+   </item>
+   <item>
     <layout class="QVBoxLayout" name="verticalLayout">
      <property name="spacing">
       <number>0</number>
@@ -739,6 +764,24 @@
    </property>
    <property name="toolTip">
     <string>Load next software disk or side</string>
+   </property>
+  </action>
+  <action name="actionToggleOSB">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="icons.qrc">
+     <normaloff>:/icons/other-icons/toggleosb.png</normaloff>:/icons/other-icons/toggleosb.png</iconset>
+   </property>
+   <property name="text">
+    <string>Boot translator disk image</string>
+   </property>
+   <property name="toolTip">
+    <string>Boot translator disk image the next time the Atari is powered on</string>
    </property>
   </action>
  </widget>

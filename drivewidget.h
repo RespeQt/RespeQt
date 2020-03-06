@@ -30,7 +30,7 @@ public:
 
     void showAsEmpty();
     void showAsFolderMounted(const QString &fileName, const QString &description, bool editEnabled);
-    void showAsImageMounted(const QString &fileName, const QString &description, bool editEnabled, bool enableSave, bool leverOpen, bool happyEnabled, bool chipOpen, bool severalSides);
+    void showAsImageMounted(const QString &fileName, const QString &description, bool editEnabled, bool enableSave, bool leverOpen, bool happyEnabled, bool chipOpen, bool translatorActive, bool severalSides);
 
     void updateFromImage(SimpleDiskImage* diskImage);
     bool isAutoSaveEnabled();
@@ -49,6 +49,7 @@ signals:
     void actionNextSide(int deviceId);
     void actionToggleHappy(int deviceId, bool enabled);
     void actionToggleChip(int deviceId, bool open);
+    void actionToggleOSB(int deviceId, bool open);
     void actionWriteProtect(int deviceId,bool state);
     void actionMountRecent(int deviceId, const QString &fileName);
     void actionEditDisk(int deviceId);
@@ -67,6 +68,7 @@ private slots:
     void on_actionNextSide_triggered();
     void on_actionToggleHappy_triggered(bool enabled);
     void on_actionToggleChip_triggered(bool open);
+    void on_actionToggleOSB_triggered(bool open);
 
     void on_actionWriteProtect_toggled(bool state);
 

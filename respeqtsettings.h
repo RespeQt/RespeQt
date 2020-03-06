@@ -286,6 +286,10 @@ public:
     void setDisplayTrackInformation(bool displayTrackInformation);
     bool disassembleUploadedCode();
     void setDisassembleUploadedCode(bool disassembleUploadedCode);
+    bool translatorAutomaticDetection();
+    void setTranslatorAutomaticDetection(bool translatorAutomaticDetection);
+    QString translatorDiskImagePath();
+    void setTranslatorDiskImagePath(const QString &diskImage);
     bool displayCpuInstructions();
     void setDisplayCpuInstructions(bool displayCpuInstructions);
 	QString traceFilename();
@@ -407,6 +411,8 @@ private:
     bool mDisplayIDAddressMarks;
     bool mDisplayTrackInformation;
     bool mDisassembleUploadedCode;
+    bool mTranslatorAutomaticDetection;
+    QString mTranslatorDiskImagePath;
     bool mDisplayCpuInstructions;
 	QString mTraceFilename;
     bool mD1PowerOnWithDiskInserted;

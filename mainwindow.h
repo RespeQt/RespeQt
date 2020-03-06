@@ -105,6 +105,7 @@ private:
     void loadNextSide(int no);
     void toggleHappy(int no, bool enabled);
     void toggleChip(int no, bool open);
+    void toggleOSB(int no, bool open);
     void toggleWriteProtection(int no, bool protectionEnabled);
     void openEditor(int no);
     void saveDisk(int no);
@@ -168,6 +169,7 @@ private slots:
     void on_actionNextSide_triggered(int deviceId);
     void on_actionToggleHappy_triggered(int deviceId, bool enabled);
     void on_actionToggleChip_triggered(int deviceId, bool open);
+    void on_actionToggleOSB_triggered(int deviceId, bool open);
     void on_actionWriteProtect_triggered(int deviceId, bool writeProtectEnabled);
     void on_actionMountRecent_triggered(const QString &fileName);
     void on_actionEditDisk_triggered(int deviceId);

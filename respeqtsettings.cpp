@@ -154,6 +154,8 @@ RespeqtSettings::RespeqtSettings()
     mDisplayIDAddressMarks = mSettings->value("DisplayIDAddressMarks", false).toBool();
     mDisplayTrackInformation = mSettings->value("DisplayTrackInformation", false).toBool();
     mDisassembleUploadedCode = mSettings->value("DisassembleUploadedCode", false).toBool();
+    mTranslatorAutomaticDetection = mSettings->value("TranslatorAutomaticDetection", false).toBool();
+    mTranslatorDiskImagePath = mSettings->value("TranslatorDiskImagePath", "").toString();
     mDisplayCpuInstructions = mSettings->value("DisplayCpuInstructions", false).toBool();
     mTraceFilename = mSettings->value("TraceFilename", "").toString();
     mD1PowerOnWithDiskInserted = mSettings->value("D1PowerOnWithDiskInserted", false).toBool();
@@ -254,6 +256,8 @@ void RespeqtSettings::saveSessionToFile(const QString &fileName)
         s.setValue("DisplayIDAddressMarks", mDisplayIDAddressMarks);
         s.setValue("DisplayTrackInformation", mDisplayTrackInformation);
         s.setValue("DisassembleUploadedCode", mDisassembleUploadedCode);
+        s.setValue("TranslatorAutomaticDetection", mTranslatorAutomaticDetection);
+        s.setValue("TranslatorDiskImagePath", mTranslatorDiskImagePath);
         s.setValue("DisplayCpuInstructions", mDisplayCpuInstructions);
         s.setValue("TraceFilename", mTraceFilename);
         s.setValue("D1PowerOnWithDiskInserted", mD1PowerOnWithDiskInserted);
@@ -353,6 +357,8 @@ void RespeqtSettings::saveSessionToFile(const QString &fileName)
         mDisplayIDAddressMarks = s.value("DisplayIDAddressMarks", false).toBool();
         mDisplayTrackInformation = s.value("DisplayTrackInformation", false).toBool();
         mDisassembleUploadedCode = s.value("DisassembleUploadedCode", false).toBool();
+        mTranslatorAutomaticDetection = s.value("TranslatorAutomaticDetection", false).toBool();
+        mTranslatorDiskImagePath = s.value("TranslatorDiskImagePath", false).toString();
         mDisplayCpuInstructions = s.value("DisplayCpuInstructions", false).toBool();
         mTraceFilename = s.value("TraceFilename", false).toBool();
         mD1PowerOnWithDiskInserted = s.value("D1PowerOnWithDiskInserted", false).toBool();
@@ -1337,6 +1343,28 @@ void RespeqtSettings::setDisassembleUploadedCode(bool disassembleUploadedCode)
 {
     mDisassembleUploadedCode = disassembleUploadedCode;
     if(mSessionFileName == "") mSettings->setValue("DisassembleUploadedCode", mDisassembleUploadedCode);
+}
+
+bool RespeqtSettings::translatorAutomaticDetection()
+{
+    return mTranslatorAutomaticDetection;
+}
+
+void RespeqtSettings::setTranslatorAutomaticDetection(bool translatorAutomaticDetection)
+{
+    mTranslatorAutomaticDetection = translatorAutomaticDetection;
+    if(mSessionFileName == "") mSettings->setValue("TranslatorAutomaticDetection", mTranslatorAutomaticDetection);
+}
+
+QString RespeqtSettings::translatorDiskImagePath()
+{
+    return mTranslatorDiskImagePath;
+}
+
+void RespeqtSettings::setTranslatorDiskImagePath(const QString &diskImage)
+{
+    mTranslatorDiskImagePath = diskImage;
+    if(mSessionFileName == "") mSettings->setValue("TranslatorDiskImagePath", mTranslatorDiskImagePath);
 }
 
 bool RespeqtSettings::displayCpuInstructions()

@@ -481,6 +481,8 @@ Board::Board()
     m_lastArchiverUploadCrc16 = 0;
     m_lastHappyUploadCrc16 = 0;
     m_happyPatchInProgress = false;
+    m_translatorActive = false;
+    m_translatorState = NOT_BOOTED;
 }
 
 Board::~Board()
@@ -500,6 +502,8 @@ Board *Board::getCopy()
     copy->m_happyRam.append(m_happyRam);
     copy->m_lastHappyUploadCrc16 = m_lastHappyUploadCrc16;
     copy->m_happyPatchInProgress = m_happyPatchInProgress;
+    copy->m_translatorActive = false;
+    copy->m_translatorState = m_translatorState;
     return copy;
 }
 
@@ -517,6 +521,8 @@ void Board::setFromCopy(Board *copy)
     m_happyRam.append(copy->m_happyRam);
     m_lastHappyUploadCrc16 = copy->m_lastHappyUploadCrc16;
     m_happyPatchInProgress = copy->m_happyPatchInProgress;
+    m_translatorActive = copy->m_translatorActive;
+    m_translatorState = copy->m_translatorState;
 }
 
 bool Board::hasHappySignature()
@@ -544,12 +550,24 @@ SimpleDiskImage::SimpleDiskImage(SioWorker *worker)
     m_isReady = false;
     m_timer.start();
     m_conversionInProgress = false;
+    m_translatorAutomaticDetection = false;
+    m_OSBMode = false;
+    m_translatorDisk = NULL;
 }
 
 SimpleDiskImage::~SimpleDiskImage()
 {
+    closeTranslator();
     if (isOpen()) {
         close();
+    }
+}
+
+void SimpleDiskImage::closeTranslator()
+{
+    if (m_translatorDisk != NULL) {
+        m_translatorDisk->close();
+        m_translatorDisk = NULL;
     }
 }
 
@@ -618,6 +636,52 @@ void SimpleDiskImage::setHappyMode(bool enable)
     emit statusChanged(m_deviceNo);
 }
 
+void SimpleDiskImage::setOSBMode(bool enable)
+{
+    m_OSBMode = enable;
+    setTranslatorActive(true);
+}
+
+void SimpleDiskImage::setTranslatorActive(bool resetTranslatorState)
+{
+    bool enable = m_OSBMode && (m_deviceNo == 0x31) && (m_translatorDiskImagePath.size() > 5);
+    if (enable) {
+        enable = translatorAvailableAvailable();
+    }
+    if (enable && resetTranslatorState) {
+        m_board.setTranslatorState(NOT_BOOTED);
+    }
+    if (m_board.isTranslatorActive() != enable) {
+        m_board.setTranslatorActive(enable);
+        if (m_board.isTranslatorActive() != enable) { // needed - don't remove!!!
+            emit statusChanged(m_deviceNo);
+        }
+    }
+    if ((!enable) || (!m_board.isTranslatorActive())){
+        closeTranslator();
+    }
+}
+
+bool SimpleDiskImage::translatorAvailableAvailable()
+{
+    if (m_translatorDiskImagePath.isEmpty()) {
+        qWarning() << "!w" << tr("[%1] No Translator disk image defined. Please, check settings in menu Disk images>OS-B emulation.")
+                      .arg(deviceName());
+        return false;
+    }
+    QFile *translatorFile = new QFile(m_translatorDiskImagePath);
+    if (!translatorFile->open(QFile::ReadOnly)) {
+        delete translatorFile;
+        qWarning() << "!w" << tr("[%1] Translator '%2' not found. Please, check settings in menu Disk images>OS-B emulation.")
+                      .arg(deviceName())
+                      .arg(m_translatorDiskImagePath);
+        return false;
+    }
+    translatorFile->close();
+    delete translatorFile;
+    return true;
+}
+
 void SimpleDiskImage::setDisplayTransmission(bool active)
 {
     m_displayTransmission = active;
@@ -636,6 +700,17 @@ void SimpleDiskImage::setTrackLayout(bool enable)
 void SimpleDiskImage::setDisassembleUploadedCode(bool enable)
 {
     m_disassembleUploadedCode = enable;
+}
+
+void SimpleDiskImage::setTranslatorAutomaticDetection(bool enable)
+{
+    m_translatorAutomaticDetection = enable;
+}
+
+void SimpleDiskImage::setTranslatorDiskImagePath(const QString &filename)
+{
+    m_translatorDiskImagePath = filename;
+    setTranslatorActive(false);
 }
 
 void SimpleDiskImage::setLeverOpen(bool open)
@@ -706,6 +781,11 @@ bool SimpleDiskImage::open(const QString &fileName, FileTypes::FileType type)
     if (bResult) {
         QFileInfo fileInfo(fileName);
         QString baseName = fileInfo.completeBaseName();
+        if ((m_translatorAutomaticDetection) && (baseName.contains("OS-B", Qt::CaseInsensitive))) {
+            qDebug() << "!u" << tr("Translator '%1' activated")
+                        .arg(m_translatorDiskImagePath);
+            setOSBMode(true);
+        }
         if (baseName.contains("Side", Qt::CaseInsensitive) || baseName.contains("Disk", Qt::CaseInsensitive)) {
             QStringList imageList;
             imageList << fileInfo.absoluteDir().absoluteFilePath(fileInfo.fileName());
@@ -943,6 +1023,7 @@ void SimpleDiskImage::reopen()
 
 void SimpleDiskImage::close()
 {
+    closeTranslator();
     m_currentSide = 1;
     m_numberOfSides = 1;
     m_nextSideFilename.clear();
@@ -1488,6 +1569,50 @@ void SimpleDiskImage::handleCommand(quint8 command, quint16 aux)
                            .arg(command, 2, 16, QChar('0'))
                            .arg(aux, 4, 16, QChar('0'));
             writeCommandNak();
+            return;
+        }
+    }
+    if ((m_deviceNo == 0x31) && (command == 0x52) && (m_board.isTranslatorActive())) {
+        quint16 sector = aux;
+        if (m_board.isChipOpen()) {
+            sector = aux & 0x3FF;
+        }
+        if (sector == 1) {
+            if (m_board.getTranslatorState() == NOT_BOOTED) {
+                m_translatorDisk = new SimpleDiskImage(sio);
+                m_translatorDisk->setReadOnly(true);
+                m_translatorDisk->setDeviceNo(0x31);
+                m_translatorDisk->setDisplayTransmission(false);
+                m_translatorDisk->setSpyMode(false);
+                m_translatorDisk->setTrackLayout(false);
+                m_translatorDisk->setDisassembleUploadedCode(false);
+                m_translatorDisk->setTranslatorAutomaticDetection(false);
+                m_translatorDisk->setReady(true);
+                FileTypes::FileType type = FileTypes::getFileType(m_translatorDiskImagePath);
+                if (!m_translatorDisk->open(m_translatorDiskImagePath, type)) {
+                    m_board.setTranslatorActive(false);
+                }
+                else {
+                    m_board.setTranslatorState(FIRST_SECTOR_1);
+                    qWarning() << "!i" << tr("[%1] Booting Translator '%2' first")
+                                .arg(deviceName())
+                                .arg(m_translatorDiskImagePath);
+                }
+            }
+            else if (m_board.getTranslatorState() == READ_OTHER_SECTOR) {
+                m_board.setTranslatorState(SECOND_SECTOR_1);
+                m_board.setTranslatorActive(false);
+                setTranslatorActive(false);
+                qWarning() << "!i" << tr("[%1] Removing Translator to boot on '%2'")
+                            .arg(deviceName())
+                            .arg(m_originalFileName);
+            }
+        }
+        else if ((sector != 1) && (m_board.getTranslatorState() == FIRST_SECTOR_1)) {
+            m_board.setTranslatorState(READ_OTHER_SECTOR);
+        }
+        if (m_board.isTranslatorActive() && (m_translatorDisk != NULL)) {
+            m_translatorDisk->handleCommand(command, aux);
             return;
         }
     }

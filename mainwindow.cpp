@@ -70,6 +70,7 @@ bool g_disablePicoHiSpeed;
 static bool g_D9DOVisible = true;
 bool g_miniMode = false;
 static bool g_shadeMode = false;
+SimpleDiskImage *g_translator = NULL;
 //static int g_savedWidth;
 
 // ****************************** END OF GLOBALS ************************************//
@@ -403,6 +404,7 @@ void MainWindow::createDeviceWidgets()
         connect(deviceWidget, SIGNAL(actionNextSide(int)),this, SLOT(on_actionNextSide_triggered(int)));
         connect(deviceWidget, SIGNAL(actionToggleHappy(int,bool)),this, SLOT(on_actionToggleHappy_triggered(int,bool)));
         connect(deviceWidget, SIGNAL(actionToggleChip(int,bool)),this, SLOT(on_actionToggleChip_triggered(int,bool)));
+        connect(deviceWidget, SIGNAL(actionToggleOSB(int,bool)),this, SLOT(on_actionToggleOSB_triggered(int,bool)));
         connect(deviceWidget, SIGNAL(actionWriteProtect(int,bool)),this, SLOT(on_actionWriteProtect_triggered(int,bool)));
         connect(deviceWidget, SIGNAL(actionEditDisk(int)),this, SLOT(on_actionEditDisk_triggered(int)));
         connect(deviceWidget, SIGNAL(actionSave(int)),this, SLOT(on_actionSave_triggered(int)));
@@ -1011,12 +1013,14 @@ void MainWindow::deviceStatusChanged(int deviceNo)
                         }
                     }
                 }
-                diskWidget->showAsImageMounted(filenamelabel, img->description(), enableEdit, enableSave, img->isLeverOpen(), img->isHappyEnabled(), img->isChipOpen(), img->hasSeveralSides());
+                diskWidget->showAsImageMounted(filenamelabel, img->description(), enableEdit, enableSave, img->isLeverOpen(), img->isHappyEnabled(), img->isChipOpen(), img->isTranslatorActive(), img->hasSeveralSides());
             }
 
             img->setDisplayTransmission(respeqtSettings->displayTransmission());
             img->setSpyMode(respeqtSettings->isSpyMode());
             img->setDisassembleUploadedCode(respeqtSettings->disassembleUploadedCode());
+            img->setTranslatorAutomaticDetection(respeqtSettings->translatorAutomaticDetection());
+            img->setTranslatorDiskImagePath(respeqtSettings->translatorDiskImagePath());
             FirmwareDiskImage *fimg = qobject_cast <FirmwareDiskImage*> (sio->getDevice(deviceNo));
             if (fimg) {
                 fimg->SetDisplayDriveHead(respeqtSettings->displayDriveHead());
@@ -1456,6 +1460,8 @@ SimpleDiskImage *MainWindow::installDiskImage(int no)
         disk->setSpyMode(respeqtSettings->isSpyMode());
         disk->setTrackLayout(respeqtSettings->isTrackLayout());
         disk->setDisassembleUploadedCode(respeqtSettings->disassembleUploadedCode());
+        disk->setTranslatorAutomaticDetection(respeqtSettings->translatorAutomaticDetection());
+        disk->setTranslatorDiskImagePath(respeqtSettings->translatorDiskImagePath());
         disk->SetDisplayDriveHead(respeqtSettings->displayDriveHead());
         disk->SetDisplayFdcCommands(respeqtSettings->displayFdcCommands());
         disk->SetDisplayIndexPulse(respeqtSettings->displayIndexPulse());
@@ -1471,6 +1477,8 @@ SimpleDiskImage *MainWindow::installDiskImage(int no)
         disk->setSpyMode(respeqtSettings->isSpyMode());
         disk->setTrackLayout(respeqtSettings->isTrackLayout());
         disk->setDisassembleUploadedCode(respeqtSettings->disassembleUploadedCode());
+        disk->setTranslatorAutomaticDetection(respeqtSettings->translatorAutomaticDetection());
+        disk->setTranslatorDiskImagePath(respeqtSettings->translatorDiskImagePath());
         return disk;
     }
 }
@@ -1555,6 +1563,12 @@ void MainWindow::toggleChip(int no, bool open)
 {
     SimpleDiskImage *img = qobject_cast <SimpleDiskImage*> (sio->getDevice(no + DISK_BASE_CDEVIC));
     img->setChipMode(open);
+}
+
+void MainWindow::toggleOSB(int no, bool open)
+{
+    SimpleDiskImage *img = qobject_cast <SimpleDiskImage*> (sio->getDevice(no + DISK_BASE_CDEVIC));
+    img->setOSBMode(open);
 }
 
 void MainWindow::toggleWriteProtection(int no, bool protectionEnabled)
@@ -1766,6 +1780,7 @@ void MainWindow::on_actionEject_triggered(int deviceId) {ejectImage(deviceId);}
 void MainWindow::on_actionNextSide_triggered(int deviceId) {loadNextSide(deviceId);}
 void MainWindow::on_actionToggleHappy_triggered(int deviceId, bool open) {toggleHappy(deviceId, open);}
 void MainWindow::on_actionToggleChip_triggered(int deviceId, bool open) {toggleChip(deviceId, open);}
+void MainWindow::on_actionToggleOSB_triggered(int deviceId, bool open) {toggleOSB(deviceId, open);}
 void MainWindow::on_actionWriteProtect_triggered(int deviceId, bool writeProtectEnabled) {toggleWriteProtection(deviceId, writeProtectEnabled);}
 void MainWindow::on_actionEditDisk_triggered(int deviceId) {openEditor(deviceId);}
 void MainWindow::on_actionSave_triggered(int deviceId) {saveDisk(deviceId);}

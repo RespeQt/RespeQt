@@ -34,11 +34,14 @@ OptionsDialog::OptionsDialog(QWidget *parent) :
     itemStandard = m_ui->treeWidget->topLevelItem(0)->child(0);
     itemAtariSio = m_ui->treeWidget->topLevelItem(0)->child(1);
     itemEmulation = m_ui->treeWidget->topLevelItem(1);
-    itemDiskOptions = m_ui->treeWidget->topLevelItem(2);
+    itemDiskOptions = m_ui->treeWidget->topLevelItem(2)->child(0);
+    itemDiskOSB = m_ui->treeWidget->topLevelItem(2)->child(1);
     itemI18n = m_ui->treeWidget->topLevelItem(3);
     itemTestSerialPort = m_ui->treeWidget->topLevelItem(0)->child(2);
     itemAtari1027 = m_ui->treeWidget->topLevelItem(4)->child(0);
     itemPassthrough = m_ui->treeWidget->topLevelItem(4)->child(1);
+
+    m_ui->translatorSelectButton->setDefaultAction(m_ui->actionSelectTranslatorDisk);
 
 #ifndef Q_OS_LINUX
     m_ui->treeWidget->topLevelItem(0)->removeChild(itemAtariSio);
@@ -91,6 +94,7 @@ OptionsDialog::OptionsDialog(QWidget *parent) :
     m_ui->commandName->setChecked(respeqtSettings->isCommandName());
     m_ui->trackLayout->setChecked(respeqtSettings->isTrackLayout());
     m_ui->disassembleUploadedCode->setChecked(respeqtSettings->disassembleUploadedCode());
+    m_ui->translatorAutomaticDetection->setChecked(respeqtSettings->translatorAutomaticDetection());
     m_ui->useLargerFont->setChecked(respeqtSettings->useLargeFont());
     m_ui->enableShade->setChecked(respeqtSettings->enableShade());
     m_ui->RclNameEdit->setText(respeqtSettings->lastRclDir());
@@ -170,6 +174,7 @@ OptionsDialog::OptionsDialog(QWidget *parent) :
         m_ui->emulationHighSpeedExeLoaderBox->setVisible(true);
     }
 
+    m_ui->translatorDiskImagePath->setText(respeqtSettings->translatorDiskImagePath());
     m_ui->label_atarifixed->setText(respeqtSettings->atariFixedFontFamily());
     QFont font;
     font.setPointSize(12);
@@ -294,6 +299,8 @@ void OptionsDialog::on_treeWidget_currentItemChanged(QTreeWidgetItem* current, Q
         m_ui->stackedWidget->setCurrentIndex(3);
     } else if (current == itemDiskOptions) {
         m_ui->stackedWidget->setCurrentIndex(4);
+    } else if (current == itemDiskOSB) {
+        m_ui->stackedWidget->setCurrentIndex(12);
     } else if (current == itemI18n) {
         m_ui->stackedWidget->setCurrentIndex(5);
     } else if (current == itemAtari1027) {
@@ -329,6 +336,7 @@ void OptionsDialog::OptionsDialog_accepted()
     respeqtSettings->setCommandName(m_ui->commandName->isChecked());
     respeqtSettings->setTrackLayout(m_ui->trackLayout->isChecked());
     respeqtSettings->setDisassembleUploadedCode(m_ui->disassembleUploadedCode->isChecked());
+    respeqtSettings->setTranslatorAutomaticDetection(m_ui->translatorAutomaticDetection->isChecked());
     respeqtSettings->setUseLargeFont(m_ui->useLargerFont->isChecked());
     respeqtSettings->setEnableShade(m_ui->enableShade->isChecked());
     respeqtSettings->setRclDir(m_ui->RclNameEdit->text());
@@ -351,6 +359,7 @@ void OptionsDialog::OptionsDialog_accepted()
 #ifdef Q_OS_MAC
     respeqtSettings->setNativeMenu(m_ui->useNativeMenu->isChecked());
 #endif
+    respeqtSettings->setTranslatorDiskImagePath(m_ui->translatorDiskImagePath->text());
     if (m_ui->rawPrinterName->currentData() != -1)
         respeqtSettings->setRawPrinterName(m_ui->rawPrinterName->currentText());
     else
@@ -426,6 +435,17 @@ void OptionsDialog::on_actionSelect1050TurboFirmware_triggered()
 void OptionsDialog::on_actionSelect1050DuplicatorFirmware_triggered()
 {
     selectFirmware(m_ui->atari1050DuplicatorFirmwarePath, tr("Select Atari 1050 Duplicator firmware"), tr("Atari drive firmware (*.rom);;All files (*)"));
+}
+
+void OptionsDialog::on_translatorAutomaticDetection_toggled(bool)
+{
+    //m_ui->translatorDiskImagePath->setEnabled(checked);
+    //m_ui->translatorSelectButton->setEnabled(checked);
+}
+
+void OptionsDialog::on_actionSelectTranslatorDisk_triggered()
+{
+    selectFirmware(m_ui->translatorDiskImagePath, tr("Select translator disk image"), tr("Atari disk image (*.atr);;All files (*)"));
 }
 
 void OptionsDialog::on_testFileButton_clicked()

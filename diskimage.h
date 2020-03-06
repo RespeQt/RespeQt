@@ -193,6 +193,14 @@ public:
     bool loadTrack(QString &originalFileName);
 };
 
+enum TRANSLATOR_STATE
+{
+    NOT_BOOTED = 0,
+    FIRST_SECTOR_1,
+    READ_OTHER_SECTOR,
+    SECOND_SECTOR_1
+};
+
 class Board: public QObject
 {
     Q_OBJECT
@@ -207,6 +215,9 @@ protected:
     bool m_happy1050;
     unsigned short m_lastHappyUploadCrc16;
     bool m_happyPatchInProgress;
+    // For translator
+    bool m_translatorActive;
+    enum TRANSLATOR_STATE m_translatorState;
 
 public:
     // For Chip 810 and Super Archiver 1050 emulation
@@ -223,6 +234,10 @@ public:
     bool hasHappySignature();
     inline void setChipOpen(bool open) {m_chipOpen = open;}
     inline bool isChipOpen() const {return m_chipOpen;}
+    inline void setTranslatorActive(bool active) {m_translatorActive = active;}
+    inline bool isTranslatorActive() const {return m_translatorActive && (m_translatorState != SECOND_SECTOR_1);}
+    inline void setTranslatorState(enum TRANSLATOR_STATE state) {m_translatorState = state;}
+    inline int getTranslatorState() const {return m_translatorState;}
     inline void setLastArchiverUploadCrc16(unsigned short crc16) {m_lastArchiverUploadCrc16 = crc16;}
     inline unsigned short getLastArchiverUploadCrc16() const {return m_lastArchiverUploadCrc16;}
     inline void setLastArchiverSpeed(quint16 speed) {m_lastArchiverSpeed = speed;}
@@ -262,6 +277,7 @@ public:
     inline bool isReady() const {return m_isReady;}
     inline bool isHappyEnabled() const {return m_board.isHappyEnabled();}
     inline bool isChipOpen() const {return m_board.isChipOpen();}
+    inline bool isTranslatorActive() const {return m_board.isTranslatorActive();}
     inline bool hasSeveralSides() const {return m_numberOfSides > 1;}
     virtual QString getNextSideLabel();
     inline QString getNextSideFilename() {return m_nextSideFilename;}
@@ -291,10 +307,13 @@ public:
     virtual void setReady(bool bReady);
     virtual void setChipMode(bool enable);
     virtual void setHappyMode(bool enable);
+    virtual void setOSBMode(bool enable);
     virtual void setDisplayTransmission(bool active);
     virtual void setSpyMode(bool enable);
     virtual void setTrackLayout(bool enable);
     virtual void setDisassembleUploadedCode(bool enable);
+    virtual void setTranslatorAutomaticDetection(bool enable);
+    virtual void setTranslatorDiskImagePath(const QString &filename);
 
     inline DiskGeometry geometry() const {return m_geometry;}
     inline QString originalFileName() const {return m_originalFileName;}
@@ -326,6 +345,9 @@ protected:
     bool m_dumpDataFrame;
     bool m_displayTrackLayout;
     bool m_disassembleUploadedCode;
+    bool m_translatorAutomaticDetection;
+    QString m_translatorDiskImagePath;
+    bool m_OSBMode;
     quint16 m_trackNumber;
     qint64 m_lastTime;
     qint64 m_lastDistance;
@@ -349,6 +371,8 @@ protected:
 	ScpTrackInfo m_scpTrackInfo[40];
     // data for Happy or Archiver
     Board m_board;
+    // Tanslator
+    SimpleDiskImage *m_translatorDisk;
 
     bool seekToSector(quint16 sector);
     void refreshNewGeometry();
@@ -498,6 +522,9 @@ protected:
     QByteArray readHappySectors(int trackNumber, int afterSectorNumber, bool happy1050);
     bool writeHappySectors(int trackNumber, int afterSectorNumber, bool happy1050);
     int findNearestSpeed(int speed);
+    void setTranslatorActive(bool resetTranslatorState);
+    bool translatorAvailableAvailable();
+    void closeTranslator();
 };
 
 #endif // DISKIMAGE_H
