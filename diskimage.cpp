@@ -644,16 +644,17 @@ void SimpleDiskImage::setOSBMode(bool enable)
 
 void SimpleDiskImage::setTranslatorActive(bool resetTranslatorState)
 {
+    bool oldState = m_board.isTranslatorActive();
     bool enable = m_OSBMode && (m_deviceNo == 0x31) && (m_translatorDiskImagePath.size() > 5);
     if (enable) {
-        enable = translatorAvailableAvailable();
+        enable = translatorDiskImageAvailable();
     }
     if (enable && resetTranslatorState) {
         m_board.setTranslatorState(NOT_BOOTED);
     }
     if (m_board.isTranslatorActive() != enable) {
         m_board.setTranslatorActive(enable);
-        if (m_board.isTranslatorActive() != enable) { // needed - don't remove!!!
+        if (m_board.isTranslatorActive() != oldState) {
             emit statusChanged(m_deviceNo);
         }
     }
@@ -662,7 +663,7 @@ void SimpleDiskImage::setTranslatorActive(bool resetTranslatorState)
     }
 }
 
-bool SimpleDiskImage::translatorAvailableAvailable()
+bool SimpleDiskImage::translatorDiskImageAvailable()
 {
     if (m_translatorDiskImagePath.isEmpty()) {
         qWarning() << "!w" << tr("[%1] No Translator disk image defined. Please, check settings in menu Disk images>OS-B emulation.")
@@ -1579,6 +1580,7 @@ void SimpleDiskImage::handleCommand(quint8 command, quint16 aux)
         }
         if (sector == 1) {
             if (m_board.getTranslatorState() == NOT_BOOTED) {
+                closeTranslator();
                 m_translatorDisk = new SimpleDiskImage(sio);
                 m_translatorDisk->setReadOnly(true);
                 m_translatorDisk->setDeviceNo(0x31);

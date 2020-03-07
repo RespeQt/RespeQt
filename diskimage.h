@@ -523,7 +523,7 @@ protected:
     bool writeHappySectors(int trackNumber, int afterSectorNumber, bool happy1050);
     int findNearestSpeed(int speed);
     void setTranslatorActive(bool resetTranslatorState);
-    bool translatorAvailableAvailable();
+    bool translatorDiskImageAvailable();
     void closeTranslator();
 };
 
