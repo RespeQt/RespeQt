@@ -105,6 +105,11 @@
       <string>OS-B emulation</string>
      </property>
     </item>
+    <item>
+     <property name="text">
+      <string>Icon visibility</string>
+     </property>
+    </item>
    </item>
    <item>
     <property name="text">
@@ -146,7 +151,7 @@
     </sizepolicy>
    </property>
    <property name="currentIndex">
-    <number>12</number>
+    <number>13</number>
    </property>
    <widget class="QWidget" name="page_serialPort">
     <layout class="QVBoxLayout" name="verticalLayout_2">
@@ -2166,6 +2171,100 @@
        <widget class="QLabel" name="warning2_5">
         <property name="text">
          <string>NOTE: this option applies only to slot D1:</string>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </widget>
+   <widget class="QWidget" name="page_3">
+    <widget class="QGroupBox" name="diskGroup_2">
+     <property name="geometry">
+      <rect>
+       <x>0</x>
+       <y>0</y>
+       <width>320</width>
+       <height>400</height>
+      </rect>
+     </property>
+     <property name="minimumSize">
+      <size>
+       <width>258</width>
+       <height>208</height>
+      </size>
+     </property>
+     <property name="title">
+      <string>Icon visibility in drive slots</string>
+     </property>
+     <layout class="QGridLayout" name="gridLayout_12">
+      <item row="4" column="0">
+       <widget class="QCheckBox" name="hideNextImage">
+        <property name="text">
+         <string>Hide Next image icon</string>
+        </property>
+       </widget>
+      </item>
+      <item row="5" column="0">
+       <widget class="QCheckBox" name="hideOSBMode">
+        <property name="text">
+         <string>Hide OS-B mode icon</string>
+        </property>
+       </widget>
+      </item>
+      <item row="2" column="0">
+       <widget class="QCheckBox" name="hideChipMode">
+        <property name="text">
+         <string>Hide Chip mode icon</string>
+        </property>
+       </widget>
+      </item>
+      <item row="3" column="0">
+       <widget class="QCheckBox" name="hideHappyMode">
+        <property name="text">
+         <string>Hide Happy mode icon</string>
+        </property>
+       </widget>
+      </item>
+      <item row="6" column="0">
+       <widget class="QCheckBox" name="hideToolDisk">
+        <property name="text">
+         <string>Hide Tool disk icon</string>
+        </property>
+       </widget>
+      </item>
+      <item row="11" column="0">
+       <spacer name="emulationSpacer2_3">
+        <property name="orientation">
+         <enum>Qt::Vertical</enum>
+        </property>
+        <property name="sizeHint" stdset="0">
+         <size>
+          <width>20</width>
+          <height>40</height>
+         </size>
+        </property>
+       </spacer>
+      </item>
+      <item row="7" column="0">
+       <spacer name="verticalSpacer_7">
+        <property name="orientation">
+         <enum>Qt::Vertical</enum>
+        </property>
+        <property name="sizeType">
+         <enum>QSizePolicy::Fixed</enum>
+        </property>
+        <property name="sizeHint" stdset="0">
+         <size>
+          <width>20</width>
+          <height>10</height>
+         </size>
+        </property>
+       </spacer>
+      </item>
+      <item row="8" column="0">
+       <widget class="QLabel" name="warning2_7">
+        <property name="text">
+         <string>These features can still be toggled with contextual menu.</string>
         </property>
        </widget>
       </item>

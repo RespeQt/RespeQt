@@ -29,7 +29,7 @@ static void FormatStatusTip(QAction* action, QString& driveNum)
     action->setStatusTip(tip);
 }
 
-void DriveWidget::setup()
+void DriveWidget::setup(bool happyHidden, bool chipHidden, bool nextSideHidden, bool OSBHidden, bool toolDiskHidden)
 {
     QString driveTxt;
     if(driveNo_ < 9 ) {
@@ -85,14 +85,17 @@ void DriveWidget::setup()
     ui->autoSave->setDefaultAction(ui->actionAutoSave);
     ui->buttonEditDisk->setDefaultAction(ui->actionEditDisk);
 
-    ui->buttonToggleOSB->setVisible(driveNo_ == 0);
+    ui->buttonNextSide->setVisible(!nextSideHidden);
+    ui->buttonToggleHappy->setVisible(!happyHidden);
+    ui->buttonToggleChip->setVisible(!chipHidden);
+    ui->buttonToggleOSB->setVisible((driveNo_ == 0) &&(!OSBHidden));
 }
 
-void DriveWidget::updateFromImage(SimpleDiskImage *diskImage)
+void DriveWidget::updateFromImage(SimpleDiskImage *diskImage, bool happyHidden, bool chipHidden, bool nextSideHidden, bool OSBHidden, bool toolDiskHidden)
 {
     if (diskImage == NULL)
     {
-        showAsEmpty();
+        showAsEmpty(happyHidden, chipHidden, nextSideHidden, OSBHidden, toolDiskHidden);
         return;
     }
 
@@ -100,16 +103,19 @@ void DriveWidget::updateFromImage(SimpleDiskImage *diskImage)
     ui->labelFileName->setText(fileName);
     ui->labelImageProperties->setText(diskImage->description());
     ui->actionEject->setEnabled(true);
+    ui->buttonNextSide->setEnabled(!nextSideHidden);
     ui->actionNextSide->setEnabled(diskImage->hasSeveralSides());
     if (diskImage->hasSeveralSides()) {
         ui->actionNextSide->setToolTip(diskImage->getNextSideLabel());
     }
-    ui->actionToggleOSB->setVisible(driveNo_ == 0);
+    ui->buttonToggleHappy->setVisible(!happyHidden);
     ui->actionToggleHappy->setEnabled(true);
-    ui->actionToggleChip->setEnabled(true);
-    ui->actionToggleOSB->setEnabled(true);
     ui->actionToggleHappy->setChecked(diskImage->isHappyEnabled());
+    ui->buttonToggleChip->setVisible(!chipHidden);
+    ui->actionToggleChip->setEnabled(true);
     ui->actionToggleChip->setChecked(diskImage->isChipOpen());
+    ui->buttonToggleOSB->setVisible((driveNo_ == 0) && (!OSBHidden));
+    ui->actionToggleOSB->setEnabled(true);
     ui->actionToggleOSB->setChecked(diskImage->isTranslatorActive());
 
     bool enableEdit = diskImage->editDialog() != NULL;
@@ -142,19 +148,22 @@ void DriveWidget::triggerChipClickIfEnabled()
     if(ui->buttonToggleChip->isEnabled()) ui->buttonToggleChip->click();
 }
 
-void DriveWidget::showAsEmpty()
+void DriveWidget::showAsEmpty(bool happyHidden, bool chipHidden, bool nextSideHidden, bool OSBHidden, bool toolDiskHidden)
 {
     ui->actionSave->setEnabled(false);
     ui->labelFileName->clear();
     ui->labelImageProperties->clear();
     ui->actionEject->setEnabled(false);
+    ui->buttonNextSide->setVisible(!nextSideHidden);
     ui->actionNextSide->setEnabled(false);
     ui->actionNextSide->setChecked(false);
+    ui->buttonToggleHappy->setVisible(!happyHidden);
     ui->actionToggleHappy->setChecked(false);
     ui->actionToggleHappy->setEnabled(false);
+    ui->buttonToggleChip->setVisible(!chipHidden);
     ui->actionToggleChip->setChecked(false);
     ui->actionToggleChip->setEnabled(false);
-    ui->buttonToggleOSB->setVisible(driveNo_ == 0);
+    ui->buttonToggleOSB->setVisible((driveNo_ == 0) &&(!OSBHidden));
     ui->actionToggleOSB->setChecked(false);
     ui->actionToggleOSB->setEnabled(false);
     ui->actionRevert->setEnabled(false);
@@ -174,10 +183,13 @@ void DriveWidget::showAsFolderMounted(const QString &fileName, const QString &de
     ui->labelFileName->setText(fileName);
     ui->labelImageProperties->setText(description);
     ui->actionEject->setEnabled(true);
+    ui->buttonNextSide->setVisible(false);
     ui->actionNextSide->setEnabled(false);
+    ui->buttonToggleHappy->setVisible(false);
     ui->actionToggleHappy->setEnabled(false);
+    ui->buttonToggleChip->setVisible(false);
     ui->actionToggleChip->setEnabled(false);
-    ui->buttonToggleOSB->setVisible(driveNo_ == 0);
+    ui->buttonToggleOSB->setVisible(false);
     ui->actionToggleOSB->setEnabled(false);
     ui->actionEditDisk->setChecked(editEnabled);
 
@@ -192,22 +204,27 @@ void DriveWidget::showAsFolderMounted(const QString &fileName, const QString &de
     if(driveNo_ == 0) ui->actionBootOption->setEnabled(true);
 }
 
-void DriveWidget::showAsImageMounted(const QString &fileName, const QString &description, bool editEnabled, bool enableSave, bool leverOpen, bool happyEnabled, bool chipOpen, bool translatorActive, bool severalSides)
+void DriveWidget::showAsImageMounted(const QString &fileName, const QString &description, bool editEnabled, bool enableSave, bool leverOpen, bool happyEnabled, bool chipOpen,
+                                     bool translatorActive, bool severalSides, bool happyHidden, bool chipHidden, bool nextSideHidden, bool OSBHidden, bool toolDiskHidden)
 {
     ui->labelFileName->setText(fileName);
     ui->labelImageProperties->setText(description);
     ui->actionEject->setEnabled(true);
-    ui->actionNextSide->setEnabled(severalSides);
-    ui->actionToggleHappy->setEnabled(true);
-    ui->actionToggleChip->setEnabled(true);
-    ui->buttonToggleOSB->setVisible(driveNo_ == 0);
-    ui->actionToggleOSB->setEnabled(true);
-    ui->actionNextSide->setChecked(leverOpen);
-    ui->actionToggleHappy->setChecked(happyEnabled);
-    ui->actionToggleChip->setChecked(chipOpen);
-    ui->actionToggleOSB->setChecked(translatorActive);
-    ui->actionEditDisk->setChecked(editEnabled);
 
+    ui->buttonToggleHappy->setVisible(!happyHidden);
+    ui->actionToggleHappy->setEnabled(true);
+    ui->actionToggleHappy->setChecked(happyEnabled);
+    ui->buttonToggleChip->setVisible(!chipHidden);
+    ui->actionToggleChip->setEnabled(true);
+    ui->actionToggleChip->setChecked(chipOpen);
+    ui->buttonToggleOSB->setVisible((driveNo_ == 0) && (!OSBHidden));
+    ui->actionToggleOSB->setEnabled(true);
+    ui->actionToggleOSB->setChecked(translatorActive);
+    ui->buttonNextSide->setVisible(!nextSideHidden);
+    ui->actionNextSide->setEnabled(severalSides);
+    ui->actionNextSide->setChecked(leverOpen);
+
+    ui->actionEditDisk->setChecked(editEnabled);
 
     ui->labelFileName->setStyleSheet("color: rgb(0, 0, 0); font-weight: normal");  //
 

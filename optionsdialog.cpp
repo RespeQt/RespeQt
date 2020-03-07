@@ -36,6 +36,7 @@ OptionsDialog::OptionsDialog(QWidget *parent) :
     itemEmulation = m_ui->treeWidget->topLevelItem(1);
     itemDiskOptions = m_ui->treeWidget->topLevelItem(2)->child(0);
     itemDiskOSB = m_ui->treeWidget->topLevelItem(2)->child(1);
+    itemDiskIcons = m_ui->treeWidget->topLevelItem(2)->child(2);
     itemI18n = m_ui->treeWidget->topLevelItem(3);
     itemTestSerialPort = m_ui->treeWidget->topLevelItem(0)->child(2);
     itemAtari1027 = m_ui->treeWidget->topLevelItem(4)->child(0);
@@ -95,6 +96,11 @@ OptionsDialog::OptionsDialog(QWidget *parent) :
     m_ui->trackLayout->setChecked(respeqtSettings->isTrackLayout());
     m_ui->disassembleUploadedCode->setChecked(respeqtSettings->disassembleUploadedCode());
     m_ui->translatorAutomaticDetection->setChecked(respeqtSettings->translatorAutomaticDetection());
+    m_ui->hideChipMode->setChecked(respeqtSettings->hideChipMode());
+    m_ui->hideHappyMode->setChecked(respeqtSettings->hideHappyMode());
+    m_ui->hideNextImage->setChecked(respeqtSettings->hideNextImage());
+    m_ui->hideOSBMode->setChecked(respeqtSettings->hideOSBMode());
+    m_ui->hideToolDisk->setChecked(respeqtSettings->hideToolDisk());
     m_ui->useLargerFont->setChecked(respeqtSettings->useLargeFont());
     m_ui->enableShade->setChecked(respeqtSettings->enableShade());
     m_ui->RclNameEdit->setText(respeqtSettings->lastRclDir());
@@ -301,6 +307,8 @@ void OptionsDialog::on_treeWidget_currentItemChanged(QTreeWidgetItem* current, Q
         m_ui->stackedWidget->setCurrentIndex(4);
     } else if (current == itemDiskOSB) {
         m_ui->stackedWidget->setCurrentIndex(12);
+    } else if (current == itemDiskIcons) {
+        m_ui->stackedWidget->setCurrentIndex(13);
     } else if (current == itemI18n) {
         m_ui->stackedWidget->setCurrentIndex(5);
     } else if (current == itemAtari1027) {
@@ -337,6 +345,11 @@ void OptionsDialog::OptionsDialog_accepted()
     respeqtSettings->setTrackLayout(m_ui->trackLayout->isChecked());
     respeqtSettings->setDisassembleUploadedCode(m_ui->disassembleUploadedCode->isChecked());
     respeqtSettings->setTranslatorAutomaticDetection(m_ui->translatorAutomaticDetection->isChecked());
+    respeqtSettings->setHideChipMode(m_ui->hideChipMode->isChecked());
+    respeqtSettings->setHideHappyMode(m_ui->hideHappyMode->isChecked());
+    respeqtSettings->setHideNextImage(m_ui->hideNextImage->isChecked());
+    respeqtSettings->setHideOSBMode(m_ui->hideOSBMode->isChecked());
+    respeqtSettings->setHideToolDisk(m_ui->hideToolDisk->isChecked());
     respeqtSettings->setUseLargeFont(m_ui->useLargerFont->isChecked());
     respeqtSettings->setEnableShade(m_ui->enableShade->isChecked());
     respeqtSettings->setRclDir(m_ui->RclNameEdit->text());
@@ -435,12 +448,6 @@ void OptionsDialog::on_actionSelect1050TurboFirmware_triggered()
 void OptionsDialog::on_actionSelect1050DuplicatorFirmware_triggered()
 {
     selectFirmware(m_ui->atari1050DuplicatorFirmwarePath, tr("Select Atari 1050 Duplicator firmware"), tr("Atari drive firmware (*.rom);;All files (*)"));
-}
-
-void OptionsDialog::on_translatorAutomaticDetection_toggled(bool)
-{
-    //m_ui->translatorDiskImagePath->setEnabled(checked);
-    //m_ui->translatorSelectButton->setEnabled(checked);
 }
 
 void OptionsDialog::on_actionSelectTranslatorDisk_triggered()

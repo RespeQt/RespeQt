@@ -156,6 +156,11 @@ RespeqtSettings::RespeqtSettings()
     mDisassembleUploadedCode = mSettings->value("DisassembleUploadedCode", false).toBool();
     mTranslatorAutomaticDetection = mSettings->value("TranslatorAutomaticDetection", false).toBool();
     mTranslatorDiskImagePath = mSettings->value("TranslatorDiskImagePath", "").toString();
+    mHideChipMode = mSettings->value("HideChipMode", false).toBool();
+    mHideHappyMode = mSettings->value("HideHappyMode", false).toBool();
+    mHideNextImage = mSettings->value("HideNextImage", false).toBool();
+    mHideOSBMode = mSettings->value("HideOSBMode", false).toBool();
+    mHideToolDisk = mSettings->value("HideToolDisk", false).toBool();
     mDisplayCpuInstructions = mSettings->value("DisplayCpuInstructions", false).toBool();
     mTraceFilename = mSettings->value("TraceFilename", "").toString();
     mD1PowerOnWithDiskInserted = mSettings->value("D1PowerOnWithDiskInserted", false).toBool();
@@ -258,6 +263,11 @@ void RespeqtSettings::saveSessionToFile(const QString &fileName)
         s.setValue("DisassembleUploadedCode", mDisassembleUploadedCode);
         s.setValue("TranslatorAutomaticDetection", mTranslatorAutomaticDetection);
         s.setValue("TranslatorDiskImagePath", mTranslatorDiskImagePath);
+        s.setValue("HideChipMode", mHideChipMode);
+        s.setValue("HideHappyMode", mHideHappyMode);
+        s.setValue("HideNextImage", mHideNextImage);
+        s.setValue("HideOSBMode", mHideOSBMode);
+        s.setValue("HideToolDisk", mHideToolDisk);
         s.setValue("DisplayCpuInstructions", mDisplayCpuInstructions);
         s.setValue("TraceFilename", mTraceFilename);
         s.setValue("D1PowerOnWithDiskInserted", mD1PowerOnWithDiskInserted);
@@ -359,6 +369,11 @@ void RespeqtSettings::saveSessionToFile(const QString &fileName)
         mDisassembleUploadedCode = s.value("DisassembleUploadedCode", false).toBool();
         mTranslatorAutomaticDetection = s.value("TranslatorAutomaticDetection", false).toBool();
         mTranslatorDiskImagePath = s.value("TranslatorDiskImagePath", false).toString();
+        mHideChipMode = s.value("HideChipMode", false).toBool();
+        mHideHappyMode = s.value("HideHappyMode", false).toBool();
+        mHideNextImage = s.value("HideNextImage", false).toBool();
+        mHideOSBMode = s.value("HideOSBMode", false).toBool();
+        mHideToolDisk = s.value("HideToolDisk", false).toBool();
         mDisplayCpuInstructions = s.value("DisplayCpuInstructions", false).toBool();
         mTraceFilename = s.value("TraceFilename", false).toBool();
         mD1PowerOnWithDiskInserted = s.value("D1PowerOnWithDiskInserted", false).toBool();
@@ -1354,6 +1369,61 @@ void RespeqtSettings::setTranslatorAutomaticDetection(bool translatorAutomaticDe
 {
     mTranslatorAutomaticDetection = translatorAutomaticDetection;
     if(mSessionFileName == "") mSettings->setValue("TranslatorAutomaticDetection", mTranslatorAutomaticDetection);
+}
+
+bool RespeqtSettings::hideChipMode()
+{
+    return mHideChipMode;
+}
+
+void RespeqtSettings::setHideChipMode(bool hidden)
+{
+    mHideChipMode = hidden;
+    if(mSessionFileName == "") mSettings->setValue("HideChipMode", mHideChipMode);
+}
+
+bool RespeqtSettings::hideHappyMode()
+{
+    return mHideHappyMode;
+}
+
+void RespeqtSettings::setHideHappyMode(bool hidden)
+{
+    mHideHappyMode = hidden;
+    if(mSessionFileName == "") mSettings->setValue("HideHappyMode", mHideHappyMode);
+}
+
+bool RespeqtSettings::hideNextImage()
+{
+    return mHideNextImage;
+}
+
+void RespeqtSettings::setHideNextImage(bool hidden)
+{
+    mHideNextImage = hidden;
+    if(mSessionFileName == "") mSettings->setValue("HideNextImage", mHideNextImage);
+}
+
+bool RespeqtSettings::hideOSBMode()
+{
+    return mHideOSBMode;
+}
+
+void RespeqtSettings::setHideOSBMode(bool hidden)
+{
+    mHideOSBMode = hidden;
+    if(mSessionFileName == "") mSettings->setValue("HideOSBMode", mHideOSBMode);
+}
+
+bool RespeqtSettings::hideToolDisk()
+{
+    return mHideToolDisk;
+}
+
+void RespeqtSettings::setHideToolDisk(bool hidden)
+{
+    mHideToolDisk = hidden;
+    if(mSessionFileName == "") mSettings->setValue("HideToolDisk", mHideToolDisk);
 }
 
 QString RespeqtSettings::translatorDiskImagePath()

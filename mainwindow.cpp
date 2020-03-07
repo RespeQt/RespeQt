@@ -393,7 +393,7 @@ void MainWindow::createDeviceWidgets()
             ui->rightColumn->addWidget( deviceWidget );
         }
 
-        deviceWidget->setup();
+        deviceWidget->setup(respeqtSettings->hideHappyMode(), respeqtSettings->hideChipMode(), respeqtSettings->hideNextImage(), respeqtSettings->hideOSBMode(), respeqtSettings->hideToolDisk());
         diskWidgets[i] = deviceWidget;
 
         // connect signals to slots
@@ -1013,7 +1013,9 @@ void MainWindow::deviceStatusChanged(int deviceNo)
                         }
                     }
                 }
-                diskWidget->showAsImageMounted(filenamelabel, img->description(), enableEdit, enableSave, img->isLeverOpen(), img->isHappyEnabled(), img->isChipOpen(), img->isTranslatorActive(), img->hasSeveralSides());
+                diskWidget->showAsImageMounted(filenamelabel, img->description(), enableEdit, enableSave, img->isLeverOpen(), img->isHappyEnabled(), img->isChipOpen(),
+                                               img->isTranslatorActive(), img->hasSeveralSides(), respeqtSettings->hideHappyMode(), respeqtSettings->hideChipMode(),
+                                               respeqtSettings->hideNextImage(), respeqtSettings->hideOSBMode(), respeqtSettings->hideToolDisk());
             }
 
             img->setDisplayTransmission(respeqtSettings->displayTransmission());
@@ -1033,7 +1035,7 @@ void MainWindow::deviceStatusChanged(int deviceNo)
                 fimg->SetTraceFilename(respeqtSettings->traceFilename());
             }
         } else {
-            diskWidget->showAsEmpty();
+            diskWidget->showAsEmpty(respeqtSettings->hideHappyMode(), respeqtSettings->hideChipMode(), respeqtSettings->hideNextImage(), respeqtSettings->hideOSBMode(), respeqtSettings->hideToolDisk());
         }
     }
 }
@@ -1246,7 +1248,7 @@ bool MainWindow::ejectImage(int no, bool ask)
     sio->uninstallDevice(no + DISK_BASE_CDEVIC);
     if (img) {
         delete img;
-        diskWidgets[no]->showAsEmpty();
+        diskWidgets[no]->showAsEmpty(respeqtSettings->hideHappyMode(), respeqtSettings->hideChipMode(), respeqtSettings->hideNextImage(), respeqtSettings->hideOSBMode(), respeqtSettings->hideToolDisk());
         respeqtSettings->unmountImage(no);
         updateRecentFileActions();
         deviceStatusChanged(no + DISK_BASE_CDEVIC);
@@ -1421,7 +1423,7 @@ void MainWindow::mountFile(int no, const QString &fileName, bool /*prot*/)
             qDebug() << "!e " << tr("Bad cast for PCLINK");
         }
 
-        diskWidgets[no]->updateFromImage(disk);
+        diskWidgets[no]->updateFromImage(disk, respeqtSettings->hideHappyMode(), respeqtSettings->hideChipMode(), respeqtSettings->hideNextImage(), respeqtSettings->hideOSBMode(), respeqtSettings->hideToolDisk());
 
         respeqtSettings->mountImage(no, fileName, disk->isReadOnly());
         updateRecentFileActions();
@@ -1687,7 +1689,7 @@ void MainWindow::autoSaveDisk(int no)
 
     if (img->isUnnamed()) {
         saveDiskAs(no);
-        widget->updateFromImage(img);
+        widget->updateFromImage(img, respeqtSettings->hideHappyMode(), respeqtSettings->hideChipMode(), respeqtSettings->hideNextImage(), respeqtSettings->hideOSBMode(), respeqtSettings->hideToolDisk());
         return;
     }
 
@@ -1710,7 +1712,7 @@ void MainWindow::autoSaveDisk(int no)
             saveDiskAs(no);
         }
     }
-    widget->updateFromImage(img);
+    widget->updateFromImage(img, respeqtSettings->hideHappyMode(), respeqtSettings->hideChipMode(), respeqtSettings->hideNextImage(), respeqtSettings->hideOSBMode(), respeqtSettings->hideToolDisk());
 }
 //
 void MainWindow::saveDiskAs(int no)

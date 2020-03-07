@@ -25,14 +25,15 @@ public:
     ~DriveWidget();
 
     int getDriveNumber() { return driveNo_; }
-    void setup();
+    void setup(bool happyShown, bool chipShown, bool nextSideShown, bool OSBShown, bool toolDiskShown);
 
 
-    void showAsEmpty();
+    void showAsEmpty(bool happyHidden, bool chipHidden, bool nextSideHidden, bool OSBHidden, bool toolDiskHidden);
     void showAsFolderMounted(const QString &fileName, const QString &description, bool editEnabled);
-    void showAsImageMounted(const QString &fileName, const QString &description, bool editEnabled, bool enableSave, bool leverOpen, bool happyEnabled, bool chipOpen, bool translatorActive, bool severalSides);
+    void showAsImageMounted(const QString &fileName, const QString &description, bool editEnabled, bool enableSave, bool leverOpen, bool happyEnabled, bool chipOpen,
+                            bool translatorActive, bool severalSides, bool happyShown, bool chipShown, bool nextSideShown, bool OSBShown, bool toolDiskShown);
 
-    void updateFromImage(SimpleDiskImage* diskImage);
+    void updateFromImage(SimpleDiskImage* diskImage, bool happyShown, bool chipShown, bool nextSideShown, bool OSBShown, bool toolDiskShown);
     bool isAutoSaveEnabled();
     bool isHappyEnabled();
     bool isChipEnabled();
