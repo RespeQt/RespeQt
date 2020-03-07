@@ -35,7 +35,7 @@ protected:
 private:
     Ui::OptionsDialog *m_ui;
     QTreeWidgetItem *itemTestSerialPort, *itemPassthrough, *itemAtari1027,
-        *itemStandard, *itemAtariSio, *itemEmulation, *itemDiskOptions, *itemDiskOSB, *itemDiskIcons, *itemI18n,
+        *itemStandard, *itemAtariSio, *itemEmulation, *itemDiskOptions, *itemDiskOSB, *itemDiskIcons, *itemDiskFavorite, *itemI18n,
         *itemFirmware810Path, *itemFirmware1050Path, *itemFirmwareEmulation, *itemTraceOptions;
 
     void selectFirmware(QLineEdit *edit, QString title, QString filters);
@@ -59,6 +59,7 @@ private slots:
     void on_actionSelect1050TurboFirmware_triggered();
     void on_actionSelect1050DuplicatorFirmware_triggered();
     void on_actionSelectTranslatorDisk_triggered();
+    void on_actionSelectToolDisk_triggered();
     void on_button_atarifixed_clicked();
     void on_buttonRclFolder_clicked();
 };

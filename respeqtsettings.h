@@ -290,6 +290,8 @@ public:
     void setTranslatorAutomaticDetection(bool translatorAutomaticDetection);
     QString translatorDiskImagePath();
     void setTranslatorDiskImagePath(const QString &diskImage);
+    QString toolDiskImagePath();
+    void setToolDiskImagePath(const QString &diskImage);
     bool hideChipMode();
     void setHideChipMode(bool hidden);
     bool hideHappyMode();
@@ -300,6 +302,10 @@ public:
     void setHideOSBMode(bool hidden);
     bool hideToolDisk();
     void setHideToolDisk(bool hidden);
+    bool activateChipModeWithTool();
+    void setActivateChipModeWithTool(bool activate);
+    bool activateHappyModeWithTool();
+    void setActivateHappyModeWithTool(bool activate);
     bool displayCpuInstructions();
     void setDisplayCpuInstructions(bool displayCpuInstructions);
 	QString traceFilename();
@@ -428,6 +434,9 @@ private:
     bool mHideNextImage;
     bool mHideOSBMode;
     bool mHideToolDisk;
+    QString mToolDiskImagePath;
+    bool mActivateChipModeWithTool;
+    bool mActivateHappyModeWithTool;
     bool mDisplayCpuInstructions;
 	QString mTraceFilename;
     bool mD1PowerOnWithDiskInserted;

@@ -54,6 +54,7 @@ void DriveWidget::setup(bool happyHidden, bool chipHidden, bool nextSideHidden, 
     FormatStatusTip(ui->actionToggleHappy, driveTxt);
     FormatStatusTip(ui->actionToggleChip, driveTxt);
     FormatStatusTip(ui->actionToggleOSB, driveTxt);
+    FormatStatusTip(ui->actionToolDisk, driveTxt);
     FormatStatusTip(ui->actionWriteProtect, driveTxt);
     FormatStatusTip(ui->actionEditDisk, driveTxt);
 
@@ -70,6 +71,7 @@ void DriveWidget::setup(bool happyHidden, bool chipHidden, bool nextSideHidden, 
     insertAction(0, ui->actionToggleHappy);
     insertAction(0, ui->actionToggleChip);
     insertAction(0, ui->actionToggleOSB);
+    insertAction(0, ui->actionToolDisk);
     insertAction(0, ui->actionWriteProtect);
     insertAction(0, ui->actionEditDisk);
 
@@ -81,6 +83,7 @@ void DriveWidget::setup(bool happyHidden, bool chipHidden, bool nextSideHidden, 
     ui->buttonToggleHappy->setDefaultAction(ui->actionToggleHappy);
     ui->buttonToggleChip->setDefaultAction(ui->actionToggleChip);
     ui->buttonToggleOSB->setDefaultAction(ui->actionToggleOSB);
+    ui->buttonToolDisk->setDefaultAction(ui->actionToolDisk);
     ui->buttonSave->setDefaultAction(ui->actionSave);
     ui->autoSave->setDefaultAction(ui->actionAutoSave);
     ui->buttonEditDisk->setDefaultAction(ui->actionEditDisk);
@@ -89,6 +92,7 @@ void DriveWidget::setup(bool happyHidden, bool chipHidden, bool nextSideHidden, 
     ui->buttonToggleHappy->setVisible(!happyHidden);
     ui->buttonToggleChip->setVisible(!chipHidden);
     ui->buttonToggleOSB->setVisible((driveNo_ == 0) &&(!OSBHidden));
+    ui->buttonToolDisk->setVisible((driveNo_ == 0) &&(!toolDiskHidden));
 }
 
 void DriveWidget::updateFromImage(SimpleDiskImage *diskImage, bool happyHidden, bool chipHidden, bool nextSideHidden, bool OSBHidden, bool toolDiskHidden)
@@ -117,6 +121,9 @@ void DriveWidget::updateFromImage(SimpleDiskImage *diskImage, bool happyHidden, 
     ui->buttonToggleOSB->setVisible((driveNo_ == 0) && (!OSBHidden));
     ui->actionToggleOSB->setEnabled(true);
     ui->actionToggleOSB->setChecked(diskImage->isTranslatorActive());
+    ui->buttonToolDisk->setVisible((driveNo_ == 0) && (!toolDiskHidden));
+    ui->actionToolDisk->setEnabled(true);
+    ui->actionToolDisk->setChecked(diskImage->isToolDiskActive());
 
     bool enableEdit = diskImage->editDialog() != NULL;
     ui->actionEditDisk->setChecked(enableEdit);
@@ -166,6 +173,9 @@ void DriveWidget::showAsEmpty(bool happyHidden, bool chipHidden, bool nextSideHi
     ui->buttonToggleOSB->setVisible((driveNo_ == 0) &&(!OSBHidden));
     ui->actionToggleOSB->setChecked(false);
     ui->actionToggleOSB->setEnabled(false);
+    ui->buttonToolDisk->setVisible((driveNo_ == 0) &&(!toolDiskHidden));
+    ui->actionToolDisk->setChecked(false);
+    ui->actionToolDisk->setEnabled(false);
     ui->actionRevert->setEnabled(false);
     ui->actionSaveAs->setEnabled(false);
     ui->actionEditDisk->setEnabled(false);
@@ -191,6 +201,8 @@ void DriveWidget::showAsFolderMounted(const QString &fileName, const QString &de
     ui->actionToggleChip->setEnabled(false);
     ui->buttonToggleOSB->setVisible(false);
     ui->actionToggleOSB->setEnabled(false);
+    ui->buttonToolDisk->setVisible(false);
+    ui->actionToolDisk->setEnabled(false);
     ui->actionEditDisk->setChecked(editEnabled);
 
     ui->labelFileName->setStyleSheet("color: rgb(54, 168, 164); font-weight: bold");
@@ -205,7 +217,7 @@ void DriveWidget::showAsFolderMounted(const QString &fileName, const QString &de
 }
 
 void DriveWidget::showAsImageMounted(const QString &fileName, const QString &description, bool editEnabled, bool enableSave, bool leverOpen, bool happyEnabled, bool chipOpen,
-                                     bool translatorActive, bool severalSides, bool happyHidden, bool chipHidden, bool nextSideHidden, bool OSBHidden, bool toolDiskHidden)
+                                     bool translatorActive, bool toolDiskActive, bool severalSides, bool happyHidden, bool chipHidden, bool nextSideHidden, bool OSBHidden, bool toolDiskHidden)
 {
     ui->labelFileName->setText(fileName);
     ui->labelImageProperties->setText(description);
@@ -220,6 +232,9 @@ void DriveWidget::showAsImageMounted(const QString &fileName, const QString &des
     ui->buttonToggleOSB->setVisible((driveNo_ == 0) && (!OSBHidden));
     ui->actionToggleOSB->setEnabled(true);
     ui->actionToggleOSB->setChecked(translatorActive);
+    ui->buttonToolDisk->setVisible((driveNo_ == 0) && (!toolDiskHidden));
+    ui->actionToolDisk->setEnabled(true);
+    ui->actionToolDisk->setChecked(toolDiskActive);
     ui->buttonNextSide->setVisible(!nextSideHidden);
     ui->actionNextSide->setEnabled(severalSides);
     ui->actionNextSide->setChecked(leverOpen);
@@ -279,6 +294,7 @@ void DriveWidget::on_actionNextSide_triggered()     { emit actionNextSide(driveN
 void DriveWidget::on_actionToggleHappy_triggered(bool open) { emit actionToggleHappy(driveNo_, open); }
 void DriveWidget::on_actionToggleChip_triggered(bool open) { emit actionToggleChip(driveNo_, open); }
 void DriveWidget::on_actionToggleOSB_triggered(bool open) { emit actionToggleOSB(driveNo_, open); }
+void DriveWidget::on_actionToolDisk_triggered(bool open) { emit actionToolDisk(driveNo_, open); }
 void DriveWidget::on_actionWriteProtect_toggled(bool state) { emit actionWriteProtect(driveNo_, state); }
 void DriveWidget::on_actionEditDisk_triggered()     { emit actionEditDisk(driveNo_); }
 void DriveWidget::on_actionSave_triggered()         { emit actionSave(driveNo_); }

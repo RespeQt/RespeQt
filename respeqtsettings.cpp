@@ -161,6 +161,9 @@ RespeqtSettings::RespeqtSettings()
     mHideNextImage = mSettings->value("HideNextImage", false).toBool();
     mHideOSBMode = mSettings->value("HideOSBMode", false).toBool();
     mHideToolDisk = mSettings->value("HideToolDisk", false).toBool();
+    mToolDiskImagePath = mSettings->value("ToolDiskImagePath", "").toString();
+    mActivateChipModeWithTool = mSettings->value("ActivateChipModeWithTool", false).toBool();
+    mActivateHappyModeWithTool = mSettings->value("ActivateHappyModeWithTool", false).toBool();
     mDisplayCpuInstructions = mSettings->value("DisplayCpuInstructions", false).toBool();
     mTraceFilename = mSettings->value("TraceFilename", "").toString();
     mD1PowerOnWithDiskInserted = mSettings->value("D1PowerOnWithDiskInserted", false).toBool();
@@ -268,6 +271,9 @@ void RespeqtSettings::saveSessionToFile(const QString &fileName)
         s.setValue("HideNextImage", mHideNextImage);
         s.setValue("HideOSBMode", mHideOSBMode);
         s.setValue("HideToolDisk", mHideToolDisk);
+        s.setValue("ToolDiskImagePath", mToolDiskImagePath);
+        s.setValue("ActivateChipModeWithTool", mActivateChipModeWithTool);
+        s.setValue("ActivateHappyModeWithTool", mActivateHappyModeWithTool);
         s.setValue("DisplayCpuInstructions", mDisplayCpuInstructions);
         s.setValue("TraceFilename", mTraceFilename);
         s.setValue("D1PowerOnWithDiskInserted", mD1PowerOnWithDiskInserted);
@@ -374,6 +380,9 @@ void RespeqtSettings::saveSessionToFile(const QString &fileName)
         mHideNextImage = s.value("HideNextImage", false).toBool();
         mHideOSBMode = s.value("HideOSBMode", false).toBool();
         mHideToolDisk = s.value("HideToolDisk", false).toBool();
+        mToolDiskImagePath = s.value("ToolDiskImagePath", false).toString();
+        mActivateChipModeWithTool = s.value("ActivateChipModeWithTool", false).toBool();
+        mActivateHappyModeWithTool = s.value("ActivateHappyModeWithTool", false).toBool();
         mDisplayCpuInstructions = s.value("DisplayCpuInstructions", false).toBool();
         mTraceFilename = s.value("TraceFilename", false).toBool();
         mD1PowerOnWithDiskInserted = s.value("D1PowerOnWithDiskInserted", false).toBool();
@@ -1435,6 +1444,39 @@ void RespeqtSettings::setTranslatorDiskImagePath(const QString &diskImage)
 {
     mTranslatorDiskImagePath = diskImage;
     if(mSessionFileName == "") mSettings->setValue("TranslatorDiskImagePath", mTranslatorDiskImagePath);
+}
+
+QString RespeqtSettings::toolDiskImagePath()
+{
+    return mToolDiskImagePath;
+}
+
+void RespeqtSettings::setToolDiskImagePath(const QString &diskImage)
+{
+    mToolDiskImagePath = diskImage;
+    if(mSessionFileName == "") mSettings->setValue("ToolDiskImagePath", mToolDiskImagePath);
+}
+
+bool RespeqtSettings::activateChipModeWithTool()
+{
+    return mActivateChipModeWithTool;
+}
+
+void RespeqtSettings::setActivateChipModeWithTool(bool activate)
+{
+    mActivateChipModeWithTool = activate;
+    if(mSessionFileName == "") mSettings->setValue("ActivateChipModeWithTool", mActivateChipModeWithTool);
+}
+
+bool RespeqtSettings::activateHappyModeWithTool()
+{
+    return mActivateHappyModeWithTool;
+}
+
+void RespeqtSettings::setActivateHappyModeWithTool(bool activate)
+{
+    mActivateHappyModeWithTool = activate;
+    if(mSessionFileName == "") mSettings->setValue("ActivateHappyModeWithTool", mActivateHappyModeWithTool);
 }
 
 bool RespeqtSettings::displayCpuInstructions()

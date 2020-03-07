@@ -69,5 +69,7 @@
         <file>silk-icons/icons/drive_save.png</file>
         <file>oxygen-icons/16x16/actions/2rightarrow.png</file>
         <file>other-icons/toggleosb.png</file>
+        <file>silk-icons/icons/shield.png</file>
+        <file>silk-icons/icons/shield_go.png</file>
     </qresource>
 </RCC>

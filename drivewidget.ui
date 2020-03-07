@@ -343,6 +343,31 @@
     </widget>
    </item>
    <item>
+    <widget class="QToolButton" name="buttonToolDisk">
+     <property name="enabled">
+      <bool>true</bool>
+     </property>
+     <property name="minimumSize">
+      <size>
+       <width>21</width>
+       <height>25</height>
+      </size>
+     </property>
+     <property name="maximumSize">
+      <size>
+       <width>21</width>
+       <height>25</height>
+      </size>
+     </property>
+     <property name="popupMode">
+      <enum>QToolButton::DelayedPopup</enum>
+     </property>
+     <property name="autoRaise">
+      <bool>false</bool>
+     </property>
+    </widget>
+   </item>
+   <item>
     <widget class="QToolButton" name="buttonToggleOSB">
      <property name="enabled">
       <bool>true</bool>
@@ -764,6 +789,25 @@
    </property>
    <property name="toolTip">
     <string>Load next software disk or side</string>
+   </property>
+  </action>
+  <action name="actionToolDisk">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="icons.qrc">
+     <normaloff>:/icons/silk-icons/icons/shield.png</normaloff>
+     <normalon>:/icons/silk-icons/icons/shield_go.png</normalon>:/icons/silk-icons/icons/shield.png</iconset>
+   </property>
+   <property name="text">
+    <string>Boot tool disk image</string>
+   </property>
+   <property name="toolTip">
+    <string>Boot tool disk image the next time the Atari is powered on</string>
    </property>
   </action>
   <action name="actionToggleOSB">

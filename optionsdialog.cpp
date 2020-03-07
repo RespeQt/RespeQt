@@ -37,12 +37,14 @@ OptionsDialog::OptionsDialog(QWidget *parent) :
     itemDiskOptions = m_ui->treeWidget->topLevelItem(2)->child(0);
     itemDiskOSB = m_ui->treeWidget->topLevelItem(2)->child(1);
     itemDiskIcons = m_ui->treeWidget->topLevelItem(2)->child(2);
+    itemDiskFavorite = m_ui->treeWidget->topLevelItem(2)->child(3);
     itemI18n = m_ui->treeWidget->topLevelItem(3);
     itemTestSerialPort = m_ui->treeWidget->topLevelItem(0)->child(2);
     itemAtari1027 = m_ui->treeWidget->topLevelItem(4)->child(0);
     itemPassthrough = m_ui->treeWidget->topLevelItem(4)->child(1);
 
     m_ui->translatorSelectButton->setDefaultAction(m_ui->actionSelectTranslatorDisk);
+    m_ui->toolDiskSelectButton->setDefaultAction(m_ui->actionSelectToolDisk);
 
 #ifndef Q_OS_LINUX
     m_ui->treeWidget->topLevelItem(0)->removeChild(itemAtariSio);
@@ -95,12 +97,16 @@ OptionsDialog::OptionsDialog(QWidget *parent) :
     m_ui->commandName->setChecked(respeqtSettings->isCommandName());
     m_ui->trackLayout->setChecked(respeqtSettings->isTrackLayout());
     m_ui->disassembleUploadedCode->setChecked(respeqtSettings->disassembleUploadedCode());
+    m_ui->translatorDiskImagePath->setText(respeqtSettings->translatorDiskImagePath());
     m_ui->translatorAutomaticDetection->setChecked(respeqtSettings->translatorAutomaticDetection());
     m_ui->hideChipMode->setChecked(respeqtSettings->hideChipMode());
     m_ui->hideHappyMode->setChecked(respeqtSettings->hideHappyMode());
     m_ui->hideNextImage->setChecked(respeqtSettings->hideNextImage());
     m_ui->hideOSBMode->setChecked(respeqtSettings->hideOSBMode());
     m_ui->hideToolDisk->setChecked(respeqtSettings->hideToolDisk());
+    m_ui->toolDiskImagePath->setText(respeqtSettings->toolDiskImagePath());
+    m_ui->activateChipModeWithTool->setChecked(respeqtSettings->activateChipModeWithTool());
+    m_ui->activateHappyModeWithTool->setChecked(respeqtSettings->activateHappyModeWithTool());
     m_ui->useLargerFont->setChecked(respeqtSettings->useLargeFont());
     m_ui->enableShade->setChecked(respeqtSettings->enableShade());
     m_ui->RclNameEdit->setText(respeqtSettings->lastRclDir());
@@ -180,7 +186,6 @@ OptionsDialog::OptionsDialog(QWidget *parent) :
         m_ui->emulationHighSpeedExeLoaderBox->setVisible(true);
     }
 
-    m_ui->translatorDiskImagePath->setText(respeqtSettings->translatorDiskImagePath());
     m_ui->label_atarifixed->setText(respeqtSettings->atariFixedFontFamily());
     QFont font;
     font.setPointSize(12);
@@ -309,6 +314,8 @@ void OptionsDialog::on_treeWidget_currentItemChanged(QTreeWidgetItem* current, Q
         m_ui->stackedWidget->setCurrentIndex(12);
     } else if (current == itemDiskIcons) {
         m_ui->stackedWidget->setCurrentIndex(13);
+    } else if (current == itemDiskFavorite) {
+        m_ui->stackedWidget->setCurrentIndex(14);
     } else if (current == itemI18n) {
         m_ui->stackedWidget->setCurrentIndex(5);
     } else if (current == itemAtari1027) {
@@ -345,11 +352,15 @@ void OptionsDialog::OptionsDialog_accepted()
     respeqtSettings->setTrackLayout(m_ui->trackLayout->isChecked());
     respeqtSettings->setDisassembleUploadedCode(m_ui->disassembleUploadedCode->isChecked());
     respeqtSettings->setTranslatorAutomaticDetection(m_ui->translatorAutomaticDetection->isChecked());
+    respeqtSettings->setTranslatorDiskImagePath(m_ui->translatorDiskImagePath->text());
     respeqtSettings->setHideChipMode(m_ui->hideChipMode->isChecked());
     respeqtSettings->setHideHappyMode(m_ui->hideHappyMode->isChecked());
     respeqtSettings->setHideNextImage(m_ui->hideNextImage->isChecked());
     respeqtSettings->setHideOSBMode(m_ui->hideOSBMode->isChecked());
     respeqtSettings->setHideToolDisk(m_ui->hideToolDisk->isChecked());
+    respeqtSettings->setToolDiskImagePath(m_ui->toolDiskImagePath->text());
+    respeqtSettings->setActivateChipModeWithTool(m_ui->activateChipModeWithTool->isChecked());
+    respeqtSettings->setActivateHappyModeWithTool(m_ui->activateHappyModeWithTool->isChecked());
     respeqtSettings->setUseLargeFont(m_ui->useLargerFont->isChecked());
     respeqtSettings->setEnableShade(m_ui->enableShade->isChecked());
     respeqtSettings->setRclDir(m_ui->RclNameEdit->text());
@@ -372,7 +383,6 @@ void OptionsDialog::OptionsDialog_accepted()
 #ifdef Q_OS_MAC
     respeqtSettings->setNativeMenu(m_ui->useNativeMenu->isChecked());
 #endif
-    respeqtSettings->setTranslatorDiskImagePath(m_ui->translatorDiskImagePath->text());
     if (m_ui->rawPrinterName->currentData() != -1)
         respeqtSettings->setRawPrinterName(m_ui->rawPrinterName->currentText());
     else
@@ -453,6 +463,11 @@ void OptionsDialog::on_actionSelect1050DuplicatorFirmware_triggered()
 void OptionsDialog::on_actionSelectTranslatorDisk_triggered()
 {
     selectFirmware(m_ui->translatorDiskImagePath, tr("Select translator disk image"), tr("Atari disk image (*.atr);;All files (*)"));
+}
+
+void OptionsDialog::on_actionSelectToolDisk_triggered()
+{
+    selectFirmware(m_ui->toolDiskImagePath, tr("Select tool disk image"), tr("Atari disk image (*.atr);;All files (*)"));
 }
 
 void OptionsDialog::on_testFileButton_clicked()

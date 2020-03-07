@@ -31,7 +31,7 @@ public:
     void showAsEmpty(bool happyHidden, bool chipHidden, bool nextSideHidden, bool OSBHidden, bool toolDiskHidden);
     void showAsFolderMounted(const QString &fileName, const QString &description, bool editEnabled);
     void showAsImageMounted(const QString &fileName, const QString &description, bool editEnabled, bool enableSave, bool leverOpen, bool happyEnabled, bool chipOpen,
-                            bool translatorActive, bool severalSides, bool happyShown, bool chipShown, bool nextSideShown, bool OSBShown, bool toolDiskShown);
+                            bool translatorActive, bool toolDiskActive, bool severalSides, bool happyShown, bool chipShown, bool nextSideShown, bool OSBShown, bool toolDiskShown);
 
     void updateFromImage(SimpleDiskImage* diskImage, bool happyShown, bool chipShown, bool nextSideShown, bool OSBShown, bool toolDiskShown);
     bool isAutoSaveEnabled();
@@ -51,6 +51,7 @@ signals:
     void actionToggleHappy(int deviceId, bool enabled);
     void actionToggleChip(int deviceId, bool open);
     void actionToggleOSB(int deviceId, bool open);
+    void actionToolDisk(int deviceId, bool open);
     void actionWriteProtect(int deviceId,bool state);
     void actionMountRecent(int deviceId, const QString &fileName);
     void actionEditDisk(int deviceId);
@@ -70,6 +71,7 @@ private slots:
     void on_actionToggleHappy_triggered(bool enabled);
     void on_actionToggleChip_triggered(bool open);
     void on_actionToggleOSB_triggered(bool open);
+    void on_actionToolDisk_triggered(bool open);
 
     void on_actionWriteProtect_toggled(bool state);
 
