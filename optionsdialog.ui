@@ -10,7 +10,7 @@
     <x>0</x>
     <y>0</y>
     <width>638</width>
-    <height>443</height>
+    <height>423</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -33,8 +33,8 @@
     <rect>
      <x>9</x>
      <y>9</y>
-     <width>256</width>
-     <height>201</height>
+     <width>271</width>
+     <height>361</height>
     </rect>
    </property>
    <property name="sizePolicy">
@@ -90,8 +90,31 @@
    </item>
    <item>
     <property name="text">
-     <string>Disk image options</string>
+     <string>Disk images</string>
     </property>
+    <property name="flags">
+     <set>ItemIsDragEnabled|ItemIsUserCheckable|ItemIsEnabled</set>
+    </property>
+    <item>
+     <property name="text">
+      <string>Image options</string>
+     </property>
+    </item>
+    <item>
+     <property name="text">
+      <string>OS-B emulation</string>
+     </property>
+    </item>
+    <item>
+     <property name="text">
+      <string>Icon visibility</string>
+     </property>
+    </item>
+    <item>
+     <property name="text">
+      <string>Favorite tool disk</string>
+     </property>
+    </item>
    </item>
    <item>
     <property name="text">
@@ -133,7 +156,7 @@
     </sizepolicy>
    </property>
    <property name="currentIndex">
-    <number>7</number>
+    <number>14</number>
    </property>
    <widget class="QWidget" name="page_serialPort">
     <layout class="QVBoxLayout" name="verticalLayout_2">
@@ -381,7 +404,7 @@
         <item>
          <widget class="QLabel" name="serialPortCompErrDelayLabel">
           <property name="text">
-           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;Complete/Error response delay (μs)&lt;br&gt;See manual for more information&lt;/body&gt;&lt;/html&gt;</string>
+           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Complete/Error response delay (μs)&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
           </property>
          </widget>
         </item>
@@ -706,19 +729,6 @@
           </property>
          </widget>
         </item>
-        <item row="12" column="1">
-         <spacer name="emulationSpacer2">
-          <property name="orientation">
-           <enum>Qt::Vertical</enum>
-          </property>
-          <property name="sizeHint" stdset="0">
-           <size>
-            <width>20</width>
-            <height>40</height>
-           </size>
-          </property>
-         </spacer>
-        </item>
         <item row="6" column="0" colspan="2">
          <widget class="QCheckBox" name="filterUscore">
           <property name="minimumSize">
@@ -829,6 +839,65 @@
           </property>
          </widget>
         </item>
+        <item row="13" column="0">
+         <widget class="QLineEdit" name="RclNameEdit">
+          <property name="text">
+           <string/>
+          </property>
+          <property name="readOnly">
+           <bool>true</bool>
+          </property>
+         </widget>
+        </item>
+        <item row="14" column="0">
+         <spacer name="emulationSpacer2">
+          <property name="orientation">
+           <enum>Qt::Vertical</enum>
+          </property>
+          <property name="sizeHint" stdset="0">
+           <size>
+            <width>20</width>
+            <height>40</height>
+           </size>
+          </property>
+         </spacer>
+        </item>
+        <item row="12" column="0">
+         <widget class="QLabel" name="atariSioDriverNameLabel_2">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
+          <property name="text">
+           <string>RCL client local path</string>
+          </property>
+         </widget>
+        </item>
+        <item row="13" column="1">
+         <widget class="QToolButton" name="buttonRclFolder">
+          <property name="enabled">
+           <bool>true</bool>
+          </property>
+          <property name="minimumSize">
+           <size>
+            <width>28</width>
+            <height>28</height>
+           </size>
+          </property>
+          <property name="maximumSize">
+           <size>
+            <width>28</width>
+            <height>28</height>
+           </size>
+          </property>
+          <property name="icon">
+           <iconset resource="icons.qrc">
+            <normaloff>:/icons/silk-icons/icons/drive.png</normaloff>:/icons/silk-icons/icons/drive.png</iconset>
+          </property>
+         </widget>
+        </item>
        </layout>
       </widget>
      </item>
@@ -860,7 +929,7 @@
         </size>
        </property>
        <property name="title">
-        <string>Disk image options</string>
+        <string>Image options</string>
        </property>
        <layout class="QGridLayout" name="gridLayout_11">
         <item row="4" column="0">
@@ -1993,12 +2062,362 @@
      </layout>
     </widget>
    </widget>
+   <widget class="QWidget" name="page_2">
+    <widget class="QGroupBox" name="traceGroup_2">
+     <property name="geometry">
+      <rect>
+       <x>0</x>
+       <y>0</y>
+       <width>320</width>
+       <height>401</height>
+      </rect>
+     </property>
+     <property name="minimumSize">
+      <size>
+       <width>258</width>
+       <height>208</height>
+      </size>
+     </property>
+     <property name="title">
+      <string>OS-B emulation</string>
+     </property>
+     <layout class="QGridLayout" name="gridLayout_7">
+      <item row="17" column="0">
+       <widget class="QCheckBox" name="translatorAutomaticDetection">
+        <property name="text">
+         <string>Detect [OS-B] and boot the translator disk</string>
+        </property>
+       </widget>
+      </item>
+      <item row="23" column="0">
+       <spacer name="traceSpacer_2">
+        <property name="orientation">
+         <enum>Qt::Vertical</enum>
+        </property>
+        <property name="sizeHint" stdset="0">
+         <size>
+          <width>20</width>
+          <height>40</height>
+         </size>
+        </property>
+       </spacer>
+      </item>
+      <item row="11" column="0">
+       <widget class="QLineEdit" name="translatorDiskImagePath">
+        <property name="text">
+         <string/>
+        </property>
+       </widget>
+      </item>
+      <item row="12" column="0">
+       <spacer name="verticalSpacer_6">
+        <property name="orientation">
+         <enum>Qt::Vertical</enum>
+        </property>
+        <property name="sizeType">
+         <enum>QSizePolicy::Fixed</enum>
+        </property>
+        <property name="sizeHint" stdset="0">
+         <size>
+          <width>20</width>
+          <height>10</height>
+         </size>
+        </property>
+       </spacer>
+      </item>
+      <item row="11" column="1">
+       <widget class="QToolButton" name="translatorSelectButton">
+        <property name="enabled">
+         <bool>true</bool>
+        </property>
+        <property name="minimumSize">
+         <size>
+          <width>24</width>
+          <height>24</height>
+         </size>
+        </property>
+        <property name="maximumSize">
+         <size>
+          <width>24</width>
+          <height>24</height>
+         </size>
+        </property>
+       </widget>
+      </item>
+      <item row="10" column="0">
+       <widget class="QLabel" name="warning2_6">
+        <property name="text">
+         <string>Translator disk to use with [OS-B] disk images</string>
+        </property>
+       </widget>
+      </item>
+      <item row="18" column="0">
+       <widget class="QLabel" name="warning2_2">
+        <property name="text">
+         <string>With this option active, RespeQt will detect [OS-B] in</string>
+        </property>
+       </widget>
+      </item>
+      <item row="19" column="0">
+       <widget class="QLabel" name="warning2_3">
+        <property name="text">
+         <string>a disk image filename and will automatically boot a</string>
+        </property>
+       </widget>
+      </item>
+      <item row="20" column="0">
+       <widget class="QLabel" name="warning2_4">
+        <property name="text">
+         <string>translator disk before booting the chosen disk image.</string>
+        </property>
+       </widget>
+      </item>
+      <item row="21" column="0">
+       <widget class="QLabel" name="warning2_5">
+        <property name="text">
+         <string>NOTE: this option applies only to slot D1:</string>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </widget>
+   <widget class="QWidget" name="page_3">
+    <widget class="QGroupBox" name="diskGroup_2">
+     <property name="geometry">
+      <rect>
+       <x>0</x>
+       <y>0</y>
+       <width>320</width>
+       <height>400</height>
+      </rect>
+     </property>
+     <property name="minimumSize">
+      <size>
+       <width>258</width>
+       <height>208</height>
+      </size>
+     </property>
+     <property name="title">
+      <string>Icon visibility in drive slots</string>
+     </property>
+     <layout class="QGridLayout" name="gridLayout_12">
+      <item row="4" column="0">
+       <widget class="QCheckBox" name="hideNextImage">
+        <property name="text">
+         <string>Hide Next image icon</string>
+        </property>
+       </widget>
+      </item>
+      <item row="5" column="0">
+       <widget class="QCheckBox" name="hideOSBMode">
+        <property name="text">
+         <string>Hide OS-B mode icon</string>
+        </property>
+       </widget>
+      </item>
+      <item row="2" column="0">
+       <widget class="QCheckBox" name="hideChipMode">
+        <property name="text">
+         <string>Hide Chip mode icon</string>
+        </property>
+       </widget>
+      </item>
+      <item row="3" column="0">
+       <widget class="QCheckBox" name="hideHappyMode">
+        <property name="text">
+         <string>Hide Happy mode icon</string>
+        </property>
+       </widget>
+      </item>
+      <item row="6" column="0">
+       <widget class="QCheckBox" name="hideToolDisk">
+        <property name="text">
+         <string>Hide Tool disk icon</string>
+        </property>
+       </widget>
+      </item>
+      <item row="11" column="0">
+       <spacer name="emulationSpacer2_3">
+        <property name="orientation">
+         <enum>Qt::Vertical</enum>
+        </property>
+        <property name="sizeHint" stdset="0">
+         <size>
+          <width>20</width>
+          <height>40</height>
+         </size>
+        </property>
+       </spacer>
+      </item>
+      <item row="7" column="0">
+       <spacer name="verticalSpacer_7">
+        <property name="orientation">
+         <enum>Qt::Vertical</enum>
+        </property>
+        <property name="sizeType">
+         <enum>QSizePolicy::Fixed</enum>
+        </property>
+        <property name="sizeHint" stdset="0">
+         <size>
+          <width>20</width>
+          <height>10</height>
+         </size>
+        </property>
+       </spacer>
+      </item>
+      <item row="8" column="0">
+       <widget class="QLabel" name="warning2_7">
+        <property name="text">
+         <string>These features can still be toggled with contextual menu.</string>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </widget>
+   <widget class="QWidget" name="page_4">
+    <widget class="QGroupBox" name="traceGroup_3">
+     <property name="geometry">
+      <rect>
+       <x>0</x>
+       <y>0</y>
+       <width>320</width>
+       <height>401</height>
+      </rect>
+     </property>
+     <property name="minimumSize">
+      <size>
+       <width>258</width>
+       <height>208</height>
+      </size>
+     </property>
+     <property name="title">
+      <string>Favorite tool disk</string>
+     </property>
+     <layout class="QGridLayout" name="gridLayout_9">
+      <item row="16" column="0">
+       <spacer name="verticalSpacer_9">
+        <property name="orientation">
+         <enum>Qt::Vertical</enum>
+        </property>
+        <property name="sizeType">
+         <enum>QSizePolicy::Fixed</enum>
+        </property>
+        <property name="sizeHint" stdset="0">
+         <size>
+          <width>20</width>
+          <height>10</height>
+         </size>
+        </property>
+       </spacer>
+      </item>
+      <item row="14" column="0">
+       <widget class="QLabel" name="warning2_9">
+        <property name="text">
+         <string>Tool disk image to boot when the favorite icon is active</string>
+        </property>
+       </widget>
+      </item>
+      <item row="13" column="0">
+       <spacer name="verticalSpacer_8">
+        <property name="orientation">
+         <enum>Qt::Vertical</enum>
+        </property>
+        <property name="sizeType">
+         <enum>QSizePolicy::Fixed</enum>
+        </property>
+        <property name="sizeHint" stdset="0">
+         <size>
+          <width>20</width>
+          <height>10</height>
+         </size>
+        </property>
+       </spacer>
+      </item>
+      <item row="10" column="0" colspan="2">
+       <widget class="QLabel" name="warning2_8">
+        <property name="text">
+         <string>The favorite tool disk is a disk image to boot before the</string>
+        </property>
+       </widget>
+      </item>
+      <item row="11" column="0" colspan="2">
+       <widget class="QLabel" name="warning2_10">
+        <property name="text">
+         <string>selected disk image in slot D1:. For example, you can</string>
+        </property>
+       </widget>
+      </item>
+      <item row="15" column="1">
+       <widget class="QToolButton" name="toolDiskSelectButton">
+        <property name="enabled">
+         <bool>true</bool>
+        </property>
+        <property name="minimumSize">
+         <size>
+          <width>24</width>
+          <height>24</height>
+         </size>
+        </property>
+        <property name="maximumSize">
+         <size>
+          <width>24</width>
+          <height>24</height>
+         </size>
+        </property>
+       </widget>
+      </item>
+      <item row="15" column="0">
+       <widget class="QLineEdit" name="toolDiskImagePath">
+        <property name="text">
+         <string/>
+        </property>
+       </widget>
+      </item>
+      <item row="12" column="0" colspan="2">
+       <widget class="QLabel" name="warning2_11">
+        <property name="text">
+         <string>have your favorite copier always ready with this option.</string>
+        </property>
+       </widget>
+      </item>
+      <item row="25" column="0">
+       <spacer name="traceSpacer_3">
+        <property name="orientation">
+         <enum>Qt::Vertical</enum>
+        </property>
+        <property name="sizeHint" stdset="0">
+         <size>
+          <width>20</width>
+          <height>40</height>
+         </size>
+        </property>
+       </spacer>
+      </item>
+      <item row="18" column="0">
+       <widget class="QCheckBox" name="activateHappyModeWithTool">
+        <property name="text">
+         <string>Activate Happy mode when booting this disk</string>
+        </property>
+       </widget>
+      </item>
+      <item row="17" column="0">
+       <widget class="QCheckBox" name="activateChipModeWithTool">
+        <property name="text">
+         <string>Activate Chip mode when booting this disk</string>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </widget>
   </widget>
   <widget class="QDialogButtonBox" name="buttonBox">
    <property name="geometry">
     <rect>
-     <x>9</x>
-     <y>411</y>
+     <x>10</x>
+     <y>390</y>
      <width>156</width>
      <height>23</height>
     </rect>
@@ -2149,6 +2568,36 @@
    </property>
    <property name="statusTip">
     <string>Mount a folder image to D%1</string>
+   </property>
+  </action>
+  <action name="actionSelectTranslatorDisk">
+   <property name="icon">
+    <iconset resource="icons.qrc">
+     <normaloff>:/icons/silk-icons/icons/folder.png</normaloff>:/icons/silk-icons/icons/folder.png</iconset>
+   </property>
+   <property name="text">
+    <string>Select translator disk image</string>
+   </property>
+   <property name="toolTip">
+    <string>Select translator disk image</string>
+   </property>
+   <property name="statusTip">
+    <string>Select translator disk image to D%1</string>
+   </property>
+  </action>
+  <action name="actionSelectToolDisk">
+   <property name="icon">
+    <iconset resource="icons.qrc">
+     <normaloff>:/icons/silk-icons/icons/folder.png</normaloff>:/icons/silk-icons/icons/folder.png</iconset>
+   </property>
+   <property name="text">
+    <string>Select tool disk image</string>
+   </property>
+   <property name="toolTip">
+    <string>Select tool disk image</string>
+   </property>
+   <property name="statusTip">
+    <string>Select tool disk image to D%1</string>
    </property>
   </action>
  </widget>

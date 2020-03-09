@@ -53,15 +53,19 @@ I_TDON	equ $FFC6
 
 
 	.enum Cmd
-GetTD		= $93
+GetDR       = $91	
+GetSL       = $92
+GetTD	    = $93
 Swap		= $94
 Unmount		= $95
-Mount		= $96
+Mount		    = $96
 CreateAndMount	= $97
-AutoToggle	= $98
+AutoToggle	    = $98
 	.ende
-	
+
 	.enum DCB
+GetDR	
+GetSL
 GetTD
 Swap
 Unmount
@@ -70,13 +74,13 @@ CreateAndMount
 AutoToggle
 GetDrvNum
 	.ende
-	
-	
+
+
 comfnam	equ $21
 comtab	equ $0A
-	
+
 	org $80
-	
+
 Temp1		.ds 2
 Temp2		.ds 2
 Temp3		.ds 2
@@ -86,13 +90,13 @@ ArgIndex	.ds 1
 FieldWidth	.ds 1
 StringIndex	.ds 1
 
-	
+
 .macro ldxy
 	ldx #< :1
 	ldy #> :1
 .endm
-	
-	
+
+
 .macro ldax
 	lda #< :1
 	ldx #> :1
@@ -103,5 +107,4 @@ StringIndex	.ds 1
 	sta :1
 	stx :1+1
 .endm
-
 

@@ -364,7 +364,6 @@ Done
 	.endp
 
 	
-	
 	.proc ToUpper
 	cmp #'z'+1
 	bcs NLow
@@ -374,4 +373,47 @@ Done
 NLow
 	rts
 	.endp
+	
+
+//
+//	input 1 character
+//
+	.proc Input1
+	jsr Input
+	cpy #03
+	bmi ok1
+	jsr Printf
+	.byte 155,'Enter only 1 character',0
+	sec
+	rts
+ok1
+    clc
+	rts
+	.endp
+
+		
+//
+//	input characters
+//				
+	.proc Input
+	lda #0
+	tax
+	lda #$ff
+	sta icblen,x
+	lda #$00
+	sta icblen+1,x
+	lda #< [InputBuf]
+	sta icbadr,x
+	lda #> [InputBuf]
+	sta icbadr+1,x
+	mva #$05 iccom,x
+	jsr ciov
+    lda InputBuf
+    ldy icblen,x
+    clc
+	rts
+	.endp
+	
+InputBuf
+	.ds 255
 	

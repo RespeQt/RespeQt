@@ -104,7 +104,7 @@ RespeqtSettings::RespeqtSettings()
     mLastCasDir = mSettings->value("LastCasDir", "").toString();
     
     mI18nLanguage = mSettings->value("I18nLanguage", "auto").toString();
-
+    mRclDir = mSettings->value("LastRclDir","").toString();
     mMinimizeToTray = mSettings->value("MinimizeToTray", false).toBool();
     msaveWindowsPos = mSettings->value("SaveWindowsPosSize", true).toBool();
     mFilterUnderscore = mSettings->value("FilterUnderscore", true).toBool();
@@ -154,12 +154,24 @@ RespeqtSettings::RespeqtSettings()
     mDisplayIDAddressMarks = mSettings->value("DisplayIDAddressMarks", false).toBool();
     mDisplayTrackInformation = mSettings->value("DisplayTrackInformation", false).toBool();
     mDisassembleUploadedCode = mSettings->value("DisassembleUploadedCode", false).toBool();
+    mTranslatorAutomaticDetection = mSettings->value("TranslatorAutomaticDetection", false).toBool();
+    mTranslatorDiskImagePath = mSettings->value("TranslatorDiskImagePath", "").toString();
+    mHideChipMode = mSettings->value("HideChipMode", false).toBool();
+    mHideHappyMode = mSettings->value("HideHappyMode", false).toBool();
+    mHideNextImage = mSettings->value("HideNextImage", false).toBool();
+    mHideOSBMode = mSettings->value("HideOSBMode", false).toBool();
+    mHideToolDisk = mSettings->value("HideToolDisk", false).toBool();
+    mToolDiskImagePath = mSettings->value("ToolDiskImagePath", "").toString();
+    mActivateChipModeWithTool = mSettings->value("ActivateChipModeWithTool", false).toBool();
+    mActivateHappyModeWithTool = mSettings->value("ActivateHappyModeWithTool", false).toBool();
     mDisplayCpuInstructions = mSettings->value("DisplayCpuInstructions", false).toBool();
     mTraceFilename = mSettings->value("TraceFilename", "").toString();
     mD1PowerOnWithDiskInserted = mSettings->value("D1PowerOnWithDiskInserted", false).toBool();
     mD2PowerOnWithDiskInserted = mSettings->value("D2PowerOnWithDiskInserted", false).toBool();
     mD3PowerOnWithDiskInserted = mSettings->value("D3PowerOnWithDiskInserted", false).toBool();
     mD4PowerOnWithDiskInserted = mSettings->value("D4PowerOnWithDiskInserted", false).toBool();
+
+
 #ifdef Q_OS_MAC
     mNativeMenu = mSettings->value("NativeMenu", false).toBool();
 #endif
@@ -189,7 +201,7 @@ void RespeqtSettings::saveSessionToFile(const QString &fileName)
     }
 #endif
 
-    s.beginGroup("RespeQt");
+        s.beginGroup("RespeQt");
         s.setValue("Backend", mBackend);
         s.setValue("AtariSioDriverName", mAtariSioDriverName);
         s.setValue("AtariSioHandshakingMethod", mAtariSioHandshakingMethod);
@@ -252,6 +264,16 @@ void RespeqtSettings::saveSessionToFile(const QString &fileName)
         s.setValue("DisplayIDAddressMarks", mDisplayIDAddressMarks);
         s.setValue("DisplayTrackInformation", mDisplayTrackInformation);
         s.setValue("DisassembleUploadedCode", mDisassembleUploadedCode);
+        s.setValue("TranslatorAutomaticDetection", mTranslatorAutomaticDetection);
+        s.setValue("TranslatorDiskImagePath", mTranslatorDiskImagePath);
+        s.setValue("HideChipMode", mHideChipMode);
+        s.setValue("HideHappyMode", mHideHappyMode);
+        s.setValue("HideNextImage", mHideNextImage);
+        s.setValue("HideOSBMode", mHideOSBMode);
+        s.setValue("HideToolDisk", mHideToolDisk);
+        s.setValue("ToolDiskImagePath", mToolDiskImagePath);
+        s.setValue("ActivateChipModeWithTool", mActivateChipModeWithTool);
+        s.setValue("ActivateHappyModeWithTool", mActivateHappyModeWithTool);
         s.setValue("DisplayCpuInstructions", mDisplayCpuInstructions);
         s.setValue("TraceFilename", mTraceFilename);
         s.setValue("D1PowerOnWithDiskInserted", mD1PowerOnWithDiskInserted);
@@ -259,6 +281,7 @@ void RespeqtSettings::saveSessionToFile(const QString &fileName)
         s.setValue("D3PowerOnWithDiskInserted", mD3PowerOnWithDiskInserted);
         s.setValue("D4PowerOnWithDiskInserted", mD4PowerOnWithDiskInserted);
         s.setValue("RawPrinterName", mRawPrinterName);
+        s.setValue("LastRclDir",mRclDir);
 #ifdef Q_OS_MAC
         s.setValue("NativeMenu", mNativeMenu);
 #endif
@@ -293,6 +316,7 @@ void RespeqtSettings::saveSessionToFile(const QString &fileName)
         mSerialPortName = s.value("SerialPortName", StandardSerialPortBackend::defaultPortName()).toString();
         mSerialPortHandshakingMethod = s.value("HandshakingMethod", 0).toInt();
         mSerialPortTriggerOnFallingEdge = s.value("FallingEdge", false).toBool();
+        mRclDir = mSettings->value("LastRclDir","").toString();
         mSerialPortDTRControlEnable = s.value("DTRControlEnable", false).toBool();
         mSerialPortWriteDelay = s.value("WriteDelay", 1).toInt();
         mSerialPortCompErrDelay = s.value("CompErrDelay", 1).toInt();
@@ -349,6 +373,16 @@ void RespeqtSettings::saveSessionToFile(const QString &fileName)
         mDisplayIDAddressMarks = s.value("DisplayIDAddressMarks", false).toBool();
         mDisplayTrackInformation = s.value("DisplayTrackInformation", false).toBool();
         mDisassembleUploadedCode = s.value("DisassembleUploadedCode", false).toBool();
+        mTranslatorAutomaticDetection = s.value("TranslatorAutomaticDetection", false).toBool();
+        mTranslatorDiskImagePath = s.value("TranslatorDiskImagePath", false).toString();
+        mHideChipMode = s.value("HideChipMode", false).toBool();
+        mHideHappyMode = s.value("HideHappyMode", false).toBool();
+        mHideNextImage = s.value("HideNextImage", false).toBool();
+        mHideOSBMode = s.value("HideOSBMode", false).toBool();
+        mHideToolDisk = s.value("HideToolDisk", false).toBool();
+        mToolDiskImagePath = s.value("ToolDiskImagePath", false).toString();
+        mActivateChipModeWithTool = s.value("ActivateChipModeWithTool", false).toBool();
+        mActivateHappyModeWithTool = s.value("ActivateHappyModeWithTool", false).toBool();
         mDisplayCpuInstructions = s.value("DisplayCpuInstructions", false).toBool();
         mTraceFilename = s.value("TraceFilename", false).toBool();
         mD1PowerOnWithDiskInserted = s.value("D1PowerOnWithDiskInserted", false).toBool();
@@ -356,6 +390,7 @@ void RespeqtSettings::saveSessionToFile(const QString &fileName)
         mD3PowerOnWithDiskInserted = s.value("D3PowerOnWithDiskInserted", false).toBool();
         mD4PowerOnWithDiskInserted = s.value("D4PowerOnWithDiskInserted", false).toBool();
         mRawPrinterName = s.value("RawPrinterName", "").toString();
+
 #ifdef Q_OS_MAC
         mNativeMenu = s.value("NativeMenu", false).toBool();
 #endif
@@ -516,6 +551,17 @@ void RespeqtSettings::setBackend(int backend)
 {   
     mBackend = backend;
     if(mSessionFileName == "") mSettings->setValue("Backend", mBackend);
+}
+
+QString RespeqtSettings::lastRclDir()
+{
+    return mRclDir;
+}
+
+void RespeqtSettings::setRclDir(const QString &dir)
+{
+    mRclDir = dir;
+    mSettings->setValue("LastRclDir", mRclDir);
 }
 
 bool RespeqtSettings::useHighSpeedExeLoader()
@@ -1321,6 +1367,116 @@ void RespeqtSettings::setDisassembleUploadedCode(bool disassembleUploadedCode)
 {
     mDisassembleUploadedCode = disassembleUploadedCode;
     if(mSessionFileName == "") mSettings->setValue("DisassembleUploadedCode", mDisassembleUploadedCode);
+}
+
+bool RespeqtSettings::translatorAutomaticDetection()
+{
+    return mTranslatorAutomaticDetection;
+}
+
+void RespeqtSettings::setTranslatorAutomaticDetection(bool translatorAutomaticDetection)
+{
+    mTranslatorAutomaticDetection = translatorAutomaticDetection;
+    if(mSessionFileName == "") mSettings->setValue("TranslatorAutomaticDetection", mTranslatorAutomaticDetection);
+}
+
+bool RespeqtSettings::hideChipMode()
+{
+    return mHideChipMode;
+}
+
+void RespeqtSettings::setHideChipMode(bool hidden)
+{
+    mHideChipMode = hidden;
+    if(mSessionFileName == "") mSettings->setValue("HideChipMode", mHideChipMode);
+}
+
+bool RespeqtSettings::hideHappyMode()
+{
+    return mHideHappyMode;
+}
+
+void RespeqtSettings::setHideHappyMode(bool hidden)
+{
+    mHideHappyMode = hidden;
+    if(mSessionFileName == "") mSettings->setValue("HideHappyMode", mHideHappyMode);
+}
+
+bool RespeqtSettings::hideNextImage()
+{
+    return mHideNextImage;
+}
+
+void RespeqtSettings::setHideNextImage(bool hidden)
+{
+    mHideNextImage = hidden;
+    if(mSessionFileName == "") mSettings->setValue("HideNextImage", mHideNextImage);
+}
+
+bool RespeqtSettings::hideOSBMode()
+{
+    return mHideOSBMode;
+}
+
+void RespeqtSettings::setHideOSBMode(bool hidden)
+{
+    mHideOSBMode = hidden;
+    if(mSessionFileName == "") mSettings->setValue("HideOSBMode", mHideOSBMode);
+}
+
+bool RespeqtSettings::hideToolDisk()
+{
+    return mHideToolDisk;
+}
+
+void RespeqtSettings::setHideToolDisk(bool hidden)
+{
+    mHideToolDisk = hidden;
+    if(mSessionFileName == "") mSettings->setValue("HideToolDisk", mHideToolDisk);
+}
+
+QString RespeqtSettings::translatorDiskImagePath()
+{
+    return mTranslatorDiskImagePath;
+}
+
+void RespeqtSettings::setTranslatorDiskImagePath(const QString &diskImage)
+{
+    mTranslatorDiskImagePath = diskImage;
+    if(mSessionFileName == "") mSettings->setValue("TranslatorDiskImagePath", mTranslatorDiskImagePath);
+}
+
+QString RespeqtSettings::toolDiskImagePath()
+{
+    return mToolDiskImagePath;
+}
+
+void RespeqtSettings::setToolDiskImagePath(const QString &diskImage)
+{
+    mToolDiskImagePath = diskImage;
+    if(mSessionFileName == "") mSettings->setValue("ToolDiskImagePath", mToolDiskImagePath);
+}
+
+bool RespeqtSettings::activateChipModeWithTool()
+{
+    return mActivateChipModeWithTool;
+}
+
+void RespeqtSettings::setActivateChipModeWithTool(bool activate)
+{
+    mActivateChipModeWithTool = activate;
+    if(mSessionFileName == "") mSettings->setValue("ActivateChipModeWithTool", mActivateChipModeWithTool);
+}
+
+bool RespeqtSettings::activateHappyModeWithTool()
+{
+    return mActivateHappyModeWithTool;
+}
+
+void RespeqtSettings::setActivateHappyModeWithTool(bool activate)
+{
+    mActivateHappyModeWithTool = activate;
+    if(mSessionFileName == "") mSettings->setValue("ActivateHappyModeWithTool", mActivateHappyModeWithTool);
 }
 
 bool RespeqtSettings::displayCpuInstructions()

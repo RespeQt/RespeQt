@@ -71,6 +71,7 @@ bool g_disablePicoHiSpeed;
 static bool g_D9DOVisible = true;
 bool g_miniMode = false;
 static bool g_shadeMode = false;
+SimpleDiskImage *g_translator = NULL;
 //static int g_savedWidth;
 
 // ****************************** END OF GLOBALS ************************************//
@@ -355,7 +356,10 @@ MainWindow::MainWindow(QWidget *parent)
     connect (this, SIGNAL(newSlot(int)), rcl, SLOT(gotNewSlot(int)));
     connect (rcl, SIGNAL(mountFile(int,QString)), this, SLOT(mountFileWithDefaultProtection(int,QString)));
     connect (this, SIGNAL(fileMounted(bool)), rcl, SLOT(fileMounted(bool)));
-    connect (rcl, SIGNAL(toggleAutoCommit(int)), this, SLOT(autoCommit(int)));
+    connect (rcl, SIGNAL(toggleAutoCommit(int, bool)), this, SLOT(autoCommit(int, bool)));
+    connect (rcl, SIGNAL(toggleHappy(int, bool)), this, SLOT(happy(int, bool)));
+    connect (rcl, SIGNAL(toggleChip(int, bool)), this, SLOT(chip(int, bool)));
+    connect (rcl, SIGNAL(bootExe(QString)), this, SLOT(bootExeTriggered(QString)));
 }
 
 MainWindow::~MainWindow()
@@ -377,6 +381,9 @@ MainWindow::~MainWindow()
 
 void MainWindow::createDeviceWidgets()
 {
+
+    ui->rightColumn->setAlignment(Qt::AlignTop);
+
     for (int i = 0; i < DISK_COUNT; i++) {      //
         DriveWidget* deviceWidget = new DriveWidget(i);
 
@@ -386,7 +393,7 @@ void MainWindow::createDeviceWidgets()
             ui->rightColumn->addWidget( deviceWidget );
         }
 
-        deviceWidget->setup();
+        deviceWidget->setup(respeqtSettings->hideHappyMode(), respeqtSettings->hideChipMode(), respeqtSettings->hideNextImage(), respeqtSettings->hideOSBMode(), respeqtSettings->hideToolDisk());
         diskWidgets[i] = deviceWidget;
 
         // connect signals to slots
@@ -397,6 +404,8 @@ void MainWindow::createDeviceWidgets()
         connect(deviceWidget, SIGNAL(actionNextSide(int)),this, SLOT(on_actionNextSide_triggered(int)));
         connect(deviceWidget, SIGNAL(actionToggleHappy(int,bool)),this, SLOT(on_actionToggleHappy_triggered(int,bool)));
         connect(deviceWidget, SIGNAL(actionToggleChip(int,bool)),this, SLOT(on_actionToggleChip_triggered(int,bool)));
+        connect(deviceWidget, SIGNAL(actionToggleOSB(int,bool)),this, SLOT(on_actionToggleOSB_triggered(int,bool)));
+        connect(deviceWidget, SIGNAL(actionToolDisk(int,bool)),this, SLOT(on_actionToolDisk_triggered(int,bool)));
         connect(deviceWidget, SIGNAL(actionWriteProtect(int,bool)),this, SLOT(on_actionWriteProtect_triggered(int,bool)));
         connect(deviceWidget, SIGNAL(actionEditDisk(int)),this, SLOT(on_actionEditDisk_triggered(int)));
         connect(deviceWidget, SIGNAL(actionSave(int)),this, SLOT(on_actionSave_triggered(int)));
@@ -408,22 +417,19 @@ void MainWindow::createDeviceWidgets()
         connect(this, SIGNAL(setFont(const QFont&)),deviceWidget, SLOT(setFont(const QFont&)));
     }
 
-    /* Add info widget for symmetry */
-    this->infoWidget = new InfoWidget();
-    ui->rightColumn->addWidget( infoWidget );
+
 
     for (int i = 0; i < PRINTER_COUNT; i++) {      //
         PrinterWidget* printerWidget = new PrinterWidget(i);
-
         if (i<2) {
-            ui->leftColumn->addWidget( printerWidget );
+            ui->leftColumn2->addWidget( printerWidget );
         } else {
-            ui->rightColumn->addWidget( printerWidget );
+            ui->rightColumn2->addWidget( printerWidget );
         }
-
         printerWidget->setup();
         printerWidgets[i] = printerWidget;
    }
+
 
     changeFonts();
 }
@@ -844,7 +850,7 @@ void MainWindow::showHideDrives()
         printerWidgets[i]->setVisible(g_D9DOVisible);
     }
 
-    infoWidget->setVisible(g_D9DOVisible);
+    // infoWidget->setVisible(g_D9DOVisible);
 
     if( g_D9DOVisible ) {
         ui->actionHideShowDrives->setText(QApplication::translate("MainWindow", "Hide drives D9-DO", 0));
@@ -1008,12 +1014,19 @@ void MainWindow::deviceStatusChanged(int deviceNo)
                         }
                     }
                 }
-                diskWidget->showAsImageMounted(filenamelabel, img->description(), enableEdit, enableSave, img->isLeverOpen(), img->isHappyEnabled(), img->isChipOpen(), img->hasSeveralSides());
+                diskWidget->showAsImageMounted(filenamelabel, img->description(), enableEdit, enableSave, img->isLeverOpen(), img->isHappyEnabled(), img->isChipOpen(),
+                                               img->isTranslatorActive(), img->isToolDiskActive(), img->hasSeveralSides(), respeqtSettings->hideHappyMode(), respeqtSettings->hideChipMode(),
+                                               respeqtSettings->hideNextImage(), respeqtSettings->hideOSBMode(), respeqtSettings->hideToolDisk());
             }
 
             img->setDisplayTransmission(respeqtSettings->displayTransmission());
             img->setSpyMode(respeqtSettings->isSpyMode());
             img->setDisassembleUploadedCode(respeqtSettings->disassembleUploadedCode());
+            img->setTranslatorAutomaticDetection(respeqtSettings->translatorAutomaticDetection());
+            img->setTranslatorDiskImagePath(respeqtSettings->translatorDiskImagePath());
+            img->setToolDiskImagePath(respeqtSettings->toolDiskImagePath());
+            img->setActivateChipModeWithTool(respeqtSettings->activateChipModeWithTool());
+            img->setActivateHappyModeWithTool(respeqtSettings->activateHappyModeWithTool());
             FirmwareDiskImage *fimg = qobject_cast <FirmwareDiskImage*> (sio->getDevice(deviceNo));
             if (fimg) {
                 fimg->SetDisplayDriveHead(respeqtSettings->displayDriveHead());
@@ -1026,7 +1039,7 @@ void MainWindow::deviceStatusChanged(int deviceNo)
                 fimg->SetTraceFilename(respeqtSettings->traceFilename());
             }
         } else {
-            diskWidget->showAsEmpty();
+            diskWidget->showAsEmpty(respeqtSettings->hideHappyMode(), respeqtSettings->hideChipMode(), respeqtSettings->hideNextImage(), respeqtSettings->hideOSBMode(), respeqtSettings->hideToolDisk());
         }
     }
 }
@@ -1239,7 +1252,7 @@ bool MainWindow::ejectImage(int no, bool ask)
     sio->uninstallDevice(no + DISK_BASE_CDEVIC);
     if (img) {
         delete img;
-        diskWidgets[no]->showAsEmpty();
+        diskWidgets[no]->showAsEmpty(respeqtSettings->hideHappyMode(), respeqtSettings->hideChipMode(), respeqtSettings->hideNextImage(), respeqtSettings->hideOSBMode(), respeqtSettings->hideToolDisk());
         respeqtSettings->unmountImage(no);
         updateRecentFileActions();
         deviceStatusChanged(no + DISK_BASE_CDEVIC);
@@ -1319,6 +1332,16 @@ void MainWindow::keepBootExeOpen()
     bootExe(g_exefileName);
 }
 
+void MainWindow::bootExeTriggered(const QString &fileName)
+{
+    QString path = respeqtSettings->lastRclDir();
+    g_exefileName = path + "/" + fileName;
+    if (!g_exefileName.isEmpty()) {
+        respeqtSettings->setLastExeDir(QFileInfo(g_exefileName).absolutePath());
+        bootExe(g_exefileName);
+    }
+}
+
 void MainWindow::mountFileWithDefaultProtection(int no, const QString &fileName)
 {
     // If fileName was passed from RCL it is an 8.1 name, so we need to find
@@ -1329,10 +1352,8 @@ void MainWindow::mountFileWithDefaultProtection(int no, const QString &fileName)
     atariFileName = fileName;
 
     if(atariFileName.left(1) == "*") {
-        FolderImage fi(sio);
-        atariFileName = atariFileName.mid(1);
-        path = respeqtSettings->lastFolderImageDir();
-        atariLongName = fi.longName(path, atariFileName);
+        atariLongName = atariFileName.mid(1);
+        QString path = respeqtSettings->lastRclDir();
         if(atariLongName == "") {
             sio->port()->writeDataNak();
             return;
@@ -1350,6 +1371,7 @@ void MainWindow::mountFile(int no, const QString &fileName, bool /*prot*/)
 {
     SimpleDiskImage *disk = nullptr;
     bool isDir = false;
+    bool ask   = true;
 
     if (fileName.isEmpty()) {
         if(g_rclFileName.left(1) == "*") emit fileMounted(false);
@@ -1367,8 +1389,9 @@ void MainWindow::mountFile(int no, const QString &fileName, bool /*prot*/)
 
     if (disk) {
         SimpleDiskImage *oldDisk = qobject_cast <SimpleDiskImage*> (sio->getDevice(no + DISK_BASE_CDEVIC));
-        Board *board = oldDisk != nullptr ? oldDisk->getBoardInfo() : nullptr;
-        if (!disk->open(fileName, type) || !ejectImage(no) ) {
+        Board *board = oldDisk != NULL ? oldDisk->getBoardInfo() : nullptr;
+        if(g_rclFileName.left(1) == "*") ask = false;
+        if (!disk->open(fileName, type) || !ejectImage(no, ask) ) {
             respeqtSettings->unmountImage(no);
             delete disk;
             if (board != nullptr) {
@@ -1404,7 +1427,7 @@ void MainWindow::mountFile(int no, const QString &fileName, bool /*prot*/)
             qDebug() << "!e " << tr("Bad cast for PCLINK");
         }
 
-        diskWidgets[no]->updateFromImage(disk);
+        diskWidgets[no]->updateFromImage(disk, respeqtSettings->hideHappyMode(), respeqtSettings->hideChipMode(), respeqtSettings->hideNextImage(), respeqtSettings->hideOSBMode(), respeqtSettings->hideToolDisk());
 
         respeqtSettings->mountImage(no, fileName, disk->isReadOnly());
         updateRecentFileActions();
@@ -1443,6 +1466,11 @@ SimpleDiskImage *MainWindow::installDiskImage(int no)
         disk->setSpyMode(respeqtSettings->isSpyMode());
         disk->setTrackLayout(respeqtSettings->isTrackLayout());
         disk->setDisassembleUploadedCode(respeqtSettings->disassembleUploadedCode());
+        disk->setTranslatorAutomaticDetection(respeqtSettings->translatorAutomaticDetection());
+        disk->setTranslatorDiskImagePath(respeqtSettings->translatorDiskImagePath());
+        disk->setToolDiskImagePath(respeqtSettings->toolDiskImagePath());
+        disk->setActivateChipModeWithTool(respeqtSettings->activateChipModeWithTool());
+        disk->setActivateHappyModeWithTool(respeqtSettings->activateHappyModeWithTool());
         disk->SetDisplayDriveHead(respeqtSettings->displayDriveHead());
         disk->SetDisplayFdcCommands(respeqtSettings->displayFdcCommands());
         disk->SetDisplayIndexPulse(respeqtSettings->displayIndexPulse());
@@ -1458,6 +1486,11 @@ SimpleDiskImage *MainWindow::installDiskImage(int no)
         disk->setSpyMode(respeqtSettings->isSpyMode());
         disk->setTrackLayout(respeqtSettings->isTrackLayout());
         disk->setDisassembleUploadedCode(respeqtSettings->disassembleUploadedCode());
+        disk->setTranslatorAutomaticDetection(respeqtSettings->translatorAutomaticDetection());
+        disk->setTranslatorDiskImagePath(respeqtSettings->translatorDiskImagePath());
+        disk->setToolDiskImagePath(respeqtSettings->toolDiskImagePath());
+        disk->setActivateChipModeWithTool(respeqtSettings->activateChipModeWithTool());
+        disk->setActivateHappyModeWithTool(respeqtSettings->activateHappyModeWithTool());
         return disk;
     }
 }
@@ -1544,6 +1577,18 @@ void MainWindow::toggleChip(int no, bool open)
     img->setChipMode(open);
 }
 
+void MainWindow::toggleOSB(int no, bool open)
+{
+    SimpleDiskImage *img = qobject_cast <SimpleDiskImage*> (sio->getDevice(no + DISK_BASE_CDEVIC));
+    img->setOSBMode(open);
+}
+
+void MainWindow::toggleToolDisk(int no, bool enabled)
+{
+    SimpleDiskImage *img = qobject_cast <SimpleDiskImage*> (sio->getDevice(no + DISK_BASE_CDEVIC));
+    img->setToolDiskMode(enabled);
+}
+
 void MainWindow::toggleWriteProtection(int no, bool protectionEnabled)
 {
     SimpleDiskImage *img = qobject_cast <SimpleDiskImage*> (sio->getDevice(no + DISK_BASE_CDEVIC));
@@ -1623,11 +1668,32 @@ void MainWindow::saveDisk(int no)
     }
 }
 //
-void MainWindow::autoCommit(int no)
+void MainWindow::autoCommit(int no, bool st)
 {
     if( no < DISK_COUNT )
     {
-        diskWidgets[no]->triggerAutoSaveClickIfEnabled();
+        if ( (diskWidgets[no]->isAutoSaveEnabled() && st) || (!diskWidgets[no]->isAutoSaveEnabled() && !st) )
+                          diskWidgets[no]->triggerAutoSaveClickIfEnabled();
+    }
+}
+
+
+void MainWindow::happy(int no, bool st)
+{
+    if( no < DISK_COUNT )
+    {
+        if ( (diskWidgets[no]->isHappyEnabled() && st) || (!diskWidgets[no]->isHappyEnabled() && !st) )
+                          diskWidgets[no]->triggerHappyClickIfEnabled();
+    }
+}
+
+
+void MainWindow::chip(int no, bool st)
+{
+    if( no < DISK_COUNT )
+    {
+        if ( (diskWidgets[no]->isChipEnabled() && st) || (!diskWidgets[no]->isChipEnabled() && !st) )
+                          diskWidgets[no]->triggerChipClickIfEnabled();
     }
 }
 
@@ -1639,7 +1705,7 @@ void MainWindow::autoSaveDisk(int no)
 
     if (img->isUnnamed()) {
         saveDiskAs(no);
-        widget->updateFromImage(img);
+        widget->updateFromImage(img, respeqtSettings->hideHappyMode(), respeqtSettings->hideChipMode(), respeqtSettings->hideNextImage(), respeqtSettings->hideOSBMode(), respeqtSettings->hideToolDisk());
         return;
     }
 
@@ -1662,7 +1728,7 @@ void MainWindow::autoSaveDisk(int no)
             saveDiskAs(no);
         }
     }
-    widget->updateFromImage(img);
+    widget->updateFromImage(img, respeqtSettings->hideHappyMode(), respeqtSettings->hideChipMode(), respeqtSettings->hideNextImage(), respeqtSettings->hideOSBMode(), respeqtSettings->hideToolDisk());
 }
 //
 void MainWindow::saveDiskAs(int no)
@@ -1732,6 +1798,8 @@ void MainWindow::on_actionEject_triggered(int deviceId) {ejectImage(deviceId);}
 void MainWindow::on_actionNextSide_triggered(int deviceId) {loadNextSide(deviceId);}
 void MainWindow::on_actionToggleHappy_triggered(int deviceId, bool open) {toggleHappy(deviceId, open);}
 void MainWindow::on_actionToggleChip_triggered(int deviceId, bool open) {toggleChip(deviceId, open);}
+void MainWindow::on_actionToggleOSB_triggered(int deviceId, bool open) {toggleOSB(deviceId, open);}
+void MainWindow::on_actionToolDisk_triggered(int deviceId, bool open) {toggleToolDisk(deviceId, open);}
 void MainWindow::on_actionWriteProtect_triggered(int deviceId, bool writeProtectEnabled) {toggleWriteProtection(deviceId, writeProtectEnabled);}
 void MainWindow::on_actionEditDisk_triggered(int deviceId) {openEditor(deviceId);}
 void MainWindow::on_actionSave_triggered(int deviceId) {saveDisk(deviceId);}

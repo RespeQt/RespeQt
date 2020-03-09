@@ -128,6 +128,9 @@ public:
     QString lastCasDir();
     void setLastCasDir(const QString &dir);
 
+    QString lastRclDir();
+    void setRclDir(const QString &dir);
+
     // Set and restore last mainwindow position and size //
     int lastVerticalPos();
     void setLastVerticalPos(int lastVpos);
@@ -283,6 +286,26 @@ public:
     void setDisplayTrackInformation(bool displayTrackInformation);
     bool disassembleUploadedCode();
     void setDisassembleUploadedCode(bool disassembleUploadedCode);
+    bool translatorAutomaticDetection();
+    void setTranslatorAutomaticDetection(bool translatorAutomaticDetection);
+    QString translatorDiskImagePath();
+    void setTranslatorDiskImagePath(const QString &diskImage);
+    QString toolDiskImagePath();
+    void setToolDiskImagePath(const QString &diskImage);
+    bool hideChipMode();
+    void setHideChipMode(bool hidden);
+    bool hideHappyMode();
+    void setHideHappyMode(bool hidden);
+    bool hideNextImage();
+    void setHideNextImage(bool hidden);
+    bool hideOSBMode();
+    void setHideOSBMode(bool hidden);
+    bool hideToolDisk();
+    void setHideToolDisk(bool hidden);
+    bool activateChipModeWithTool();
+    void setActivateChipModeWithTool(bool activate);
+    bool activateHappyModeWithTool();
+    void setActivateHappyModeWithTool(bool activate);
     bool displayCpuInstructions();
     void setDisplayCpuInstructions(bool displayCpuInstructions);
 	QString traceFilename();
@@ -345,6 +368,8 @@ private:
     QString mAtariSioDriverName;
     int mAtariSioHandshakingMethod;
 
+    QString mRclDir;
+
     int mBackend;
 #ifndef QT_NO_DEBUG
     QString mTestFile;
@@ -402,6 +427,16 @@ private:
     bool mDisplayIDAddressMarks;
     bool mDisplayTrackInformation;
     bool mDisassembleUploadedCode;
+    bool mTranslatorAutomaticDetection;
+    QString mTranslatorDiskImagePath;
+    bool mHideChipMode;
+    bool mHideHappyMode;
+    bool mHideNextImage;
+    bool mHideOSBMode;
+    bool mHideToolDisk;
+    QString mToolDiskImagePath;
+    bool mActivateChipModeWithTool;
+    bool mActivateHappyModeWithTool;
     bool mDisplayCpuInstructions;
 	QString mTraceFilename;
     bool mD1PowerOnWithDiskInserted;

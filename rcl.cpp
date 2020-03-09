@@ -30,9 +30,121 @@ char RCl::rclSlotNo;
 void RCl::handleCommand(quint8 command, quint16 aux)
 {
     QByteArray data(6, 0);
+    QByteArray  fdata(21, 0);
+    QByteArray  ddata(255, 0);
     QDateTime dateTime = QDateTime::currentDateTime();
 
     switch (command) {
+
+
+
+    case 0x91 : // list rcl folder(up to 250 files)
+    {
+        if (!sio->port()->writeCommandAck()) {
+            return;
+        }
+
+        quint8 list   = (aux  / 256);
+        quint8 offset = (aux  % 256);
+
+        if(!list) {
+            QByteArray ddata = sio->port()->readDataFrame(32);
+            if (ddata.isEmpty()) {
+                qCritical() << "!e" << tr("[%1] Read data frame failed")
+                               .arg(deviceName());
+                sio->port()->writeDataNak();
+                sio->port()->writeError();
+                g_fileFilter = "*";
+                return;
+            }
+            sio->port()->writeDataAck();
+            sio->port()->writeComplete();
+            g_fileFilter = ddata;
+            qCritical() << "!i" << tr("[%1] List filter set: [%2]")
+                           .arg(deviceName())
+                           .arg(g_fileFilter);
+            return;
+        }
+        else
+        {
+            QByteArray  ddata(255, 0);
+            quint8 index  = 0;
+            QString pth = respeqtSettings->lastRclDir();
+            QDir dir(pth);
+            QStringList filters;
+            QString fileFilter = g_fileFilter.trimmed();
+            (fileFilter == "*" || fileFilter == "") ?
+                        filters <<"*.atr"<<"*.xfd"<<"*.atx"<<"*.pro"<<"*.xex"<<"*.exe"<<"*.com"  :
+                                  filters <<(fileFilter+".atr")<<(fileFilter+".xfd")<<(fileFilter+".atx")<<(fileFilter+"+.pro")<<(fileFilter+".xex")<<(fileFilter+"+.exe")<<(fileFilter+"+.com");
+
+            dir.setNameFilters(filters);
+            QFileInfoList list = dir.entryInfoList();
+
+            QByteArray fn  = ("Path: " + pth).toUtf8();
+            for(int n = 0; n < fn.length() && n < 37; n++)
+                ddata[index++] = fn[n] & 0xff;
+
+            ddata[index++] = 155;
+
+            for (quint8 i = offset; i < list.size() && i < 250;  ++i) {
+                QFileInfo fileInfo = list.at(i);
+                QString dosfilname = fileInfo.fileName();
+                QString atarifilname = toAtariFileName(dosfilname);
+                QString atariFilenum = QString(QChar::fromLatin1(i-offset+0x41));
+                QByteArray fn  = (" "+atariFilenum+" "+ atarifilname).toUtf8();
+                if(index + fn.length() < 252  && i-offset < 16) {
+                    for(int n = 0; n < fn.length(); n++)
+                        ddata[index++] = fn[n] & 0xff;
+                    ddata[index++] = 155;
+                    ddata[254] =  0x00;
+                } else  {
+                    ddata[254] =  i;
+                    break;
+                }
+            }
+
+            for(int n = index; n < 253 ; n++) ddata[index++] = 0x00;
+            sio->port()->writeComplete();
+            sio->port()->writeDataFrame(ddata);
+            return;
+        }
+    }
+        break;
+
+
+    case 0x92 :   // get slots filename
+    {
+        if (!sio->port()->writeCommandAck()) {
+            return;
+        }
+
+        qint8 deviceNo;
+        deviceNo =  (aux  % 256);
+        deviceNo  = (deviceNo > 9) ? (deviceNo -16) :deviceNo;
+
+        if (deviceNo >= 0x0 && deviceNo <= 0xF ) {
+            SimpleDiskImage *img = qobject_cast <SimpleDiskImage*> (sio->getDevice(deviceNo -1 +  DISK_BASE_CDEVIC));
+            QString  filename = "";
+            if (img) {
+                int i = -1;
+                i = img->originalFileName().lastIndexOf("/");
+                if ((i != -1) || (img->originalFileName().mid(0, 14) == "Untitled image"))
+                    filename = " " + img->originalFileName().right(img->originalFileName().size() - ++i);
+            }
+
+
+            QByteArray fn = filename.toUtf8();
+            for(int i=0; i < 22; i++)
+                fdata[i] = (fn.length() > i) ? (fn[i] & 0xff) : 0x00;
+
+            sio->port()->writeComplete();
+            sio->port()->writeDataFrame(fdata);
+            return;
+        }
+        sio->port()->writeDataNak();
+    }
+
+        break;
       case 0x93 :   // Send Date/Time
          {
             if (!sio->port()->writeCommandAck()) {
@@ -206,7 +318,7 @@ void RCl::handleCommand(quint8 command, quint16 aux)
                       return;
                   }
                   imageFileName = imageFileName.left(i);
-                  QFile file(respeqtSettings->lastFolderImageDir() + "/" + imageFileName);
+                  QFile file(respeqtSettings->lastRclDir() + "/" + imageFileName);
                   if (!file.open(QIODevice::WriteOnly)) {
                       qCritical() << "!e" << tr("[%1] Can not create PC File: %2")
                                      .arg(deviceName())
@@ -297,7 +409,7 @@ void RCl::handleCommand(quint8 command, quint16 aux)
 
               sio->port()->writeDataAck();
 
-              imageFileName = "*" + imageFileName;
+              imageFileName = "*" + toDosFileName(imageFileName);
 
 
               // Ask the MainWindow for the next available slot number
@@ -321,39 +433,205 @@ void RCl::handleCommand(quint8 command, quint16 aux)
        }
        break;
 
-      case 0x98 :   // Auto-Commit toggle
-        {
-            qint8 commitDisk;
-            commitDisk = static_cast<qint8>(aux % 256);
-            qDebug() << "!n"<<commitDisk<<" <- "<<aux;
-            if (commitDisk > 9)
-                commitDisk -= 16;
-
-            if (commitDisk != -6 && (commitDisk < 0 || commitDisk > 14)) {
-                sio->port()->writeCommandNak();
-                return;
-            }
-
-            // All disks or a given disk
-            if (commitDisk == -6 || commitDisk == 0) {
-                for (int i = 0; i < 15; i++) {
-                    emit toggleAutoCommit(i);
-                }
-            } else {
-                emit toggleAutoCommit(commitDisk - 1);
-            }
-            sio->port()->writeCommandAck();
-            sio->port()->writeComplete();
+    case 0x98 :   // Auto-Commit toggle
+    {
+        if (!sio->port()->writeCommandAck()) {
+            return;
         }
+        qint8 commitDisk;
+        bool commitOnOff;
+        commitDisk = aux % 256 - 1;
+        commitOnOff = (aux/256)?false:true;
+
+        if (commitDisk > 9) commitDisk -= 16;
+        if (commitDisk != -7 && (commitDisk <0 || commitDisk > 14)) {
+            sio->port()->writeCommandNak();
+            return;
+        }
+
+        // All disks or a given disk
+        if (commitDisk == -7) {
+            for (int i = 0; i < 15; i++) {
+                emit toggleAutoCommit(i, commitOnOff);
+            }
+        } else {
+            emit toggleAutoCommit(commitDisk, commitOnOff);
+        }
+
+        sio->port()->writeComplete();
+    }
         break;
 
-      default :
-      // Invalid Command
-         sio->port()->writeCommandNak();
-         qWarning() << "!e" << tr("[%1] command: $%2, aux: $%3 NAKed.")
-                       .arg(deviceName())
-                       .arg(command, 2, 16, QChar('0'))
-                       .arg(aux, 4, 16, QChar('0'));
+     case 0x99 :   // save disks
+     {
+        if (!sio->port()->writeCommandAck()) {
+            return;
+        }
+
+        int diskSaved = 0;
+        qint8 deviceNo;
+        deviceNo = aux /256;
+
+        if (deviceNo == -6) deviceNo = 0;        // All drives
+        if (deviceNo > 9) deviceNo -= 16;        // Drive 10-15
+        if (deviceNo >= 0 and deviceNo <= 15) {
+            if (deviceNo == 0) {
+                // Eject All disks
+
+                for (int i = 0; i <= 14; i++) {    //
+                    SimpleDiskImage *img = qobject_cast <SimpleDiskImage*> (sio->getDevice(i + DISK_BASE_CDEVIC));
+                    if (img && img->isModified() && !img->isUnnamed()) {
+                        img->save();
+                        qDebug() << "!n" << tr("[%1] Saved disk %2")
+                                    .arg(deviceName())
+                                    .arg(i + 1);
+                        diskSaved++;
+                    }
+                }
+
+            } else {
+                // Single Disk save
+                SimpleDiskImage *img = qobject_cast <SimpleDiskImage*> (sio->getDevice(deviceNo - 1 + DISK_BASE_CDEVIC));
+
+                if (img && img->isModified() && !img->isUnnamed()) {
+                    img->save();
+                    qDebug() << "!n" << tr("[%1] Saved disk %2")
+                                .arg(deviceName())
+                                .arg(deviceNo);
+                    diskSaved++;
+                }
+            }
+            if (!diskSaved)
+              sio->port()->writeCommandNak();
+
+        } else {
+            sio->port()->writeCommandNak();
+            qDebug() << "!e" << tr("[%1] Invalid drive number: %2 for remote unmount")
+                        .arg(deviceName())
+                        .arg(deviceNo);
+        }
+        sio->port()->writeComplete();
+    }
+        break;
+
+
+
+    case 0x9A :   // Mount slot and boot
+    {
+        if (!sio->port()->writeCommandAck()) {
+            return;
+        }
+
+        bool isPrgXEX = (aux/256)?false:true;
+        // If no Folder Image has ever been mounted abort the command as we won't
+        // know which folder to use to remotely create/mount an image file.
+        if(respeqtSettings->lastRclDir() == "") {
+            qCritical() << "!e" << tr("[%1] RespeQt can't determine the folder where the image file must be created/mounted!")
+                           .arg(deviceName());
+            qCritical() << "!e" << tr("[%1] Mount a Folder Image at least once before issuing a remote mount command.")
+                           .arg(deviceName());
+            sio->port()->writeDataNak();
+            sio->port()->writeError();
+            return;
+        }
+        // Get the name of the image file
+
+
+        QByteArray data(12, 0);
+        data = sio->port()->readDataFrame(12);
+        if (data.isEmpty()) {
+            qCritical() << "!e" << tr("[%1] Read data frame failed")
+                           .arg(deviceName());
+            sio->port()->writeDataNak();
+            sio->port()->writeError();
+            return;
+        }
+
+        sio->port()->writeDataAck();
+        sio->port()->writeComplete();
+
+        imageFileName = data;
+        if(isPrgXEX) {
+            imageFileName = "*" + toDosFileName(imageFileName);
+            emit mountFile(0,imageFileName);
+        }
+        else
+        {
+            imageFileName = toDosFileName(imageFileName);
+            emit bootExe(imageFileName);
+        }
+    }
+        break;
+
+
+    case 0x9B :   // happy toggle
+    {
+        if (!sio->port()->writeCommandAck()) {
+            return;
+        }
+        qint8 happyDisk;
+        bool happyOnOff;
+        happyDisk = aux % 256 - 1;
+        happyOnOff = (aux/256)?false:true;
+
+        if (happyDisk > 9) happyDisk -= 16;
+        if (happyDisk != -7 && (happyDisk <0 || happyDisk > 14)) {
+            sio->port()->writeCommandNak();
+            return;
+        }
+
+        // All disks or a given disk
+        if (happyDisk == -7) {
+            for (int i = 0; i < 15; i++) {
+                emit toggleHappy(i, happyOnOff);
+            }
+        } else {
+            emit toggleHappy(happyDisk, happyOnOff);
+        }
+
+        sio->port()->writeComplete();
+    }
+        break;
+
+
+
+    case 0x9C :   //  chip toggle
+    {
+        if (!sio->port()->writeCommandAck()) {
+            return;
+        }
+        qint8 chipDisk;
+        bool chipOnOff;
+        chipDisk = aux % 256 - 1;
+        chipOnOff = (aux/256)?false:true;
+
+        if (chipDisk > 9) chipDisk -= 16;
+        if (chipDisk != -7 && (chipDisk <0 || chipDisk > 14)) {
+            sio->port()->writeCommandNak();
+            return;
+        }
+
+        // All disks or a given disk
+        if (chipDisk == -7) {
+            for (int i = 0; i < 15; i++) {
+                emit toggleChip(i, chipOnOff);
+            }
+        } else {
+            emit toggleChip(chipDisk, chipOnOff);
+        }
+
+        sio->port()->writeComplete();
+    }
+        break;
+
+
+    default :
+        // Invalid Command
+        sio->port()->writeCommandNak();
+        qWarning() << "!e" << tr("[%1] command: $%2, aux: $%3 NAKed.")
+                      .arg(deviceName())
+                      .arg(command, 2, 16, QChar('0'))
+                      .arg(aux, 4, 16, QChar('0'));
     }
 }
 
@@ -379,3 +657,42 @@ void RCl::fileMounted(bool mounted)
        sio->port()->writeDataNak();
     }
 }
+
+
+
+QString RCl::toAtariFileName(QString dosFileName) {
+    QString name = "";
+    QString ext  = "";
+    QString filename = dosFileName.toUpper();
+    int t = filename.lastIndexOf(".");
+    if(t > 0){
+        name = filename.left(t);
+        ext = filename.right(filename.length() - t -1);
+    }
+    name.remove(QRegExp("[^A-Z0-9_]"));
+    name = (name.length() > 8)?name.left(5)+"$"+name.right(2): name;
+    ext.remove(QRegExp("[^A-Z0-9_]"));
+    return name + "." +ext;
+}
+
+
+QString RCl::toDosFileName(QString atariFileName)
+{
+    QString pth = respeqtSettings->lastRclDir();
+    QDir dir(pth);
+    QStringList filters;
+    filters <<"*.atr"<<"*.xfd" <<"*.atx"<<"*.pro"<<"*.xex"<<"*.exe"<<"*.com";
+    dir.setNameFilters(filters);
+    QFileInfoList list = dir.entryInfoList();
+    for (int i = 0; i < list.size(); ++i) {
+        QFileInfo fileInfo = list.at(i);
+        QString dosFilename = fileInfo.fileName();
+        if(toAtariFileName(dosFilename) == atariFileName)
+            return dosFilename;
+
+     }
+     return "";
+}
+
+
+
