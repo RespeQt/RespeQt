@@ -520,7 +520,7 @@ void RCl::handleCommand(quint8 command, quint16 aux)
             return;
         }
 
-        bool isPrgXEX = (aux/256)?false:true;
+        bool isDiskImage = (aux/256)?false:true;
         // If no Folder Image has ever been mounted abort the command as we won't
         // know which folder to use to remotely create/mount an image file.
         if(respeqtSettings->lastRclDir() == "") {
@@ -549,7 +549,11 @@ void RCl::handleCommand(quint8 command, quint16 aux)
         sio->port()->writeComplete();
 
         imageFileName = data;
-        if(isPrgXEX) {
+        imageFileName = imageFileName.trimmed();
+        isDiskImage = (imageFileName.endsWith("XEX") || imageFileName.endsWith("EXE")
+                       || imageFileName.endsWith("COM")) ?false: true;
+
+        if(isDiskImage) {
             imageFileName = "*" + toDosFileName(imageFileName);
             emit mountFile(0,imageFileName);
         }
