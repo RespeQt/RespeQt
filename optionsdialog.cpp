@@ -96,6 +96,7 @@ OptionsDialog::OptionsDialog(QWidget *parent) :
     m_ui->spyMode->setChecked(respeqtSettings->isSpyMode());
     m_ui->commandName->setChecked(respeqtSettings->isCommandName());
     m_ui->trackLayout->setChecked(respeqtSettings->isTrackLayout());
+    m_ui->displayTransmission->setChecked(respeqtSettings->displayTransmission());
     m_ui->disassembleUploadedCode->setChecked(respeqtSettings->disassembleUploadedCode());
     m_ui->translatorDiskImagePath->setText(respeqtSettings->translatorDiskImagePath());
     m_ui->translatorAutomaticDetection->setChecked(respeqtSettings->translatorAutomaticDetection());
@@ -350,6 +351,7 @@ void OptionsDialog::OptionsDialog_accepted()
     respeqtSettings->setSpyMode(m_ui->spyMode->isChecked());
     respeqtSettings->setCommandName(m_ui->commandName->isChecked());
     respeqtSettings->setTrackLayout(m_ui->trackLayout->isChecked());
+    respeqtSettings->setDisplayTransmission(m_ui->displayTransmission->isChecked());
     respeqtSettings->setDisassembleUploadedCode(m_ui->disassembleUploadedCode->isChecked());
     respeqtSettings->setTranslatorAutomaticDetection(m_ui->translatorAutomaticDetection->isChecked());
     respeqtSettings->setTranslatorDiskImagePath(m_ui->translatorDiskImagePath->text());
