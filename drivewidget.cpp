@@ -107,7 +107,7 @@ void DriveWidget::updateFromImage(SimpleDiskImage *diskImage, bool happyHidden, 
     ui->labelFileName->setText(fileName);
     ui->labelImageProperties->setText(diskImage->description());
     ui->actionEject->setEnabled(true);
-    ui->buttonNextSide->setEnabled(!nextSideHidden);
+    ui->buttonNextSide->setVisible(!nextSideHidden);
     ui->actionNextSide->setEnabled(diskImage->hasSeveralSides());
     if (diskImage->hasSeveralSides()) {
         ui->actionNextSide->setToolTip(diskImage->getNextSideLabel());
