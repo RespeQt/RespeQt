@@ -1,16 +1,10 @@
 <RCC>
     <qresource prefix="/translations">
-        <file>i18n/qt_pl.qm</file>
-        <file>i18n/qt_tr.qm</file>
-        <file>i18n/qt_de.qm</file>
-        <file>i18n/qt_ru.qm</file>
-        <file>i18n/qt_sk.qm</file>
         <file>i18n/respeqt_de.qm</file>
         <file>i18n/respeqt_pl.qm</file>
         <file>i18n/respeqt_ru.qm</file>
         <file>i18n/respeqt_sk.qm</file>
         <file>i18n/respeqt_tr.qm</file>
         <file>i18n/respeqt_es.qm</file>
-        <file>i18n/qt_es.qm</file>
     </qresource>
 </RCC>

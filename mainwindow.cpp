@@ -1422,7 +1422,7 @@ void MainWindow::mountFile(int no, const QString &fileName, bool /*prot*/)
                 }
                 sio->installDevice(PCLINK_CDEVIC,pclink);
             }
-        } catch(std::bad_cast e)
+        } catch(std::bad_cast& e)
         {
             qDebug() << "!e " << tr("Bad cast for PCLINK");
         }
