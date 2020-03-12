@@ -16,12 +16,12 @@ namespace Printers
     BasePrinter::~BasePrinter()
     {}
 
-    const QChar BasePrinter::translateAtascii(const unsigned char b)
+    const QChar BasePrinter::translateAtascii(const unsigned char b) const
     {
         return mAtascii(b);
     }
 
-    void BasePrinter::handleCommand(quint8 command, quint16 aux)
+    void BasePrinter::handleCommand(const quint8 command, const quint16 aux)
     {
         if (respeqtSettings->printerEmulation() && mOutput) {  // Ignore printer commands  if Emulation turned OFF)    //
             qDebug() << "!n" << "[" << deviceName() << "] "

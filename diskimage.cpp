@@ -556,8 +556,8 @@ SimpleDiskImage::SimpleDiskImage(SioWorkerPtr worker)
     m_translatorAutomaticDetection = false;
     m_OSBMode = false;
     m_toolDiskMode = false;
-    m_translatorDisk = NULL;
-    m_toolDisk = NULL;
+    m_translatorDisk = nullptr;
+    m_toolDisk = nullptr;
 }
 
 SimpleDiskImage::~SimpleDiskImage()
@@ -571,17 +571,17 @@ SimpleDiskImage::~SimpleDiskImage()
 
 void SimpleDiskImage::closeTranslator()
 {
-    if (m_translatorDisk != NULL) {
+    if (m_translatorDisk != nullptr) {
         m_translatorDisk->close();
-        m_translatorDisk = NULL;
+        m_translatorDisk = nullptr;
     }
 }
 
 void SimpleDiskImage::closeToolDisk()
 {
-    if (m_toolDisk != NULL) {
+    if (m_toolDisk != nullptr) {
         m_toolDisk->close();
-        m_toolDisk = NULL;
+        m_toolDisk = nullptr;
     }
 }
 
@@ -1710,13 +1710,13 @@ void SimpleDiskImage::handleCommand(quint8 command, quint16 aux)
             else if ((sector != 1) && (m_board.getTranslatorState() == FIRST_SECTOR_1)) {
                 m_board.setTranslatorState(READ_OTHER_SECTOR);
             }
-            if (m_board.isTranslatorActive() && (m_translatorDisk != NULL)) {
+            if (m_board.isTranslatorActive() && (m_translatorDisk != nullptr)) {
                 m_translatorDisk->handleCommand(command, aux);
                 return;
             }
         }
         else if (m_board.isToolDiskActive()) {
-            if (m_toolDisk == NULL) {
+            if (m_toolDisk == nullptr) {
                 m_toolDisk = new SimpleDiskImage(sio);
                 m_toolDisk->setReadOnly(true);
                 m_toolDisk->setDeviceNo(0x31);
@@ -1744,7 +1744,7 @@ void SimpleDiskImage::handleCommand(quint8 command, quint16 aux)
                                 .arg(m_toolDiskImagePath);
                 }
             }
-            if (m_board.isToolDiskActive() && (m_toolDisk != NULL)) {
+            if (m_board.isToolDiskActive() && (m_toolDisk != nullptr)) {
                 m_toolDisk->handleCommand(command, aux);
                 return;
             }

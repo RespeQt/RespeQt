@@ -16,7 +16,7 @@ namespace Printers
     public:
         Atari1029(SioWorkerPtr worker);
 
-        virtual void setupFont();
+        virtual void setupFont() override;
         static QString typeName()
         {
             return "Atari 1029";
@@ -28,7 +28,7 @@ namespace Printers
         uint8_t mGraphicsMode; // TODO Enum?
         uint16_t mGraphicsColumns;
 
-        virtual bool handleBuffer(QByteArray &buffer, unsigned int len);
+        virtual bool handleBuffer(const QByteArray &buffer, const unsigned int len) override;
         bool handleEscapedCodes(const unsigned char b);
         bool handlePrintableCodes(const unsigned char b);
         bool elongatedMode() { return mElongatedMode; }

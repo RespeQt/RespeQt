@@ -44,7 +44,7 @@ QString SioDevice::deviceName()
 SioWorker::SioWorker()
         : QThread()
 #ifndef QT_NO_DEBUG
-      , mSnapshotRunning(false), mSnapshotWriter(NULL)
+      , mSnapshotRunning(false), mSnapshotWriter(nullptr)
 #endif
 {
     deviceMutex = new QMutex(QMutex::Recursive);
@@ -453,7 +453,7 @@ void SioWorker::stopSIOSnapshot()
         mSnapshotWriter->writeEndDocument();
         mSnapshotWriter->device()->close();
         delete mSnapshotWriter;
-        mSnapshotWriter = NULL;
+        mSnapshotWriter = nullptr;
         mSnapshotRunning = false;
     }
 }

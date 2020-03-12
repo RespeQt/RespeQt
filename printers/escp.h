@@ -10,7 +10,7 @@ namespace Printers
     public:
         Escp(SioWorkerPtr sio);
 
-        virtual bool handleBuffer(QByteArray &buffer, unsigned int len);
+        virtual bool handleBuffer(const QByteArray &buffer, const unsigned int len) override;
 
         static QString typeName()
         {

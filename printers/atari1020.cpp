@@ -50,10 +50,10 @@ namespace Printers
         }
     }
 
-    bool Atari1020::handleBuffer(QByteArray &buffer, unsigned int len)
+    bool Atari1020::handleBuffer(const QByteArray &buffer, const unsigned int len)
     {
-        len = std::min(static_cast<unsigned int>(buffer.count()), len);
-        for(unsigned int i = 0; i < len; i++) {
+        auto lenmin = std::min(static_cast<unsigned int>(buffer.count()), len);
+        for(unsigned int i = 0; i < lenmin; i++) {
             unsigned char b = static_cast<unsigned char>(buffer.at(static_cast<int>(i)));
 
             if (b == 155) // EOL
@@ -69,7 +69,7 @@ namespace Printers
                 } else if (mPrintText)
                     handlePrintableCodes(b);
                 else
-                    handleGraphicsMode(buffer, len, i);
+                    handleGraphicsMode(buffer, lenmin, i);
             } else {
                 // Textmode
                 if (b == 27) // ESC
@@ -130,7 +130,7 @@ namespace Printers
         }
     }
 
-    bool Atari1020::handleGraphicsMode(QByteArray &buffer, unsigned int len, unsigned int &i)
+    bool Atari1020::handleGraphicsMode(const QByteArray &buffer, const unsigned int len, unsigned int &i)
     {
         unsigned char b = static_cast<unsigned char>(buffer.at(static_cast<int>(i)));
 
@@ -376,7 +376,7 @@ namespace Printers
         return true;
     }
 
-    int Atari1020::fetchIntFromBuffer(QByteArray &buffer, unsigned int /*len*/, unsigned int i, unsigned int &end)
+    int Atari1020::fetchIntFromBuffer(const QByteArray &buffer, const unsigned int /*len*/, const unsigned int i, unsigned int &end)
     {
         int result = 0;
         QString number("");

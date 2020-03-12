@@ -32,10 +32,10 @@ namespace Printers
         BasePrinter(SioWorkerPtr worker);
         virtual ~BasePrinter();
 
-        virtual void handleCommand(quint8 command, quint16 aux);
-        virtual bool handleBuffer(QByteArray &buffer, unsigned int len) = 0;
+        virtual void handleCommand(const quint8 command, const quint16 aux);
+        virtual bool handleBuffer(const QByteArray &buffer, const unsigned int len) = 0;
 
-        virtual const QChar translateAtascii(const unsigned char b);
+        virtual const QChar translateAtascii(const unsigned char b) const;
 
         NativeOutputPtr output() const { return mOutput; }
         void setOutput(NativeOutputPtr output);

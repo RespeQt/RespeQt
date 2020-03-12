@@ -52,7 +52,7 @@ protected:
 public:
     SioDevice(SioWorkerPtr worker);
     virtual ~SioDevice();
-    virtual void handleCommand(quint8 command, quint16 aux) = 0;
+    virtual void handleCommand(const quint8 command, const quint16 aux) = 0;
     virtual QString deviceName();
     inline void lock() {mLock.lock();}
     inline bool tryLock() {return mLock.tryLock();}

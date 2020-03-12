@@ -26,7 +26,7 @@ namespace Printers
     void Passthrough::setupFont()
     {}
 
-    bool Passthrough::handleBuffer(QByteArray &buffer, unsigned int len)
+    bool Passthrough::handleBuffer(const QByteArray &buffer, const unsigned int len)
     {
         QSharedPointer<RawOutput> output;
         try {
@@ -38,19 +38,20 @@ namespace Printers
             return false;
         }
 
-        len = std::min(static_cast<unsigned int>(buffer.count()), len);
-        for(unsigned int i = 0; i < len; i++) {
+        auto lenmin = std::min(static_cast<unsigned int>(buffer.count()), len);
+        auto tempbuffer = buffer;
+        for(unsigned int i = 0; i < lenmin; i++) {
             unsigned char b = static_cast<unsigned char>(buffer.at(static_cast<int>(i)));
 
             if (b == 155) // EOL
             {
                 const char lf = 13;
-                buffer.replace(static_cast<int>(i), 1, &lf);
-                buffer.resize(static_cast<int>(i+1));
+                tempbuffer.replace(static_cast<int>(i), 1, &lf);
+                tempbuffer.resize(static_cast<int>(i+1));
                 break; // Drop the rest of the buffer
             }
         }
 
-        return output->sendBuffer(buffer, static_cast<unsigned int>(buffer.size()));
+        return output->sendBuffer(tempbuffer, static_cast<unsigned int>(tempbuffer.size()));
     }
 }

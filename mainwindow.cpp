@@ -71,7 +71,7 @@ bool g_disablePicoHiSpeed;
 static bool g_D9DOVisible = true;
 bool g_miniMode = false;
 static bool g_shadeMode = false;
-SimpleDiskImage *g_translator = NULL;
+SimpleDiskImage *g_translator = nullptr;
 //static int g_savedWidth;
 
 // ****************************** END OF GLOBALS ************************************//
@@ -1389,7 +1389,7 @@ void MainWindow::mountFile(int no, const QString &fileName, bool /*prot*/)
 
     if (disk) {
         SimpleDiskImage *oldDisk = qobject_cast <SimpleDiskImage*> (sio->getDevice(no + DISK_BASE_CDEVIC));
-        Board *board = oldDisk != NULL ? oldDisk->getBoardInfo() : nullptr;
+        Board *board = oldDisk != nullptr ? oldDisk->getBoardInfo() : nullptr;
         if(g_rclFileName.left(1) == "*") ask = false;
         if (!disk->open(fileName, type) || !ejectImage(no, ask) ) {
             respeqtSettings->unmountImage(no);

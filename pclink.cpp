@@ -716,7 +716,7 @@ DIRENTRY * PCLINK::cache_dir(uchar handle)
 
     if (iodesc[handle].dir_cache != nullptr)
     {
-        if(D) qDebug() << "!n" << tr("Internal error: dir_cache should be NULL!");
+        if(D) qDebug() << "!n" << tr("Internal error: dir_cache should be nullptr!");
         free(iodesc[handle].dir_cache);
         iodesc[handle].dir_cache = nullptr;
     }

@@ -21,7 +21,7 @@ namespace Printers
         }
     }
 
-    bool Atari1029::handleBuffer(QByteArray &buffer, unsigned int len)
+    bool Atari1029::handleBuffer(const QByteArray &buffer, const unsigned int len)
     {
         for(unsigned int i = 0; i < len; i++)
         {

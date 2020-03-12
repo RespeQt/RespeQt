@@ -5,19 +5,14 @@
 
 namespace Printers
 {
-    enum class Colors1020
-    {
-        BLACK, BLUE, RED, GREEN
-    };
-
     class Atari1020 : public AtariPrinter
     {
     public:
         Atari1020(SioWorkerPtr sio);
 
-        virtual bool handleBuffer(QByteArray &buffer, unsigned int len);
-        virtual void setupFont();
-        virtual void setupOutput();
+        virtual bool handleBuffer(const QByteArray &buffer, const unsigned int len) override;
+        virtual void setupFont() override;
+        virtual void setupOutput() override;
 
         static QString typeName()
         {
@@ -32,8 +27,8 @@ namespace Printers
         int mFontSize;
 
         bool handlePrintableCodes(const unsigned char b);
-        bool handleGraphicsMode(QByteArray &buffer, unsigned int len, unsigned int &i);
-        int fetchIntFromBuffer(QByteArray &buffer, unsigned int len, unsigned int i, unsigned int &end);
+        bool handleGraphicsMode(const QByteArray &buffer, const unsigned int len, unsigned int &i);
+        int fetchIntFromBuffer(const QByteArray &buffer, const unsigned int len, const unsigned int i, unsigned int &end);
         void endCommandLine();
         bool drawAxis(bool xAxis, int size, int count);
     };
