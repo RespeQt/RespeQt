@@ -16,16 +16,16 @@ namespace Printers
         inline QPrinterPtr printer() const {
             return qSharedPointerDynamicCast<QPrinter>(mDevice);
         }
-        virtual void newPage(bool linefeed = false);
+        virtual void newPage(bool linefeed = false) override;
+        virtual bool setupOutput() override;
 
-        virtual bool setupOutput();
         static QString typeName()
         {
             return "NativePrinter";
         }
 
     protected:
-        virtual void updateBoundingBox();
+        virtual void updateBoundingBox() override;
     };
 }
 #endif // NATIVEPRINTER_H

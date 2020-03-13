@@ -25,25 +25,25 @@ public:
     explicit TextPrinterWindow(QWidget *parent = nullptr);
     ~TextPrinterWindow();
 
-    virtual void newLine(bool linefeed = false);
-    virtual void newPage(bool) {}
-    virtual void updateBoundingBox() {}
-    virtual bool beginOutput() { return true; }
-    virtual bool endOutput() { return true; }
-    virtual void printChar(const QChar &c);
-    virtual void printString(const QString &s);
+    virtual void newLine(bool linefeed = false) override;
+    virtual void newPage(bool) override {}
+    virtual void updateBoundingBox() override {}
+    virtual bool beginOutput() override { return true; }
+    virtual bool endOutput() override { return true; }
+    virtual void printChar(const QChar &c) override;
+    virtual void printString(const QString &s) override;
     virtual void setWindow(const QRect &) {}
     virtual void setPen(const QColor &) {}
     virtual void setPen(Qt::PenStyle) {}
     virtual void setPen(const QPen &) {}
-    virtual int dpiX() { return 1; }
+    virtual int dpiX() override { return 1; }
     virtual const QPen &pen() const { return mPen; }
-    virtual void setFont(QFontPtr) {}
+    virtual void setFont(QFontPtr) override {}
     virtual void translate(const QPointF &) {}
     virtual void drawLine(const QPointF &, const QPointF &) {}
-    virtual void calculateFixedFontSize(uint8_t) {}
+    virtual void calculateFixedFontSize(uint8_t) override {}
+    virtual bool setupOutput() override;
 
-    virtual bool setupOutput();
     static QString typeName()
     {
         return QObject::tr("Text printer");
@@ -57,8 +57,8 @@ signals:
     void textPrint(const QString &text);
 
 protected:
-    void changeEvent(QEvent *e);
-    void closeEvent(QCloseEvent *e);
+    void changeEvent(QEvent *e) override;
+    void closeEvent(QCloseEvent *e) override;
 
 private:
     Ui::TextPrinterWindow *ui;

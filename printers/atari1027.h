@@ -16,7 +16,9 @@ namespace Printers
     public:
         Atari1027(SioWorkerPtr worker);
 
+        virtual bool handleBuffer(const QByteArray &buffer, const unsigned int len) override;
         virtual void setupFont() override;
+
         static QString typeName()
         {
             return "Atari 1027";
@@ -25,7 +27,6 @@ namespace Printers
     private:
         bool mESC;
 
-        virtual bool handleBuffer(const QByteArray &buffer, const unsigned int len) override;
         bool handleEscapedCodes(const unsigned char b);
         bool handlePrintableCodes(const unsigned char b);
     };
