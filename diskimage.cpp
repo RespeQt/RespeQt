@@ -62,6 +62,10 @@ static quint8 ARCHIVER_DIAGNOSTIC[] = {
     0x0C, 0x20, 0x56, 0xE4, 0xE6, 0xCB, 0xD0, 0xF3, 0xB9, 0xC7, 0x01, 0x06, 0x63, 0x60, 0x7D, 0xFF
 };
 
+static quint8 ARCHIVER_ADDRESS_CHECK[] = {
+    0x31, 0x74, 0x00, 0xE9, 0x68, 0xF8, 0xA5, 0x90
+};
+
 // Signature sent by Happy at $0800 to execute code in drive
 static quint8 HAPPY_SIGNATURE[] = { 0x26, 0x11, 0x34, 0x14, 0x15, 0x57, 0x37, 0x85, 0x86 };
 
@@ -1167,9 +1171,27 @@ bool SimpleDiskImage::executeArchiverCode(quint16 aux, QByteArray &data)
             qDebug() << "!u" << tr("[%1] Uploaded code is: Speed check")
                         .arg(deviceName());
         }
-        else if (m_board.getLastArchiverUploadCrc16() == 0x61F6) {
+        else if ((m_board.getLastArchiverUploadCrc16() == 0x61F6) || (m_board.getLastArchiverUploadCrc16() == 0xBFE7)) {
             qDebug() << "!u" << tr("[%1] Uploaded code is: Diagnostic")
                         .arg(deviceName());
+        }
+        else if ((m_board.getLastArchiverUploadCrc16() == 0x16BB) || (m_board.getLastArchiverUploadCrc16() == 0x7430)) {
+            qDebug() << "!u" << tr("[%1] Uploaded code is: End of diagnostic")
+                        .arg(deviceName());
+        }
+        else if (m_board.getLastArchiverUploadCrc16() == 0xE3B5) {
+            qDebug() << "!u" << tr("[%1] Uploaded code is: Read address marks for track $%2")
+                        .arg(deviceName())
+                        .arg((aux & 0x3F), 2, 16, QChar('0'));
+        }
+        else if (m_board.getLastArchiverUploadCrc16() == 0x912F) {
+            qDebug() << "!u" << tr("[%1] Uploaded code is: BitWriter clear memory")
+                        .arg(deviceName());
+        }
+        else if (m_board.getLastArchiverUploadCrc16() == 0x01DA) {
+            qDebug() << "!u" << tr("[%1] Uploaded code is: BitWriter read track $%2")
+                        .arg(deviceName())
+                        .arg((aux & 0x3F), 2, 16, QChar('0'));
         }
         else if ((firstDataPartCrc16 == 0x9537) || (firstDataPartCrc16 == 0xBEAF) || (firstDataPartCrc16 == 0xD2A0)) { // Super Archiver 3.02, 3.03, 3.12 respectively
             m_board.setLastArchiverUploadCrc16(firstDataPartCrc16);
@@ -1179,6 +1201,18 @@ bool SimpleDiskImage::executeArchiverCode(quint16 aux, QByteArray &data)
             qDebug() << "!u" << tr("[%1] Uploaded code is: Prepare track data at offset $%2")
                         .arg(deviceName())
                         .arg(startOffset, 2, 16, QChar('0'));
+        }
+        else if ((firstDataPartCrc16 == 0x335F) || (firstDataPartCrc16 == 0x936E) || (firstDataPartCrc16 == 0x4B4B)) {
+            qDebug() << "!u" << tr("[%1] Uploaded code is: Super Archiver open Chip")
+                        .arg(deviceName());
+        }
+        else if (firstDataPartCrc16 == 0xB180) {
+            qDebug() << "!u" << tr("[%1] Uploaded code is: BitWriter open Chip")
+                        .arg(deviceName());
+        }
+        else if (firstDataPartCrc16 == 0x0E8E) {
+            qDebug() << "!u" << tr("[%1] Uploaded code is: Super Archiver clear memory")
+                        .arg(deviceName());
         }
         else {
             // when SK+ option is on in Archiver 3.03, an Execute Code command is sent with code and data.
@@ -2503,12 +2537,25 @@ void SimpleDiskImage::handleCommand(quint8 command, quint16 aux)
         }
     case 0x50:  // Write sector with verify (ALL) or Write memory (HAPPY 810)
     case 0x57:  // Write sector without verify (ALL) or Write memory (HAPPY 810)
-    case 0x70:  // High Speed Write sector with verify or Write memory (HAPPY 1050)
+    case 0x70:  // High Speed Write sector with verify or Write memory (HAPPY 1050) or BitWriter read memory
     case 0x77:  // High Speed Write sector without verify or Write memory (HAPPY 1050)
         {
             quint16 sector = aux;
             if (m_board.isChipOpen()) {
                 sector = aux & 0x3FF;
+                if (command == 0x70) {
+                    if (!writeCommandAck()) {
+                        break;
+                    }
+                    qDebug() << "!n" << tr("[%1] BitWriter read memory with AUX=$%2")
+                                .arg(deviceName())
+                                .arg(aux, 4, 16, QChar('0'));
+                    if (!writeComplete()) {
+                        break;
+                    }
+                    writeDataFrame(QByteArray((const char *)ARCHIVER_SPEED_CHECK, sizeof(ARCHIVER_SPEED_CHECK)));
+                    break;
+                }
             }
             else if (m_board.isHappyEnabled()) {
                 if ((! m_board.isHappy1050()) && (aux >= 0x0800) && (aux <= 0x1380)) { // Write memory (HAPPY 810)
@@ -3412,10 +3459,27 @@ void SimpleDiskImage::handleCommand(quint8 command, quint16 aux)
                 writeDataFrame(QByteArray((const char *)ARCHIVER_SPEED_CHECK, sizeof(ARCHIVER_SPEED_CHECK)));
             }
             // this is the code for the diagnostic test (Archiver memory, 6532, 6810, Archiver version and rom checksum)
-            else if (m_board.getLastArchiverUploadCrc16() == 0x61F6) {
+            else if ((m_board.getLastArchiverUploadCrc16() == 0x61F6) || (m_board.getLastArchiverUploadCrc16() == 0xBFE7)) {
                 qDebug() << "!n" << tr("[%1] Super Archiver Read memory (Diagnostic)")
                             .arg(deviceName());
                 writeDataFrame(QByteArray((const char *)ARCHIVER_DIAGNOSTIC, sizeof(ARCHIVER_DIAGNOSTIC)));
+            }
+            // this is the code for reading the address marks
+            else if (m_board.getLastArchiverUploadCrc16() == 0xE3B5) {
+                qDebug() << "!n" << tr("[%1] Super Archiver Read memory (Address marks)")
+                            .arg(deviceName());
+                QByteArray data;
+                readTrack(aux, data, 256);
+                QByteArray result(256, 0);
+                for (quint16 i = 0; i < sizeof(ARCHIVER_ADDRESS_CHECK); i++) {
+                    result[i] = ARCHIVER_ADDRESS_CHECK[i];
+                }
+                result[2] = (char)(aux & 0x3F);
+                for (quint16 i = 0; i < (256 - sizeof(ARCHIVER_ADDRESS_CHECK)); i++) {
+                    result[i + sizeof(ARCHIVER_ADDRESS_CHECK)] = data[i + 4];
+                }
+                result[8] = data[3];
+                writeDataFrame(result);
             }
 			// this is the code to get the sector timing for skew alignment
             else if ((m_board.getLastArchiverUploadCrc16() == 0x603D) || (m_board.getLastArchiverUploadCrc16() == 0xBAC2) || (m_board.getLastArchiverUploadCrc16() == 0xDFFF)) { // Super Archiver 3.02, 3.03, 3.12 respectively
