@@ -678,7 +678,7 @@ void SimpleDiskImage::setOSBMode(bool enable)
 void SimpleDiskImage::setTranslatorActive(bool resetTranslatorState)
 {
     bool oldState = m_board.isTranslatorActive();
-    bool enable = m_OSBMode && (m_deviceNo == 0x31);
+    bool enable = m_OSBMode && ((m_deviceNo == -1) || (m_deviceNo == 0x31));
     if (enable) {
         enable = translatorDiskImageAvailable();
     }
