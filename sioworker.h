@@ -14,6 +14,7 @@
 
 #include <QThread>
 #include <QMutex>
+#include <QSharedPointer>
 #ifndef QT_NO_DEBUG
 #include <QFile>
 #endif
@@ -39,7 +40,7 @@ enum SIO_DEVICE_COUNT:quint8
 };
 
 class SioWorker;
-using SioWorkerPtr = std::shared_ptr<SioWorker>;
+using SioWorkerPtr = QSharedPointer<SioWorker>;
 
 class SioDevice : public QObject
 {

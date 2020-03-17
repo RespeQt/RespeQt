@@ -312,10 +312,10 @@ MainWindow::MainWindow(QWidget *parent)
     }
 
     /* Connect SioWorker signals */
-    sio = std::make_shared<SioWorker>();
-    connect(sio.get(), SIGNAL(started()), this, SLOT(sioStarted()));
-    connect(sio.get(), SIGNAL(finished()), this, SLOT(sioFinished()));
-    connect(sio.get(), SIGNAL(statusChanged(QString)), this, SLOT(sioStatusChanged(QString)));
+    sio = SioWorkerPtr::create();
+    connect(sio.data(), SIGNAL(started()), this, SLOT(sioStarted()));
+    connect(sio.data(), SIGNAL(finished()), this, SLOT(sioFinished()));
+    connect(sio.data(), SIGNAL(statusChanged(QString)), this, SLOT(sioStatusChanged(QString)));
     shownFirstTime = true;
 
     PCLINK* pclink = new PCLINK(sio);

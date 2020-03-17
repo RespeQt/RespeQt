@@ -64,7 +64,7 @@ namespace Printers {
         {
             QVector<QString> names;
 
-            for(auto it : creatorFunctions)
+            for(const auto it : creatorFunctions)
             {
                 names.append(it.first);
             }

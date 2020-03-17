@@ -47,10 +47,11 @@ namespace Printers {
 
         BasePrinterPtr createPrinter(QString label, SioWorkerPtr worker) const
         {
-            for(auto it : creatorFunctions)
+            for(const auto it : creatorFunctions)
             {
                 if (it.first == label)
                 {
+                    // This is a call to the function pointed to by it.second.
                     return it.second(worker);
                 }
             }
