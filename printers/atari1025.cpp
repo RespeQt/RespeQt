@@ -1,11 +1,11 @@
 #include "atari1025.h"
 #include "respeqtsettings.h"
 #include <cstdlib>
-
+#include <utility> 
 namespace Printers
 {
     Atari1025::Atari1025(SioWorkerPtr worker)
-        : AtariPrinter(worker),
+        : AtariPrinter(std::move(worker)),
           mESC(false),
           mCPI(10),
           mLineChars(80),
@@ -27,7 +27,7 @@ namespace Printers
     {
         for(unsigned int i = 0; i < len; i++)
         {
-            unsigned char b = static_cast<unsigned char>(
+            auto b = static_cast<unsigned char>(
                         buffer.at(static_cast<int>(i)));
             switch(b) {
                 case 23: // CTRL+W could be ESC code

@@ -63,10 +63,10 @@ namespace Printers {
         return return_;
     }
 
-    typedef struct {
+    using my_user_data_t = struct {
         int num_dests;
         cups_dest_t *dests;
-    } my_user_data_t;
+    };
 
     int my_dest_cb(my_user_data_t *user_data, unsigned int flags, cups_dest_t *dest)
     {
@@ -97,7 +97,7 @@ namespace Printers {
         mDest = nullptr;
         for(int i = 0; i < user_data.num_dests; i++)
         {
-            cups_dest_t *dest = reinterpret_cast<cups_dest_t*>(&user_data.dests[i]);
+            auto *dest = reinterpret_cast<cups_dest_t*>(&user_data.dests[i]);
             if (rawPrinterName == QString::fromLocal8Bit(dest->name))
             {
 #if defined(Q_OS_MAC)
@@ -138,7 +138,7 @@ namespace Printers {
 
         for(int i = 0; i <  user_data.num_dests; i++)
         {
-            cups_dest_t *dest = reinterpret_cast<cups_dest_t*>(&user_data.dests[i]);
+            auto *dest = reinterpret_cast<cups_dest_t*>(&user_data.dests[i]);
 
             list->addItem(QString::fromLocal8Bit(dest->name), i);
         }

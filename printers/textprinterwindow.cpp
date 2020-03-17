@@ -102,7 +102,7 @@ void TextPrinterWindow::closeEvent(QCloseEvent *e)
     for (int x = 0; x <= n-1; ++x){
         char byte = textASCII[x];
         if (byte < 0){
-            textASCII[x] = byte ^ 0x80;
+            textASCII[x] = static_cast<char>(byte ^ 0x80);
         }
     }
     c = ui->printerTextEditASCII->textCursor();
@@ -223,9 +223,9 @@ void TextPrinterWindow::on_actionHideShow_Atascii_triggered()
 void TextPrinterWindow::on_actionPrint_triggered()
 {
     QPrinter printer;
-    QPrintDialog *dialog = new QPrintDialog(&printer, this);
+    auto dialog = new QPrintDialog(&printer, this);
     if (dialog->exec() != QDialog::Accepted)
-    return;
+        return;
 
     ui->printerTextEdit->print(&printer);
 }

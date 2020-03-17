@@ -7,11 +7,12 @@
 #include <QFontDatabase>
 #include <QPoint>
 #include <QException>
+#include <utility> 
 
 namespace Printers
 {
     Atari1020::Atari1020(SioWorkerPtr sio)
-        : AtariPrinter(sio),
+        : AtariPrinter(std::move(sio)),
           mGraphicsMode(true),
           mEsc(false),
           mPrintText(false),
@@ -54,7 +55,7 @@ namespace Printers
     {
         auto lenmin = std::min(static_cast<unsigned int>(buffer.count()), len);
         for(unsigned int i = 0; i < lenmin; i++) {
-            unsigned char b = static_cast<unsigned char>(buffer.at(static_cast<int>(i)));
+            auto b = static_cast<unsigned char>(buffer.at(static_cast<int>(i)));
 
             if (b == 155) // EOL
             {
@@ -132,7 +133,7 @@ namespace Printers
 
     bool Atari1020::handleGraphicsMode(const QByteArray &buffer, const unsigned int len, unsigned int &i)
     {
-        unsigned char b = static_cast<unsigned char>(buffer.at(static_cast<int>(i)));
+        auto b = static_cast<unsigned char>(buffer.at(static_cast<int>(i)));
 
         switch (b)
         {
@@ -160,7 +161,7 @@ namespace Printers
 
             case 'C': // Set Color
             {
-                unsigned char next = static_cast<unsigned char>(buffer.at(static_cast<int>(i + 1)));
+                auto next = static_cast<unsigned char>(buffer.at(static_cast<int>(i + 1)));
                 if (next >= '0' && next <= '3')
                 {
                     QColor temp("black");
@@ -227,7 +228,8 @@ namespace Printers
                 do {
                     try {
 
-                        unsigned int endx, endy;
+                        unsigned int endx;
+                        unsigned int endy;
                         int x = fetchIntFromBuffer(buffer, len, i, endx);
                         if (buffer.at(static_cast<int>(endx)) != ',')
                         {
@@ -290,7 +292,8 @@ namespace Printers
 
             case 'X': // draw axes 0 = Y-axis, otherwise X-axis
                 try {
-                    unsigned int i_ = i, end;
+                    unsigned int i_ = i;
+                    unsigned int end;
                     int mode, size, count;
 
                     mode = fetchIntFromBuffer(buffer, len, i_, end);
@@ -402,8 +405,8 @@ namespace Printers
         result = number.toInt(&ok);
         if (ok)
             return result;
-        else
-            throw new std::invalid_argument("couldn't convert to int");
+
+        throw new std::invalid_argument("couldn't convert to int");
     }
 
     bool Atari1020::handlePrintableCodes(const unsigned char b)

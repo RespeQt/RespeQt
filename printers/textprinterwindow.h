@@ -38,7 +38,7 @@ public:
     virtual void setPen(const QPen &) {}
     virtual int dpiX() override { return 1; }
     virtual const QPen &pen() const { return mPen; }
-    virtual void setFont(QFontPtr) override {}
+    virtual void setFont(const QFontPtr&) override {}
     virtual void translate(const QPointF &) {}
     virtual void drawLine(const QPointF &, const QPointF &) {}
     virtual void calculateFixedFontSize(uint8_t) override {}

@@ -1,9 +1,9 @@
 #include "centronics.h"
-
+ #include <utility> 
 namespace Printers
 {
     Centronics::Centronics(SioWorkerPtr sio)
-        : BasePrinter(sio)
+        : BasePrinter(std::move(sio))
     {}
 
     const QChar Centronics::translateAtascii(const unsigned char b) const

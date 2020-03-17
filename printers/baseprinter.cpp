@@ -1,20 +1,18 @@
 #include "baseprinter.h"
-#include "atari1027.h"
-#include "atari1020.h"
-#include "atari1029.h"
-#include "escp.h"
+
+#include <utility>
+
 #include "respeqtsettings.h"
 #include "logdisplaydialog.h"
 
 namespace Printers
 {
     BasePrinter::BasePrinter(SioWorkerPtr worker)
-        : SioDevice(worker),
+        : SioDevice(std::move(worker)),
           mOutput()
     {}
 
-    BasePrinter::~BasePrinter()
-    {}
+    BasePrinter::~BasePrinter() = default;
 
     const QChar BasePrinter::translateAtascii(const unsigned char b) const
     {
@@ -99,7 +97,7 @@ namespace Printers
         }
     }
 
-    void BasePrinter::setOutput(NativeOutputPtr output)
+    void BasePrinter::setOutput(const NativeOutputPtr& output)
     {
         if (mOutput && mOutput != output)
         {

@@ -38,7 +38,7 @@ namespace Printers
         virtual const QChar translateAtascii(const unsigned char b) const;
 
         NativeOutputPtr output() const { return mOutput; }
-        void setOutput(NativeOutputPtr output);
+        void setOutput(const NativeOutputPtr& output);
         void resetOutput();
         virtual void setupFont() {}
         virtual void setupOutput();

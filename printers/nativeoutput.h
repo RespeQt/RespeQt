@@ -49,7 +49,7 @@ namespace Printers
             return static_cast<int>(trunc(mBoundingBox.height()));
         }
         virtual int dpiX() { return mDevice->logicalDpiX(); }
-        virtual void setFont(QFontPtr font);
+        virtual void setFont(const QFontPtr& font);
         QFontPtr font() const { return mFont; }
         QPaintDevicePtr device() const { return mDevice; }
         QPainterPtr painter() const { return mPainter; }
@@ -59,7 +59,7 @@ namespace Printers
         void setX(int x) { mX = x; }
         void setY(int y) { mY = y; }
 
-        void setPrinter(BasePrinterWPtr printer);
+        void setPrinter(const BasePrinterWPtr& printer);
         BasePrinterWPtr printer() const { return mPrinter; }
 
         static QString typeName()

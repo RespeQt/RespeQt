@@ -7,16 +7,16 @@
 #include <stdexcept>
 #include <QFontDatabase>
 #include <QPoint>
-
+#include <utility> 
 namespace Printers
 {
 
     Passthrough::Passthrough(SioWorkerPtr sio)
-        : BasePrinter(sio)
+        : BasePrinter(std::move(sio))
     {}
 
     Passthrough::~Passthrough()
-    {}
+    = default;
 
     void Passthrough::setupOutput()
     {
@@ -41,7 +41,7 @@ namespace Printers
         auto lenmin = std::min(static_cast<unsigned int>(buffer.count()), len);
         auto tempbuffer = buffer;
         for(unsigned int i = 0; i < lenmin; i++) {
-            unsigned char b = static_cast<unsigned char>(buffer.at(static_cast<int>(i)));
+            auto b = static_cast<unsigned char>(buffer.at(static_cast<int>(i)));
 
             if (b == 155) // EOL
             {

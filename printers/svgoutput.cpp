@@ -12,7 +12,7 @@ namespace Printers {
     }
 
     SVGOutput::~SVGOutput()
-    {}
+    = default;
 
     void SVGOutput::updateBoundingBox()
     {

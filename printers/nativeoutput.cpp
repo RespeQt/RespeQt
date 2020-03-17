@@ -78,7 +78,7 @@ namespace Printers
         mCharsPerLine = charsPerLine;
     }
 
-    void NativeOutput::setFont(QFontPtr font)
+    void NativeOutput::setFont(const QFontPtr& font)
     {
         if (font != mFont)
         {
@@ -146,7 +146,7 @@ namespace Printers
         mPainter->drawPoint(p);
     }
 
-    void NativeOutput::setPrinter(QWeakPointer<BasePrinter> printer)
+    void NativeOutput::setPrinter(const QWeakPointer<BasePrinter>& printer)
     {
         if (printer)
         {

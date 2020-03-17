@@ -1,9 +1,9 @@
 #include "atariprinter.h"
-
+ #include <utility> 
 namespace Printers
 {
     AtariPrinter::AtariPrinter(SioWorkerPtr worker)
-        : BasePrinter(worker),
+        : BasePrinter(std::move(worker)),
         mInternational(false)
     {}
 

@@ -1,9 +1,9 @@
 #include "escp.h"
-
+ #include <utility> 
 namespace Printers
 {
     Escp::Escp(SioWorkerPtr sio)
-        : Centronics(sio)
+        : Centronics(std::move(sio))
     {
         initPrinter();
     }

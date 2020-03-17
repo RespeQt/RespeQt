@@ -1,11 +1,11 @@
 #include "atari1029.h"
 #include "respeqtsettings.h"
 #include <cstdlib>
-
+#include <utility> 
 namespace Printers
 {
     Atari1029::Atari1029(SioWorkerPtr worker)
-        : AtariPrinter(worker),
+        : AtariPrinter(std::move(worker)),
           mESC(false),
           mElongatedMode(false)
     {}
@@ -25,7 +25,7 @@ namespace Printers
     {
         for(unsigned int i = 0; i < len; i++)
         {
-            unsigned char b = static_cast<unsigned char>(buffer.at(static_cast<int>(i)));
+            auto b = static_cast<unsigned char>(buffer.at(static_cast<int>(i)));
             if (mGraphicsMode == GraphicsMode::NOT_GRAPHICS)
             {
                 switch(b) {
