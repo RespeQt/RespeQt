@@ -316,6 +316,7 @@ MainWindow::MainWindow(QWidget *parent)
     connect(sio, SIGNAL(finished()), this, SLOT(sioFinished()));
     connect(sio, SIGNAL(statusChanged(QString)), this, SLOT(sioStatusChanged(QString)));
     shownFirstTime = true;
+    sio->setAutoReconnect(respeqtSettings->sioAutoReconnect());
 
     PCLINK* pclink = new PCLINK(sio);
     sio->installDevice(PCLINK_CDEVIC, pclink);
@@ -1137,6 +1138,7 @@ void MainWindow::on_actionOptions_triggered()
     for (int i = DISK_BASE_CDEVIC; i < (DISK_BASE_CDEVIC+DISK_COUNT); i++) {    // 0x31 - 0x3E
         deviceStatusChanged(i);
     }
+    sio->setAutoReconnect(respeqtSettings->sioAutoReconnect());
     
     ui->actionStartEmulation->trigger();
 }

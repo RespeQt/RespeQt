@@ -156,6 +156,7 @@ RespeqtSettings::RespeqtSettings()
     mDisassembleUploadedCode = mSettings->value("DisassembleUploadedCode", false).toBool();
     mTranslatorAutomaticDetection = mSettings->value("TranslatorAutomaticDetection", false).toBool();
     mTranslatorDiskImagePath = mSettings->value("TranslatorDiskImagePath", "").toString();
+    mSioAutoReconnect = mSettings->value("SioAutoReconnect", false).toBool();
     mHideChipMode = mSettings->value("HideChipMode", false).toBool();
     mHideHappyMode = mSettings->value("HideHappyMode", false).toBool();
     mHideNextImage = mSettings->value("HideNextImage", false).toBool();
@@ -266,6 +267,7 @@ void RespeqtSettings::saveSessionToFile(const QString &fileName)
         s.setValue("DisassembleUploadedCode", mDisassembleUploadedCode);
         s.setValue("TranslatorAutomaticDetection", mTranslatorAutomaticDetection);
         s.setValue("TranslatorDiskImagePath", mTranslatorDiskImagePath);
+        s.setValue("SioAutoReconnect", mSioAutoReconnect);
         s.setValue("HideChipMode", mHideChipMode);
         s.setValue("HideHappyMode", mHideHappyMode);
         s.setValue("HideNextImage", mHideNextImage);
@@ -375,6 +377,7 @@ void RespeqtSettings::saveSessionToFile(const QString &fileName)
         mDisassembleUploadedCode = s.value("DisassembleUploadedCode", false).toBool();
         mTranslatorAutomaticDetection = s.value("TranslatorAutomaticDetection", false).toBool();
         mTranslatorDiskImagePath = s.value("TranslatorDiskImagePath", false).toString();
+        mSioAutoReconnect = s.value("SioAutoReconnect", false).toBool();
         mHideChipMode = s.value("HideChipMode", false).toBool();
         mHideHappyMode = s.value("HideHappyMode", false).toBool();
         mHideNextImage = s.value("HideNextImage", false).toBool();
@@ -1378,6 +1381,17 @@ void RespeqtSettings::setTranslatorAutomaticDetection(bool translatorAutomaticDe
 {
     mTranslatorAutomaticDetection = translatorAutomaticDetection;
     if(mSessionFileName == "") mSettings->setValue("TranslatorAutomaticDetection", mTranslatorAutomaticDetection);
+}
+
+bool RespeqtSettings::sioAutoReconnect()
+{
+    return mSioAutoReconnect;
+}
+
+void RespeqtSettings::setSioAutoReconnect(bool sioAutoReconnect)
+{
+    mSioAutoReconnect = sioAutoReconnect;
+    if(mSessionFileName == "") mSettings->setValue("SioAutoReconnect", mSioAutoReconnect);
 }
 
 bool RespeqtSettings::hideChipMode()

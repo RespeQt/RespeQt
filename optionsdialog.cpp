@@ -100,6 +100,7 @@ OptionsDialog::OptionsDialog(QWidget *parent) :
     m_ui->disassembleUploadedCode->setChecked(respeqtSettings->disassembleUploadedCode());
     m_ui->translatorDiskImagePath->setText(respeqtSettings->translatorDiskImagePath());
     m_ui->translatorAutomaticDetection->setChecked(respeqtSettings->translatorAutomaticDetection());
+    m_ui->sioAutoReconnect->setChecked(respeqtSettings->sioAutoReconnect());
     m_ui->hideChipMode->setChecked(respeqtSettings->hideChipMode());
     m_ui->hideHappyMode->setChecked(respeqtSettings->hideHappyMode());
     m_ui->hideNextImage->setChecked(respeqtSettings->hideNextImage());
@@ -355,6 +356,7 @@ void OptionsDialog::OptionsDialog_accepted()
     respeqtSettings->setDisassembleUploadedCode(m_ui->disassembleUploadedCode->isChecked());
     respeqtSettings->setTranslatorAutomaticDetection(m_ui->translatorAutomaticDetection->isChecked());
     respeqtSettings->setTranslatorDiskImagePath(m_ui->translatorDiskImagePath->text());
+    respeqtSettings->setSioAutoReconnect(m_ui->sioAutoReconnect->isChecked());
     respeqtSettings->setHideChipMode(m_ui->hideChipMode->isChecked());
     respeqtSettings->setHideHappyMode(m_ui->hideHappyMode->isChecked());
     respeqtSettings->setHideNextImage(m_ui->hideNextImage->isChecked());

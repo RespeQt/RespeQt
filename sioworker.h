@@ -77,6 +77,7 @@ private:
     void writeSnapshotCommandFrame(qint8 no, qint8 command, qint8 aux1, qint8 aux2);
 #endif
     bool displayCommandName;
+    bool mAutoReconnect;
 
 public:
     AbstractSerialPortBackend* port() {return mPort;}
@@ -89,6 +90,7 @@ public:
 
     void run();
 
+    void setAutoReconnect(bool autoReconnect);
     void installDevice(quint8 no, SioDevice *device);
     void uninstallDevice(quint8 no);
     void swapDevices(quint8 d1, quint8 d2);

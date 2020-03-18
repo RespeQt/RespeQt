@@ -113,6 +113,11 @@ void SioWorker::start(Priority p)
     QThread::start(p);
 }
 
+void SioWorker::setAutoReconnect(bool autoReconnect)
+{
+    mAutoReconnect = autoReconnect;
+}
+
 void SioWorker::run()
 {
     connect(mPort, SIGNAL(statusChanged(QString)), this, SIGNAL(statusChanged(QString)));
@@ -133,6 +138,17 @@ void SioWorker::run()
         }
         if (cmd.isEmpty()) {
             qCritical() << "!e" << tr("Cannot read command frame.");
+            if (mAutoReconnect) {
+                qDebug() << "!u" << tr("Trying to reconnect SIO port...");
+                mPort->close();
+                while (mAutoReconnect && (!mustTerminate) && (!mPort->isOpen())) {
+                    QThread::sleep(1L);
+                    mPort->open();
+                }
+                if (!mustTerminate) {
+                    continue;
+                }
+            }
             break;
         }
         /* Decode the command */

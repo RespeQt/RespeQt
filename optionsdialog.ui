@@ -156,7 +156,7 @@
     </sizepolicy>
    </property>
    <property name="currentIndex">
-    <number>14</number>
+    <number>3</number>
    </property>
    <widget class="QWidget" name="page_serialPort">
     <layout class="QVBoxLayout" name="verticalLayout_2">
@@ -664,31 +664,6 @@
         <string>Emulation</string>
        </property>
        <layout class="QGridLayout" name="gridLayout_3">
-        <item row="8" column="0">
-         <widget class="QLabel" name="label_3">
-          <property name="text">
-           <string>PCLINK:</string>
-          </property>
-         </widget>
-        </item>
-        <item row="5" column="0">
-         <widget class="QLabel" name="label">
-          <property name="minimumSize">
-           <size>
-            <width>0</width>
-            <height>0</height>
-           </size>
-          </property>
-          <property name="font">
-           <font>
-            <italic>false</italic>
-           </font>
-          </property>
-          <property name="text">
-           <string>Folder Images:</string>
-          </property>
-         </widget>
-        </item>
         <item row="3" column="0" colspan="2">
          <widget class="QSpinBox" name="emulationCustomCasBaudSpin">
           <property name="enabled">
@@ -711,21 +686,10 @@
           </property>
          </widget>
         </item>
-        <item row="7" column="0" colspan="2">
-         <widget class="QLabel" name="label_2">
-          <property name="minimumSize">
-           <size>
-            <width>300</width>
-            <height>0</height>
-           </size>
-          </property>
-          <property name="font">
-           <font>
-            <italic>true</italic>
-           </font>
-          </property>
+        <item row="9" column="0">
+         <widget class="QCheckBox" name="capitalLettersPCLINK">
           <property name="text">
-           <string>        (Required for AtariDOS compatibility)</string>
+           <string>CAPITAL letters in file names</string>
           </property>
          </widget>
         </item>
@@ -751,6 +715,24 @@
           </property>
          </widget>
         </item>
+        <item row="7" column="0" colspan="2">
+         <widget class="QLabel" name="label_2">
+          <property name="minimumSize">
+           <size>
+            <width>300</width>
+            <height>0</height>
+           </size>
+          </property>
+          <property name="font">
+           <font>
+            <italic>true</italic>
+           </font>
+          </property>
+          <property name="text">
+           <string>        (Required for AtariDOS compatibility)</string>
+          </property>
+         </widget>
+        </item>
         <item row="4" column="1">
          <spacer name="verticalSpacer_2">
           <property name="orientation">
@@ -767,10 +749,28 @@
           </property>
          </spacer>
         </item>
-        <item row="9" column="0">
-         <widget class="QCheckBox" name="capitalLettersPCLINK">
+        <item row="8" column="0">
+         <widget class="QLabel" name="label_3">
           <property name="text">
-           <string>CAPITAL letters in file names</string>
+           <string>PCLINK:</string>
+          </property>
+         </widget>
+        </item>
+        <item row="5" column="0">
+         <widget class="QLabel" name="label">
+          <property name="minimumSize">
+           <size>
+            <width>0</width>
+            <height>0</height>
+           </size>
+          </property>
+          <property name="font">
+           <font>
+            <italic>false</italic>
+           </font>
+          </property>
+          <property name="text">
+           <string>Folder Images:</string>
           </property>
          </widget>
         </item>
@@ -793,6 +793,13 @@
           </property>
          </widget>
         </item>
+        <item row="10" column="0">
+         <widget class="QLabel" name="label_4">
+          <property name="text">
+           <string>Smart Device:</string>
+          </property>
+         </widget>
+        </item>
         <item row="1" column="1">
          <spacer name="emulationSpacer1">
           <property name="orientation">
@@ -808,6 +815,13 @@
            </size>
           </property>
          </spacer>
+        </item>
+        <item row="11" column="0">
+         <widget class="QCheckBox" name="URLSubmit">
+          <property name="text">
+           <string>URL Submit</string>
+          </property>
+         </widget>
         </item>
         <item row="0" column="0" colspan="2">
          <widget class="QCheckBox" name="emulationHighSpeedExeLoaderBox">
@@ -825,20 +839,6 @@
           </property>
          </widget>
         </item>
-        <item row="11" column="0">
-         <widget class="QCheckBox" name="URLSubmit">
-          <property name="text">
-           <string>URL Submit</string>
-          </property>
-         </widget>
-        </item>
-        <item row="10" column="0">
-         <widget class="QLabel" name="label_4">
-          <property name="text">
-           <string>Smart Device:</string>
-          </property>
-         </widget>
-        </item>
         <item row="13" column="0">
          <widget class="QLineEdit" name="RclNameEdit">
           <property name="text">
@@ -846,32 +846,6 @@
           </property>
           <property name="readOnly">
            <bool>true</bool>
-          </property>
-         </widget>
-        </item>
-        <item row="14" column="0">
-         <spacer name="emulationSpacer2">
-          <property name="orientation">
-           <enum>Qt::Vertical</enum>
-          </property>
-          <property name="sizeHint" stdset="0">
-           <size>
-            <width>20</width>
-            <height>40</height>
-           </size>
-          </property>
-         </spacer>
-        </item>
-        <item row="12" column="0">
-         <widget class="QLabel" name="atariSioDriverNameLabel_2">
-          <property name="sizePolicy">
-           <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
-            <horstretch>0</horstretch>
-            <verstretch>0</verstretch>
-           </sizepolicy>
-          </property>
-          <property name="text">
-           <string>RCL client local path</string>
           </property>
          </widget>
         </item>
@@ -895,6 +869,70 @@
           <property name="icon">
            <iconset resource="icons.qrc">
             <normaloff>:/icons/silk-icons/icons/drive.png</normaloff>:/icons/silk-icons/icons/drive.png</iconset>
+          </property>
+         </widget>
+        </item>
+        <item row="12" column="0">
+         <widget class="QLabel" name="atariSioDriverNameLabel_2">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
+          <property name="text">
+           <string>RCL client local path</string>
+          </property>
+         </widget>
+        </item>
+        <item row="16" column="0">
+         <spacer name="emulationSpacer2">
+          <property name="orientation">
+           <enum>Qt::Vertical</enum>
+          </property>
+          <property name="sizeHint" stdset="0">
+           <size>
+            <width>20</width>
+            <height>40</height>
+           </size>
+          </property>
+         </spacer>
+        </item>
+        <item row="14" column="0">
+         <spacer name="verticalSpacer_10">
+          <property name="orientation">
+           <enum>Qt::Vertical</enum>
+          </property>
+          <property name="sizeType">
+           <enum>QSizePolicy::Fixed</enum>
+          </property>
+          <property name="sizeHint" stdset="0">
+           <size>
+            <width>20</width>
+            <height>10</height>
+           </size>
+          </property>
+         </spacer>
+        </item>
+        <item row="15" column="0">
+         <widget class="QCheckBox" name="sioAutoReconnect">
+          <property name="minimumSize">
+           <size>
+            <width>300</width>
+            <height>0</height>
+           </size>
+          </property>
+          <property name="maximumSize">
+           <size>
+            <width>16777215</width>
+            <height>16777215</height>
+           </size>
+          </property>
+          <property name="text">
+           <string>Try to restart emulation when SIO connection is lost</string>
+          </property>
+          <property name="checked">
+           <bool>false</bool>
           </property>
          </widget>
         </item>
