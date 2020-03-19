@@ -198,12 +198,12 @@ MainWindow::MainWindow(QWidget *parent)
 
     /* Add QActions for most recent */
     for( int i = 0; i < NUM_RECENT_FILES; ++i ) {
-        QAction* recentAction = new QAction(this);
+        auto recentAction = new QAction(this);
         connect(recentAction,SIGNAL(triggered()), this, SLOT(openRecent()));
         recentFilesActions_.append(recentAction);
     }
 
-    QWidget* diskMenu = (QWidget*)menuBar()->children().at(1);
+    auto diskMenu = (QWidget*)menuBar()->children().at(1);
 
     diskMenu->addActions( recentFilesActions_ );
 
@@ -298,7 +298,7 @@ MainWindow::MainWindow(QWidget *parent)
 
     /* Connect to the network */
     QString netInterface;
-    Network *oNet = new Network();
+    auto oNet = new Network();
     if (oNet->openConnection(netInterface)) {
         netLabel->setPixmap(QIcon(":/icons/oxygen-icons/16x16/actions/network_connect.png").pixmap(16, 16, QIcon::Normal));
         netLabel->setToolTip(tr("Connected to the network via: ") +  netInterface);
@@ -385,7 +385,7 @@ void MainWindow::createDeviceWidgets()
     ui->rightColumn->setAlignment(Qt::AlignTop);
 
     for (int i = 0; i < DISK_COUNT; i++) {      //
-        DriveWidget* deviceWidget = new DriveWidget(i);
+        auto deviceWidget = new DriveWidget(i);
 
         if (i<8) {
             ui->leftColumn->addWidget( deviceWidget );
@@ -420,7 +420,7 @@ void MainWindow::createDeviceWidgets()
 
 
     for (int i = 0; i < PRINTER_COUNT; i++) {      //
-        PrinterWidget* printerWidget = new PrinterWidget(i);
+        auto printerWidget = new PrinterWidget(i);
         if (i<2) {
             ui->leftColumn2->addWidget( printerWidget );
         } else {
@@ -441,8 +441,8 @@ void MainWindow::createDeviceWidgets()
      if (event->button() == Qt::LeftButton
          && slot >= 0) {
 
-         QDrag *drag = new QDrag((QWidget*)this);
-         QMimeData *mimeData = new QMimeData;
+         auto drag = new QDrag((QWidget*)this);
+         auto mimeData = new QMimeData;
 
          mimeData->setData("application/x-respeqt-disk-image", QByteArray(1, slot));
          drag->setMimeData(mimeData);
@@ -535,7 +535,7 @@ void MainWindow::dropEvent(QDropEvent *event)
             sio->swapDevices(slot + DISK_BASE_CDEVIC, source + DISK_BASE_CDEVIC);
             respeqtSettings->swapImages(slot, source);
 
-            PCLINK* pclink = reinterpret_cast<PCLINK*>(sio->getDevice(PCLINK_CDEVIC));
+            auto pclink = reinterpret_cast<PCLINK*>(sio->getDevice(PCLINK_CDEVIC));
             if(pclink->hasLink(slot+1) || pclink->hasLink(source+1))
             {
                 sio->uninstallDevice(PCLINK_CDEVIC);
@@ -574,7 +574,7 @@ void MainWindow::dropEvent(QDropEvent *event)
             qApp->processEvents();
         }
 
-        CassetteDialog *dlg = new CassetteDialog(this, files.at(0));
+        auto dlg = new CassetteDialog(this, files.at(0));
         dlg->exec();
         delete dlg;
 
@@ -627,14 +627,14 @@ void MainWindow::closeEvent(QCloseEvent *event)
     int toBeSaved = 0;
 
     for (int i = 0; i < DISK_COUNT; i++) {      //
-        SimpleDiskImage *img = qobject_cast <SimpleDiskImage*> (sio->getDevice(i + DISK_BASE_CDEVIC));
+        auto img = qobject_cast <SimpleDiskImage*> (sio->getDevice(i + DISK_BASE_CDEVIC));
         if (img && img->isModified()) {
             toBeSaved++;
         }
     }
 
     for (int i = 0; i < DISK_COUNT; i++) {      //
-        SimpleDiskImage *img = qobject_cast <SimpleDiskImage*> (sio->getDevice(i + DISK_BASE_CDEVIC));
+        auto img = qobject_cast <SimpleDiskImage*> (sio->getDevice(i + DISK_BASE_CDEVIC));
         if (img && img->isModified()) {
             toBeSaved--;
             answer = saveImageWhenClosing(i, answer, toBeSaved);
@@ -653,7 +653,7 @@ void MainWindow::closeEvent(QCloseEvent *event)
 
     //close any disk edit dialogs we have open
     for (int i = 0; i < DISK_COUNT; i++) {
-        SimpleDiskImage *img = qobject_cast <SimpleDiskImage*> (sio->getDevice(i + DISK_BASE_CDEVIC));
+        auto img = qobject_cast <SimpleDiskImage*> (sio->getDevice(i + DISK_BASE_CDEVIC));
         if (img && img->editDialog()) img->editDialog()->close();
     }
 
@@ -662,7 +662,7 @@ void MainWindow::closeEvent(QCloseEvent *event)
     docDisplayWindow = nullptr;
 
     for (int i = DISK_BASE_CDEVIC; i < (DISK_BASE_CDEVIC+DISK_COUNT); i++) {
-        SimpleDiskImage *s = qobject_cast <SimpleDiskImage*> (sio->getDevice(i));
+        auto s = qobject_cast <SimpleDiskImage*> (sio->getDevice(i));
         if (s) {
             s->close();
         }
@@ -962,7 +962,7 @@ void MainWindow::sioStatusChanged(QString status)
 void MainWindow::deviceStatusChanged(int deviceNo)
 {
     if (deviceNo >= DISK_BASE_CDEVIC && deviceNo < (DISK_BASE_CDEVIC+DISK_COUNT)) { // 0x31 - 0x3E
-        SimpleDiskImage *img = qobject_cast <SimpleDiskImage*> (sio->getDevice(deviceNo));
+        auto img = qobject_cast <SimpleDiskImage*> (sio->getDevice(deviceNo));
 
         DriveWidget *diskWidget = diskWidgets[deviceNo - DISK_BASE_CDEVIC];
 
@@ -1027,7 +1027,7 @@ void MainWindow::deviceStatusChanged(int deviceNo)
             img->setToolDiskImagePath(respeqtSettings->toolDiskImagePath());
             img->setActivateChipModeWithTool(respeqtSettings->activateChipModeWithTool());
             img->setActivateHappyModeWithTool(respeqtSettings->activateHappyModeWithTool());
-            FirmwareDiskImage *fimg = qobject_cast <FirmwareDiskImage*> (sio->getDevice(deviceNo));
+            auto fimg = qobject_cast <FirmwareDiskImage*> (sio->getDevice(deviceNo));
             if (fimg) {
                 fimg->SetDisplayDriveHead(respeqtSettings->displayDriveHead());
                 fimg->SetDisplayFdcCommands(respeqtSettings->displayFdcCommands());
@@ -1202,7 +1202,7 @@ void MainWindow::setSession()
 void MainWindow::openRecent()
 {
     qDebug("open recent");
-    QAction *action = qobject_cast<QAction*>(sender());
+    auto action = qobject_cast<QAction*>(sender());
     if(action)
     {
         mountFileWithDefaultProtection(firstEmptyDiskSlot(), action->text());
@@ -1231,7 +1231,7 @@ void MainWindow::updateRecentFileActions()
 
 bool MainWindow::ejectImage(int no, bool ask)
 {
-    PCLINK* pclink = reinterpret_cast<PCLINK*>(sio->getDevice(PCLINK_CDEVIC));
+    auto pclink = reinterpret_cast<PCLINK*>(sio->getDevice(PCLINK_CDEVIC));
     if(pclink->hasLink(no+1))
     {
         sio->uninstallDevice(PCLINK_CDEVIC);
@@ -1239,7 +1239,7 @@ bool MainWindow::ejectImage(int no, bool ask)
         sio->installDevice(PCLINK_CDEVIC,pclink);
     }
     
-    SimpleDiskImage *img = qobject_cast <SimpleDiskImage*> (sio->getDevice(no + DISK_BASE_CDEVIC));
+    auto img = qobject_cast <SimpleDiskImage*> (sio->getDevice(no + DISK_BASE_CDEVIC));
 
     if (ask && img && img->isModified()) {
         QMessageBox::StandardButton answer;
@@ -1388,7 +1388,7 @@ void MainWindow::mountFile(int no, const QString &fileName, bool /*prot*/)
     }
 
     if (disk) {
-        SimpleDiskImage *oldDisk = qobject_cast <SimpleDiskImage*> (sio->getDevice(no + DISK_BASE_CDEVIC));
+        auto oldDisk = qobject_cast <SimpleDiskImage*> (sio->getDevice(no + DISK_BASE_CDEVIC));
         Board *board = oldDisk != nullptr ? oldDisk->getBoardInfo() : nullptr;
         if(g_rclFileName.left(1) == "*") ask = false;
         if (!disk->open(fileName, type) || !ejectImage(no, ask) ) {
@@ -1408,7 +1408,7 @@ void MainWindow::mountFile(int no, const QString &fileName, bool /*prot*/)
         sio->installDevice(DISK_BASE_CDEVIC + no, disk);
 
         try {
-            PCLINK* pclink = dynamic_cast<PCLINK*>(sio->getDevice(PCLINK_CDEVIC));
+            auto pclink = dynamic_cast<PCLINK*>(sio->getDevice(PCLINK_CDEVIC));
             if(pclink != nullptr && (isDir || pclink->hasLink(no+1)))
             {
                 sio->uninstallDevice(PCLINK_CDEVIC);
@@ -1504,7 +1504,7 @@ bool MainWindow::firmwareAvailable(int no, QString &name, QString path)
                       .arg(name);
         return false;
     }
-    QFile *firmwareFile = new QFile(path);
+    auto firmwareFile = new QFile(path);
     if (!firmwareFile->open(QFile::ReadOnly)) {
         delete firmwareFile;
         qWarning() << "!w" << tr("[%1] Firmware '%2' not found for '%3' emulation. Please, check settings in menu Tools>Options>Firmware emulation. Using SIO emulation.")
@@ -1561,48 +1561,48 @@ void MainWindow::mountFolderImage(int no)
 
 void MainWindow::loadNextSide(int no)
 {
-    SimpleDiskImage *img = qobject_cast <SimpleDiskImage*> (sio->getDevice(no + DISK_BASE_CDEVIC));
+    auto img = qobject_cast <SimpleDiskImage*> (sio->getDevice(no + DISK_BASE_CDEVIC));
     mountFileWithDefaultProtection(no, img->getNextSideFilename());
 }
 
 void MainWindow::toggleHappy(int no, bool enabled)
 {
-    SimpleDiskImage *img = qobject_cast <SimpleDiskImage*> (sio->getDevice(no + DISK_BASE_CDEVIC));
+    auto img = qobject_cast <SimpleDiskImage*> (sio->getDevice(no + DISK_BASE_CDEVIC));
     img->setHappyMode(enabled);
 }
 
 void MainWindow::toggleChip(int no, bool open)
 {
-    SimpleDiskImage *img = qobject_cast <SimpleDiskImage*> (sio->getDevice(no + DISK_BASE_CDEVIC));
+    auto img = qobject_cast <SimpleDiskImage*> (sio->getDevice(no + DISK_BASE_CDEVIC));
     img->setChipMode(open);
 }
 
 void MainWindow::toggleOSB(int no, bool open)
 {
-    SimpleDiskImage *img = qobject_cast <SimpleDiskImage*> (sio->getDevice(no + DISK_BASE_CDEVIC));
+    auto img = qobject_cast <SimpleDiskImage*> (sio->getDevice(no + DISK_BASE_CDEVIC));
     img->setOSBMode(open);
 }
 
 void MainWindow::toggleToolDisk(int no, bool enabled)
 {
-    SimpleDiskImage *img = qobject_cast <SimpleDiskImage*> (sio->getDevice(no + DISK_BASE_CDEVIC));
+    auto img = qobject_cast <SimpleDiskImage*> (sio->getDevice(no + DISK_BASE_CDEVIC));
     img->setToolDiskMode(enabled);
 }
 
 void MainWindow::toggleWriteProtection(int no, bool protectionEnabled)
 {
-    SimpleDiskImage *img = qobject_cast <SimpleDiskImage*> (sio->getDevice(no + DISK_BASE_CDEVIC));
+    auto img = qobject_cast <SimpleDiskImage*> (sio->getDevice(no + DISK_BASE_CDEVIC));
     img->setReadOnly(protectionEnabled);
     respeqtSettings->setMountedImageProtection(no, protectionEnabled);
 }
 
 void MainWindow::openEditor(int no)
 {
-    SimpleDiskImage *img = qobject_cast <SimpleDiskImage*> (sio->getDevice(no + DISK_BASE_CDEVIC));
+    auto img = qobject_cast <SimpleDiskImage*> (sio->getDevice(no + DISK_BASE_CDEVIC));
     if (img->editDialog()) {
         img->editDialog()->close();
     } else {
-        DiskEditDialog *dlg = new DiskEditDialog();
+        auto dlg = new DiskEditDialog();
         dlg->go(img);
         dlg->show();
     }
@@ -1610,7 +1610,7 @@ void MainWindow::openEditor(int no)
 
 QMessageBox::StandardButton MainWindow::saveImageWhenClosing(int no, QMessageBox::StandardButton previousAnswer, int number)
 {
-    SimpleDiskImage *img = qobject_cast <SimpleDiskImage*> (sio->getDevice(no + DISK_BASE_CDEVIC));
+    auto img = qobject_cast <SimpleDiskImage*> (sio->getDevice(no + DISK_BASE_CDEVIC));
 
     if (previousAnswer != QMessageBox::YesToAll) {
         QMessageBox::StandardButtons buttons;
@@ -1651,7 +1651,7 @@ void MainWindow::loadTranslators()
 
 void MainWindow::saveDisk(int no)
 {
-    SimpleDiskImage *img = qobject_cast <SimpleDiskImage*> (sio->getDevice(no + DISK_BASE_CDEVIC));
+    auto img = qobject_cast <SimpleDiskImage*> (sio->getDevice(no + DISK_BASE_CDEVIC));
 
     if (img->isUnnamed()) {
         saveDiskAs(no);
@@ -1699,7 +1699,7 @@ void MainWindow::chip(int no, bool st)
 
 void MainWindow::autoSaveDisk(int no)
 {
-    SimpleDiskImage *img = qobject_cast <SimpleDiskImage*> (sio->getDevice(no + DISK_BASE_CDEVIC));
+    auto img = qobject_cast <SimpleDiskImage*> (sio->getDevice(no + DISK_BASE_CDEVIC));
 
     DriveWidget* widget = diskWidgets[no];
 
@@ -1733,7 +1733,7 @@ void MainWindow::autoSaveDisk(int no)
 //
 void MainWindow::saveDiskAs(int no)
 {
-    SimpleDiskImage *img = qobject_cast <SimpleDiskImage*> (sio->getDevice(no + DISK_BASE_CDEVIC));
+    auto img = qobject_cast <SimpleDiskImage*> (sio->getDevice(no + DISK_BASE_CDEVIC));
     QString dir, fileName;
     bool saved = false;
 
@@ -1780,7 +1780,7 @@ void MainWindow::saveDiskAs(int no)
 
 void MainWindow::revertDisk(int no)
 {
-    SimpleDiskImage *img = qobject_cast <SimpleDiskImage*> (sio->getDevice(no + DISK_BASE_CDEVIC));
+    auto img = qobject_cast <SimpleDiskImage*> (sio->getDevice(no + DISK_BASE_CDEVIC));
     if (QMessageBox::question(this, tr("Revert to last saved"),
             tr("Do you really want to revert '%1' to its last saved state? You will lose the changes that has been made.")
             .arg(img->originalFileName()), QMessageBox::Yes, QMessageBox::No) == QMessageBox::Yes) {
@@ -1817,7 +1817,7 @@ void MainWindow::on_actionEjectAll_triggered()
     int toBeSaved = 0;
 
     for (int i = 0; i < DISK_COUNT; i++) {  //
-        SimpleDiskImage *img = qobject_cast <SimpleDiskImage*> (sio->getDevice(i + DISK_BASE_CDEVIC));
+        auto img = qobject_cast <SimpleDiskImage*> (sio->getDevice(i + DISK_BASE_CDEVIC));
         if (img && img->isModified()) {
             toBeSaved++;
         }
@@ -1836,7 +1836,7 @@ void MainWindow::on_actionEjectAll_triggered()
     }
 
     for (int i = DISK_COUNT-1; i >= 0; i--) {
-        SimpleDiskImage *img = qobject_cast <SimpleDiskImage*> (sio->getDevice(i + DISK_BASE_CDEVIC));
+        auto img = qobject_cast <SimpleDiskImage*> (sio->getDevice(i + DISK_BASE_CDEVIC));
         if (img && img->isModified()) {
             toBeSaved--;
             answer = saveImageWhenClosing(i, answer, toBeSaved);
@@ -2015,7 +2015,7 @@ void MainWindow::on_actionPlaybackCassette_triggered()
         qApp->processEvents();
     }
 
-    CassetteDialog *dlg = new CassetteDialog(this, fileName);
+    auto dlg = new CassetteDialog(this, fileName);
     dlg->exec();
     delete dlg;
 

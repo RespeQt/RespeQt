@@ -415,7 +415,7 @@ QStringList MyModel::mimeTypes() const
 
 QMimeData* MyModel::mimeData(const QModelIndexList &indexes) const
 {
-    QMimeData *data = new QMimeData();
+    auto data = new QMimeData();
     QList <AtariDirEntry> selectedEntries;
     QList <QUrl> urls;
 
@@ -662,7 +662,7 @@ void DiskEditDialog::on_actionPrint_triggered()
 
     QPrinter printer;
 
-    QPrintDialog *dialog = new QPrintDialog(&printer, this);
+    auto dialog = new QPrintDialog(&printer, this);
     if (dialog->exec() != QDialog::Accepted)
     return;
 

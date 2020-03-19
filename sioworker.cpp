@@ -432,7 +432,7 @@ void SioWorker::startSIOSnapshot()
                  tr("Save test XML File"), QString(), tr("XML Files (*.xml)"));
     if (fileName.length() > 0)
     {
-        QFile *file = new QFile(fileName);
+        auto file = new QFile(fileName);
         file->open(QFile::WriteOnly | QFile::Truncate);
         if (!mSnapshotWriter)
         {
@@ -481,7 +481,7 @@ void SioWorker::writeSnapshotDataFrame(QByteArray &data)
         QString cs;
         foreach(char c, data)
         {
-            unsigned char chr = static_cast<unsigned char>(c);
+            auto chr = static_cast<unsigned char>(c);
             cs.append("&#");
             cs.append(QString::number(chr, 10));
             cs.append(";");

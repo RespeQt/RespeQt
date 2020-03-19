@@ -78,7 +78,7 @@ bool SimpleDiskImage::openAtx(const QString &fileName)
         }
         qDebug() << "!n" << tr("Track layout for %1. Density is %2").arg(fileName).arg(densityStr);
     }
-    qint64 nextPos = (qint64) getLittleIndianLong(header, 28);
+    auto nextPos = (qint64) getLittleIndianLong(header, 28);
     for (int track = 0; track < 40; track++) {
         m_atxTrackInfo[track].clear();
 
@@ -681,7 +681,7 @@ bool SimpleDiskImage::writeHappyAtxTrack(int trackNumber, bool happy1050)
     quint16 sectorPosition = 100;
     int startOffset = happy1050 ? 0xD00 : 0x300;
     int offset = startOffset;
-    quint8 invertedTrack = (quint8) (0xFF - trackNumber);
+    auto invertedTrack = (quint8) (0xFF - trackNumber);
     while (offset < (startOffset + 0x100)) {
         quint8 code = m_board.m_happyRam[offset++];
         if (code == 0) {
@@ -1028,7 +1028,7 @@ bool SimpleDiskImage::readAtxSector(quint16 aux, QByteArray &data)
         int oldTrack = (m_lastSector - 1) / m_geometry.sectorsPerTrack();
         if (oldTrack != newTrack) {
             int diffTrack = abs(newTrack - oldTrack);
-            unsigned long seekDelay = (unsigned long)(diffTrack * 5300L); // Use 810 timings.
+            auto seekDelay = (unsigned long)(diffTrack * 5300L); // Use 810 timings.
             QThread::usleep(seekDelay);
         }
     }
@@ -1233,7 +1233,7 @@ bool SimpleDiskImage::readAtxSkewAlignment(quint16 aux, QByteArray &data, bool t
                 // now find the byte offset in the first track of this first sector and add the seek time
                 // add the time to change track and issue another read sector command: 115319 microseconds for one track difference
                 quint16 firstTrackByteOffset = ((quint16)(firstTrackSectorInfo->sectorPosition() >> 3) + 6);
-                quint16 seekTimeInBytes = (quint16)((104100 + (20550 * (secondTrack - firstTrack - 1))) >> 6);
+                auto seekTimeInBytes = (quint16)((104100 + (20550 * (secondTrack - firstTrack - 1))) >> 6);
                 firstTrackByteOffset = (firstTrackByteOffset + seekTimeInBytes) % (26042 >> 3);
 
                 // find the first sector at the same rotation angle in the second track
@@ -1329,7 +1329,7 @@ qWarning() << "!w" << tr("[%1] track $%2 - $%3 $%4 $%5 - %6 | %7 - %8 | %9 $%10 
         quint16 firstSectorPosition = firstTrackSectorInfo->sectorPosition();
 
         // add the time to change track and issue another read sector command: 115429 microseconds for one track difference
-        quint16 seekTime = (quint16)((115429 + (20550 * (secondTrack - firstTrack - 1))) >> 3);
+        auto seekTime = (quint16)((115429 + (20550 * (secondTrack - firstTrack - 1))) >> 3);
         // add also the time corresponding to the reading of the sector data: 154 bytes = 9856 microseconds
         firstSectorPosition = (firstSectorPosition + seekTime + (154 << 3)) % 26042;
 
@@ -2036,7 +2036,7 @@ int AtxSectorInfo::dataMarkOffset(int headerOffset, int shift)
 
 AtxSectorInfo* AtxTrackInfo::add(quint8 sectorNumber, quint8 sectorStatus, quint16 sectorPosition)
 {
-	AtxSectorInfo *sector = new AtxSectorInfo(sectorNumber, sectorStatus, sectorPosition);
+    auto sector = new AtxSectorInfo(sectorNumber, sectorStatus, sectorPosition);
 	m_sectors.append(sector);
 	return sector;
 }

@@ -1451,7 +1451,7 @@ void FirmwareDiskImage::handleCommand(quint8 command, quint16 aux)
             if ((! isArchiver) && (! isHappy)) {
                 // compute how much time the firmware has spent in command execution.
                 unsigned long executionTimeInMicroSeconds = m_atariDrive->GetExecutionTimeInMicroseconds();
-                unsigned long diffWorkInMicroSeconds = (unsigned long)((m_timer.nsecsElapsed() - newTimeInNanoSeconds) / 1000L);
+                auto diffWorkInMicroSeconds = (unsigned long)((m_timer.nsecsElapsed() - newTimeInNanoSeconds) / 1000L);
                 // wait to simulate accurate timing if the protected software on the Atari relies on the timing.
                 if ((unsigned long)executionTimeInMicroSeconds > diffWorkInMicroSeconds) {
                     unsigned long delayInMicroSeconds = executionTimeInMicroSeconds - diffWorkInMicroSeconds;
@@ -1822,8 +1822,8 @@ void FirmwareDiskImage::FillTrackFromProImage(int trackNumber, Track *track)
                         // write the CRC
                         bool crcError = ((m_proSectorInfo[indexInPro].wd1771Status & 0x08) == 0);
                         if (! crcError) {
-                            unsigned char crc1 = (unsigned char)((crc.GetCrc() >> 8) & 0xFF);
-                            unsigned char crc2 = (unsigned char)(crc.GetCrc() & 0xFF);
+                            auto crc1 = (unsigned char)((crc.GetCrc() >> 8) & 0xFF);
+                            auto crc2 = (unsigned char)(crc.GetCrc() & 0xFF);
                             bitNumber = track->WriteRawByte(bitNumber, DISK_NORMAL_DATA_CLOCK, crc1);
                             bitNumber = track->WriteRawByte(bitNumber, DISK_NORMAL_DATA_CLOCK, crc2);
                         }
@@ -1838,8 +1838,8 @@ void FirmwareDiskImage::FillTrackFromProImage(int trackNumber, Track *track)
         case STATE_WRITE_DATA_CRC:
             {
                 bool crcError = ((m_proSectorInfo[indexInPro].wd1771Status & 0x08) == 0) || (m_proSectorInfo[indexInPro].shortSectorSize != 0);
-                unsigned char crc1 = (unsigned char)((crc.GetCrc() >> 8) & 0xFF);
-                unsigned char crc2 = (unsigned char)(crc.GetCrc() & 0xFF);
+                auto crc1 = (unsigned char)((crc.GetCrc() >> 8) & 0xFF);
+                auto crc2 = (unsigned char)(crc.GetCrc() & 0xFF);
                 if (crcError) {
                     crc1 += 0x88;
                     crc2 += 0x55;
@@ -2139,8 +2139,8 @@ void FirmwareDiskImage::FillTrackFromAtxImage(int trackNumber, Track *track)
                         // write the CRC
                         bool crcError = ((sectorInfo->wd1771Status() & 0x08) == 0);
                         if (! crcError) {
-                            unsigned char crc1 = (unsigned char)((crc.GetCrc() >> 8) & 0xFF);
-                            unsigned char crc2 = (unsigned char)(crc.GetCrc() & 0xFF);
+                            auto crc1 = (unsigned char)((crc.GetCrc() >> 8) & 0xFF);
+                            auto crc2 = (unsigned char)(crc.GetCrc() & 0xFF);
                             bitNumber = track->WriteRawByte(bitNumber, DISK_NORMAL_DATA_CLOCK, crc1);
                             bitNumber = track->WriteRawByte(bitNumber, DISK_NORMAL_DATA_CLOCK, crc2);
                         }
@@ -2211,8 +2211,8 @@ void FirmwareDiskImage::FillTrackFromAtxImage(int trackNumber, Track *track)
         case STATE_WRITE_DATA_CRC:
             {
                 bool crcError = ((sectorInfo->wd1771Status() & 0x08) == 0) || (shortSectorSize != 0);
-                unsigned char crc1 = (unsigned char)((crc.GetCrc() >> 8) & 0xFF);
-                unsigned char crc2 = (unsigned char)(crc.GetCrc() & 0xFF);
+                auto crc1 = (unsigned char)((crc.GetCrc() >> 8) & 0xFF);
+                auto crc2 = (unsigned char)(crc.GetCrc() & 0xFF);
                 if (crcError) {
                     crc1 += 0x88;
                     crc2 += 0x55;

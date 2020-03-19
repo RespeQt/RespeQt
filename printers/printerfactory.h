@@ -47,7 +47,7 @@ namespace Printers {
 
         BasePrinterPtr createPrinter(QString label, SioWorkerPtr worker) const
         {
-            for(const auto it : creatorFunctions)
+            for(const auto& it : creatorFunctions)
             {
                 if (it.first == label)
                 {
@@ -66,7 +66,7 @@ namespace Printers {
         const QVector<QString> getPrinterNames() const
         {
             QVector<QString> names;
-            for(auto it : creatorFunctions)
+            for(const auto& it : creatorFunctions)
             {
                 names.append(it.first);
             }

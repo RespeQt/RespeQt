@@ -9,10 +9,10 @@
  */
 
 #include <QtDebug>
-#include <stdio.h>
+#include <cstdio>
 #include <dirent.h>
 #include <unistd.h>
-#include <errno.h>
+#include <cerrno>
 #include <sys/stat.h>
 #include <sys/time.h>
 #include <utime.h>
@@ -167,12 +167,6 @@ PCLINK::PCLINK(SioWorkerPtr worker)
     :SDXProtocol(worker)
 {
     do_pclink_init(1);
-}
-
-/*************************************************************************/
-
-PCLINK::~PCLINK()
-{
 }
 
 /*************************************************************************/
@@ -820,7 +814,7 @@ DIRENTRY * PCLINK::cache_dir(uchar handle)
 
 ulong PCLINK::dir_read(uchar *mem, ulong blk_size, uchar handle, int *eof_sig)
 {
-    uchar *db = (uchar *)iodesc[handle].dir_cache;
+    auto db = (uchar *)iodesc[handle].dir_cache;
     ulong dirlen = iodesc[handle].fpstat.st_size, newblk;
 
     eof_sig[0] = 0;

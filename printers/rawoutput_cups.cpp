@@ -38,11 +38,9 @@ namespace Printers {
 
     bool RawOutput::endOutput()
     {
-        QByteArray temp = rawPrinterName.toLocal8Bit();
         cupsFinishDestDocument(mHttp, mDest, mInfo);
-
         cupsFreeDestInfo(mInfo);
-        mDest = nullptr;
+
 #if defined(Q_OS_MAC)
         delete mDest;
 #elif defined(Q_OS_LINUX)

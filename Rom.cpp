@@ -36,7 +36,7 @@ Rom::~Rom()
 
 unsigned char *Rom::LoadBinary(QString filename, int *size)
 {
-    QFile *firmwareFile = new QFile(filename);
+    auto firmwareFile = new QFile(filename);
     if (!firmwareFile->open(QFile::ReadOnly)) {
         delete firmwareFile;
         return nullptr;
@@ -45,7 +45,7 @@ unsigned char *Rom::LoadBinary(QString filename, int *size)
     firmwareFile->close();
     delete firmwareFile;
     *size = array.size();
-    unsigned char *content = (unsigned char *)malloc(*size);
+    auto content = (unsigned char *)malloc(*size);
     memcpy(content, array.data(), *size);
     return content;
 }
@@ -63,7 +63,7 @@ unsigned char *Rom::LoadBinary(QString filename, int *size)
 struct ROM_SYMBOLS *Rom::LoadSymbolFile(QString filename)
 {
     struct ROM_SYMBOLS *head = nullptr;
-    QFile *symbolFile = new QFile(filename);
+    auto symbolFile = new QFile(filename);
     if (!symbolFile->open(QFile::ReadOnly | QFile::Text)) {
         delete symbolFile;
         return nullptr;
@@ -151,7 +151,7 @@ struct ROM_SYMBOLS *Rom::LoadSymbolFile(QString filename)
 						// unknown directive
 						continue;
 					}
-					struct ROM_SYMBOLS *sym = (struct ROM_SYMBOLS *)malloc(sizeof(struct ROM_SYMBOLS));
+                    auto sym = (struct ROM_SYMBOLS *)malloc(sizeof(struct ROM_SYMBOLS));
 					strncpy(sym->name, name, sizeof(sym->name));
 					sym->address = (unsigned short)address;
                     sym->address2 = (unsigned short)address2;

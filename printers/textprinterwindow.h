@@ -49,13 +49,6 @@ public:
         return QObject::tr("Text printer");
     }
 
-
-public slots:
-    void print(const QString &text);
-
-signals:
-    void textPrint(const QString &text);
-
 protected:
     void changeEvent(QEvent *e) override;
     void closeEvent(QCloseEvent *e) override;
@@ -70,22 +63,24 @@ private:
     int fontSize;
     QString atasciiFont;
 
-private slots:
-    void on_actionSave_triggered();
-    void on_actionClear_triggered();
-    void on_actionWord_wrap_triggered();
-    void on_actionPrint_triggered();
+public slots:
+    void saveTriggered();
+    void clearTriggered();
+    void wordwrapTriggered();
+    void printTriggered();
 
     // To manipulate fonts and ascii/atascii windows  // 
-    void on_actionAtasciiFont_triggered();
-    void on_actionFont_Size_triggered();
-    void on_actionHideShow_Ascii_triggered();
-    void on_actionHideShow_Atascii_triggered();
-    void on_actionStrip_Line_Numbers_triggered();
+    void atasciiFontTriggered();
+    void fontSizeTriggered();
+    void hideshowAsciiTriggered();
+    void hideshowAtasciiTriggered();
+    void stripLineNumbersTriggered();
     void asciiFontChanged (const QFont &);
+    void print(const QString &text);
 
 signals:
     void closed();
+    void textPrint(const QString &text);
 };
 
 }

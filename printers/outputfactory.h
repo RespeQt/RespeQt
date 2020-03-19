@@ -45,7 +45,7 @@ namespace Printers {
 
         NativeOutputPtr createOutput(QString label) const
         {
-            for(auto it : creatorFunctions)
+            for(const auto& it : creatorFunctions)
             {
                 if (it.first == label)
                 {
@@ -64,7 +64,7 @@ namespace Printers {
         {
             QVector<QString> names;
 
-            for(const auto it : creatorFunctions)
+            for(const auto& it : creatorFunctions)
             {
                 names.append(it.first);
             }

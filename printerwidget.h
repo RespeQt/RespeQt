@@ -31,15 +31,16 @@ signals:
     void actionEject(int deviceId);
     void actionConnectPrinter(int deviceId);
 
-private slots:
-    bool selectPrinter();
-    bool selectOutput();
-    void on_actionConnectPrinter_triggered();
-    void on_actionDisconnectPrinter_triggered();
-    void on_outputSelection_currentIndexChanged(const QString &outputName);
-    void on_atariPrinters_currentIndexChanged(const QString &printerName);
+public slots:
+    void connectPrinter();
+    void disconnectPrinter();
+    void outputSelectionChanged(const QString &outputName);
+    void printerSelectionChanged(const QString &printerName);
 
 private:
+    bool selectPrinter();
+    bool selectOutput();
+
     Ui::PrinterWidget *ui;
     int printerNo_;
     Printers::BasePrinterPtr mPrinter;

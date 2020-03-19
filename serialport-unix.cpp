@@ -472,7 +472,7 @@ QByteArray StandardSerialPortBackend::readCommandFrame()
             if (data.isEmpty()) {
                 return nullptr;
             }
-            quint8 expected = (quint8)data.at(4);
+            auto expected = (quint8)data.at(4);
             quint8 got = sioChecksum(data, 4);
             if (expected == got) {
                 data.resize(4);
@@ -529,14 +529,15 @@ QByteArray StandardSerialPortBackend::readDataFrame(uint size, bool verbose)
     if (data.isEmpty()) {
         return nullptr;
     }
-    quint8 expected = (quint8)data.at(size);
-    quint8 got = sioChecksum(data, size);
+    auto expected = (quint8)data.at(size);
+    auto got = sioChecksum(data, size);
     if (expected == got) {
         data.resize(size);
 
 #ifndef QT_NO_DEBUG
     try {
-        SioWorker *sio = dynamic_cast<SioWorker*>(parent());
+        // TODO. Does this actually work? parent should be nullptr
+        auto sio = dynamic_cast<SioWorker*>(parent());
         if (sio) {
             sio->writeSnapshotDataFrame(data);
         }
@@ -940,7 +941,8 @@ QByteArray AtariSioBackend::readDataFrame(uint size, bool verbose)
 
 #ifndef QT_NO_DEBUG
     try {
-        SioWorker *sio = dynamic_cast<SioWorker*>(parent());
+        // TODO. Does this actually work? parent should be nullptr
+        auto sio = dynamic_cast<SioWorker*>(parent());
         if (sio) {
             sio->writeSnapshotDataFrame(data);
         }

@@ -112,7 +112,7 @@ public:
 signals:
     void statusChanged(QString status);
 public slots:
-    void start(Priority p = InheritPriority);
+    void start(Priority p);
 };
 
 class CassetteRecord {
@@ -147,7 +147,7 @@ public:
 signals:
     void statusChanged(int remainingTime);
 public slots:
-    void start(Priority p = InheritPriority);
+    void start(Priority p);
 };
 
 #endif // SIOWORKER_H

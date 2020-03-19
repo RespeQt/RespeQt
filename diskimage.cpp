@@ -370,7 +370,7 @@ void DiskGeometry::initialize(uint aTotalSize)
 
 void DiskGeometry::initialize(const QByteArray &percom)
 {
-    quint8 aTracksPerSide = (quint8)percom.at(0);
+    auto aTracksPerSide = (quint8)percom.at(0);
     quint16 aSectorsPerTrack = (quint8)percom.at(2) * 256 + (quint8)percom.at(3);
     bool aIsDoubleSided = (quint8)percom.at(4);
     quint16 aBytesPerSector = (quint8)percom.at(6) * 256 + (quint8)percom.at(7);
@@ -492,7 +492,7 @@ Board::~Board()
 
 Board *Board::getCopy()
 {
-    Board *copy = new Board();
+    auto copy = new Board();
     copy->m_chipOpen = m_chipOpen;
     memcpy(copy->m_chipRam, m_chipRam, sizeof(m_chipRam));
     copy->m_lastArchiverUploadCrc16 = m_lastArchiverUploadCrc16;
@@ -530,7 +530,7 @@ void Board::setFromCopy(Board *copy)
 
 bool Board::hasHappySignature()
 {
-    unsigned char *ram = (unsigned char *)m_happyRam.data();
+    auto ram = (unsigned char *)m_happyRam.data();
     for (unsigned int i = 0; i < sizeof(HAPPY_SIGNATURE); i++) {
         if (ram[i] != HAPPY_SIGNATURE[i]) {
             return false;
@@ -704,7 +704,7 @@ bool SimpleDiskImage::translatorDiskImageAvailable()
                       .arg(deviceName());
         return false;
     }
-    QFile *translatorFile = new QFile(m_translatorDiskImagePath);
+    auto translatorFile = new QFile(m_translatorDiskImagePath);
     if (!translatorFile->open(QFile::ReadOnly)) {
         delete translatorFile;
         qWarning() << "!w" << tr("[%1] Translator '%2' not found. Please, check settings in menu Disk images>OS-B emulation.")
@@ -749,7 +749,7 @@ bool SimpleDiskImage::toolDiskImageAvailable()
                       .arg(deviceName());
         return false;
     }
-    QFile *toolDiskFile = new QFile(m_toolDiskImagePath);
+    auto toolDiskFile = new QFile(m_toolDiskImagePath);
     if (!toolDiskFile->open(QFile::ReadOnly)) {
         delete toolDiskFile;
         qWarning() << "!w" << tr("[%1] Tool disk '%2' not found. Please, check settings in menu Disk images>Favorite tool disk.")
@@ -3631,7 +3631,8 @@ QByteArray SimpleDiskImage::readDataFrame(uint size)
     }
 #ifndef QT_NO_DEBUG
     try {
-        SioWorker *sio = dynamic_cast<SioWorker*>(parent());
+        // TODO Does this really work? Parent should be nullptr
+        auto sio = dynamic_cast<SioWorker*>(parent());
         if (sio) {
             sio->writeSnapshotDataFrame(data);
         }
@@ -3830,7 +3831,7 @@ void SimpleDiskImage::disassembleCode(QByteArray &data, unsigned short address, 
     m_remainingBytes.clear();
     code.append(data);
     len = code.size();
-    unsigned char *codePtr = (unsigned char *) code.data();
+    auto codePtr = (unsigned char *) code.data();
     while (offset < len) {
         int lenOpCode = -1;
         if (drive1050) {

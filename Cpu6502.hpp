@@ -214,7 +214,7 @@ public:
 
 	// constructors and destructor
                             Cpu6502(CPU_ENUM cpuType);
-	virtual					~Cpu6502();
+    virtual					~Cpu6502() = default;
 
 	// return register value
 	inline unsigned short	GetPC(void) { return m_PC; }

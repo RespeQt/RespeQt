@@ -560,10 +560,6 @@ Cpu6502::Cpu6502(CPU_ENUM cpuType)
 	}
 }
 
-Cpu6502::~Cpu6502()
-{
-}
-
 int Cpu6502::Branch(unsigned char val)
 {
 	unsigned short OldPC = m_PC;
@@ -591,7 +587,7 @@ void Cpu6502::Adc(unsigned char val)
 {
 	unsigned char oldA = m_A;
 	unsigned short sum = ((unsigned short)val + (unsigned short)m_A) + (m_SR & CPU6502_FLAG_C);
-	unsigned char lowSum = (unsigned char)sum;
+    auto lowSum = (unsigned char)sum;
 	SetFlagN(lowSum);
 	SetFlagV(((lowSum ^ oldA) & 0x80) && ((lowSum ^ val) & 0x80));
 
