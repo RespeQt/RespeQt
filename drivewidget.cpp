@@ -97,7 +97,7 @@ void DriveWidget::setup(bool happyHidden, bool chipHidden, bool nextSideHidden, 
 
 void DriveWidget::updateFromImage(SimpleDiskImage *diskImage, bool happyHidden, bool chipHidden, bool nextSideHidden, bool OSBHidden, bool toolDiskHidden)
 {
-    if (diskImage == NULL)
+    if (diskImage == nullptr)
     {
         showAsEmpty(happyHidden, chipHidden, nextSideHidden, OSBHidden, toolDiskHidden);
         return;
@@ -125,7 +125,7 @@ void DriveWidget::updateFromImage(SimpleDiskImage *diskImage, bool happyHidden, 
     ui->actionToolDisk->setEnabled(true);
     ui->actionToolDisk->setChecked(diskImage->isToolDiskActive());
 
-    bool enableEdit = diskImage->editDialog() != NULL;
+    bool enableEdit = diskImage->editDialog() != nullptr;
     ui->actionEditDisk->setChecked(enableEdit);
 
 

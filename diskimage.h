@@ -261,7 +261,7 @@ class SimpleDiskImage: public SioDevice
     Q_OBJECT
 
 public:
-    SimpleDiskImage(SioWorker *worker);
+    SimpleDiskImage(SioWorkerPtr worker);
     virtual ~SimpleDiskImage();
 
     virtual bool open(const QString &fileName, FileTypes::FileType type);

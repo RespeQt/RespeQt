@@ -22,13 +22,13 @@ namespace Ui {
 
 #include "atarifilesystem.h"
 
-class MyModel: public QAbstractTableModel
+class FileModel: public QAbstractTableModel
 {
     Q_OBJECT
 
 public:
-    MyModel(QObject *parent);
-    ~MyModel();
+    FileModel(QObject *parent);
+    ~FileModel();
     QList <AtariDirEntry> entries;
     AtariFileSystem *fileSystem;
     Qt::ItemFlags flags(const QModelIndex &index) const;
@@ -66,7 +66,7 @@ public:
     void go(SimpleDiskImage *image, int fileSystem = -1);
 
 protected:
-    MyModel *model;
+    FileModel *model;
     void changeEvent(QEvent *e);
 
 private:
@@ -74,18 +74,17 @@ private:
     SimpleDiskImage *m_disk;
     QComboBox *m_fileSystemBox;
 
-private slots:
-    void on_actionAddFiles_triggered();
-    void on_actionDeleteSelectedFiles_triggered();
-    void on_actionTextConversion_triggered();
-    void on_actionExtractFiles_triggered();
-    void on_actionToParent_triggered();
-    void on_actionPrint_triggered();        // 
-    void on_aView_doubleClicked(QModelIndex index);
-    void onTopChanged();
+public slots:
+    void addFilesTriggered();
+    void deleteSelectedFilesTriggered();
+    void textConversionTriggered();
+    void extractFilesTriggered();
+    void toParentTriggered();
+    void printTriggered();
+    void fileListDoubleClicked(QModelIndex index);
+    void stayOnTopChanged();
 
     void fileSystemChanged(int index);
-    void currentChanged (const QModelIndex & current, const QModelIndex & previous);
     void selectionChanged (const QItemSelection & selected, const QItemSelection & deselected);
 };
 

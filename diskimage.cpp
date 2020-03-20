@@ -374,7 +374,7 @@ void DiskGeometry::initialize(uint aTotalSize)
 
 void DiskGeometry::initialize(const QByteArray &percom)
 {
-    quint8 aTracksPerSide = (quint8)percom.at(0);
+    auto aTracksPerSide = (quint8)percom.at(0);
     quint16 aSectorsPerTrack = (quint8)percom.at(2) * 256 + (quint8)percom.at(3);
     bool aIsDoubleSided = (quint8)percom.at(4);
     quint16 aBytesPerSector = (quint8)percom.at(6) * 256 + (quint8)percom.at(7);
@@ -496,7 +496,7 @@ Board::~Board()
 
 Board *Board::getCopy()
 {
-    Board *copy = new Board();
+    auto copy = new Board();
     copy->m_chipOpen = m_chipOpen;
     memcpy(copy->m_chipRam, m_chipRam, sizeof(m_chipRam));
     copy->m_lastArchiverUploadCrc16 = m_lastArchiverUploadCrc16;
@@ -534,7 +534,7 @@ void Board::setFromCopy(Board *copy)
 
 bool Board::hasHappySignature()
 {
-    unsigned char *ram = (unsigned char *)m_happyRam.data();
+    auto ram = (unsigned char *)m_happyRam.data();
     for (unsigned int i = 0; i < sizeof(HAPPY_SIGNATURE); i++) {
         if (ram[i] != HAPPY_SIGNATURE[i]) {
             return false;
@@ -545,7 +545,7 @@ bool Board::hasHappySignature()
 
 /* SimpleDiskImage */
 
-SimpleDiskImage::SimpleDiskImage(SioWorker *worker)
+SimpleDiskImage::SimpleDiskImage(SioWorkerPtr worker)
     : SioDevice(worker)
 {
     m_editDialog = 0;
@@ -560,8 +560,8 @@ SimpleDiskImage::SimpleDiskImage(SioWorker *worker)
     m_translatorAutomaticDetection = false;
     m_OSBMode = false;
     m_toolDiskMode = false;
-    m_translatorDisk = NULL;
-    m_toolDisk = NULL;
+    m_translatorDisk = nullptr;
+    m_toolDisk = nullptr;
 }
 
 SimpleDiskImage::~SimpleDiskImage()
@@ -575,17 +575,17 @@ SimpleDiskImage::~SimpleDiskImage()
 
 void SimpleDiskImage::closeTranslator()
 {
-    if (m_translatorDisk != NULL) {
+    if (m_translatorDisk != nullptr) {
         m_translatorDisk->close();
-        m_translatorDisk = NULL;
+        m_translatorDisk = nullptr;
     }
 }
 
 void SimpleDiskImage::closeToolDisk()
 {
-    if (m_toolDisk != NULL) {
+    if (m_toolDisk != nullptr) {
         m_toolDisk->close();
-        m_toolDisk = NULL;
+        m_toolDisk = nullptr;
     }
 }
 
@@ -708,7 +708,7 @@ bool SimpleDiskImage::translatorDiskImageAvailable()
                       .arg(deviceName());
         return false;
     }
-    QFile *translatorFile = new QFile(m_translatorDiskImagePath);
+    auto translatorFile = new QFile(m_translatorDiskImagePath);
     if (!translatorFile->open(QFile::ReadOnly)) {
         delete translatorFile;
         qWarning() << "!w" << tr("[%1] Translator '%2' not found. Please, check settings in menu Disk images>OS-B emulation.")
@@ -753,7 +753,7 @@ bool SimpleDiskImage::toolDiskImageAvailable()
                       .arg(deviceName());
         return false;
     }
-    QFile *toolDiskFile = new QFile(m_toolDiskImagePath);
+    auto toolDiskFile = new QFile(m_toolDiskImagePath);
     if (!toolDiskFile->open(QFile::ReadOnly)) {
         delete toolDiskFile;
         qWarning() << "!w" << tr("[%1] Tool disk '%2' not found. Please, check settings in menu Disk images>Favorite tool disk.")
@@ -1744,13 +1744,13 @@ void SimpleDiskImage::handleCommand(quint8 command, quint16 aux)
             else if ((sector != 1) && (m_board.getTranslatorState() == FIRST_SECTOR_1)) {
                 m_board.setTranslatorState(READ_OTHER_SECTOR);
             }
-            if (m_board.isTranslatorActive() && (m_translatorDisk != NULL)) {
+            if (m_board.isTranslatorActive() && (m_translatorDisk != nullptr)) {
                 m_translatorDisk->handleCommand(command, aux);
                 return;
             }
         }
         else if (m_board.isToolDiskActive()) {
-            if (m_toolDisk == NULL) {
+            if (m_toolDisk == nullptr) {
                 m_toolDisk = new SimpleDiskImage(sio);
                 m_toolDisk->setReadOnly(true);
                 m_toolDisk->setDeviceNo(0x31);
@@ -1778,7 +1778,7 @@ void SimpleDiskImage::handleCommand(quint8 command, quint16 aux)
                                 .arg(m_toolDiskImagePath);
                 }
             }
-            if (m_board.isToolDiskActive() && (m_toolDisk != NULL)) {
+            if (m_board.isToolDiskActive() && (m_toolDisk != nullptr)) {
                 m_toolDisk->handleCommand(command, aux);
                 return;
             }
@@ -3693,6 +3693,15 @@ QByteArray SimpleDiskImage::readDataFrame(uint size)
         qDebug() << "!u" << tr("[%1] Receiving %2 bytes from Atari").arg(deviceName()).arg(data.length());
         dumpBuffer((unsigned char *) data.data(), data.length());
     }
+#ifndef QT_NO_DEBUG
+    try {
+        // TODO Does this really work? Parent should be nullptr
+        auto sio = dynamic_cast<SioWorker*>(parent());
+        if (sio) {
+            sio->writeSnapshotDataFrame(data);
+        }
+    } catch(...) {}
+#endif
     return data;
 }
 
@@ -3886,7 +3895,7 @@ void SimpleDiskImage::disassembleCode(QByteArray &data, unsigned short address, 
     m_remainingBytes.clear();
     code.append(data);
     len = code.size();
-    unsigned char *codePtr = (unsigned char *) code.data();
+    auto codePtr = (unsigned char *) code.data();
     while (offset < len) {
         int lenOpCode = -1;
         if (drive1050) {

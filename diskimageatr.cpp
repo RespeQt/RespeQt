@@ -105,7 +105,7 @@ bool SimpleDiskImage::openAtr(const QString &fileName)
         }
     }
 
-    quint64 imageSize = static_cast<quint64>(file.size());
+    auto imageSize = static_cast<quint64>(file.size());
 
     // Check if the reported image size is consistent with the actual size
     // 
@@ -269,7 +269,7 @@ bool SimpleDiskImage::openXfd(const QString &fileName)
         }
     }
 
-    quint64 size = static_cast<quint64>(file.size());
+    auto size = static_cast<quint64>(file.size());
 
     if ((size % 128) != 0) {
         qCritical() << "!e" << tr("Cannot open '%1': %2")
@@ -696,7 +696,7 @@ bool SimpleDiskImage::writeHappyAtrTrack(int trackNumber, bool happy1050)
     int nbSectors = 0;
     int startOffset = happy1050 ? 0xD00 : 0x300;
     int offset = startOffset;
-    quint8 invertedTrack = (quint8)(0xFF - trackNumber);
+    auto invertedTrack = (quint8)(0xFF - trackNumber);
     while (offset < (startOffset + 0x100)) {
         quint8 code = m_board.m_happyRam[offset++];
         if (code == 0) {
@@ -960,7 +960,7 @@ bool SimpleDiskImage::readAtrSkewAlignment(quint16 aux, QByteArray &data, bool t
 	// skew alignment is not useful for ATR. Return default values
     m_board.m_trackData.clear();
     m_board.m_trackData.append(data);
-    quint8 track = (quint8)((aux >> 8) & 0xFF);
+    auto track = (quint8)((aux >> 8) & 0xFF);
     if (!timingOnly) {
         quint16 *sectorPositions = m_geometry.sectorsPerTrack() == 26 ? ATX_SECTOR_POSITIONS_ED : ATX_SECTOR_POSITIONS_SD;
         int nbSectors = m_geometry.sectorsPerTrack();
@@ -972,7 +972,7 @@ bool SimpleDiskImage::readAtrSkewAlignment(quint16 aux, QByteArray &data, bool t
                 sectorIndex -= m_geometry.sectorsPerTrack() - 1;
             }
             quint8 sectorNumber = sectorIndex - 1;
-            quint16 sectorPosition = (quint16)(sectorPositions[i] >> 3);
+            auto sectorPosition = (quint16)(sectorPositions[i] >> 3);
             m_board.m_trackData[0x08 + i] = sectorNumber;
             m_board.m_trackData[0x28 + i] = (sectorPosition >> 8) & 0xFF;
             m_board.m_trackData[0x48 + i] = sectorPosition & 0xFF;

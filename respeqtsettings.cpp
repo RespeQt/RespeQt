@@ -613,7 +613,7 @@ void RespeqtSettings::setCustomCasBaud(int baud)
 
 const RespeqtSettings::ImageSettings* RespeqtSettings::getImageSettingsFromName(const QString &fileName)
 {
-    ImageSettings *is = NULL;
+    ImageSettings *is = nullptr;
     int i;
     bool found = false;
 

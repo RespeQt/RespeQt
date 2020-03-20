@@ -14,13 +14,15 @@
 
 #include <QThread>
 #include <QMutex>
+#include <QSharedPointer>
 #ifndef QT_NO_DEBUG
 #include <QFile>
 #endif
 
 #include "serialport.h"
+#include <memory>
 
-enum SIO_CDEVIC
+enum SIO_CDEVIC:quint8
 {
     DISK_BASE_CDEVIC = 0x31,
     PRINTER_BASE_CDEVIC = 0x40,
@@ -30,7 +32,7 @@ enum SIO_CDEVIC
     PCLINK_CDEVIC = 0x6F
 };
 
-enum SIO_DEVICE_COUNT
+enum SIO_DEVICE_COUNT:quint8
 {
     DISK_COUNT = 15,
     PRINTER_COUNT = 4,
@@ -38,6 +40,7 @@ enum SIO_DEVICE_COUNT
 };
 
 class SioWorker;
+using SioWorkerPtr = QSharedPointer<SioWorker>;
 
 class SioDevice : public QObject
 {
@@ -46,11 +49,11 @@ class SioDevice : public QObject
 protected:
     int m_deviceNo;
     QMutex mLock;
-    SioWorker *sio;
+    SioWorkerPtr sio;
 public:
-    SioDevice(SioWorker *worker);
+    SioDevice(SioWorkerPtr worker);
     virtual ~SioDevice();
-    virtual void handleCommand(quint8 command, quint16 aux) = 0;
+    virtual void handleCommand(const quint8 command, const quint16 aux) = 0;
     virtual QString deviceName();
     inline void lock() {mLock.lock();}
     inline bool tryLock() {return mLock.tryLock();}
@@ -111,7 +114,7 @@ public:
 signals:
     void statusChanged(QString status);
 public slots:
-    void start(Priority p = InheritPriority);
+    void start(Priority p);
 };
 
 class CassetteRecord {
@@ -146,7 +149,7 @@ public:
 signals:
     void statusChanged(int remainingTime);
 public slots:
-    void start(Priority p = InheritPriority);
+    void start(Priority p);
 };
 
 #endif // SIOWORKER_H

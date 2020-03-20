@@ -720,7 +720,7 @@ bool SimpleDiskImage::writeHappyProTrack(int trackNumber, bool happy1050)
     // browse track data
     int startOffset = happy1050 ? 0xD00 : 0x300;
     int offset = startOffset;
-    quint8 invertedTrack = (quint8) (0xFF - trackNumber);
+    auto invertedTrack = (quint8) (0xFF - trackNumber);
     while (offset < (startOffset + 0x100)) {
         quint8 code = m_board.m_happyRam[offset++];
         if (code == 0) {
@@ -1448,7 +1448,7 @@ bool SimpleDiskImage::readProSector(quint16 aux, QByteArray &data)
     // simulate accurate timing.
     if ((!m_conversionInProgress) && (chipFlags == 0)) {
         unsigned long delayInMicroSeconds = seekDelay + fetchDelay;
-        unsigned long diffWorkInMicroSeconds = (unsigned long)((m_timer.nsecsElapsed() - newTimeInNanoSeconds) / 1000);
+        auto diffWorkInMicroSeconds = (unsigned long)((m_timer.nsecsElapsed() - newTimeInNanoSeconds) / 1000);
         if (delayInMicroSeconds > diffWorkInMicroSeconds) {
             delayInMicroSeconds -= diffWorkInMicroSeconds;
             QThread::usleep(delayInMicroSeconds);
@@ -1514,7 +1514,7 @@ bool SimpleDiskImage::readProSkewAlignment(quint16 aux, QByteArray &data, bool t
                 }
 
                 // add the seek time
-                quint16 seekTimeInBytes = (quint16)((104100 + (20550 * (secondTrack - firstTrack - 1))) >> 6);;
+                auto seekTimeInBytes = (quint16)((104100 + (20550 * (secondTrack - firstTrack - 1))) >> 6);;
                 firstTrackByteOffset = (firstTrackByteOffset + seekTimeInBytes) % (26042 >> 3);
 
                 // find the first sector at the same rotation angle in the second track
@@ -1596,7 +1596,7 @@ bool SimpleDiskImage::readProSkewAlignment(quint16 aux, QByteArray &data, bool t
         }
 
         // add the time to change track and issue another read sector command: 115429 microseconds for one track difference
-        quint16 seekTime = (quint16)((115429 + (20550 * (secondTrack - firstTrack - 1))) >> 3);
+        auto seekTime = (quint16)((115429 + (20550 * (secondTrack - firstTrack - 1))) >> 3);
         // add also the time corresponding to the reading of the sector data: 154 bytes = 9856 microseconds
         firstSectorPosition = (firstSectorPosition + seekTime + (154 << 3)) % 26042;
 

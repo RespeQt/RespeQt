@@ -46,7 +46,7 @@ class MainWindow : public QMainWindow
     Q_OBJECT
 
 public:
-    MainWindow(QWidget *parent = Q_NULLPTR);
+    MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
     QString g_sessionFile;
     QString g_sessionFilePath;
@@ -67,7 +67,7 @@ public slots:
 private:
     int untitledName;
     Ui::MainWindow *ui;
-    SioWorker *sio;
+    SioWorkerPtr sio;
     bool shownFirstTime;
     PrinterWidget* printerWidgets[PRINTER_COUNT]; //
     DriveWidget* diskWidgets[DISK_COUNT];    //

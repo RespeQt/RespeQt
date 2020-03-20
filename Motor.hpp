@@ -40,7 +40,7 @@ private:
 public:
 
     // constructor and destructor
-                            Motor(Cpu6502 *cpu, Track *disk, long frequency, eMOTOR motorType);
+                            Motor(Cpu6502 *cpu, Track *track, long frequency, eMOTOR motorType);
 	virtual					~Motor() { }
 	virtual void			Reset(void);
     virtual void			SetReady(bool bReady);

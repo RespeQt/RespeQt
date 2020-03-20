@@ -13,7 +13,7 @@ RomBankSwitchTurbo::RomBankSwitchTurbo(Rom *rom)
 
 RomBankSwitchTurbo::~RomBankSwitchTurbo()
 {
-    m_rom = NULL;
+    m_rom = nullptr;
 }
 
 unsigned char RomBankSwitchTurbo::ReadRegister(unsigned short addr)

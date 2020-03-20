@@ -50,10 +50,19 @@ TextPrinterWindow::TextPrinterWindow(QWidget *parent) :
 
     connect(ui->asciiFontName, &QFontComboBox::currentFontChanged, this, &TextPrinterWindow::asciiFontChanged);
     connect(this, &TextPrinterWindow::textPrint, this, &TextPrinterWindow::print);
+    connect(ui->actionAtasciiFont, &QAction::triggered, this, &TextPrinterWindow::atasciiFontTriggered);
+    connect(ui->actionSave, &QAction::triggered, this, &TextPrinterWindow::saveTriggered);
+    connect(ui->actionClear, &QAction::triggered, this, &TextPrinterWindow::clearTriggered);
+    connect(ui->actionPrint, &QAction::triggered, this, &TextPrinterWindow::printTriggered);
+    connect(ui->actionFont_Size, &QAction::triggered, this, &TextPrinterWindow::fontSizeTriggered);
+    connect(ui->actionWord_wrap, &QAction::triggered, this, &TextPrinterWindow::wordwrapTriggered);
+    connect(ui->actionHideShow_Ascii, &QAction::triggered, this, &TextPrinterWindow::hideshowAsciiTriggered);
+    connect(ui->actionHideShow_Atascii, &QAction::triggered, this, &TextPrinterWindow::hideshowAtasciiTriggered);
+    connect(ui->actionStrip_Line_Numbers, &QAction::triggered, this, &TextPrinterWindow::stripLineNumbersTriggered);
 
-    mFont = Q_NULLPTR;
-    mDevice = Q_NULLPTR;
-    mPainter = Q_NULLPTR;
+    mFont.reset();
+    mDevice.reset();
+    mPainter.reset();
 }
 
 TextPrinterWindow::~TextPrinterWindow()
@@ -102,7 +111,7 @@ void TextPrinterWindow::closeEvent(QCloseEvent *e)
     for (int x = 0; x <= n-1; ++x){
         char byte = textASCII[x];
         if (byte < 0){
-            textASCII[x] = byte ^ 0x80;
+            textASCII[x] = static_cast<char>(byte ^ 0x80);
         }
     }
     c = ui->printerTextEditASCII->textCursor();
@@ -111,7 +120,7 @@ void TextPrinterWindow::closeEvent(QCloseEvent *e)
     ui->printerTextEditASCII->insertPlainText(textASCII);
 }
 
-void TextPrinterWindow::on_actionWord_wrap_triggered()
+void TextPrinterWindow::wordwrapTriggered()
 {
     if (ui->actionWord_wrap->isChecked()) {
         ui->printerTextEdit->setLineWrapMode(QPlainTextEdit::WidgetWidth);
@@ -125,7 +134,7 @@ void TextPrinterWindow::on_actionWord_wrap_triggered()
     }
 }
 
-void TextPrinterWindow::on_actionClear_triggered()
+void TextPrinterWindow::clearTriggered()
 {
     ui->printerTextEdit->clear();
     // 
@@ -134,7 +143,7 @@ void TextPrinterWindow::on_actionClear_triggered()
 }
 
 // Toggle ATASCII fonts // 
-void TextPrinterWindow::on_actionAtasciiFont_triggered()
+void TextPrinterWindow::atasciiFontTriggered()
 {
     ++effAtasciiFont;
     if (effAtasciiFont == 4){
@@ -158,7 +167,7 @@ void TextPrinterWindow::on_actionAtasciiFont_triggered()
 }
 
 // Toggle Atari Output Font Size in both ATASCII and ASCII Windows // 
-void TextPrinterWindow::on_actionFont_Size_triggered()
+void TextPrinterWindow::fontSizeTriggered()
 {
     ++effFontSize;
     if (effFontSize == 4){
@@ -192,7 +201,7 @@ void TextPrinterWindow::asciiFontChanged(const QFont &)
 }
 
 // Hide/Show Ascii text window  // 
-void TextPrinterWindow::on_actionHideShow_Ascii_triggered()
+void TextPrinterWindow::hideshowAsciiTriggered()
 {
     if (showAscii) {
         ui->printerTextEditASCII->hide();
@@ -206,7 +215,7 @@ void TextPrinterWindow::on_actionHideShow_Ascii_triggered()
     }
 }
 // Hide/Show Atascii text window  // 
-void TextPrinterWindow::on_actionHideShow_Atascii_triggered()
+void TextPrinterWindow::hideshowAtasciiTriggered()
 {
     if (showAtascii) {
         ui->printerTextEdit->hide();
@@ -220,20 +229,20 @@ void TextPrinterWindow::on_actionHideShow_Atascii_triggered()
     }
 }
 // Send to Printer Action   // 
-void TextPrinterWindow::on_actionPrint_triggered()
+void TextPrinterWindow::printTriggered()
 {
     QPrinter printer;
-    QPrintDialog *dialog = new QPrintDialog(&printer, this);
+    auto dialog = new QPrintDialog(&printer, this);
     if (dialog->exec() != QDialog::Accepted)
-    return;
+        return;
 
     ui->printerTextEdit->print(&printer);
 }
 
-void TextPrinterWindow::on_actionSave_triggered()
+void TextPrinterWindow::saveTriggered()
 {
     QString fileName = QFileDialog::getSaveFileName(this, tr("Save printer text output"), respeqtSettings->lastPrinterTextDir(),
-                                                    tr("Text files (*.txt);;All files (*)"), Q_NULLPTR);
+                                                    tr("Text files (*.txt);;All files (*)"), nullptr);
     if (fileName.isEmpty()) {
         return;
     }
@@ -242,7 +251,7 @@ void TextPrinterWindow::on_actionSave_triggered()
     file.open(QFile::WriteOnly | QFile::Truncate | QFile::Text);
     file.write(ui->printerTextEdit->toPlainText().toLatin1());
 }
- void TextPrinterWindow::on_actionStrip_Line_Numbers_triggered()
+ void TextPrinterWindow::stripLineNumbersTriggered()
 {
      bool number;
      bool lineNumberFound = false;
@@ -253,7 +262,7 @@ void TextPrinterWindow::on_actionSave_triggered()
      for (int i = 0; i < lines.size(); ++i) {
         int x = lines.at(i).indexOf(" ");
         if (x > 0) {
-        lines.at(i).mid(1,x-1).toInt(&number);
+        lines.at(i).midRef(1,x-1).toInt(&number);
             if (number) {
                 lineNumberFound = true;
                 break;
@@ -269,7 +278,7 @@ void TextPrinterWindow::on_actionSave_triggered()
          for (int i = 0; i < lines.size(); ++i) {
              int x = lines.at(i).indexOf(" ");
              if (x > 0) {
-             lines.at(i).mid(1,x-1).toInt(&number);
+             lines.at(i).midRef(1,x-1).toInt(&number);
                  if (!number) {
                      x = -1;
                  }

@@ -1,9 +1,9 @@
 #include "escp.h"
-
+ #include <utility> 
 namespace Printers
 {
-    Escp::Escp(SioWorker *sio)
-        : Centronics(sio)
+    Escp::Escp(SioWorkerPtr sio)
+        : Centronics(std::move(sio))
     {
         initPrinter();
     }
@@ -13,7 +13,7 @@ namespace Printers
         mEsc = false;
     }
 
-    bool Escp::handleBuffer(QByteArray &/*buffer*/, unsigned int len)
+    bool Escp::handleBuffer(const QByteArray &/*buffer*/, const unsigned int len)
     {
         for(unsigned int i = 0; i < len; i++)
         {

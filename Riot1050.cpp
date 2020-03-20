@@ -3,8 +3,8 @@
 // (c) 2016 Eric BACHER
 //
 
-#include <stdio.h>
-#include <string.h>
+#include <cstdio>
+#include <cstring>
 #include "Riot1050.hpp"
 #include "Emulator.h"
 

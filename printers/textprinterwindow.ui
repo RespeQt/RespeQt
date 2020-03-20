@@ -14,7 +14,7 @@
    <string>RespeQt - Printer text output</string>
   </property>
   <property name="windowIcon">
-   <iconset resource="icons.qrc">
+   <iconset resource="../icons.qrc">
     <normaloff>:/icons/silk-icons/icons/printer.png</normaloff>:/icons/silk-icons/icons/printer.png</iconset>
   </property>
   <widget class="QWidget" name="centralwidget">
@@ -153,7 +153,7 @@
   </widget>
   <action name="actionSave">
    <property name="icon">
-    <iconset resource="icons.qrc">
+    <iconset resource="../icons.qrc">
      <normaloff>:/icons/silk-icons/icons/disk.png</normaloff>:/icons/silk-icons/icons/disk.png</iconset>
    </property>
    <property name="text">
@@ -171,7 +171,7 @@
   </action>
   <action name="actionClear">
    <property name="icon">
-    <iconset resource="icons.qrc">
+    <iconset resource="../icons.qrc">
      <normaloff>:/icons/silk-icons/icons/page_white.png</normaloff>:/icons/silk-icons/icons/page_white.png</iconset>
    </property>
    <property name="text">
@@ -195,7 +195,7 @@
     <bool>false</bool>
    </property>
    <property name="icon">
-    <iconset resource="icons.qrc">
+    <iconset resource="../icons.qrc">
      <normaloff>:/icons/silk-icons/icons/text_align_left.png</normaloff>:/icons/silk-icons/icons/text_align_left.png</iconset>
    </property>
    <property name="text">
@@ -213,7 +213,7 @@
   </action>
   <action name="actionPrint">
    <property name="icon">
-    <iconset resource="icons.qrc">
+    <iconset resource="../icons.qrc">
      <normaloff>:/icons/silk-icons/icons/printer.png</normaloff>:/icons/silk-icons/icons/printer.png</iconset>
    </property>
    <property name="text">
@@ -231,7 +231,7 @@
   </action>
   <action name="actionAtasciiFont">
    <property name="icon">
-    <iconset resource="icons.qrc">
+    <iconset resource="../icons.qrc">
      <normaloff>:/icons/silk-icons/icons/font_go.png</normaloff>
      <normalon>:/icons/silk-icons/icons/font_go.png</normalon>:/icons/silk-icons/icons/font_go.png</iconset>
    </property>
@@ -256,7 +256,7 @@
   </action>
   <action name="actionFont_Size">
    <property name="icon">
-    <iconset resource="icons.qrc">
+    <iconset resource="../icons.qrc">
      <normaloff>:/icons/oxygen-icons/16x16/actions/format_font_size_more.png</normaloff>
      <normalon>:/icons/oxygen-icons/16x16/actions/format_font_size_more.png</normalon>:/icons/oxygen-icons/16x16/actions/format_font_size_more.png</iconset>
    </property>
@@ -284,7 +284,7 @@
     <bool>false</bool>
    </property>
    <property name="icon">
-    <iconset resource="icons.qrc">
+    <iconset resource="../icons.qrc">
      <normaloff>:/icons/oxygen-icons/16x16/actions/view_right_close.png</normaloff>
      <normalon>:/icons/oxygen-icons/16x16/actions/view_right_close.png</normalon>:/icons/oxygen-icons/16x16/actions/view_right_close.png</iconset>
    </property>
@@ -315,7 +315,7 @@
     <bool>true</bool>
    </property>
    <property name="icon">
-    <iconset resource="icons.qrc">
+    <iconset resource="../icons.qrc">
      <normaloff>:/icons/oxygen-icons/16x16/actions/view_left_close.png</normaloff>
      <normalon>:/icons/oxygen-icons/16x16/actions/view_left_close.png</normalon>:/icons/oxygen-icons/16x16/actions/view_left_close.png</iconset>
    </property>
@@ -340,7 +340,7 @@
     <bool>true</bool>
    </property>
    <property name="icon">
-    <iconset resource="icons.qrc">
+    <iconset resource="../icons.qrc">
      <normaloff>:/icons/silk-icons/icons/cut_red.png</normaloff>:/icons/silk-icons/icons/cut_red.png</iconset>
    </property>
    <property name="text">
@@ -358,7 +358,7 @@
   </action>
  </widget>
  <resources>
-  <include location="icons.qrc"/>
+  <include location="../icons.qrc"/>
  </resources>
  <connections/>
 </ui>

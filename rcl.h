@@ -20,7 +20,7 @@ class RCl: public SioDevice
 
 public:
     QString g_fileFilter;
-    RCl(SioWorker *worker): SioDevice(worker) {}
+    RCl(SioWorkerPtr worker): SioDevice(worker), mutex() {}
     void handleCommand(quint8 command, quint16 aux);
     QString toAtariFileName(QString dosFileName);
     QString toDosFileName(QString atariFileName);
@@ -39,7 +39,8 @@ signals:
 
 private:
     QString imageFileName;
-    static char g_rclSlotNo;
+    static char rclSlotNo;
+    QMutex mutex;
 };
 
 #endif // RCL_H

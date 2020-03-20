@@ -68,7 +68,7 @@ bool StandardSerialPortBackend::open()
             (WCHAR*)name.utf16(),
             GENERIC_READ | GENERIC_WRITE,
             0,
-            NULL,
+            nullptr,
             OPEN_EXISTING,
             0,
             0
@@ -84,7 +84,7 @@ bool StandardSerialPortBackend::open()
             (WCHAR*)name.utf16(),
             GENERIC_READ | GENERIC_WRITE,
             0,
-            NULL,
+            nullptr,
             OPEN_EXISTING,
             FILE_ATTRIBUTE_NORMAL | FILE_FLAG_OVERLAPPED,
             0
@@ -329,7 +329,7 @@ QByteArray StandardSerialPortBackend::readCommandFrame()
         {
             DWORD result;
             char c;
-            if(ReadFile(mHandle, &c, 1, &result, NULL) && result == 1)
+            if(ReadFile(mHandle, &c, 1, &result, nullptr) && result == 1)
             {
                 data.append(c);
                 if(data.size()==size+2)
@@ -508,6 +508,16 @@ QByteArray StandardSerialPortBackend::readDataFrame(uint size, bool verbose)
     quint8 got = sioChecksum(data, size);
     if (expected == got) {
         data.resize(size);
+
+#ifndef QT_NO_DEBUG
+    try {
+        SioWorker *sio = dynamic_cast<SioWorker*>(parent());
+        if (sio) {
+            sio->writeSnapshotDataFrame(data);
+        }
+    } catch(...) {}
+#endif
+
         return data;
     } else {
         if (verbose) {
@@ -606,7 +616,7 @@ QByteArray StandardSerialPortBackend::readRawFrame(uint size, bool verbose)
     if(mMethod==HANDSHAKE_SOFTWARE)
     {
         data.resize(size);
-        if (!ReadFile(mHandle, data.data(), size, &result, NULL) || (result != (DWORD)size))
+        if (!ReadFile(mHandle, data.data(), size, &result, nullptr) || (result != (DWORD)size))
         {
             data.clear();
         }
@@ -666,7 +676,7 @@ bool StandardSerialPortBackend::writeRawFrame(const QByteArray &data)
 
     if(mMethod==HANDSHAKE_SOFTWARE)
     {
-        return WriteFile(mHandle, data.constData(), data.size(), &result, NULL);
+        return WriteFile(mHandle, data.constData(), data.size(), &result, nullptr);
     }
     else
     {
@@ -708,11 +718,11 @@ QString StandardSerialPortBackend::lastErrorMessage()
         FORMAT_MESSAGE_ALLOCATE_BUFFER |
         FORMAT_MESSAGE_FROM_SYSTEM |
         FORMAT_MESSAGE_IGNORE_INSERTS,
-        NULL,
+        nullptr,
         GetLastError(),
         MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),
         (LPTSTR) &lpMsgBuf,
-        0, NULL );
+        0, nullptr);
 
     result.setUtf16((ushort *)lpMsgBuf, wcslen((wchar_t*)lpMsgBuf) - 2);
     LocalFree(lpMsgBuf);

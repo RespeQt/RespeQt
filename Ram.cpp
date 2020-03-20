@@ -7,7 +7,7 @@
 #ifndef __clang__
 #include <malloc.h>
 #endif
-#include <stdio.h>
+#include <cstdio>
 #include "Ram.hpp"
 
 #include <QtDebug>
@@ -23,7 +23,7 @@ Ram::Ram(Cpu6502 *cpu, int iSize)
 Ram::~Ram()
 {
     free(m_ram);
-	m_ram = NULL;
+    m_ram = nullptr;
 }
 
 unsigned char Ram::ReadRegister(unsigned short addr)

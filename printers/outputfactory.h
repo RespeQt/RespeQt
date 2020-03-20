@@ -5,32 +5,33 @@
 #include <QString>
 #include "nativeoutput.h"
 
+
 namespace Printers {
 
     class OutputFactory
     {
     private:
         template<class TDerived>
-        static NativeOutput* creator()
+        static NativeOutputPtr creator()
         {
-            return new TDerived();
+            return QSharedPointer<TDerived>::create();
         }
 
         // Instanciation maps
-        typedef NativeOutput* (*Creator)();
-        typedef QPair<QString, Creator> CreatorPair;
-        typedef QVector<CreatorPair> CreatorVector;
+        using Creator = NativeOutputPtr(); // Function type definition
+        using CreatorPair = QPair<QString, Creator*>;
+        using CreatorVector = QVector<CreatorPair>;
         CreatorVector creatorFunctions;
 
-        static OutputFactory* sInstance;
+        static std::unique_ptr<OutputFactory> sInstance;
         OutputFactory() {}
 
     public:
-        static OutputFactory* instance()
+        static std::unique_ptr<OutputFactory>& instance()
         {
-            if (sInstance == Q_NULLPTR)
+            if (sInstance == nullptr)
             {
-                sInstance = new OutputFactory();
+                sInstance.reset(new OutputFactory());
             }
             return sInstance;
         }
@@ -42,17 +43,16 @@ namespace Printers {
             creatorFunctions.append(CreatorPair(label, &creator<TDerived>));
         }
 
-        NativeOutput* createOutput(QString label) const
+        NativeOutputPtr createOutput(QString label) const
         {
-            typename CreatorVector::const_iterator it;
-            for(it = creatorFunctions.begin(); it != creatorFunctions.end(); ++it)
+            for(const auto& it : creatorFunctions)
             {
-                if (it->first == label)
+                if (it.first == label)
                 {
-                    return it->second();
+                    return it.second();
                 }
             }
-            return Q_NULLPTR;
+            throw new std::invalid_argument("Unknown output label given.");
         }
 
         int numRegisteredOutputs() const
@@ -63,10 +63,10 @@ namespace Printers {
         const QVector<QString> getOutputNames() const
         {
             QVector<QString> names;
-            CreatorVector::const_iterator it;
-            for(it = creatorFunctions.begin(); it != creatorFunctions.end(); ++it)
+
+            for(const auto& it : creatorFunctions)
             {
-                names.append(it->first);
+                names.append(it.first);
             }
             return names;
         }

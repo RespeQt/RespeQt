@@ -3,7 +3,7 @@
 // (c) 2016 Eric BACHER
 //
 
-#include <stdio.h>
+#include <cstdio>
 #include "Emulator.h"
 #include "Atari1050.hpp"
 #include "Riot1050.hpp"

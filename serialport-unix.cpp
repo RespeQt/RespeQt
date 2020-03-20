@@ -19,9 +19,9 @@
 #include <QTime>
 #include <QtDebug>
 
-#include <string.h>
+#include <cstring>
 #include <fcntl.h>
-#include <errno.h>
+#include <cerrno>
 #include <sys/types.h>
 #include <unistd.h>
 #ifdef Q_OS_UNIX
@@ -298,7 +298,7 @@ bool StandardSerialPortBackend::setSpeed(int speed)
     /* Set serial port state */
     if (tcsetattr(mHandle, TCSANOW, &tios) != 0) {
         qCritical() << "!e" << tr("Cannot set serial port speed to %1: %2")
-                       .arg(speed)
+                       .arg(19200)
                        .arg(lastErrorMessage());
         return false;
     }
@@ -468,7 +468,22 @@ QByteArray StandardSerialPortBackend::readCommandFrame()
                 return data;
             }
 
-            data = readDataFrame(4, false);
+            data = readRawFrame(5, false);
+            if (data.isEmpty()) {
+                return nullptr;
+            }
+            auto expected = (quint8)data.at(4);
+            quint8 got = sioChecksum(data, 4);
+            if (expected == got) {
+                data.resize(4);
+            } else {
+                qWarning() << "!w" << tr("Command frame checksum error, expected: %1, got: %2. (%3)")
+                                   .arg(expected)
+                                   .arg(got)
+                                   .arg(QString(data.toHex()));
+
+                data.clear();
+            }
 
             if (!data.isEmpty()) {
                 if(mMethod != HANDSHAKE_NO_HANDSHAKE)
@@ -512,12 +527,23 @@ QByteArray StandardSerialPortBackend::readDataFrame(uint size, bool verbose)
 {
     QByteArray data = readRawFrame(size + 1, verbose);
     if (data.isEmpty()) {
-        return NULL;
+        return nullptr;
     }
-    quint8 expected = (quint8)data.at(size);
-    quint8 got = sioChecksum(data, size);
+    auto expected = (quint8)data.at(size);
+    auto got = sioChecksum(data, size);
     if (expected == got) {
         data.resize(size);
+
+#ifndef QT_NO_DEBUG
+    try {
+        // TODO. Does this actually work? parent should be nullptr
+        auto sio = dynamic_cast<SioWorker*>(parent());
+        if (sio) {
+            sio->writeSnapshotDataFrame(data);
+        }
+    } catch(...) {}
+#endif
+
         return data;
     } else {
         if (verbose) {
@@ -856,7 +882,7 @@ QByteArray AtariSioBackend::readCommandFrame()
     FD_ZERO(&read_set);
     FD_SET(mCancelHandles[0], &read_set);
 
-    ret = select(maxfd+1, &read_set, NULL, &except_set, 0);
+    ret = select(maxfd+1, &read_set, nullptr, &except_set, 0);
     if (ret == -1 || ret == 0) {
         return data;
     }
@@ -912,6 +938,16 @@ QByteArray AtariSioBackend::readDataFrame(uint size, bool verbose)
         }
         data.clear();
     }
+
+#ifndef QT_NO_DEBUG
+    try {
+        // TODO. Does this actually work? parent should be nullptr
+        auto sio = dynamic_cast<SioWorker*>(parent());
+        if (sio) {
+            sio->writeSnapshotDataFrame(data);
+        }
+    } catch(...) {}
+#endif
 
     return data;
 }

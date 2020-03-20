@@ -187,8 +187,8 @@ p    { font-size: medium; text-align: justify; }
 	"C:\Program Files\RespeQt\RespeQt.exe"&nbsp; C:\Program Files\RespeQt\session.RespeQt</p>
 	
 	<h5>RespeQt client software for the Atari <em>(RCL)</em></h5>
-	<p>Maintainer's note: The following portion of the user manual pertains to the old AspeCL software. This documentation is out of date now that AspeCL has been replaced with RCL written by FlashJazzCat. Nevertheless, it will remain here until a suitable replacement is written because the reference may still be useful.<br />
-	<p>RespeQt also implements a client server device <em>($46)</em> which communicates with the client module AspeCL that runs on the Atari computer. AspeCL is a general purpose client module and incorporates the following functionalities:</p>
+        <p>Maintainer's note: The following portion of the user manual pertains to the old RCL software. This documentation is out of date now that RCL has been replaced with RCL written by FlashJazzCat. Nevertheless, it will remain here until a suitable replacement is written because the reference may still be useful.<br />
+        <p>RespeQt also implements a client server device <em>($46)</em> which communicates with the client module RCL that runs on the Atari computer. RCL is a general purpose client module and incorporates the following functionalities:</p>
 	<ul type="square">
 		<li>Downloading the Date/Time from the PC and setting it on the Atari computer <em>(SpartaDos v2.5 and up only)</em></li>
 		<li>Turning the Date/Time line ON or OFF on the Atari computer <em>(SpartaDos v2.5 and up only)</em></li>
@@ -197,15 +197,15 @@ p    { font-size: medium; text-align: justify; }
 		<li>Remotely Mounting an existing disk image. Image must reside in the "Last Folder Image Directory" of RespeQt</li>
                 <li>Remotely creating and mounting a new disk image in RespeQt in Single, Enhanced, DD, DSDD and hard disk formats. The new disk image will reside in the "Last Folder Image Directory"</li>
 		<li>Remotely toggling auto-save feature of a mounted disk image</li>
-		<li>AspeCL keeps you updated with a plenty of on-screen status/info/error messages, when and If this verbosity is a concern <em>(i.e. the screen must be left undisturbed)</em>, you can run it with I/O redirection, sending the screen output to the NULL device <em>(or to another actual device like a printer or a disk file)</em>, effectively eliminating screen interaction but still being able to keep a log of AspeCL activities.<br /><br />
+                <li>RCL keeps you updated with a plenty of on-screen status/info/error messages, when and If this verbosity is a concern <em>(i.e. the screen must be left undisturbed)</em>, you can run it with I/O redirection, sending the screen output to the NULL device <em>(or to another actual device like a printer or a disk file)</em>, effectively eliminating screen interaction but still being able to keep a log of RCL activities.<br /><br />
 		For example:<br /><br />
-		ASPECL&nbsp; DMGAMES01.ATR &gt;&gt;NULL <br /><br />
+                RCL&nbsp; DMGAMES01.ATR &gt;&gt;NULL <br /><br />
 		will mount the image file GAMES01.ATR to the first available disk slot  without any info/error messages displayed on the screen. The disk slot number used for mounting the image file will not be displayed back either.<br /><br />
 		Similarly:<br /><br />
-		ASPECL DMGAMES01.ATR &gt;&gt;PRN:<br /><br />
+                RCL DMGAMES01.ATR &gt;&gt;PRN:<br /><br />
 		will mount the image file GAMES01.ATR to the first available disk slot and will log all info/error messages to the printer.</li>
 	</ul>	
-	<p>ASPECL&nbsp;&nbsp;TS | TO | TF | DA | DS | DU | DM | DN<br /><br />
+        <p>RCL&nbsp;&nbsp;TS | TO | TF | DA | DS | DU | DM | DN<br /><br />
 	TS =&gt; Set Date/Time on Atari<br /><br />
 	TO =&gt; Set Date/Time on Atari and turn TD Line ON<br /><br />
 	TF =&gt; Set Date/Time on Atari and turn TD Line OFF</p>
@@ -223,11 +223,11 @@ p    { font-size: medium; text-align: justify; }
                 <li>Double density hard disk <em>(256 bytes/sec, 65535 sectors, 16MB)</em></li>
                 <li>Quad density hard disk <em>(512 bytes/sec, 65535 sectors, 32MB)</em></li>
 	</ol>
-        <p>Example: ASPECL DNmyhd.atr.6 =&gt; will create and mount a quad density hard disk .atr image with the name myhd<br /><br />
-	And here's an example of invoking AspeCL with multiple command line switches:<br /><br />
-	ASPECL TF DS18 DMBASICXE.ATR =&gt; will set the date/time and turn TD line OFF, will swap disks 1-8, and will mount basicxe.atr disk image to the first available disk slot, returning back the slot number to Atari.</p>
-	<h5>AspeCL compatibility</h5>
-	<p>AspeCL is currently a command line based client which is fully compatible with and runs only under SpartaDos <em>(v2.5 and up)</em> and SpartaDos X versions. A seperate menu driven client for menu based DOS <em>(like AtariDOS and MyDos versions)</em> will be available in the future. Some of the functionality in AspeCL also depend on the underlying DOSes capabilities. For example setting the Date/Time from the PC is a DOS dependent feature as it requires specific Date/Time drivers from the DOS. Other functionality like mounting/unmounting/swapping disk or folder images are DOS independent and therefore are available under different DOSes.</p>
+        <p>Example: RCL DNmyhd.atr.6 =&gt; will create and mount a quad density hard disk .atr image with the name myhd<br /><br />
+        And here's an example of invoking RCL with multiple command line switches:<br /><br />
+        RCL TF DS18 DMBASICXE.ATR =&gt; will set the date/time and turn TD line OFF, will swap disks 1-8, and will mount basicxe.atr disk image to the first available disk slot, returning back the slot number to Atari.</p>
+        <h5>RCL compatibility</h5>
+        <p>RCL is currently a command line based client which is fully compatible with and runs only under SpartaDos <em>(v2.5 and up)</em> and SpartaDos X versions. A seperate menu driven client for menu based DOS <em>(like AtariDOS and MyDos versions)</em> will be available in the future. Some of the functionality in RCL also depend on the underlying DOSes capabilities. For example setting the Date/Time from the PC is a DOS dependent feature as it requires specific Date/Time drivers from the DOS. Other functionality like mounting/unmounting/swapping disk or folder images are DOS independent and therefore are available under different DOSes.</p>
 	<h5>Apetime</h5>
 	<p>RespeQt supports ApeTime <em>(Date/Time downloader utility)</em> from the AtariMax APE package. The support code has been added back in from older versions of AspeQt.</p>
 	<div align="right"><a href="#home">Up</a></div>

@@ -151,12 +151,11 @@ QChar Atascii::operator() (const unsigned char atascii) const
 
 unsigned char Atascii::operator() (const QChar &unicode) const
 {
-    std::map<unsigned char, QChar>::iterator it;
-    for (it = mapping.begin(); it != mapping.end(); ++it)
+    for (auto it: mapping)
     {
-        if (unicode == it->second)
+        if (unicode == it.second)
         {
-            return it->first;
+            return it.first;
         }
     }
     throw new std::invalid_argument("Unknown unicode mapping");

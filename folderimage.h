@@ -40,7 +40,7 @@ protected:
     int atariFileNo;             // 
 
 public:
-    FolderImage(SioWorker *worker): SimpleDiskImage(worker) {}
+    FolderImage(SioWorkerPtr worker): SimpleDiskImage(worker) {}
     ~FolderImage();
 
     void close();

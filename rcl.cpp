@@ -23,13 +23,13 @@
 #include <QDesktopServices>
 #include <QUrl>
 
-char RCl::g_rclSlotNo;
+char RCl::rclSlotNo;
 
 // RespeQt Client ()
 
 void RCl::handleCommand(quint8 command, quint16 aux)
 {
-    QByteArray  data(5, 0);
+    QByteArray data(6, 0);
     QByteArray  fdata(21, 0);
     QByteArray  ddata(255, 0);
     QDateTime dateTime = QDateTime::currentDateTime();
@@ -123,7 +123,7 @@ void RCl::handleCommand(quint8 command, quint16 aux)
         deviceNo  = (deviceNo > 9) ? (deviceNo -16) :deviceNo;
 
         if (deviceNo >= 0x0 && deviceNo <= 0xF ) {
-            SimpleDiskImage *img = qobject_cast <SimpleDiskImage*> (sio->getDevice(deviceNo -1 +  DISK_BASE_CDEVIC));
+            auto img = qobject_cast <SimpleDiskImage*> (sio->getDevice(deviceNo -1 +  DISK_BASE_CDEVIC));
             QString  filename = "";
             if (img) {
                 int i = -1;
@@ -168,9 +168,6 @@ void RCl::handleCommand(quint8 command, quint16 aux)
 
       case 0x94 :   // Swap Disks
          {
-            if (!sio->port()->writeCommandAck()) {
-                return;
-            }
             qint8 swapDisk1, swapDisk2;
             swapDisk1 = static_cast<qint8>(aux / 256);
             swapDisk2 = static_cast<qint8>(aux % 256);
@@ -188,8 +185,9 @@ void RCl::handleCommand(quint8 command, quint16 aux)
                 respeqtSettings->swapImages(swapDisk1 - 1, swapDisk2 - 1);
                 qDebug() << "!n" << tr("[%1] Swapped disk %2 with disk %3.")
                                 .arg(deviceName())
-                                .arg(swapDisk2 + 1)
-                                .arg(swapDisk1 + 1);
+                                .arg(swapDisk2)
+                                .arg(swapDisk1);
+                sio->port()->writeCommandAck();
             } else {
                 sio->port()->writeCommandNak();
                 qDebug() << "!e" << tr("[%1] Invalid swap request for drives: (%2)-(%3).")
@@ -203,11 +201,8 @@ void RCl::handleCommand(quint8 command, quint16 aux)
 
       case 0x95 :   // Unmount Disk(s)
        {
-          if (!sio->port()->writeCommandAck()) {
-              return;
-          }
           qint8 unmountDisk;
-          unmountDisk = static_cast<qint8>(aux /256);
+          unmountDisk = static_cast<qint8>(aux / 256);
           if (unmountDisk == -6)
               unmountDisk = 0;        // All drives
           if (unmountDisk > 25)
@@ -217,7 +212,7 @@ void RCl::handleCommand(quint8 command, quint16 aux)
               // Eject All disks
                   int toBeSaved = 0;
                   for (int i = 0; i <= 14; i++) {    //
-                      SimpleDiskImage *img = qobject_cast <SimpleDiskImage*>
+                      auto img = qobject_cast <SimpleDiskImage*>
                             (sio->getDevice(static_cast<quint8>(i + DISK_BASE_CDEVIC)));
                       if (img && img->isModified()) {
                           toBeSaved++;
@@ -225,7 +220,7 @@ void RCl::handleCommand(quint8 command, quint16 aux)
                   }
                   if (!toBeSaved) {
                       for (int i = 14; i >= 0; i--) {
-                          SimpleDiskImage *img = qobject_cast <SimpleDiskImage*>
+                          auto img = qobject_cast <SimpleDiskImage*>
                                   (sio->getDevice(static_cast<quint8>(i + DISK_BASE_CDEVIC)));
                           sio->uninstallDevice(static_cast<quint8>(i + DISK_BASE_CDEVIC));
                           delete img;
@@ -236,6 +231,7 @@ void RCl::handleCommand(quint8 command, quint16 aux)
                       }
                       qDebug() << "!n" << tr("[%1] ALL images were remotely unmounted")
                                 .arg(deviceName());
+                      sio->port()->writeCommandAck();
                   } else {
                       sio->port()->writeCommandNak();
                       qDebug() << "!e" << tr("[%1] Can not remotely unmount ALL images due to pending changes.")
@@ -243,7 +239,7 @@ void RCl::handleCommand(quint8 command, quint16 aux)
                   }
               } else {
                   // Single Disk Eject
-                  SimpleDiskImage *img = qobject_cast <SimpleDiskImage*>
+                  auto img = qobject_cast <SimpleDiskImage*>
                           (sio->getDevice(static_cast<quint8>(unmountDisk - 1 + DISK_BASE_CDEVIC)));
 
                   if (img && img->isModified()) {
@@ -259,8 +255,8 @@ void RCl::handleCommand(quint8 command, quint16 aux)
                                   .arg(deviceName())
                                   .arg(unmountDisk);
                   }
+                  sio->port()->writeCommandAck();
                 }
-
               } else {
                   sio->port()->writeCommandNak();
                   qDebug() << "!e" << tr("[%1] Invalid drive number: %2 for remote unmount")
@@ -274,7 +270,7 @@ void RCl::handleCommand(quint8 command, quint16 aux)
       case 0x96 :   // Mount Disk Image
       case 0x97 :   // Create and Mount a new Disk Image
        {
-          if (!sio->port()->writeCommandAck()) {
+          if (!sio->port()->writeCommandAck()) { // TODO MOVE
               return;
           }
           // If no Folder Image has ever been mounted abort the command as we won't
@@ -298,9 +294,7 @@ void RCl::handleCommand(quint8 command, quint16 aux)
           if (aux == 0) {
               QByteArray data(len, 0);
               data = sio->port()->readDataFrame(static_cast<uint>(len));
-#ifndef QT_NO_DEBUG
-              sio->writeSnapshotDataFrame(data);
-#endif
+
               if (data.isEmpty()) {
                   qCritical() << "!e" << tr("[%1] Read data frame failed")
                                 .arg(deviceName());
@@ -417,16 +411,24 @@ void RCl::handleCommand(quint8 command, quint16 aux)
 
               imageFileName = "*" + toDosFileName(imageFileName);
 
+
               // Ask the MainWindow for the next available slot number
+              mutex.lock();
               emit findNewSlot(0, true);
 
           } else {
 
-              // Return the last mounted drive number
-              QByteArray data(1,0);
-              data[0] = g_rclSlotNo;
-              sio->port()->writeComplete();
-              sio->port()->writeDataFrame(data);
+              if (mutex.tryLock())
+              {
+                  // Return the last mounted drive number
+                  QByteArray data(1,0);
+                  data[0] = rclSlotNo;
+                  mutex.unlock();
+                  sio->port()->writeComplete();
+                  sio->port()->writeDataFrame(data);
+              } else {
+                  sio->port()->writeCommandNak();
+              }
           }
        }
        break;
@@ -477,7 +479,7 @@ void RCl::handleCommand(quint8 command, quint16 aux)
                 // Eject All disks
 
                 for (int i = 0; i <= 14; i++) {    //
-                    SimpleDiskImage *img = qobject_cast <SimpleDiskImage*> (sio->getDevice(i + DISK_BASE_CDEVIC));
+                    auto img = qobject_cast <SimpleDiskImage*> (sio->getDevice(i + DISK_BASE_CDEVIC));
                     if (img && img->isModified() && !img->isUnnamed()) {
                         img->save();
                         qDebug() << "!n" << tr("[%1] Saved disk %2")
@@ -489,7 +491,7 @@ void RCl::handleCommand(quint8 command, quint16 aux)
 
             } else {
                 // Single Disk save
-                SimpleDiskImage *img = qobject_cast <SimpleDiskImage*> (sio->getDevice(deviceNo - 1 + DISK_BASE_CDEVIC));
+                auto img = qobject_cast <SimpleDiskImage*> (sio->getDevice(deviceNo - 1 + DISK_BASE_CDEVIC));
 
                 if (img && img->isModified() && !img->isUnnamed()) {
                     img->save();
@@ -640,7 +642,9 @@ void RCl::handleCommand(quint8 command, quint16 aux)
 // Get the next slot number available for mounting a disk image
 void RCl::gotNewSlot(int slot)
 {
-   g_rclSlotNo = static_cast<char>(slot);
+   mutex.lock();
+   rclSlotNo = static_cast<char>(slot);
+   mutex.unlock();
 
    // Ask the MainWindow to mount the file
    emit mountFile(slot, imageFileName);
@@ -652,7 +656,7 @@ void RCl::fileMounted(bool mounted)
         sio->port()->writeComplete();
         qDebug() << "!n" << tr("[%1] Image %2 mounted")
                    .arg(deviceName())
-                    .arg(imageFileName.mid(1,imageFileName.size()-1));
+                   .arg(imageFileName.mid(1,imageFileName.size()-1));
     } else {
        sio->port()->writeDataNak();
     }

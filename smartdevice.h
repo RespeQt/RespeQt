@@ -19,7 +19,7 @@ class SmartDevice: public SioDevice
     Q_OBJECT
 
 public:
-    SmartDevice(SioWorker *worker): SioDevice(worker) {}
+    SmartDevice(SioWorkerPtr worker): SioDevice(worker) {}
     void handleCommand(quint8 command, quint16 aux);
 };
 

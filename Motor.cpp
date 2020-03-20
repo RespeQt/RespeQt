@@ -3,8 +3,8 @@
 // (c) 2016 Eric BACHER
 //
 
-#include <string.h>
-#include <math.h>
+#include <cstring>
+#include <cmath>
 #include "Motor.hpp"
 #include "Emulator.h"
 

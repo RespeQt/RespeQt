@@ -25,14 +25,14 @@
 
 /* MyModel */
 
-MyModel::MyModel(QObject *parent)
+FileModel::FileModel(QObject *parent)
     :QAbstractTableModel(parent)
 {
     fileSystem = 0;
     tempDirs = new QStringList();
 }
 
-MyModel::~MyModel()
+FileModel::~FileModel()
 {
     while (!tempDirs->isEmpty()) {
         deltree(QDir::temp().absoluteFilePath(tempDirs->last()));
@@ -44,7 +44,7 @@ MyModel::~MyModel()
     }
 }
 
-Qt::ItemFlags MyModel::flags(const QModelIndex &index) const
+Qt::ItemFlags FileModel::flags(const QModelIndex &index) const
 {
     if (index.column() == 1 || index.column() == 2) {
         return Qt::ItemIsSelectable | Qt::ItemIsEnabled | Qt::ItemIsDragEnabled | Qt::ItemIsEditable | Qt::ItemIsDropEnabled;
@@ -59,7 +59,7 @@ Qt::ItemFlags MyModel::flags(const QModelIndex &index) const
     }
 }
 
-QVariant MyModel::data(const QModelIndex &index, int role) const
+QVariant FileModel::data(const QModelIndex &index, int role) const
 {
     if (index.row() >= rowCount()) {
         return QVariant();
@@ -125,7 +125,7 @@ QVariant MyModel::data(const QModelIndex &index, int role) const
     return QVariant();
 }
 
-bool MyModel::setData(const QModelIndex &index, const QVariant &value, int role)
+bool FileModel::setData(const QModelIndex &index, const QVariant &value, int role)
 {
     if (role != Qt::EditRole) {
         return false;
@@ -209,7 +209,7 @@ bool MyModel::setData(const QModelIndex &index, const QVariant &value, int role)
     return false;
 }
 
-void MyModel::deleteFiles(QModelIndexList indexes)
+void FileModel::deleteFiles(QModelIndexList indexes)
 {
     QList <int> l;
 
@@ -233,7 +233,7 @@ void MyModel::deleteFiles(QModelIndexList indexes)
     emit layoutChanged();
 }
 
-QVariant MyModel::headerData (int section, Qt::Orientation orientation, int role) const
+QVariant FileModel::headerData (int section, Qt::Orientation orientation, int role) const
 {
     if (role != Qt::DisplayRole || orientation != Qt::Horizontal) {
         return QVariant();
@@ -263,17 +263,17 @@ QVariant MyModel::headerData (int section, Qt::Orientation orientation, int role
     }
 }
 
-int MyModel::rowCount (const QModelIndex & /*parent*/) const
+int FileModel::rowCount (const QModelIndex & /*parent*/) const
 {
     return entries.count();
 }
 
-int MyModel::columnCount (const QModelIndex & /*parent*/) const
+int FileModel::columnCount (const QModelIndex & /*parent*/) const
 {
     return 6;
 }
 
-void MyModel::sort(int column, Qt::SortOrder order)
+void FileModel::sort(int column, Qt::SortOrder order)
 {
     if (column < 0 || column > 5) {
         return;
@@ -326,7 +326,7 @@ void MyModel::sort(int column, Qt::SortOrder order)
     emit layoutChanged();
 }
 
-void MyModel::setFileSystem(AtariFileSystem *aFileSystem)
+void FileModel::setFileSystem(AtariFileSystem *aFileSystem)
 {
     emit layoutAboutToBeChanged();
     if (fileSystem) {
@@ -341,7 +341,7 @@ void MyModel::setFileSystem(AtariFileSystem *aFileSystem)
     emit layoutChanged();
 }
 
-void MyModel::setDirectory(int row)
+void FileModel::setDirectory(int row)
 {
     emit layoutAboutToBeChanged();
     paths.append(entries.at(row).name());
@@ -351,7 +351,7 @@ void MyModel::setDirectory(int row)
     emit layoutChanged();
 }
 
-void MyModel::toParent()
+void FileModel::toParent()
 {
     paths.removeLast();
     dirs.removeLast();
@@ -364,7 +364,7 @@ void MyModel::toParent()
     emit layoutChanged();
 }
 
-void MyModel::setRoot()
+void FileModel::setRoot()
 {
     emit layoutAboutToBeChanged();
     paths.clear();
@@ -376,7 +376,7 @@ void MyModel::setRoot()
     emit layoutChanged();
 }
 
-void MyModel::insertFiles(QStringList names)
+void FileModel::insertFiles(QStringList names)
 {
     if (names.isEmpty()) {
         return;
@@ -389,7 +389,7 @@ void MyModel::insertFiles(QStringList names)
     emit layoutChanged();
 }
 
-bool MyModel::dropMimeData(const QMimeData *data, Qt::DropAction /*action*/, int /*row*/, int /*column*/, const QModelIndex &/*parent*/)
+bool FileModel::dropMimeData(const QMimeData *data, Qt::DropAction /*action*/, int /*row*/, int /*column*/, const QModelIndex &/*parent*/)
 {
     QStringList names;
     if (data->hasUrls()) {
@@ -406,16 +406,16 @@ bool MyModel::dropMimeData(const QMimeData *data, Qt::DropAction /*action*/, int
     }
 }
 
-QStringList MyModel::mimeTypes() const
+QStringList FileModel::mimeTypes() const
 {
     QStringList types;
     types.append("text/uri-list");
     return types;
 }
 
-QMimeData* MyModel::mimeData(const QModelIndexList &indexes) const
+QMimeData* FileModel::mimeData(const QModelIndexList &indexes) const
 {
-    QMimeData *data = new QMimeData();
+    auto data = new QMimeData();
     QList <AtariDirEntry> selectedEntries;
     QList <QUrl> urls;
 
@@ -467,16 +467,25 @@ DiskEditDialog::DiskEditDialog(QWidget *parent) :
     m_fileSystemBox->addItem(tr("SpartaDos"));
     m_ui->statusbar->addPermanentWidget(m_fileSystemBox);
 
-    model = new MyModel(this);
+    model = new FileModel(this);
     model->setFileSystem(0);
-    m_ui->aView->setModel(model);
+    m_ui->fileList->setModel(model);
 
-    connect(m_fileSystemBox, SIGNAL(currentIndexChanged(int)), SLOT(fileSystemChanged(int)));
-    connect(m_ui->aView->selectionModel(), SIGNAL(currentChanged(QModelIndex,QModelIndex)), SLOT(currentChanged(QModelIndex,QModelIndex)));
-    connect(m_ui->aView->selectionModel(), SIGNAL(selectionChanged(QItemSelection,QItemSelection)), SLOT(selectionChanged(QItemSelection,QItemSelection)));
-    connect(m_ui->onTopBox, SIGNAL(stateChanged(int)), SLOT(onTopChanged()));
-    m_ui->aView->viewport()->setAcceptDrops(true);
-    if(respeqtSettings->explorerOnTop()) {
+    void (QComboBox::*fileSystemChanged)(int) = &QComboBox::currentIndexChanged;
+    connect(m_fileSystemBox, fileSystemChanged, this, &DiskEditDialog::fileSystemChanged);
+    connect(m_ui->fileList->selectionModel(), &QItemSelectionModel::selectionChanged, this, &DiskEditDialog::selectionChanged);
+    connect(m_ui->onTopBox, &QCheckBox::stateChanged, this, &DiskEditDialog::stayOnTopChanged);
+    connect(m_ui->actionAddFiles, &QAction::triggered, this, &DiskEditDialog::addFilesTriggered);
+    connect(m_ui->actionDeleteSelectedFiles, &QAction::triggered, this, &DiskEditDialog::deleteSelectedFilesTriggered);
+    connect(m_ui->actionTextConversion, &QAction::triggered, this, &DiskEditDialog::textConversionTriggered);
+    connect(m_ui->actionPrint, &QAction::triggered, this, &DiskEditDialog::printTriggered);
+    connect(m_ui->actionToParent, &QAction::triggered, this, &DiskEditDialog::toParentTriggered);
+    connect(m_ui->actionExtractFiles, &QAction::triggered, this, &DiskEditDialog::extractFilesTriggered);
+    connect(m_ui->fileList, &QTableView::doubleClicked, this, &DiskEditDialog::fileListDoubleClicked);
+
+    m_ui->fileList->viewport()->setAcceptDrops(true);
+    if(respeqtSettings->explorerOnTop())
+    {
             m_ui->onTopBox->setChecked(true);
             setWindowFlags(Qt::WindowStaysOnTopHint);
     }
@@ -538,20 +547,20 @@ void DiskEditDialog::fileSystemChanged(int index)
     }
 
     model->setFileSystem(a);
-    m_ui->aView->resizeColumnToContents(0);
-    m_ui->aView->resizeColumnToContents(1);
-    m_ui->aView->resizeColumnToContents(2);
-    m_ui->aView->resizeColumnToContents(3);
-    m_ui->aView->resizeColumnToContents(4);
-    m_ui->aView->resizeColumnToContents(5);
+    m_ui->fileList->resizeColumnToContents(0);
+    m_ui->fileList->resizeColumnToContents(1);
+    m_ui->fileList->resizeColumnToContents(2);
+    m_ui->fileList->resizeColumnToContents(3);
+    m_ui->fileList->resizeColumnToContents(4);
+    m_ui->fileList->resizeColumnToContents(5);
 
     if (!a) {
-        m_ui->aView->setEnabled(false);
+        m_ui->fileList->setEnabled(false);
         m_ui->actionAddFiles->setEnabled(false);
         m_ui->actionExtractFiles->setEnabled(false);
         m_ui->actionTextConversion->setEnabled(false);
     } else {
-        m_ui->aView->setEnabled(true);
+        m_ui->fileList->setEnabled(true);
         m_ui->actionAddFiles->setEnabled(true);
         m_ui->actionTextConversion->setEnabled(true);
     }
@@ -560,49 +569,44 @@ void DiskEditDialog::fileSystemChanged(int index)
     m_ui->actionToParent->setEnabled(false);
 }
 
-void DiskEditDialog::currentChanged(const QModelIndex &/*current*/, const QModelIndex &/*previous*/)
-{
-
-}
-
 void DiskEditDialog::selectionChanged(const QItemSelection &/*selected*/, const QItemSelection &/*deselected*/)
 {
-    bool enabled = !m_ui->aView->selectionModel()->selectedIndexes().isEmpty();
+    bool enabled = !m_ui->fileList->selectionModel()->selectedIndexes().isEmpty();
     m_ui->actionExtractFiles->setEnabled(enabled);
     m_ui->actionDeleteSelectedFiles->setEnabled(enabled);
 }
 
-void DiskEditDialog::on_aView_doubleClicked(QModelIndex index)
+void DiskEditDialog::fileListDoubleClicked(QModelIndex index)
 {
     if (model->entries.at(index.row()).attributes & AtariDirEntry::Directory) {
         model->setDirectory(index.row());
-        m_ui->aView->resizeColumnToContents(0);
-        m_ui->aView->resizeColumnToContents(1);
-        m_ui->aView->resizeColumnToContents(2);
-        m_ui->aView->resizeColumnToContents(3);
-        m_ui->aView->resizeColumnToContents(4);
-        m_ui->aView->resizeColumnToContents(5);
+        m_ui->fileList->resizeColumnToContents(0);
+        m_ui->fileList->resizeColumnToContents(1);
+        m_ui->fileList->resizeColumnToContents(2);
+        m_ui->fileList->resizeColumnToContents(3);
+        m_ui->fileList->resizeColumnToContents(4);
+        m_ui->fileList->resizeColumnToContents(5);
         setWindowTitle(tr("RespeQt - Exploring %1").arg(model->currentPath()));
         m_ui->actionToParent->setEnabled(true);
     }
 }
 
-void DiskEditDialog::on_actionToParent_triggered()
+void DiskEditDialog::toParentTriggered()
 {
     model->toParent();
-    m_ui->aView->resizeColumnToContents(0);
-    m_ui->aView->resizeColumnToContents(1);
-    m_ui->aView->resizeColumnToContents(2);
-    m_ui->aView->resizeColumnToContents(3);
-    m_ui->aView->resizeColumnToContents(4);
-    m_ui->aView->resizeColumnToContents(5);
+    m_ui->fileList->resizeColumnToContents(0);
+    m_ui->fileList->resizeColumnToContents(1);
+    m_ui->fileList->resizeColumnToContents(2);
+    m_ui->fileList->resizeColumnToContents(3);
+    m_ui->fileList->resizeColumnToContents(4);
+    m_ui->fileList->resizeColumnToContents(5);
     setWindowTitle(tr("RespeQt - Exploring %1").arg(model->currentPath()));
     m_ui->actionToParent->setEnabled(!model->isRoot());
 }
 
-void DiskEditDialog::on_actionExtractFiles_triggered()
+void DiskEditDialog::extractFilesTriggered()
 {
-    QModelIndexList indexes = m_ui->aView->selectionModel()->selectedRows();
+    QModelIndexList indexes = m_ui->fileList->selectionModel()->selectedRows();
     if (indexes.isEmpty()) {
         return;
     }
@@ -624,7 +628,7 @@ void DiskEditDialog::on_actionExtractFiles_triggered()
     model->fileSystem->extractRecursive(selectedEntries, target);
 }
 
-void DiskEditDialog::on_actionTextConversion_triggered()
+void DiskEditDialog::textConversionTriggered()
 {
     if (m_ui->actionTextConversion->isChecked()) {
         m_ui->actionTextConversion->setToolTip(tr("Text conversion is on"));
@@ -637,17 +641,17 @@ void DiskEditDialog::on_actionTextConversion_triggered()
     }
 }
 
-void DiskEditDialog::on_actionDeleteSelectedFiles_triggered()
+void DiskEditDialog::deleteSelectedFilesTriggered()
 {
     if (QMessageBox::question(this, tr("Confirmation"), tr("Are you sure you want to delete selected files?"), QMessageBox::Yes, QMessageBox::No) != QMessageBox::Yes) {
         return;
     }
-    QModelIndexList indexes = m_ui->aView->selectionModel()->selectedRows();
+    QModelIndexList indexes = m_ui->fileList->selectionModel()->selectedRows();
     model->deleteFiles(indexes);
-    m_ui->aView->selectionModel()->clearSelection();
+    m_ui->fileList->selectionModel()->clearSelection();
 }
 
-void DiskEditDialog::on_actionAddFiles_triggered()
+void DiskEditDialog::addFilesTriggered()
 {
     QStringList files = QFileDialog::getOpenFileNames(this, tr("Add files"), respeqtSettings->lastExtractDir());
     if (files.empty()) {
@@ -657,12 +661,12 @@ void DiskEditDialog::on_actionAddFiles_triggered()
 }
 
 // 
-void DiskEditDialog::on_actionPrint_triggered()
+void DiskEditDialog::printTriggered()
 {
 
     QPrinter printer;
 
-    QPrintDialog *dialog = new QPrintDialog(&printer, this);
+    auto dialog = new QPrintDialog(&printer, this);
     if (dialog->exec() != QDialog::Accepted)
     return;
 
@@ -682,7 +686,7 @@ void DiskEditDialog::on_actionPrint_triggered()
 
     dirlist.print(&printer);
 }
-void DiskEditDialog::onTopChanged()
+void DiskEditDialog::stayOnTopChanged()
 {
     if(m_ui->onTopBox->isChecked())
     {

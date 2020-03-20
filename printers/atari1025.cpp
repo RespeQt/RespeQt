@@ -1,11 +1,11 @@
 #include "atari1025.h"
 #include "respeqtsettings.h"
-#include <stdlib.h>
-
+#include <cstdlib>
+#include <utility> 
 namespace Printers
 {
-    Atari1025::Atari1025(SioWorker *worker)
-        : AtariPrinter(worker),
+    Atari1025::Atari1025(SioWorkerPtr worker)
+        : AtariPrinter(std::move(worker)),
           mESC(false),
           mCPI(10),
           mLineChars(80),
@@ -16,18 +16,18 @@ namespace Printers
     {
         if (mOutput)
         {
-            QFont *font = new QFont(respeqtSettings->atariFixedFontFamily(), 12);
+            QFontPtr font = QFontPtr::create(respeqtSettings->atariFixedFontFamily(), 12);
             font->setUnderline(false);
             mOutput->setFont(font);
             mOutput->calculateFixedFontSize(mLineChars);
         }
     }
 
-    bool Atari1025::handleBuffer(QByteArray &buffer, unsigned int len)
+    bool Atari1025::handleBuffer(const QByteArray &buffer, const unsigned int len)
     {
         for(unsigned int i = 0; i < len; i++)
         {
-            unsigned char b = static_cast<unsigned char>(
+            auto b = static_cast<unsigned char>(
                         buffer.at(static_cast<int>(i)));
             switch(b) {
                 case 23: // CTRL+W could be ESC code
@@ -53,7 +53,7 @@ namespace Printers
                 case 155: // EOL
                 {
                     mESC = false;
-                    QFont *font = mOutput->font();
+                    QFontPtr font = mOutput->font();
                     font->setUnderline(false);
                     mOutput->setFont(font);
                     mOutput->newLine();
