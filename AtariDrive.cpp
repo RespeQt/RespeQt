@@ -3,8 +3,8 @@
 // (c) 2016 Eric BACHER
 //
 
-#include <stdio.h>
-#include <stdarg.h>
+#include <cstdio>
+#include <cstdarg>
 #include "Emulator.h"
 #include "AtariDrive.hpp"
 

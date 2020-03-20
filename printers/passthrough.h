@@ -8,12 +8,12 @@ namespace Printers
     class Passthrough : public BasePrinter
     {
     public:
-        Passthrough(SioWorker *sio);
+        Passthrough(SioWorkerPtr sio);
         virtual ~Passthrough();
 
-        virtual bool handleBuffer(QByteArray &buffer, unsigned int len);
-        virtual void setupFont();
-        virtual void setupOutput();
+        virtual bool handleBuffer(const QByteArray &buffer, const unsigned int len) override;
+        virtual void setupFont() override;
+        virtual void setupOutput() override;
 
         static QString typeName()
         {

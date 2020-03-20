@@ -1,39 +1,31 @@
 #include "atari1020.h"
 #include "logdisplaydialog.h"
-#include "math.h"
 #include "respeqtsettings.h"
 
+#include <cmath>
 #include <stdexcept>
 #include <QFontDatabase>
 #include <QPoint>
+#include <QException>
+#include <utility> 
 
 namespace Printers
 {
-    const unsigned char Atari1020::BLACK = 0;
-    const unsigned char Atari1020::BLUE = 1;
-    const unsigned char Atari1020::RED = 3;
-    const unsigned char Atari1020::GREEN = 2;
-    std::map<unsigned char, QColor> Atari1020::sColorMapping = {
-        { Atari1020::BLACK, QColor("black") },
-        { Atari1020::BLUE, QColor("blue") },
-        { Atari1020::RED, QColor("red") },
-        { Atari1020::GREEN, QColor("green") }
-    };
-
-    Atari1020::Atari1020(SioWorker *sio)
-        : AtariPrinter(sio),
-          mGraphicsMode(false),
+    Atari1020::Atari1020(SioWorkerPtr sio)
+        : AtariPrinter(std::move(sio)),
+          mGraphicsMode(true),
           mEsc(false),
           mPrintText(false),
-          mTextOrientation(0)
+          mTextOrientation(0),
+          mFontSize(10)
     {}
 
     void Atari1020::setupOutput()
     {
         AtariPrinter::setupOutput();
-        if (mOutput)
+        if (mOutput && mOutput->painter())
         {
-            mOutput->setWindow(QRect(0, -999, 480, 1000));
+            mOutput->painter()->setWindow(QRect(0, -999, 480, 1000));
         }
     }
 
@@ -42,25 +34,28 @@ namespace Printers
         if (mOutput)
         {
             QFontDatabase fonts;
-            if (!fonts.hasFamily("Lucida Console"))
+            if (!fonts.hasFamily("Atari  Console"))
             {
                 QFontDatabase::addApplicationFont(":/fonts/1020");
             }
             // TODO calculate the correct font size.
             mFontSize = 10;
-            QFont *font = new QFont("Lucida Console", mFontSize);
+            QFontPtr font = QFontPtr::create("Atari  Console", mFontSize);
             font->setUnderline(false);
             mOutput->setFont(font);
             mOutput->calculateFixedFontSize(80);
-            mOutput->setPen(sColorMapping.at(0));
+            if (mOutput->painter())
+            {
+                mOutput->painter()->setPen(QColor("black"));
+            }
         }
     }
 
-    bool Atari1020::handleBuffer(QByteArray &buffer, unsigned int len)
+    bool Atari1020::handleBuffer(const QByteArray &buffer, const unsigned int len)
     {
-        len = std::min(static_cast<unsigned int>(buffer.count()), len);
-        for(unsigned int i = 0; i < len; i++) {
-            unsigned char b = static_cast<unsigned char>(buffer.at(static_cast<int>(i)));
+        auto lenmin = std::min(static_cast<unsigned int>(buffer.count()), len);
+        for(unsigned int i = 0; i < lenmin; i++) {
+            auto b = static_cast<unsigned char>(buffer.at(static_cast<int>(i)));
 
             if (b == 155) // EOL
             {
@@ -75,7 +70,7 @@ namespace Printers
                 } else if (mPrintText)
                     handlePrintableCodes(b);
                 else
-                    handleGraphicsMode(buffer, len, i);
+                    handleGraphicsMode(buffer, lenmin, i);
             } else {
                 // Textmode
                 if (b == 27) // ESC
@@ -89,6 +84,10 @@ namespace Printers
                     {
                         mEsc = false;
                         handlePrintableCodes(27);
+                    } else if (b == 7) // CTRL+G: Enter Graphics Mode
+                    {
+                        mGraphicsMode = true;
+                        mEsc = true;
                     } else if (b == 16) // CTRL+P: 20 characters
                     {
                         mOutput->calculateFixedFontSize(20);
@@ -132,9 +131,9 @@ namespace Printers
         }
     }
 
-    bool Atari1020::handleGraphicsMode(QByteArray &buffer, unsigned int len, unsigned int &i)
+    bool Atari1020::handleGraphicsMode(const QByteArray &buffer, const unsigned int len, unsigned int &i)
     {
-        unsigned char b = static_cast<unsigned char>(buffer.at(static_cast<int>(i)));
+        auto b = static_cast<unsigned char>(buffer.at(static_cast<int>(i)));
 
         switch (b)
         {
@@ -149,7 +148,7 @@ namespace Printers
                     int scale = fetchIntFromBuffer(buffer, len, i, end);
                     if (scale >= 0 && scale <= 63)
                     {
-                        QFont *font = mOutput->font();
+                        QFontPtr font = mOutput->font();
                         font->setPixelSize(font->pixelSize() * scale);
                         i = end;
                     } else
@@ -162,10 +161,28 @@ namespace Printers
 
             case 'C': // Set Color
             {
-                unsigned char next = static_cast<unsigned char>(buffer.at(static_cast<int>(i + 1)));
+                auto next = static_cast<unsigned char>(buffer.at(static_cast<int>(i + 1)));
                 if (next >= '0' && next <= '3')
                 {
-                    mOutput->setPen(sColorMapping[next - '0']);
+                    QColor temp("black");
+                    switch(next)
+                    {
+                        default:
+                        case '0':
+                            temp = QColor("black");
+                            break;
+                        case '1':
+                            temp = QColor("blue");
+                            break;
+                        case '2':
+                            temp = QColor("green");
+                            break;
+                        case '3':
+                            temp = QColor("red");
+                            break;
+                    }
+
+                    mOutput->painter()->setPen(temp);
                     i++;
                 } else
                     handlePrintableCodes(b);
@@ -178,7 +195,7 @@ namespace Printers
                     int line = fetchIntFromBuffer(buffer, len, i, end);
                     if (line >= 0 && line <= 15)
                     {
-                        QPen pen = mOutput->pen();
+                        auto pen = mOutput->painter()->pen();
                         if (line == 0) {
                             pen.setStyle(Qt::SolidLine);
                         } else {
@@ -187,7 +204,7 @@ namespace Printers
                             pattern << 1 << line;
                             pen.setDashPattern(pattern);
                         }
-                        mOutput->setPen(pen);
+                        mOutput->painter()->setPen(pen);
                         i = end;
                     } else {
                         handlePrintableCodes(b);
@@ -199,7 +216,7 @@ namespace Printers
             break;
 
             case 'I': // Init plotter
-                mOutput->translate(mPenPoint);
+                mOutput->painter()->translate(mPenPoint);
             break;
 
             case 'D': // draw to point
@@ -211,16 +228,22 @@ namespace Printers
                 do {
                     try {
 
-                        unsigned int endx, endy;
+                        unsigned int endx;
+                        unsigned int endy;
                         int x = fetchIntFromBuffer(buffer, len, i, endx);
-                        if (buffer.at(static_cast<int>(endx) + 1) != ',')
+                        if (buffer.at(static_cast<int>(endx)) != ',')
+                        {
                             throw new std::invalid_argument("expected ,");
+                        }
                         if (x < 0 || x > 480)
+                        {
                             throw new std::invalid_argument("x coordinate out of range");
-
+                        }
                         int y = fetchIntFromBuffer(buffer, len, endx + 1, endy);
                         if (y < -999 && y > 999)
+                        {
                             throw new std::invalid_argument("y coordinate out of range");
+                        }
 
                         i = endy;
 
@@ -228,13 +251,13 @@ namespace Printers
 
                         switch (command) {
                             case 'D':
-                                mOutput->drawLine(mPenPoint, point);
+                                mOutput->painter()->drawLine(mPenPoint, point);
                                 mPenPoint = point;
                             break;
 
                             case 'J':
                                 point += mPenPoint;
-                                mOutput->drawLine(mPenPoint, point);
+                                mOutput->painter()->drawLine(mPenPoint, point);
                                 mPenPoint = point;
                             break;
 
@@ -247,7 +270,12 @@ namespace Printers
                             break;
                         }
 
-                        b = static_cast<unsigned char>(buffer.at(static_cast<int>(i) + 1));
+                        b = static_cast<unsigned char>(buffer.at(static_cast<int>(i)));
+                    } catch(std::exception& e)
+                    {
+                        qDebug() << "!n" << "std::exception: " << QString(e.what());
+                        handlePrintableCodes(b);
+                        break;
                     } catch(...)
                     {
                         qDebug() << "!n" << tr("[%1] parsing error for draw command").arg(deviceName());
@@ -264,27 +292,38 @@ namespace Printers
 
             case 'X': // draw axes 0 = Y-axis, otherwise X-axis
                 try {
-                    unsigned int i_ = i, end;
+                    unsigned int i_ = i;
+                    unsigned int end;
                     int mode, size, count;
 
                     mode = fetchIntFromBuffer(buffer, len, i_, end);
-                    if (len < end + 1)
+                    if (len < end)
+                    {
                         throw new std::invalid_argument("expected comma, buffer too short");
-                    i_ = end + 1; // separator check
-                    if (buffer.at(static_cast<int>(i_)))
+                    }
+                    i_ = end; // separator check
+                    if (buffer.at(static_cast<int>(i_)) != ',')
+                    {
                         throw new std::invalid_argument(QString("expected comma, got %1").arg(b).toStdString());
+                    }
                     i_++;
 
                     size = fetchIntFromBuffer(buffer, len, i_, end);
-                    i_ = end + 1; // separator check
-                    if (buffer.at(static_cast<int>(i_)))
+                    i_ = end; // separator check
+                    if (len < end)
+                    {
+                        throw new std::invalid_argument("expected comma, buffer too short");
+                    }
+                    if (buffer.at(static_cast<int>(i_)) != ',')
+                    {
                         throw new std::invalid_argument(QString("expected comma, got %1").arg(b).toStdString());
+                    }
                     i_++;
 
                     count = fetchIntFromBuffer(buffer, len, i_, end);
-                    i_ = end;
-                    drawAxis(mode == 0, size, count);
-                    i = i_;
+                    i = end;
+
+                    drawAxis(mode != 0, size, count);
                 } catch(...)
                 {
                     qDebug() << "!n" << tr("[%1] parsing error for axis draw").arg(deviceName());
@@ -323,24 +362,24 @@ namespace Printers
         } else {
             end.setY(end.y() + size * count);
         }
-        mOutput->drawLine(start, end);
+        mOutput->painter()->drawLine(start, end);
 
         for (int c = 1; c <= count; c++)
         {
             if (xAxis)
             {
                 qreal xc = mPenPoint.x() + c * size;
-                mOutput->drawLine(QPointF(xc, mPenPoint.y() - 2), QPointF(xc, mPenPoint.y() + 2));
+                mOutput->painter()->drawLine(QPointF(xc, mPenPoint.y() - 2), QPointF(xc, mPenPoint.y() + 2));
             } else {
                 qreal yc = mPenPoint.y() + c * size;
-                mOutput->drawLine(QPointF(mPenPoint.x() - 2, yc), QPointF(mPenPoint.x() + 2, yc));
+                mOutput->painter()->drawLine(QPointF(mPenPoint.x() - 2, yc), QPointF(mPenPoint.x() + 2, yc));
             }
         }
 
         return true;
     }
 
-    int Atari1020::fetchIntFromBuffer(QByteArray &buffer, unsigned int /*len*/, unsigned int i, unsigned int &end)
+    int Atari1020::fetchIntFromBuffer(const QByteArray &buffer, const unsigned int /*len*/, const unsigned int i, unsigned int &end)
     {
         int result = 0;
         QString number("");
@@ -366,8 +405,8 @@ namespace Printers
         result = number.toInt(&ok);
         if (ok)
             return result;
-        else
-            throw new std::invalid_argument("couldn't convert to int");
+
+        throw new std::invalid_argument("couldn't convert to int");
     }
 
     bool Atari1020::handlePrintableCodes(const unsigned char b)

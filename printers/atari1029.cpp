@@ -1,11 +1,11 @@
 #include "atari1029.h"
 #include "respeqtsettings.h"
-#include <stdlib.h>
-
+#include <cstdlib>
+#include <utility> 
 namespace Printers
 {
-    Atari1029::Atari1029(SioWorker *worker)
-        : AtariPrinter(worker),
+    Atari1029::Atari1029(SioWorkerPtr worker)
+        : AtariPrinter(std::move(worker)),
           mESC(false),
           mElongatedMode(false)
     {}
@@ -14,19 +14,19 @@ namespace Printers
     {
         if (mOutput)
         {
-            QFont *font = new QFont(respeqtSettings->atariFixedFontFamily(), 12);
+            QFontPtr font = QFontPtr::create(respeqtSettings->atariFixedFontFamily(), 12);
             font->setUnderline(false);
             mOutput->setFont(font);
             mOutput->calculateFixedFontSize(80);
         }
     }
 
-    bool Atari1029::handleBuffer(QByteArray &buffer, unsigned int len)
+    bool Atari1029::handleBuffer(const QByteArray &buffer, const unsigned int len)
     {
         for(unsigned int i = 0; i < len; i++)
         {
-            unsigned char b = static_cast<unsigned char>(buffer.at(static_cast<int>(i)));
-            if (mGraphicsMode == 0)
+            auto b = static_cast<unsigned char>(buffer.at(static_cast<int>(i)));
+            if (mGraphicsMode == GraphicsMode::NOT_GRAPHICS)
             {
                 switch(b) {
                     case 13: // CTRL+N could be ESC code
@@ -53,7 +53,7 @@ namespace Printers
                     {
                         mESC = false;
                         setElongatedMode(false);
-                        QFont *font = mOutput->font();
+                        QFontPtr font = mOutput->font();
                         font->setUnderline(false);
                         mOutput->setFont(font);
                         mOutput->newLine();
@@ -95,7 +95,7 @@ namespace Printers
         switch(b) {
             case 25: // CTRL+Y starts underline mode
             {
-                QFont *font = mOutput->font();
+                QFontPtr font = mOutput->font();
                 font->setUnderline(true);
                 mOutput->setFont(font);
                 mESC = false;
@@ -104,7 +104,7 @@ namespace Printers
             }
             case 26: // CTRL+Z ends underline mode
             {
-                QFont *font = mOutput->font();
+                QFontPtr font = mOutput->font();
                 font->setUnderline(false);
                 mOutput->setFont(font);
                 mESC = false;
@@ -140,7 +140,7 @@ namespace Printers
                 return true;
 
             case 65: // A starts graphics mode
-                mGraphicsMode = 2;
+                mGraphicsMode = GraphicsMode::FETCH_MSB;
                 mESC = false;
                 return true;
         }
@@ -169,19 +169,20 @@ namespace Printers
     {
         switch(mGraphicsMode)
         {
-            case 2:
+            case GraphicsMode::FETCH_MSB:
                 // b is the MSB of the count of following columns
                 mGraphicsColumns = static_cast<uint16_t>(b << 8);
-                mGraphicsMode++;
-                break;
+                mGraphicsMode = GraphicsMode::FETCH_LSB;
+            break;
 
-            case 3:
+            case GraphicsMode::FETCH_LSB:
                 // b is the LSB of the count of following columns
                 mGraphicsColumns += b;
-                mGraphicsMode = 1;
-                break;
+                mGraphicsMode = GraphicsMode::PLOT_DOTS;
+            break;
 
-            case 1:
+            case GraphicsMode::PLOT_DOTS:
+            {
                 // Now we fetch the graphics data, until mGraphicsColumns is 0
                 // Paint the dots;
                 QPoint point(mOutput->x(), mOutput->y() + 6);
@@ -194,7 +195,13 @@ namespace Printers
                 mGraphicsColumns --;
                 mOutput->setX(mOutput->x() + 1); // Move to next column;
                 if (mGraphicsColumns == 0)
-                    mGraphicsMode = 0;
+                    mGraphicsMode = GraphicsMode::NOT_GRAPHICS;
+            }
+            break;
+
+            case GraphicsMode::NOT_GRAPHICS: //Should not happen.
+                assert(0);
+            break;
         }
 
         return true;

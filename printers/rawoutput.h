@@ -20,11 +20,11 @@ namespace Printers
             RawOutput();
             virtual ~RawOutput();
 
-            virtual bool beginOutput();
-            virtual bool endOutput();
-            virtual void updateBoundingBox();
-            virtual void newPage(bool linefeed = false);
-            virtual bool setupOutput();
+            virtual bool beginOutput() override;
+            virtual bool endOutput() override;
+            virtual void updateBoundingBox() override;
+            virtual void newPage(bool linefeed = false) override;
+            virtual bool setupOutput() override;
             bool sendBuffer(const QByteArray &b, unsigned int len);
 
             static QString typeName()

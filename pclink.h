@@ -10,36 +10,15 @@
 #ifndef PCLINK_H
 #define PCLINK_H
 
-#include "sioworker.h"
+#include "sdxprotocol.h"
 
-# ifndef uchar
-#  define uchar unsigned char
-# endif
-
-# ifndef ushort
-#  define ushort unsigned short
-# endif
-
-# ifndef ulong
-#  define ulong unsigned long
-# endif
-
-typedef struct
-{
-    uchar status;
-    uchar map_l, map_h;
-    uchar len_l, len_m, len_h;
-    char fname[11];
-    uchar stamp[6];
-} DIRENTRY;
-
-class PCLINK: public SioDevice
+class PCLINK: public SDXProtocol
 {
     Q_OBJECT
 
 public:
-    PCLINK(SioWorker *worker);
-    ~PCLINK();
+    PCLINK(SioWorkerPtr worker);
+    ~PCLINK() = default;
     void handleCommand(quint8 command, quint16 aux);
     // links are numbered from 1 to 15
     bool hasLink(int no);

@@ -488,7 +488,7 @@ bool SimpleDiskImage::writeScpSectorExtended(int /*bitNumber*/, quint8 /*dataTyp
 
 ScpTrackRevolution* ScpTrackInfo::addRevolution(quint32 duration, quint32 bitcells, quint32 offset)
 {
-	ScpTrackRevolution *track = new ScpTrackRevolution(duration, bitcells, offset);
+    auto track = new ScpTrackRevolution(duration, bitcells, offset);
 	m_trackRevolutions.append(track);
 	return track;
 }

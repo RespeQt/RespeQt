@@ -26,6 +26,7 @@ DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x050000
 SOURCES += main.cpp \
     mainwindow.cpp \
     rcl.cpp \
+    sdxprotocol.cpp \
     sioworker.cpp \
     optionsdialog.cpp \
     aboutdialog.cpp \
@@ -101,6 +102,7 @@ HEADERS += mainwindow.h \
     printers/outputs.h \
     printers/printers.h \
     rcl.h \
+    sdxprotocol.h \
     serialport.h \
     sioworker.h \
     optionsdialog.h \

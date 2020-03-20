@@ -9,10 +9,10 @@
  */
 
 #include <QtDebug>
-#include <stdio.h>
+#include <cstdio>
 #include <dirent.h>
 #include <unistd.h>
-#include <errno.h>
+#include <cerrno>
 #include <sys/stat.h>
 #include <sys/time.h>
 #include <utime.h>
@@ -163,16 +163,10 @@ char RESERVED_NAME_PREFIX_STR[] = {RESERVED_NAME_PREFIX_CHAR,0};
 
 /*************************************************************************/
 
-PCLINK::PCLINK(SioWorker *worker)
-    :SioDevice(worker)
+PCLINK::PCLINK(SioWorkerPtr worker)
+    :SDXProtocol(worker)
 {
     do_pclink_init(1);
-}
-
-/*************************************************************************/
-
-PCLINK::~PCLINK()
-{
 }
 
 /*************************************************************************/
@@ -547,7 +541,7 @@ int PCLINK::match_dos_names(char *name, char *mask, uchar fatr1, struct stat *sb
     char *dot = strchr(fname, '.');
     long valid_fn, valid_xx;
 
-    if ((dot == NULL) && (strlen(fname) > 8))
+    if ((dot == nullptr) && (strlen(fname) > 8))
         return 1;
     if (dot)
     {
@@ -568,7 +562,7 @@ int PCLINK::match_dos_names(char *name, char *mask, uchar fatr1, struct stat *sb
     }
 
     valid_fn = validate_fn((uchar *)fname, 8);
-    if (dot != NULL)
+    if (dot != nullptr)
         valid_xx = validate_fn((uchar *)(dot + 1), 3);
     else
         valid_xx = 1;
@@ -637,7 +631,7 @@ int PCLINK::check_dos_name(char *newpath, struct dirent *dp, struct stat *sb)
 
 void PCLINK::fps_close(int i)
 {
-    if (iodesc[i].fps.file != NULL)
+    if (iodesc[i].fps.file != nullptr)
     {
         if (iodesc[i].fpmode & 0x10)
             closedir(iodesc[i].fps.dir);
@@ -645,13 +639,13 @@ void PCLINK::fps_close(int i)
             fclose(iodesc[i].fps.file);
     }
 
-    if (iodesc[i].dir_cache != NULL)
+    if (iodesc[i].dir_cache != nullptr)
     {
         free(iodesc[i].dir_cache);
-        iodesc[i].dir_cache = NULL;
+        iodesc[i].dir_cache = nullptr;
     }
 
-    iodesc[i].fps.file = NULL;
+    iodesc[i].fps.file = nullptr;
 
     iodesc[i].devno = 0;
     iodesc[i].cunit = 0;
@@ -685,7 +679,7 @@ ulong PCLINK::get_file_len(uchar handle)
         rewinddir(iodesc[handle].fps.dir);
         filelen = sizeof(DIRENTRY);
 
-        while ((dp = readdir(iodesc[handle].fps.dir)) != NULL)
+        while ((dp = readdir(iodesc[handle].fps.dir)) != nullptr)
         {
             if (check_dos_name(iodesc[handle].pathname, dp, &sb))
                 continue;
@@ -714,11 +708,11 @@ DIRENTRY * PCLINK::cache_dir(uchar handle)
     struct dirent *dp;
     struct stat sb;
 
-    if (iodesc[handle].dir_cache != NULL)
+    if (iodesc[handle].dir_cache != nullptr)
     {
-        if(D) qDebug() << "!n" << tr("Internal error: dir_cache should be NULL!");
+        if(D) qDebug() << "!n" << tr("Internal error: dir_cache should be nullptr!");
         free(iodesc[handle].dir_cache);
-        iodesc[handle].dir_cache = NULL;
+        iodesc[handle].dir_cache = nullptr;
     }
 
     dir = dbuf = (DIRENTRY*)malloc(dirlen + sizeof(DIRENTRY));
@@ -739,7 +733,7 @@ DIRENTRY * PCLINK::cache_dir(uchar handle)
 
     bs = strrchr(cwd, HOST_SEPARATOR_CHAR);
 
-    if (bs == NULL)
+    if (bs == nullptr)
         memcpy(dir->fname, "MAIN", 4);
     else
     {
@@ -772,7 +766,7 @@ DIRENTRY * PCLINK::cache_dir(uchar handle)
 
     node = 1;
 
-    while ((dp = readdir(iodesc[handle].fps.dir)) != NULL)
+    while ((dp = readdir(iodesc[handle].fps.dir)) != nullptr)
     {
         ushort map;
 
@@ -820,7 +814,7 @@ DIRENTRY * PCLINK::cache_dir(uchar handle)
 
 ulong PCLINK::dir_read(uchar *mem, ulong blk_size, uchar handle, int *eof_sig)
 {
-    uchar *db = (uchar *)iodesc[handle].dir_cache;
+    auto db = (uchar *)iodesc[handle].dir_cache;
     ulong dirlen = iodesc[handle].fpstat.st_size, newblk;
 
     eof_sig[0] = 0;
@@ -853,7 +847,7 @@ void PCLINK::do_pclink_init(int force)
     for (handle = 0; handle < 16; handle++)
     {
         if (force)
-            iodesc[handle].fps.file = NULL;
+            iodesc[handle].fps.file = nullptr;
         fps_close(handle);
         memset(&device[handle].parbuf, 0, sizeof(PARBUF));
     }
@@ -886,7 +880,7 @@ int PCLINK::validate_user_path(char *defwd, char *newpath)
 
 	d = strstr(newwd, defwd);
 
-    if (d == NULL)
+    if (d == nullptr)
         return 0;
     if (d != newwd)
         return 0;
@@ -1115,9 +1109,6 @@ void PCLINK::do_pclink(uchar devno, uchar ccom, uchar caux1, uchar caux2)
         memset(&pbuf, 0, sizeof(PARBUF));
 
         QByteArray data = sio->port()->readDataFrame(parsize);
-#ifndef QT_NO_DEBUG
-        sio->writeSnapshotDataFrame(data);
-#endif
 
         device[cunit].status.stat &= ~0x02;
 
@@ -1170,7 +1161,7 @@ void PCLINK::do_pclink(uchar devno, uchar ccom, uchar caux1, uchar caux2)
 
         if (ccom == 'P')
         {
-            if ((handle > 15) || (iodesc[handle].fps.file == NULL))
+            if ((handle > 15) || (iodesc[handle].fps.file == nullptr))
             {
                 if(D) qDebug() << "!n" << tr("bad handle 1 %1").arg(handle);
                 device[cunit].status.err = 134;	/* bad file handle */
@@ -1305,7 +1296,7 @@ void PCLINK::do_pclink(uchar devno, uchar ccom, uchar caux1, uchar caux2)
 
         if (ccom == 'P')
         {
-            if ((handle > 15) || (iodesc[handle].fps.file == NULL))
+            if ((handle > 15) || (iodesc[handle].fps.file == nullptr))
             {
                 if(D) qDebug() << "!n" << tr("bad handle 2 %1").arg(handle);
                 device[cunit].status.err = 134;	/* bad file handle */
@@ -1350,9 +1341,6 @@ void PCLINK::do_pclink(uchar devno, uchar ccom, uchar caux1, uchar caux2)
         mem = (uchar*)malloc(blk_size);
 
         QByteArray data = sio->port()->readDataFrame(blk_size);
-#ifndef QT_NO_DEBUG
-        sio->writeSnapshotDataFrame(data);
-#endif
 
         sio->port()->writeDataAck(); 	/* ack the block of data */
 
@@ -1405,7 +1393,7 @@ void PCLINK::do_pclink(uchar devno, uchar ccom, uchar caux1, uchar caux2)
     {
         ulong newpos = faux;
 
-        if ((handle > 15) || (iodesc[handle].fps.file == NULL))
+        if ((handle > 15) || (iodesc[handle].fps.file == nullptr))
         {
             if(D) qDebug() << "!n" << tr("bad handle 3 %1").arg(handle);
             device[cunit].status.err = 134;	/* bad file handle */
@@ -1444,7 +1432,7 @@ void PCLINK::do_pclink(uchar devno, uchar ccom, uchar caux1, uchar caux2)
 
         if (ccom == 'P')
         {
-            if ((handle > 15) || (iodesc[handle].fps.file == NULL))
+            if ((handle > 15) || (iodesc[handle].fps.file == nullptr))
             {
                 if(D) qDebug() << "!n" << tr("bad handle 4 %1").arg(handle);
                 device[cunit].status.err = 134;	/* bad file handle */
@@ -1498,7 +1486,7 @@ void PCLINK::do_pclink(uchar devno, uchar ccom, uchar caux1, uchar caux2)
 
         memset(pcl_dbf.dirbuf, 0, sizeof(pcl_dbf.dirbuf));
 
-        if ((handle > 15) || (iodesc[handle].fps.file == NULL))
+        if ((handle > 15) || (iodesc[handle].fps.file == nullptr))
         {
             if(D) qDebug() << "!n" << tr("bad handle 5 %1").arg(handle);
             device[cunit].status.err = 134;	/* bad file handle */
@@ -1578,7 +1566,7 @@ void PCLINK::do_pclink(uchar devno, uchar ccom, uchar caux1, uchar caux2)
             goto complete;
         }
 
-        if ((handle > 15) || (iodesc[handle].fps.file == NULL))
+        if ((handle > 15) || (iodesc[handle].fps.file == nullptr))
         {
             if(D) qDebug() << "!n" << tr("bad handle 6 %1").arg(handle);
             device[cunit].status.err = 134;	/* bad file handle */
@@ -1680,7 +1668,7 @@ void PCLINK::do_pclink(uchar devno, uchar ccom, uchar caux1, uchar caux2)
 
             for (i = 0; i < 16; i++)
             {
-                if (iodesc[i].fps.file == NULL)
+                if (iodesc[i].fps.file == nullptr)
                     break;
             }
             if (i > 15)
@@ -1707,7 +1695,7 @@ void PCLINK::do_pclink(uchar devno, uchar ccom, uchar caux1, uchar caux2)
             else
             {
                 if(D) qDebug() << "!n" << tr(" ! fmode & 0x10");
-                while ((dp = readdir(dh)) != NULL)
+                while ((dp = readdir(dh)) != nullptr)
                 {
                     if (check_dos_name(newpath, dp, &sb))
                         continue;
@@ -1748,7 +1736,7 @@ void PCLINK::do_pclink(uchar devno, uchar ccom, uchar caux1, uchar caux2)
                         if(D) qDebug() << "!n" << tr("FOPEN: file not found");
                         device[cunit].status.err = 170;
                         closedir(dh);
-                        dp = NULL;
+                        dp = nullptr;
                         goto complete_fopen;
                     }
                     else
@@ -1824,10 +1812,10 @@ void PCLINK::do_pclink(uchar devno, uchar ccom, uchar caux1, uchar caux2)
                     iodesc[i].fps.file = fopen(newpath, "rb+");
 
                 closedir(dh);
-                dp = NULL;
+                dp = nullptr;
             }
 
-            if (iodesc[i].fps.file == NULL)
+            if (iodesc[i].fps.file == nullptr)
             {
                 if(D) qDebug() << "!n" << tr("FOPEN: cannot open '%1', %2 (%3)").arg(newpath).arg(strerror(errno)).arg(errno);
                 if (device[cunit].parbuf.fmode & 0x04)
@@ -1866,7 +1854,7 @@ void PCLINK::do_pclink(uchar devno, uchar ccom, uchar caux1, uchar caux2)
 
             memset(pcl_dbf.dirbuf, 0, sizeof(pcl_dbf.dirbuf));
 
-            if ((handle > 15) || (iodesc[handle].fps.file == NULL))
+            if ((handle > 15) || (iodesc[handle].fps.file == nullptr))
             {
                 if(D) qDebug() << "!n" << tr("FOPEN: bad handle 7 %1").arg(handle);
                 device[cunit].status.err = 134;	/* bad file handle */
@@ -1970,7 +1958,7 @@ complete_fopen:
 
         renamedir = opendir(newpath);
 
-        if (renamedir == NULL)
+        if (renamedir == nullptr)
         {
             if(D) qDebug() << "!n" << tr("cannot open dir '%1'").arg(newpath);
             device[cunit].status.err = 255;
@@ -1982,7 +1970,7 @@ complete_fopen:
 
         device[cunit].status.err = 1;
 
-        while ((dp = readdir(renamedir)) != NULL)
+        while ((dp = readdir(renamedir)) != nullptr)
         {
             char raw_name[12];
 
@@ -2081,7 +2069,7 @@ complete_fopen:
 
         deldir = opendir(newpath);
 
-        if (deldir == NULL)
+        if (deldir == nullptr)
         {
             if(D) qDebug() << "!n" << tr("cannot open dir '%1'").arg(newpath);
             device[cunit].status.err = 255;
@@ -2090,7 +2078,7 @@ complete_fopen:
 
         device[cunit].status.err = 1;
 
-        while ((dp = readdir(deldir)) != NULL)
+        while ((dp = readdir(deldir)) != nullptr)
         {
             char raw_name[12];
 
@@ -2168,7 +2156,7 @@ complete_fopen:
 
         chmdir = opendir(newpath);
 
-        if (chmdir == NULL)
+        if (chmdir == nullptr)
         {
             if(D) qDebug() << "!n" << tr("CHMOD: cannot open dir '%1'").arg(newpath);
             device[cunit].status.err = 255;
@@ -2178,7 +2166,7 @@ complete_fopen:
 
         device[cunit].status.err = 1;
 
-        while ((dp = readdir(chmdir)) != NULL)
+        while ((dp = readdir(chmdir)) != nullptr)
         {
             char raw_name[12];
             
@@ -2657,7 +2645,7 @@ bool PCLINK::is_fname_reserved(const char* fname, int length) const
     if(length == -1)
     {
         const char* dot_ptr = strchr(fname,'.');
-        length = (dot_ptr==NULL)?strlen(fname):(dot_ptr-fname);
+        length = (dot_ptr==nullptr)?strlen(fname):(dot_ptr-fname);
     }
     
     while(const char *s = *p++)
@@ -2683,7 +2671,7 @@ bool PCLINK::is_fname_encoded(const char* fname) const
     const char *const *p = invalid_file_names;
     
     const char* dot_ptr = strchr(fname,'.');
-    int length = (dot_ptr==NULL)?strlen(fname):(dot_ptr-fname);
+    int length = (dot_ptr==nullptr)?strlen(fname):(dot_ptr-fname);
     
     while(const char *s = *p++)
     {

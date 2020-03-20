@@ -29,7 +29,7 @@
   <widget class="QWidget" name="centralwidget">
    <layout class="QGridLayout" name="gridLayout">
     <item row="0" column="0">
-     <widget class="QTableView" name="aView">
+     <widget class="QTableView" name="fileList">
       <property name="contextMenuPolicy">
        <enum>Qt::ActionsContextMenu</enum>
       </property>
@@ -82,7 +82,7 @@
        <bool>false</bool>
       </attribute>
       <attribute name="verticalHeaderDefaultSectionSize">
-       <number>17</number>
+       <number>20</number>
       </attribute>
      </widget>
     </item>
@@ -101,7 +101,7 @@
      <x>0</x>
      <y>0</y>
      <width>504</width>
-     <height>21</height>
+     <height>22</height>
     </rect>
    </property>
   </widget>

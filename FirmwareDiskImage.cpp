@@ -10,7 +10,7 @@
 
 extern quint8 HAPPY_SIGNATURE[9];
 
-FirmwareDiskImage::FirmwareDiskImage(SioWorker *worker, eHARDWARE eHardware, QString &hardwareName, Rom *rom, int iRpm, bool powerOnWithDiskInserted)
+FirmwareDiskImage::FirmwareDiskImage(SioWorkerPtr worker, eHARDWARE eHardware, QString &hardwareName, Rom *rom, int iRpm, bool powerOnWithDiskInserted)
     : SimpleDiskImage(worker)
 {
     m_hardwareName = hardwareName;
@@ -48,7 +48,7 @@ FirmwareDiskImage::FirmwareDiskImage(SioWorker *worker, eHARDWARE eHardware, QSt
     }
     m_initializing = true;
 	m_traceOn = false;
-	m_traceFile = NULL;
+    m_traceFile = nullptr;
 }
 
 FirmwareDiskImage::~FirmwareDiskImage()
@@ -265,7 +265,7 @@ bool FirmwareDiskImage::setTrace(bool on)
 			if (! m_traceFile->open(QFile::Append | QFile::Text)) {
                 qWarning() << "!w" << tr("[%1] Can not write to file %2").arg(deviceName()).arg(m_traceFilename);
                 delete m_traceFile;
-				m_traceFile = NULL;
+                m_traceFile = nullptr;
                 m_traceOn = false;
 			}
 			else {
@@ -273,11 +273,11 @@ bool FirmwareDiskImage::setTrace(bool on)
                 *m_traceStream << "\n";
 			}
 		}
-		else if (m_traceFile != NULL) {
+        else if (m_traceFile != nullptr) {
 			m_traceFile->close();
 			delete m_traceFile;
-			m_traceFile = NULL;
-			m_traceStream = NULL;
+            m_traceFile = nullptr;
+            m_traceStream = nullptr;
 		}
 		m_atariDrive->SetTrace(on);
 	}
@@ -570,7 +570,7 @@ QString FirmwareDiskImage::commandDescription(quint8 command, quint16 aux)
 
 void FirmwareDiskImage::dumpFDCCommand(const char *commandName, unsigned int command, unsigned int track, unsigned int sector, unsigned int data, int currentRotation, int maxRotation)
 {
-    if ((m_displayFdcCommands) || ((m_displayCpuInstructions) && (m_traceOn) && (m_traceStream != NULL))) {
+    if ((m_displayFdcCommands) || ((m_displayCpuInstructions) && (m_traceOn) && (m_traceStream != nullptr))) {
 		QString str = tr("[%1] [Rotation=%2/%3] FDC command %4 (Cmd=$%5 Trk=$%6 Sec=$%7 Data=$%8)")
                     .arg(deviceName())
                     .arg(currentRotation)
@@ -583,7 +583,7 @@ void FirmwareDiskImage::dumpFDCCommand(const char *commandName, unsigned int com
 		if (m_displayFdcCommands) {
 			qDebug() << "!u" << str;
 		}
-		if ((m_displayCpuInstructions) && (m_traceOn) && (m_traceStream != NULL)) {
+        if ((m_displayCpuInstructions) && (m_traceOn) && (m_traceStream != nullptr)) {
             *m_traceStream << str << "\n";
 		}
     }
@@ -591,7 +591,7 @@ void FirmwareDiskImage::dumpFDCCommand(const char *commandName, unsigned int com
 
 void FirmwareDiskImage::dumpIndexPulse(bool indexPulse, int currentRotation, int maxRotation)
 {
-    if ((m_displayIndexPulse) || ((m_displayCpuInstructions) && (m_traceOn) && (m_traceStream != NULL))) {
+    if ((m_displayIndexPulse) || ((m_displayCpuInstructions) && (m_traceOn) && (m_traceStream != nullptr))) {
 		QString str;
         if (indexPulse) {
             str = tr("[%1] [Rotation=%2/%3] Index Pulse").arg(deviceName()).arg(currentRotation).arg(maxRotation);
@@ -602,7 +602,7 @@ void FirmwareDiskImage::dumpIndexPulse(bool indexPulse, int currentRotation, int
 		if (m_displayIndexPulse) {
 			qDebug() << "!u" << str;
 		}
-		if ((m_displayCpuInstructions) && (m_traceOn) && (m_traceStream != NULL)) {
+        if ((m_displayCpuInstructions) && (m_traceOn) && (m_traceStream != nullptr)) {
             *m_traceStream << str << "\n";
 		}
 	}
@@ -610,7 +610,7 @@ void FirmwareDiskImage::dumpIndexPulse(bool indexPulse, int currentRotation, int
 
 void FirmwareDiskImage::dumpMotorOnOff(bool motorOn, int currentRotation, int maxRotation)
 {
-    if ((m_displayMotorOnOff) || ((m_displayCpuInstructions) && (m_traceOn) && (m_traceStream != NULL))) {
+    if ((m_displayMotorOnOff) || ((m_displayCpuInstructions) && (m_traceOn) && (m_traceStream != nullptr))) {
 		QString str;
         if (motorOn) {
             str = tr("[%1] [Rotation=%2/%3] Motor is turned ON").arg(deviceName()).arg(currentRotation).arg(maxRotation);
@@ -621,7 +621,7 @@ void FirmwareDiskImage::dumpMotorOnOff(bool motorOn, int currentRotation, int ma
 		if (m_displayMotorOnOff) {
             qDebug() << "!u" << str;
 		}
-		if ((m_displayCpuInstructions) && (m_traceOn) && (m_traceStream != NULL)) {
+        if ((m_displayCpuInstructions) && (m_traceOn) && (m_traceStream != nullptr)) {
             *m_traceStream << str << "\n";
         }
 	}
@@ -629,7 +629,7 @@ void FirmwareDiskImage::dumpMotorOnOff(bool motorOn, int currentRotation, int ma
 
 void FirmwareDiskImage::dumpIDAddressMarks(unsigned int track, unsigned int side, unsigned int sector, unsigned int size, unsigned short crc, int currentRotation, int maxRotation)
 {
-    if ((m_displayIDAddressMarks) || ((m_displayCpuInstructions) && (m_traceOn) && (m_traceStream != NULL))) {
+    if ((m_displayIDAddressMarks) || ((m_displayCpuInstructions) && (m_traceOn) && (m_traceStream != nullptr))) {
         QString str = tr("[%1] [Rotation=%2/%3] ID address mark found (Trk=$%4 Side=$%5 Sec=$%6 Len=$%7 Crc=$%8)")
                     .arg(deviceName())
                     .arg(currentRotation)
@@ -642,7 +642,7 @@ void FirmwareDiskImage::dumpIDAddressMarks(unsigned int track, unsigned int side
 		if (m_displayIDAddressMarks) {
             qDebug() << "!u" << str;
 		}
-		if ((m_displayCpuInstructions) && (m_traceOn) && (m_traceStream != NULL)) {
+        if ((m_displayCpuInstructions) && (m_traceOn) && (m_traceStream != nullptr)) {
             *m_traceStream << str << "\n";
         }
 	}
@@ -650,7 +650,7 @@ void FirmwareDiskImage::dumpIDAddressMarks(unsigned int track, unsigned int side
 
 void FirmwareDiskImage::dumpDataAddressMark(unsigned int track, unsigned int side, unsigned int sector, unsigned int size, int currentRotation, int maxRotation)
 {
-    if ((m_displayIDAddressMarks) || ((m_displayCpuInstructions) && (m_traceOn) && (m_traceStream != NULL))) {
+    if ((m_displayIDAddressMarks) || ((m_displayCpuInstructions) && (m_traceOn) && (m_traceStream != nullptr))) {
         QString str = tr("[%1] [Rotation=%2/%3] Data address mark found (Trk=$%4 Side=$%5 Sec=$%6 Len=$%7) in read command")
                     .arg(deviceName())
                     .arg(currentRotation)
@@ -662,7 +662,7 @@ void FirmwareDiskImage::dumpDataAddressMark(unsigned int track, unsigned int sid
 		if (m_displayIDAddressMarks) {
             qDebug() << "!u" << str;
 		}
-		if ((m_displayCpuInstructions) && (m_traceOn) && (m_traceStream != NULL)) {
+        if ((m_displayCpuInstructions) && (m_traceOn) && (m_traceStream != nullptr)) {
             *m_traceStream << str << "\n";
         }
 	}
@@ -783,7 +783,7 @@ void FirmwareDiskImage::displayReadSectorStatus(unsigned int trackNumber, Track 
 
 void FirmwareDiskImage::dumpCPUInstructions(const char *buf, int currentRotation, int maxRotation)
 {
-    if ((m_displayCpuInstructions) && (m_traceOn) && (m_traceStream != NULL)) {
+    if ((m_displayCpuInstructions) && (m_traceOn) && (m_traceStream != nullptr)) {
         *m_traceStream << tr("[%1] [Rotation=%2/%3] [Bank=%4] %5")
                     .arg(deviceName())
                     .arg(currentRotation)
@@ -795,7 +795,7 @@ void FirmwareDiskImage::dumpCPUInstructions(const char *buf, int currentRotation
 
 void FirmwareDiskImage::dumpCommandToFile(QString &command)
 {
-    if ((m_displayCpuInstructions) && (m_traceOn) && (m_traceStream != NULL)) {
+    if ((m_displayCpuInstructions) && (m_traceOn) && (m_traceStream != nullptr)) {
         *m_traceStream << command << "\n";
     }
 }
@@ -812,7 +812,7 @@ void FirmwareDiskImage::debugMessage(const char *msg, ...)
 
 void FirmwareDiskImage::dumpDataToFile(QByteArray &data)
 {
-    if ((m_displayCpuInstructions) && (m_traceOn) && (m_traceStream != NULL)) {
+    if ((m_displayCpuInstructions) && (m_traceOn) && (m_traceStream != nullptr)) {
 		int len = data.size();
         *m_traceStream << tr("[%1] Receiving %2 bytes from Atari").arg(deviceName()).arg(len) << "\n";
 		for (int i = 0; i < ((len + 15) >> 4); i++) {
@@ -1451,7 +1451,7 @@ void FirmwareDiskImage::handleCommand(quint8 command, quint16 aux)
             if ((! isArchiver) && (! isHappy)) {
                 // compute how much time the firmware has spent in command execution.
                 unsigned long executionTimeInMicroSeconds = m_atariDrive->GetExecutionTimeInMicroseconds();
-                unsigned long diffWorkInMicroSeconds = (unsigned long)((m_timer.nsecsElapsed() - newTimeInNanoSeconds) / 1000L);
+                auto diffWorkInMicroSeconds = (unsigned long)((m_timer.nsecsElapsed() - newTimeInNanoSeconds) / 1000L);
                 // wait to simulate accurate timing if the protected software on the Atari relies on the timing.
                 if ((unsigned long)executionTimeInMicroSeconds > diffWorkInMicroSeconds) {
                     unsigned long delayInMicroSeconds = executionTimeInMicroSeconds - diffWorkInMicroSeconds;
@@ -1822,8 +1822,8 @@ void FirmwareDiskImage::FillTrackFromProImage(int trackNumber, Track *track)
                         // write the CRC
                         bool crcError = ((m_proSectorInfo[indexInPro].wd1771Status & 0x08) == 0);
                         if (! crcError) {
-                            unsigned char crc1 = (unsigned char)((crc.GetCrc() >> 8) & 0xFF);
-                            unsigned char crc2 = (unsigned char)(crc.GetCrc() & 0xFF);
+                            auto crc1 = (unsigned char)((crc.GetCrc() >> 8) & 0xFF);
+                            auto crc2 = (unsigned char)(crc.GetCrc() & 0xFF);
                             bitNumber = track->WriteRawByte(bitNumber, DISK_NORMAL_DATA_CLOCK, crc1);
                             bitNumber = track->WriteRawByte(bitNumber, DISK_NORMAL_DATA_CLOCK, crc2);
                         }
@@ -1838,8 +1838,8 @@ void FirmwareDiskImage::FillTrackFromProImage(int trackNumber, Track *track)
         case STATE_WRITE_DATA_CRC:
             {
                 bool crcError = ((m_proSectorInfo[indexInPro].wd1771Status & 0x08) == 0) || (m_proSectorInfo[indexInPro].shortSectorSize != 0);
-                unsigned char crc1 = (unsigned char)((crc.GetCrc() >> 8) & 0xFF);
-                unsigned char crc2 = (unsigned char)(crc.GetCrc() & 0xFF);
+                auto crc1 = (unsigned char)((crc.GetCrc() >> 8) & 0xFF);
+                auto crc2 = (unsigned char)(crc.GetCrc() & 0xFF);
                 if (crcError) {
                     crc1 += 0x88;
                     crc2 += 0x55;
@@ -1908,7 +1908,7 @@ void FirmwareDiskImage::FillTrackFromAtxImage(int trackNumber, Track *track)
     int lastDataAddressMark = 0;
     bool noResize = false;
     bool warningDone = false;
-    AtxSectorInfo *sectorInfo = NULL;
+    AtxSectorInfo *sectorInfo = nullptr;
 
     // check if the track contains a protection (other than timing).
     // If there is a protection and displayTrackInformation option is on, then try to explain the layout of the track.
@@ -2139,8 +2139,8 @@ void FirmwareDiskImage::FillTrackFromAtxImage(int trackNumber, Track *track)
                         // write the CRC
                         bool crcError = ((sectorInfo->wd1771Status() & 0x08) == 0);
                         if (! crcError) {
-                            unsigned char crc1 = (unsigned char)((crc.GetCrc() >> 8) & 0xFF);
-                            unsigned char crc2 = (unsigned char)(crc.GetCrc() & 0xFF);
+                            auto crc1 = (unsigned char)((crc.GetCrc() >> 8) & 0xFF);
+                            auto crc2 = (unsigned char)(crc.GetCrc() & 0xFF);
                             bitNumber = track->WriteRawByte(bitNumber, DISK_NORMAL_DATA_CLOCK, crc1);
                             bitNumber = track->WriteRawByte(bitNumber, DISK_NORMAL_DATA_CLOCK, crc2);
                         }
@@ -2211,8 +2211,8 @@ void FirmwareDiskImage::FillTrackFromAtxImage(int trackNumber, Track *track)
         case STATE_WRITE_DATA_CRC:
             {
                 bool crcError = ((sectorInfo->wd1771Status() & 0x08) == 0) || (shortSectorSize != 0);
-                unsigned char crc1 = (unsigned char)((crc.GetCrc() >> 8) & 0xFF);
-                unsigned char crc2 = (unsigned char)(crc.GetCrc() & 0xFF);
+                auto crc1 = (unsigned char)((crc.GetCrc() >> 8) & 0xFF);
+                auto crc2 = (unsigned char)(crc.GetCrc() & 0xFF);
                 if (crcError) {
                     crc1 += 0x88;
                     crc2 += 0x55;

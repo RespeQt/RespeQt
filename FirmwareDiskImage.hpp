@@ -49,7 +49,7 @@ protected:
     virtual bool            setTrace(bool on);
 
 public:
-                            FirmwareDiskImage(SioWorker *worker, eHARDWARE eHardware, QString &hardwareName, class Rom *rom, int iRpm, bool powerOnWithDiskInserted);
+                            FirmwareDiskImage(SioWorkerPtr worker, eHARDWARE eHardware, QString &hardwareName, class Rom *rom, int iRpm, bool powerOnWithDiskInserted);
     virtual                 ~FirmwareDiskImage();
     void                    setDiskImager(FirmwareDiskImage *diskImager);
 

@@ -1,12 +1,12 @@
 #include "centronics.h"
-
+ #include <utility> 
 namespace Printers
 {
-    Centronics::Centronics(SioWorker *sio)
-        : BasePrinter(sio)
+    Centronics::Centronics(SioWorkerPtr sio)
+        : BasePrinter(std::move(sio))
     {}
 
-    const QChar Centronics::translateAtascii(const unsigned char b)
+    const QChar Centronics::translateAtascii(const unsigned char b) const
     {
         if (static_cast<unsigned char>(b) == 155) // Translate EOL to CR
         {

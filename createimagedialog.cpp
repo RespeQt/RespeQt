@@ -19,8 +19,16 @@ CreateImageDialog::CreateImageDialog(QWidget *parent) :
 
     m_ui->setupUi(this);
     
-    connect(m_ui->sectorsSpin, SIGNAL(valueChanged(int)), SLOT(recalculate()));
-    connect(m_ui->densityCombo, SIGNAL(currentIndexChanged(int)), SLOT(recalculate()));
+    void (QSpinBox::*valueChangedSignal)(int) = &QSpinBox::valueChanged;
+    connect(m_ui->sectorsSpin, valueChangedSignal, this, &CreateImageDialog::recalculate);
+    void (QComboBox::*densitySignal)(const QString&) = &QComboBox::currentIndexChanged;
+    connect(m_ui->densityCombo, densitySignal, this, &CreateImageDialog::recalculate);
+    connect(m_ui->harddiskButton, &QRadioButton::toggled, this, &CreateImageDialog::harddiskToggled);
+    connect(m_ui->customButton, &QRadioButton::toggled, this, &CreateImageDialog::customToggled);
+    connect(m_ui->doubleDoubleButton, &QRadioButton::toggled, this, &CreateImageDialog::doubleDoubleToggled);
+    connect(m_ui->stdDoubleButton, &QRadioButton::toggled, this, &CreateImageDialog::standardDoubleToggled);
+    connect(m_ui->stdSingleButton, &QRadioButton::toggled, this, &CreateImageDialog::standardSingleToggled);
+    connect(m_ui->stdEnhancedButton, &QRadioButton::toggled, this, &CreateImageDialog::standardEnhancedToggled);
 }
 
 CreateImageDialog::~CreateImageDialog()
@@ -81,7 +89,7 @@ void CreateImageDialog::recalculate()
                                  .arg(sizeK));
 }
 
-void CreateImageDialog::on_stdEnhancedButton_toggled(bool checked)
+void CreateImageDialog::standardEnhancedToggled(bool checked)
 {
     if (checked) {
         m_ui->sectorsSpin->setValue(1040);
@@ -90,7 +98,7 @@ void CreateImageDialog::on_stdEnhancedButton_toggled(bool checked)
     }
 }
 
-void CreateImageDialog::on_stdSingleButton_toggled(bool checked)
+void CreateImageDialog::standardSingleToggled(bool checked)
 {
     if (checked) {
         m_ui->sectorsSpin->setValue(720);
@@ -99,7 +107,7 @@ void CreateImageDialog::on_stdSingleButton_toggled(bool checked)
     }
 }
 
-void CreateImageDialog::on_stdDoubleButton_toggled(bool checked)
+void CreateImageDialog::standardDoubleToggled(bool checked)
 {
     if (checked) {
         m_ui->sectorsSpin->setValue(720);
@@ -108,7 +116,7 @@ void CreateImageDialog::on_stdDoubleButton_toggled(bool checked)
     }
 }
 
-void CreateImageDialog::on_doubleDoubleButton_toggled(bool checked)
+void CreateImageDialog::doubleDoubleToggled(bool checked)
 {
     if (checked) {
         m_ui->sectorsSpin->setValue(1440);
@@ -117,14 +125,14 @@ void CreateImageDialog::on_doubleDoubleButton_toggled(bool checked)
     }
 }
 
-void CreateImageDialog::on_customButton_toggled(bool checked)
+void CreateImageDialog::customToggled(bool checked)
 {
     if (checked) {
         m_ui->geometryWidget->setEnabled(true);
     }
 }
 
-void CreateImageDialog::on_harddiskButton_toggled(bool checked)
+void CreateImageDialog::harddiskToggled(bool checked)
 {
     if (checked) {
         m_ui->sectorsSpin->setValue(65535);

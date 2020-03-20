@@ -45,7 +45,6 @@ class AbstractSerialPortBackend : public QObject
     Q_OBJECT
 //    Q_ENUMS(MessageType::UiMessageType)
 //    Q_ENUMS(SerialLine)
-
 public:
     AbstractSerialPortBackend(QObject *parent = 0);
     virtual ~AbstractSerialPortBackend();
@@ -56,13 +55,13 @@ public:
         switch (divisor) {
         case 0:
             return 125000;
-            break;
+
         case 1:
             return 110598;
-            break;
+
         case 2:
             return 98797;
-            break;
+
         default:
             return (int)(1781610.0 / (2*(divisor+7)));
         }

@@ -3,13 +3,13 @@
 // (c) 2016 Eric BACHER
 //
 
-#include <string.h>
-#include <stdio.h>
+#include <cstring>
+#include <cstdio>
 #include "RomProvider.hpp"
 
 RomProvider::RomProvider()
 {
-	m_roms = NULL;
+    m_roms = nullptr;
 }
 
 RomProvider::~RomProvider()
@@ -20,29 +20,29 @@ RomProvider::~RomProvider()
 		delete head;
 		head = next;
 	}
-	m_roms = NULL;
+    m_roms = nullptr;
 }
 
 Rom *RomProvider::GetRom(QString romName)
 {
 	Rom *head = m_roms;
-	while (head != NULL) {
+    while (head != nullptr) {
         if (head->GetRomName() == romName) {
 			return head;
 		}
 		head = head->GetNext();
 	}
-	return NULL;
+    return nullptr;
 }
 
 Rom *RomProvider::RegisterRom(QString romName, QString filename)
 {
 	Rom *rom = GetRom(romName);
-	if (rom == NULL) {
+    if (rom == nullptr) {
 		rom = new Rom(romName);
         if (!rom->LoadRomFile(filename)) {
 			delete rom;
-			rom = NULL;
+            rom = nullptr;
 		}
 	}
 	return rom;

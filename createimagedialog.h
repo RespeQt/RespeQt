@@ -30,14 +30,14 @@ protected:
 private:
     Ui::CreateImageDialog *m_ui;
 
-private slots:
-    void on_harddiskButton_toggled(bool checked);
+public slots:
     void recalculate();
-    void on_customButton_toggled(bool checked);
-    void on_doubleDoubleButton_toggled(bool checked);
-    void on_stdDoubleButton_toggled(bool checked);
-    void on_stdSingleButton_toggled(bool checked);
-    void on_stdEnhancedButton_toggled(bool checked);
+    void harddiskToggled(bool checked);
+    void customToggled(bool checked);
+    void doubleDoubleToggled(bool checked);
+    void standardDoubleToggled(bool checked);
+    void standardSingleToggled(bool checked);
+    void standardEnhancedToggled(bool checked);
 };
 
 #endif // CREATEIMAGEDIALOG_H

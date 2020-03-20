@@ -33,7 +33,7 @@ private:
     bool readExecutable(const QString &fileName);
 
 public:
-    AutoBoot(SioWorker *worker, SioDevice *aOldDevice): SioDevice(worker) {oldDevice = aOldDevice; started = loaded = false;}
+    AutoBoot(SioWorkerPtr worker, SioDevice *aOldDevice): SioDevice(worker) {oldDevice = aOldDevice; started = loaded = false;}
     ~AutoBoot();
     void handleCommand(quint8 command, quint16 aux);
     void passToOldHandler(quint8 command, quint16 aux);

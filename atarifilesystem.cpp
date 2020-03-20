@@ -160,7 +160,7 @@ void AtariDirEntry::makeFromAtariDosEntry(const QByteArray &entry, int aNo, int 
 
     internalData = entry;
 
-    quint8 f = (quint8) entry.at(0);
+    auto f = (quint8) entry.at(0);
 
     if (f & 0x10) {
         attributes |= Directory;
@@ -209,7 +209,7 @@ void AtariDirEntry::makeFromSpartaDosEntry(const QByteArray &entry, int aNo, int
 
     internalData = entry;
 
-    quint8 f = (quint8) entry.at(0);
+    auto f = (quint8) entry.at(0);
 
     if (f & 0x01) {
         attributes |= Locked;
@@ -440,7 +440,7 @@ QList <AtariDirEntry> Dos10FileSystem::getEntries(quint16 dir)
         m_image->readSector(s, data);
         for (uint e = 0; e < 8; e++, no++) {
             QByteArray dosEntry = data.mid(e * 16, 16);
-            quint8 f = (quint8)dosEntry.at(0);
+            auto f = (quint8)dosEntry.at(0);
             if (f == 0) {
                 goto bailout;
             }

@@ -35,13 +35,13 @@ namespace Printers {
         rawPrinterName.toWCharArray(temp);
         temp[rawPrinterName.length()] = 0;
 
-        OpenPrinter(temp, &mJob, Q_NULLPTR);
+        OpenPrinter(temp, &mJob, nullptr);
 
         // To get the driver version, we need to get the printer driver info.
         // First call is the call to get the needed bytes, second for the actual info.
-        GetPrinterDriver(mJob, Q_NULLPTR, 2, Q_NULLPTR, 0, &needed);
+        GetPrinterDriver(mJob, nullptr, 2, nullptr, 0, &needed);
         std::vector<char> buffer(needed);
-        GetPrinterDriver(mJob, Q_NULLPTR, 2, reinterpret_cast<LPBYTE>(&buffer[0]), needed, &needed);
+        GetPrinterDriver(mJob, nullptr, 2, reinterpret_cast<LPBYTE>(&buffer[0]), needed, &needed);
         needed = reinterpret_cast<DRIVER_INFO_2*>(&buffer[0])->cVersion;
 
         type = needed >= 4 ? "XPS_PASS" : "RAW";
@@ -53,7 +53,7 @@ namespace Printers {
 
         di1.pDatatype = temp;
         di1.pDocName = temp2;
-        di1.pOutputFile = Q_NULLPTR;
+        di1.pOutputFile = nullptr;
 
         StartDocPrinter(mJob, 1, reinterpret_cast<LPBYTE>(&di1));
         StartPagePrinter(mJob);
@@ -68,7 +68,7 @@ namespace Printers {
         EndPagePrinter(mJob);
         EndDocPrinter(mJob);
         ClosePrinter(mJob);
-        mJob = Q_NULLPTR;
+        mJob = nullptr;
         return true;
     }
 
@@ -87,12 +87,12 @@ namespace Printers {
         list->clear();
         list->addItem(QObject::tr("Select raw printer"), QVariant(-1));
 
-        EnumPrinters(PRINTER_ENUM_LOCAL | PRINTER_ENUM_CONNECTIONS, Q_NULLPTR, 1, Q_NULLPTR, 0, &needed, &returned);
+        EnumPrinters(PRINTER_ENUM_LOCAL | PRINTER_ENUM_CONNECTIONS, nullptr, 1, nullptr, 0, &needed, &returned);
         if (needed == 0)
             return;
 
         std::vector<char> buffer(needed);
-        if (!EnumPrinters(PRINTER_ENUM_LOCAL | PRINTER_ENUM_CONNECTIONS, Q_NULLPTR, 1,
+        if (!EnumPrinters(PRINTER_ENUM_LOCAL | PRINTER_ENUM_CONNECTIONS, nullptr, 1,
                      reinterpret_cast<LPBYTE>(&buffer[0]), buffer.size(), &needed, &returned))
         {
             return;

@@ -1,27 +1,25 @@
 #include "baseprinter.h"
-#include "atari1027.h"
-#include "atari1020.h"
-#include "atari1029.h"
-#include "escp.h"
+
+#include <utility>
+
 #include "respeqtsettings.h"
 #include "logdisplaydialog.h"
 
 namespace Printers
 {
-    BasePrinter::BasePrinter(SioWorker *worker)
-        : SioDevice(worker),
-          mOutput(Q_NULLPTR)
+    BasePrinter::BasePrinter(SioWorkerPtr worker)
+        : SioDevice(std::move(worker)),
+          mOutput()
     {}
 
-    BasePrinter::~BasePrinter()
-    {}
+    BasePrinter::~BasePrinter() = default;
 
-    const QChar BasePrinter::translateAtascii(const unsigned char b)
+    const QChar BasePrinter::translateAtascii(const unsigned char b) const
     {
         return mAtascii(b);
     }
 
-    void BasePrinter::handleCommand(quint8 command, quint16 aux)
+    void BasePrinter::handleCommand(const quint8 command, const quint16 aux)
     {
         if (respeqtSettings->printerEmulation() && mOutput) {  // Ignore printer commands  if Emulation turned OFF)    //
             qDebug() << "!n" << "[" << deviceName() << "] "
@@ -80,9 +78,6 @@ namespace Printers
                         sio->port()->writeDataNak();
                         return;
                     }
-#ifndef QT_NO_DEBUG
-                    sio->writeSnapshotDataFrame(data);
-#endif
 
                     handleBuffer(data, len);
                     sio->port()->writeDataAck();
@@ -102,21 +97,21 @@ namespace Printers
         }
     }
 
-    void BasePrinter::setOutput(NativeOutput *output)
+    void BasePrinter::setOutput(const NativeOutputPtr& output)
     {
-        if (mOutput != output)
+        if (mOutput && mOutput != output)
         {
-            if (mOutput)
-            {
-                mOutput->endOutput();
-            }
-            delete mOutput;
+            mOutput->endOutput();
         }
         mOutput = output;
-        setupOutput();
-        setupFont();
     }
 
     void BasePrinter::setupOutput()
     {}
+
+    void BasePrinter::resetOutput()
+    {
+        mOutput->setPrinter(QWeakPointer<BasePrinter>());
+        mOutput.reset();
+    }
 }

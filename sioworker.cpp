@@ -20,7 +20,7 @@
 #endif
 
 /* SioDevice */
-SioDevice::SioDevice(SioWorker *worker)
+SioDevice::SioDevice(SioWorkerPtr worker)
         :QObject()
 {
     sio = worker;
@@ -44,7 +44,7 @@ QString SioDevice::deviceName()
 SioWorker::SioWorker()
         : QThread()
 #ifndef QT_NO_DEBUG
-      , mSnapshotRunning(false), mSnapshotWriter(NULL)
+      , mSnapshotRunning(false), mSnapshotWriter(nullptr)
 #endif
 {
     deviceMutex = new QMutex(QMutex::Recursive);
@@ -87,14 +87,14 @@ void SioWorker::start(Priority p)
     switch (respeqtSettings->backend()) {
         default:
         case SERIAL_BACKEND_STANDARD:
-            mPort = new StandardSerialPortBackend(0);
+            mPort = new StandardSerialPortBackend(this);
             break;
         case SERIAL_BACKEND_SIO_DRIVER:
-            mPort = new AtariSioBackend(0);
+            mPort = new AtariSioBackend(this);
             break;
 #ifndef QT_NO_DEBUG
         case SERIAL_BACKEND_TEST:
-            mPort = new TestSerialPortBackend(0);
+            mPort = new TestSerialPortBackend(this);
             break;
 #endif
     }
@@ -432,7 +432,7 @@ void SioWorker::startSIOSnapshot()
                  tr("Save test XML File"), QString(), tr("XML Files (*.xml)"));
     if (fileName.length() > 0)
     {
-        QFile *file = new QFile(fileName);
+        auto file = new QFile(fileName);
         file->open(QFile::WriteOnly | QFile::Truncate);
         if (!mSnapshotWriter)
         {
@@ -453,7 +453,7 @@ void SioWorker::stopSIOSnapshot()
         mSnapshotWriter->writeEndDocument();
         mSnapshotWriter->device()->close();
         delete mSnapshotWriter;
-        mSnapshotWriter = NULL;
+        mSnapshotWriter = nullptr;
         mSnapshotRunning = false;
     }
 }
@@ -481,7 +481,7 @@ void SioWorker::writeSnapshotDataFrame(QByteArray &data)
         QString cs;
         foreach(char c, data)
         {
-            unsigned char chr = static_cast<unsigned char>(c);
+            auto chr = static_cast<unsigned char>(c);
             cs.append("&#");
             cs.append(QString::number(chr, 10));
             cs.append(";");
@@ -673,11 +673,16 @@ void CassetteWorker::start(Priority p)
 {
     switch (respeqtSettings->backend()) {
         case SERIAL_BACKEND_STANDARD:
-            mPort = new StandardSerialPortBackend(0);
+            mPort = new StandardSerialPortBackend(this);
             break;
         case SERIAL_BACKEND_SIO_DRIVER:
-            mPort = new AtariSioBackend(0);
+            mPort = new AtariSioBackend(this);
             break;
+#ifndef QT_NO_DEBUG
+        case SERIAL_BACKEND_TEST:
+            mPort = new TestSerialPortBackend(this);
+            break;
+#endif
     }
     QThread::start(p);
 }

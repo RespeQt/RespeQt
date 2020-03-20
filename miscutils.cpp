@@ -177,7 +177,7 @@ bool GzFile::open(OpenMode mode)
             mHandle = gzdopen(handle(), "wb");
         }
 
-        if(mHandle == NULL) {
+        if(mHandle == nullptr) {
             setErrorString(tr("gzdopen() failed."));
             return false;
         }
@@ -193,7 +193,7 @@ void GzFile::close()
         gzclose(mHandle);
     }
     QFile::close();
-    mHandle = NULL;
+    mHandle = nullptr;
 }
 
 bool GzFile::isSequential() const
@@ -212,7 +212,7 @@ bool GzFile::seek(qint64 pos)
 
 qint64 GzFile::readData(char *data, qint64 maxSize)
 {
-    if (mHandle == NULL) {
+    if (mHandle == nullptr) {
         return 0;
     }
 
@@ -221,7 +221,7 @@ qint64 GzFile::readData(char *data, qint64 maxSize)
 
 qint64 GzFile::writeData(const char *data, qint64 maxSize)
 {
-    if (mHandle == NULL) {
+    if (mHandle == nullptr) {
         return 0;
     }
 

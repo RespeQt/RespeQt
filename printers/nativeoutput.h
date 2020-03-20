@@ -4,8 +4,26 @@
 #include <QPainter>
 #include <QRect>
 #include <QPaintDevice>
-#include <math.h>
+#include <QSharedPointer>
+#include <QWeakPointer>
+#include <cmath>
+#include <memory>
+
+// We need a forward class definition,
+//because we reference NativeOutput in BasePrinter
+namespace Printers
+{
+    class NativeOutput;
+    using NativeOutputPtr = QSharedPointer<NativeOutput>;
+    using NativeOutputWPtr = QWeakPointer<NativeOutput>;
+}
+
 #include "sioworker.h"
+#include "baseprinter.h"
+
+using QPaintDevicePtr = QSharedPointer<QPaintDevice>;
+using QPainterPtr = QSharedPointer<QPainter>;
+using QFontPtr = QSharedPointer<QFont>;
 
 namespace Printers
 {
@@ -24,10 +42,6 @@ namespace Printers
         virtual void printChar(const QChar &c);
         virtual void printString(const QString &s);
         virtual void plot(QPoint p, uint8_t dot);
-        virtual void setWindow(const QRect &rectangle);
-        virtual void setPen(const QColor &color);
-        virtual void setPen(Qt::PenStyle style);
-        virtual void setPen(const QPen &pen);
         virtual int width() {
             return static_cast<int>(trunc(mBoundingBox.width()));
         }
@@ -35,18 +49,18 @@ namespace Printers
             return static_cast<int>(trunc(mBoundingBox.height()));
         }
         virtual int dpiX() { return mDevice->logicalDpiX(); }
-        virtual const QPen &pen() const { return mPainter->pen(); }
-        virtual void setFont(QFont *font);
-        QFont *font() const { return mFont; }
-        virtual void translate(const QPointF &offset);
-        virtual void drawLine(const QPointF &p1, const QPointF &p2);
-        QPaintDevice *device() { return mDevice; }
-        QPainter *painter() { return mPainter; }
+        virtual void setFont(const QFontPtr& font);
+        QFontPtr font() const { return mFont; }
+        QPaintDevicePtr device() const { return mDevice; }
+        QPainterPtr painter() const { return mPainter; }
         virtual void calculateFixedFontSize(uint8_t line_char_count);
-        int x() { return mX; }
-        int y() { return mY; }
+        int x() const { return mX; }
+        int y() const { return mY; }
         void setX(int x) { mX = x; }
         void setY(int y) { mY = y; }
+
+        void setPrinter(const BasePrinterWPtr& printer);
+        BasePrinterWPtr printer() const { return mPrinter; }
 
         static QString typeName()
         {
@@ -54,9 +68,9 @@ namespace Printers
         }
 
     protected:
-        QPainter *mPainter;
-        QPaintDevice *mDevice;
-        QFont *mFont;
+        QPainterPtr mPainter;
+        QPaintDevicePtr mDevice;
+        QFontPtr mFont;
         int mX, mY;
         QRectF mBoundingBox;
         uint8_t mCharsPerLine;
@@ -64,6 +78,7 @@ namespace Printers
         uint8_t mLPIMode;
         bool mCharMode;
         uint32_t hResolution, vResolution;
+        BasePrinterWPtr mPrinter;
 
         virtual void updateBoundingBox() = 0;
     };

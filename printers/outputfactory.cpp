@@ -1,3 +1,3 @@
 #include "outputfactory.h"
 
-Printers::OutputFactory* Printers::OutputFactory::sInstance = Q_NULLPTR;
+std::unique_ptr<Printers::OutputFactory> Printers::OutputFactory::sInstance = nullptr;

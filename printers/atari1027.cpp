@@ -1,11 +1,11 @@
 #include "atari1027.h"
 #include "respeqtsettings.h"
-#include <stdlib.h>
-
+#include <cstdlib>
+#include <utility> 
 namespace Printers
 {
-    Atari1027::Atari1027(SioWorker *worker)
-        : AtariPrinter(worker),
+    Atari1027::Atari1027(SioWorkerPtr worker)
+        : AtariPrinter(std::move(worker)),
           mESC(false)
     {}
 
@@ -13,23 +13,23 @@ namespace Printers
     {
         if (mOutput)
         {
-            QFont *font = new QFont(respeqtSettings->atariFixedFontFamily(), 12);
+            QFontPtr font = QFontPtr::create(respeqtSettings->atariFixedFontFamily(), 12);
             font->setUnderline(false);
             mOutput->setFont(font);
             mOutput->calculateFixedFontSize(80);
         }
     }
 
-    bool Atari1027::handleBuffer(QByteArray &buffer, unsigned int len)
+    bool Atari1027::handleBuffer(const QByteArray &buffer, const unsigned int len)
     {
         for(unsigned int i = 0; i < len; i++)
         {
-            unsigned char b = static_cast<unsigned char>(
+            auto b = static_cast<unsigned char>(
                         buffer.at(static_cast<int>(i)));
             switch(b) {
                 case 15: // CTRL+O starts underline mode
                 {
-                    QFont *font = mOutput->font();
+                    QFontPtr font = mOutput->font();
                     font->setUnderline(true);
                     mOutput->setFont(font);
                     qDebug() << "!n" << "Underline on";
@@ -38,7 +38,7 @@ namespace Printers
 
                 case 14: // CTRL+N ends underline mode
                 {
-                    QFont *font = mOutput->font();
+                    QFontPtr font = mOutput->font();
                     font->setUnderline(false);
                     mOutput->setFont(font);
                     qDebug() << "!n" << "Underline off";
@@ -63,7 +63,7 @@ namespace Printers
                 case 155: // EOL
                 {
                     mESC = false;
-                    QFont *font = mOutput->font();
+                    QFontPtr font = mOutput->font();
                     font->setUnderline(false);
                     mOutput->setFont(font);
                     mOutput->newLine();
@@ -104,7 +104,7 @@ namespace Printers
         switch(b) {
             case 25: // CTRL+Y starts underline mode
             {
-                QFont *font = mOutput->font();
+                QFontPtr font = mOutput->font();
                 font->setUnderline(true);
                 mOutput->setFont(font);
                 mESC = false;
@@ -113,7 +113,7 @@ namespace Printers
             }
             case 26: // CTRL+Z ends underline mode
             {
-                QFont *font = mOutput->font();
+                QFontPtr font = mOutput->font();
                 font->setUnderline(false);
                 mOutput->setFont(font);
                 mESC = false;
