@@ -191,7 +191,7 @@ bool SimpleDiskImage::openScp(const QString &fileName)
                     else if (sectorStatus & 0x08) {
                         secBuf.append("(CRC)");
                     }
-                    else if (m_atxTrackInfo[track].count(sectorNumber) > 0) {
+                    else if (m_scpTrackInfo[track].count(sectorNumber) > 0) {
                         secBuf.append("(DUP)");
                     }
                     else if ((sectorStatus & 0x06) == 0x06) {

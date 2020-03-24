@@ -3476,7 +3476,7 @@ void SimpleDiskImage::handleCommand(quint8 command, quint16 aux)
                 }
                 result[2] = (char)(aux & 0x3F);
                 for (quint16 i = 0; i < (256 - sizeof(ARCHIVER_ADDRESS_CHECK)); i++) {
-                    result[i + sizeof(ARCHIVER_ADDRESS_CHECK)] = data[i + 4];
+                    result[i + (quint16)sizeof(ARCHIVER_ADDRESS_CHECK)] = data[i + 4];
                 }
                 result[8] = data[3];
                 writeDataFrame(result);
@@ -3693,15 +3693,6 @@ QByteArray SimpleDiskImage::readDataFrame(uint size)
         qDebug() << "!u" << tr("[%1] Receiving %2 bytes from Atari").arg(deviceName()).arg(data.length());
         dumpBuffer((unsigned char *) data.data(), data.length());
     }
-#ifndef QT_NO_DEBUG
-    try {
-        // TODO Does this really work? Parent should be nullptr
-        auto sio = dynamic_cast<SioWorker*>(parent());
-        if (sio) {
-            sio->writeSnapshotDataFrame(data);
-        }
-    } catch(...) {}
-#endif
     return data;
 }
 
