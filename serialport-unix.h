@@ -42,9 +42,12 @@ public:
     bool writeRawFrame(const QByteArray &data);
     void setActiveSioDevices(const QByteArray &data);
     int speed();
+    void forceHighSpeed(int speed);
 
 private:
     bool mCanceled;
+    bool mHighSpeed;
+    int mForceHighSpeed;
     int mHandle;
     int mSpeed;
     int mMethod;
@@ -54,7 +57,6 @@ private:
 
     bool setNormalSpeed();
     bool setHighSpeed();
-    bool mHighSpeed;
     quint8 sioChecksum(const QByteArray &data, uint size);
     QByteArray readRawFrame(uint size, bool verbose = true);
     QString lastErrorMessage();
@@ -88,6 +90,7 @@ public:
     bool writeRawFrame(const QByteArray &data);
     void setActiveSioDevices(const QByteArray &data);
     int speed();
+    void forceHighSpeed(int speed);
 
 private:
     int mHandle, mCancelHandles[2];

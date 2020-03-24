@@ -51,6 +51,7 @@ StandardSerialPortBackend::StandardSerialPortBackend(QObject *parent)
     : AbstractSerialPortBackend(parent)
 {
     mHandle = -1;
+    mForceHighSpeed = 0;
 }
 
 StandardSerialPortBackend::~StandardSerialPortBackend()
@@ -165,6 +166,8 @@ int StandardSerialPortBackend::speedByte()
 {
     if (respeqtSettings->serialPortHandshakingMethod()==HANDSHAKE_SOFTWARE) {
         return 0x28; // standard speed (19200)
+    } else if (mForceHighSpeed != 0) {
+        return baudToDivisor(mForceHighSpeed); // speed when SuperArchiver/BitWriter is active
     } else if (respeqtSettings->serialPortUsePokeyDivisors()) {
         return respeqtSettings->serialPortPokeyDivisor();
     } else {
@@ -184,6 +187,11 @@ int StandardSerialPortBackend::speedByte()
     }
 }
 
+void StandardSerialPortBackend::forceHighSpeed(int speed)
+{
+    mForceHighSpeed = speed;
+}
+
 bool StandardSerialPortBackend::setNormalSpeed()
 {
     mHighSpeed = false;
@@ -193,7 +201,9 @@ bool StandardSerialPortBackend::setNormalSpeed()
 bool StandardSerialPortBackend::setHighSpeed()
 {
     mHighSpeed = true;
-    if (respeqtSettings->serialPortUsePokeyDivisors()) {
+    if (mForceHighSpeed != 0) {
+        return setSpeed(mForceHighSpeed); // used to force 52400 when SuperArchiver/BitWriter is active
+    } else if (respeqtSettings->serialPortUsePokeyDivisors()) {
         return setSpeed(divisorToBaud(respeqtSettings->serialPortPokeyDivisor()));
     } else {
         int speed = 57600;

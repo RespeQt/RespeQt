@@ -108,6 +108,8 @@ private:
     void toggleOSB(int no, bool open);
     void toggleToolDisk(int no, bool open);
     void toggleWriteProtection(int no, bool protectionEnabled);
+    void updateHighSpeed();
+
     void openEditor(int no);
     void saveDisk(int no);
     void saveDiskAs(int no);

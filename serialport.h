@@ -85,6 +85,7 @@ public:
     virtual bool writeRawFrame(const QByteArray &data) = 0;
     virtual void setActiveSioDevices(const QByteArray &data) = 0;
     virtual int speed() = 0;
+    virtual void forceHighSpeed(int speed) = 0;
 
 signals:
     void statusChanged(QString status);

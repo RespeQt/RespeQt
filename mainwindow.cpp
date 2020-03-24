@@ -148,7 +148,7 @@ MainWindow::MainWindow(QWidget *parent)
     connect(this, SIGNAL(logMessage(int,QString)), this, SLOT(uiMessage(int,QString)), Qt::QueuedConnection);
     qInstallMessageHandler(logMessageOutput);
     qDebug() << "!d" << tr("RespeQt started at %1.").arg(QDateTime::currentDateTime().toString());
-    
+
     logWindow_ = nullptr;
 
     /* Remove old temporaries */
@@ -164,7 +164,7 @@ MainWindow::MainWindow(QWidget *parent)
     QCoreApplication::setOrganizationDomain("https://github.com/jzatarski/RespeQt");
     QCoreApplication::setApplicationName("RespeQt");
     respeqtSettings = new RespeqtSettings();
-       
+
     /* Load translators */
     loadTranslators();
 
@@ -321,7 +321,7 @@ MainWindow::MainWindow(QWidget *parent)
 
     PCLINK* pclink = new PCLINK(sio);
     sio->installDevice(PCLINK_CDEVIC, pclink);
-    
+
     /* Restore application state */
     for (int i = 0; i < DISK_COUNT; i++) {
         RespeqtSettings::ImageSettings is;
@@ -339,7 +339,7 @@ MainWindow::MainWindow(QWidget *parent)
     // RespeQt Client  //
     RCl *rcl = new RCl(sio);
     sio->installDevice(RESPEQT_CLIENT_CDEVIC, rcl);
-    
+
     // Documentation Display
     docDisplayWindow = new DocDisplayWindow();
 
@@ -1043,6 +1043,26 @@ void MainWindow::deviceStatusChanged(int deviceNo)
             diskWidget->showAsEmpty(respeqtSettings->hideHappyMode(), respeqtSettings->hideChipMode(), respeqtSettings->hideNextImage(), respeqtSettings->hideOSBMode(), respeqtSettings->hideToolDisk());
         }
     }
+    updateHighSpeed();
+}
+
+void MainWindow::updateHighSpeed()
+{
+    if (sio->port() != nullptr) {
+        int nbChip = 0;
+        for(int i = 0 ; i < DISK_COUNT; ++i ) {
+            auto disk = qobject_cast <SimpleDiskImage*> (sio->getDevice(i + DISK_BASE_CDEVIC));
+            Board *board = disk != nullptr ? disk->getBoardInfo() : nullptr;
+            if ((board != nullptr) && (board->isChipOpen())) {
+                nbChip++;
+            }
+        }
+        if (nbChip > 0) {
+            sio->port()->forceHighSpeed(52400);
+        } else {
+            sio->port()->forceHighSpeed(0);
+        }
+    }
 }
 
 void MainWindow::uiMessage(int t, QString message)
@@ -1139,7 +1159,7 @@ void MainWindow::on_actionOptions_triggered()
         deviceStatusChanged(i);
     }
     sio->setAutoReconnect(respeqtSettings->sioAutoReconnect());
-    
+
     ui->actionStartEmulation->trigger();
 }
 
@@ -1240,7 +1260,7 @@ bool MainWindow::ejectImage(int no, bool ask)
         pclink->resetLink(no+1);
         sio->installDevice(PCLINK_CDEVIC,pclink);
     }
-    
+
     auto img = qobject_cast <SimpleDiskImage*> (sio->getDevice(no + DISK_BASE_CDEVIC));
 
     if (ask && img && img->isModified()) {
@@ -1301,7 +1321,7 @@ int MainWindow::firstEmptyDiskSlot(int startFrom, bool createOne)
 void MainWindow::bootExe(const QString &fileName)
 {
     SioDevice *old = sio->getDevice(DISK_BASE_CDEVIC);
-    AutoBoot loader(sio, old);    
+    AutoBoot loader(sio, old);
     AutoBootDialog dlg(this);
 
     bool highSpeed =    respeqtSettings->useHighSpeedExeLoader() &&
@@ -1577,6 +1597,7 @@ void MainWindow::toggleChip(int no, bool open)
 {
     auto img = qobject_cast <SimpleDiskImage*> (sio->getDevice(no + DISK_BASE_CDEVIC));
     img->setChipMode(open);
+    updateHighSpeed();
 }
 
 void MainWindow::toggleOSB(int no, bool open)
@@ -1589,6 +1610,7 @@ void MainWindow::toggleToolDisk(int no, bool enabled)
 {
     auto img = qobject_cast <SimpleDiskImage*> (sio->getDevice(no + DISK_BASE_CDEVIC));
     img->setToolDiskMode(enabled);
+    updateHighSpeed();
 }
 
 void MainWindow::toggleWriteProtection(int no, bool protectionEnabled)

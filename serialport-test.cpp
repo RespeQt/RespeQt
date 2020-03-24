@@ -89,6 +89,10 @@ bool TestSerialPortBackend::setSpeed(int /*speed*/)
     return true;
 }
 
+void TestSerialPortBackend::forceHighSpeed(int /*speed*/)
+{
+}
+
 bool TestSerialPortBackend::readPauseTag()
 {
      if (!mXmlReader->isStartElement()

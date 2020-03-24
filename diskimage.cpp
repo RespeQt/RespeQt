@@ -1904,11 +1904,12 @@ void SimpleDiskImage::handleCommand(quint8 command, quint16 aux)
             if (!writeCommandAck()) {
                 break;
             }
-            qDebug() << "!n" << tr("[%1] Speed poll")
-                        .arg(deviceName());
-            writeComplete();
             QByteArray speed(1, 0);
             speed[0] = sio->port()->speedByte();
+            qDebug() << "!n" << tr("[%1] Speed poll: %2")
+                        .arg(deviceName())
+                        .arg((int) speed[0]);
+            writeComplete();
             writeDataFrame(speed);
             break;
         }
