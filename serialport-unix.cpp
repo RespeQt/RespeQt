@@ -522,7 +522,7 @@ QByteArray StandardSerialPortBackend::readDataFrame(uint size, bool verbose)
 {
     QByteArray data = readRawFrame(size + 1, verbose);
     if (data.isEmpty()) {
-        return nullptr;
+        return data;
     }
     auto expected = (quint8)data.at(size);
     auto got = sioChecksum(data, size);
