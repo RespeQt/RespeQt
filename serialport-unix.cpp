@@ -845,6 +845,10 @@ void AtariSioBackend::cancel()
     }
 }
 
+void AtariSioBackend::forceHighSpeed(int)
+{
+}
+
 bool AtariSioBackend::setSpeed(int speed)
 {
     if (ioctl(mHandle, ATARISIO_IOC_SET_BAUDRATE, speed) < 0) {
