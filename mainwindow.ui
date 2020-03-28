@@ -398,7 +398,7 @@
   <action name="actionBootExe">
    <property name="icon">
     <iconset>
-     <normaloff>:/icons/other-icons/Atari.ico</normaloff>:/icons/other-icons/Atari.ico</iconset>
+     <normaloff>:/icons/other-icons/Atari.png</normaloff>:/icons/other-icons/Atari.png</iconset>
    </property>
    <property name="text">
     <string>&amp;Boot Atari executable...</string>

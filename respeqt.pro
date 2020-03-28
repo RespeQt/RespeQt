@@ -10,7 +10,7 @@
 # know the specific year(s) please let the current maintainer know.
 #
 #CONFIG(release, debug|release):DEFINES += QT_NO_DEBUG_OUTPUT
-VERSION = r5.2
+VERSION = r5.3
 DEFINES += VERSION=\\\"$$VERSION\\\"
 TARGET = RespeQt
 TEMPLATE = app

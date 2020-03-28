@@ -1,3 +1,11 @@
+release 5
+	* PRO and ATX images support in read/write mode with accurate (I hope so) protection emulation.
+	* Spy mode to display data exchanged with Atari.
+	* Happy 810 Rev.5 and Happy 1050 Rev.7 emulation to read/write real floppy disks from/to images.
+	* Chip 810 and Super Archiver 1050 emulation to read/write real floppy disks from/to images.
+	* Automatic Translator activation when OS-B is detected in the filename in drive D1:
+	* Favorite tool disk accessible in one click in drive D1:
+
 release 4
 	* fixed uninitialized pointer to log window instance causing a crash
 	* replaced AspeCl with FJCs RCL (#54)
