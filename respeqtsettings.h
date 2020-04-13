@@ -232,6 +232,14 @@ public:
     bool isPrinterSpyMode();
     void setPrinterSpyMode(bool enabled);
 
+// 1020 Graphics Instructions
+    bool displayGraphicsInstructions();
+    void setDisplayGraphicsInstructions(bool enabled);
+
+// Clear 1020 Graphics pane on STATUS command
+    bool clearOnStatus();
+    void setClearOnStatus(bool enabled);
+
 // Methods for setting and getting the Printer emulation settings.
     void setOutputName(int no, const QString &outputName);
     const QString &outputName(int no) const;
@@ -411,6 +419,8 @@ private:
     bool mExplorerOnTop;
     bool mEnableShade;
     bool mPrinterSpyMode;
+    bool mDisplayGraphicsInstructions;
+    bool mClearOnStatus;
 
     QString m810Firmware;
     QString m810ChipFirmware;

@@ -58,13 +58,29 @@ namespace Printers
 
         static QString typeName()
         {
-            return "GraphicsDrawChar";
+            return "GraphicsDrawText";
         }
 
     protected:
         int mOrientation;
         int mScale;
         QString mText;
+    };
+
+    class GraphicsClearPane : public GraphicsPrimitive
+    {
+        Q_OBJECT
+
+    public:
+        GraphicsClearPane();
+        virtual ~GraphicsClearPane();
+
+        virtual void execute(QGraphicsScene &graphicsScene) override;
+
+        static QString typeName()
+        {
+            return "GraphicsClearPane";
+        }
     };
 }
 #endif // GRAPHICSPRIMITIVE_H

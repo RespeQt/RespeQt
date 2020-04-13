@@ -34,7 +34,7 @@ protected:
 
 private:
     Ui::OptionsDialog *m_ui;
-    QTreeWidgetItem *itemTestSerialPort, *itemPassthrough, *itemAtari1027, *itemPrinterProtocol,
+    QTreeWidgetItem *itemTestSerialPort, *itemPassthrough, *itemAtari1027, *itemPrinterProtocol, *item1020Options,
         *itemStandard, *itemAtariSio, *itemEmulation, *itemDiskOptions, *itemDiskOSB, *itemDiskIcons, *itemDiskFavorite, *itemI18n,
         *itemFirmware810Path, *itemFirmware1050Path, *itemFirmwareEmulation, *itemTraceOptions;
 

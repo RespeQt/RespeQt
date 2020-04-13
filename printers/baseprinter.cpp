@@ -37,9 +37,13 @@ namespace Printers
                     status[1] = m_lastOperation;
                     status[2] = 3;
                     status[3] = 0;
-                    sio->port()->writeComplete();
-                    sio->port()->writeDataFrame(status);
-                    qDebug() << "!n" << tr("[%1] Get status.").arg(deviceName());
+                    if (!sio->port()->writeComplete()) {
+                        return;
+                    }
+                    qDebug() << "!n" << tr("[%1] Get status: $%2")
+                                .arg(deviceName())
+                                .arg((unsigned char)status[1], 2, 16, QChar('0'));
+                    writeDataFrame(status);
                     break;
                 }
             case 0x57: // dec 87
@@ -63,15 +67,17 @@ namespace Printers
                         break;
                     default:
                         sio->port()->writeCommandNak();
-                        qWarning() << "!w" << tr("[%1] command: $%2, aux: $%3 NAKed.")
-                                       .arg(deviceName())
-                                       .arg(command, 2, 16, QChar('0'))
-                                       .arg(aux, 4, 16, QChar('0'));
+                        qWarning() << "!w" << tr("[%1] Command: $%2, aux: $%3 NAKed because aux2 is not supported")
+                                      .arg(deviceName())
+                                      .arg(command, 2, 16, QChar('0'))
+                                      .arg(aux, 4, 16, QChar('0'));
                         return;
                     }
-                    sio->port()->writeCommandAck();
+                    if (!sio->port()->writeCommandAck()) {
+                        return;
+                    }
 
-                    QByteArray data = sio->port()->readDataFrame(len);
+                    QByteArray data = readDataFrame(len);
                     if (data.isEmpty()) {
                         qCritical() << "!e" << tr("[%1] Print: data frame failed")
                                       .arg(deviceName());
@@ -79,8 +85,10 @@ namespace Printers
                         return;
                     }
 
+                    if (!sio->port()->writeDataAck()) {
+                        return;
+                    }
                     handleBuffer(data, len);
-                    sio->port()->writeDataAck();
                     qDebug() << "!n" << tr("[%1] Print (%2 chars)").arg(deviceName()).arg(len);
                     sio->port()->writeComplete();
                     break;
@@ -113,5 +121,96 @@ namespace Printers
     {
         mOutput->setPrinter(QWeakPointer<BasePrinter>());
         mOutput.reset();
+    }
+
+    QByteArray BasePrinter::readDataFrame(uint size)
+    {
+        QByteArray data = sio->port()->readDataFrame(size);
+        if (respeqtSettings->isPrinterSpyMode()) {
+            qDebug() << "!u" << tr("[%1] Receiving %2 bytes from Atari").arg(deviceName()).arg(data.length());
+            dumpBuffer((unsigned char *) data.data(), data.length());
+        }
+        return data;
+    }
+
+    bool BasePrinter::writeDataFrame(QByteArray data)
+    {
+        if (respeqtSettings->isPrinterSpyMode()) {
+            qDebug() << "!u" << tr("[%1] Sending %2 bytes to Atari").arg(deviceName()).arg(data.length());
+            dumpBuffer((unsigned char *) data.data(), data.length());
+        }
+        return sio->port()->writeDataFrame(data);
+    }
+
+    void BasePrinter::dumpBuffer(unsigned char *buf, int len)
+    {
+        for (int i = 0; i < ((len + 15) >> 4); i++) {
+            char line[80];
+            int ofs = i << 4;
+            fillBuffer(line, buf, len, ofs, true);
+            qDebug() << "!u" << tr("[%1] §%2").arg(deviceName()).arg(line);
+        }
+    }
+
+    void BasePrinter::fillBuffer(char *line, unsigned char *buf, int len, int ofs, bool dumpAscii)
+    {
+        *line = 0;
+        if ((len - ofs) >= 16) {
+            if (dumpAscii) {
+                unsigned char car[16];
+                for (int j = 0; j < 16; j++) {
+                    if ((buf[ofs + j] > 32) && (buf[ofs + j] < 127)) {
+                        car[j] = buf[ofs + j];
+                    }
+                    else if ((buf[ofs + j] > 160) && (buf[ofs + j] < 255)) {
+                        car[j] = buf[ofs + j] & 0x7F;
+                    }
+                    else {
+                        car[j] = ' ';
+                    }
+                }
+                sprintf(line, "$%04X: %02X %02X %02X %02X %02X %02X %02X %02X %02X %02X %02X %02X %02X %02X %02X %02X | %c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c",
+                    ofs & 0xFFFF, ((unsigned int)buf[ofs + 0]) & 0xFF, ((unsigned int)buf[ofs + 1]) & 0xFF,
+                    ((unsigned int)buf[ofs + 2]) & 0xFF, ((unsigned int)buf[ofs + 3]) & 0xFF, ((unsigned int)buf[ofs + 4]) & 0xFF,
+                    ((unsigned int)buf[ofs + 5]) & 0xFF, ((unsigned int)buf[ofs + 6]) & 0xFF, ((unsigned int)buf[ofs + 7]) & 0xFF,
+                    ((unsigned int)buf[ofs + 8]) & 0xFF, ((unsigned int)buf[ofs + 9]) & 0xFF, ((unsigned int)buf[ofs + 10]) & 0xFF,
+                    ((unsigned int)buf[ofs + 11]) & 0xFF, ((unsigned int)buf[ofs + 12]) & 0xFF, ((unsigned int)buf[ofs + 13]) & 0xFF,
+                    ((unsigned int)buf[ofs + 14]) & 0xFF, ((unsigned int)buf[ofs + 15]) & 0xFF, car[0], car[1], car[2], car[3],
+                    car[4], car[5], car[6], car[7], car[8], car[9], car[10], car[11], car[12], car[13], car[14], car[15]);
+            }
+            else {
+                sprintf(line, "$%04X: %02X %02X %02X %02X %02X %02X %02X %02X %02X %02X %02X %02X %02X %02X %02X %02X",
+                    ofs & 0xFFFF, ((unsigned int)buf[ofs + 0]) & 0xFF, ((unsigned int)buf[ofs + 1]) & 0xFF,
+                    ((unsigned int)buf[ofs + 2]) & 0xFF, ((unsigned int)buf[ofs + 3]) & 0xFF, ((unsigned int)buf[ofs + 4]) & 0xFF,
+                    ((unsigned int)buf[ofs + 5]) & 0xFF, ((unsigned int)buf[ofs + 6]) & 0xFF, ((unsigned int)buf[ofs + 7]) & 0xFF,
+                    ((unsigned int)buf[ofs + 8]) & 0xFF, ((unsigned int)buf[ofs + 9]) & 0xFF, ((unsigned int)buf[ofs + 10]) & 0xFF,
+                    ((unsigned int)buf[ofs + 11]) & 0xFF, ((unsigned int)buf[ofs + 12]) & 0xFF, ((unsigned int)buf[ofs + 13]) & 0xFF,
+                    ((unsigned int)buf[ofs + 14]) & 0xFF, ((unsigned int)buf[ofs + 15]) & 0xFF);
+            }
+        }
+        else if (ofs < len) {
+            int nbRemaining = len - ofs;
+            memset(line, ' ', 73);
+            line[73] = 0;
+            sprintf(line, "$%04X:", ofs);
+            for (int i = 0; i < nbRemaining; i++) {
+                sprintf(&line[strlen(line)], " %02X", ((unsigned int)buf[ofs + i]) & 0xFF);
+            }
+            if (dumpAscii) {
+                for (int i = strlen(line); i < 54; i++) {
+                    line[i] = ' ';
+                }
+                strcpy(&line[54], " | ");
+                for (int i = 0; i < nbRemaining; i++) {
+                    if ((buf[ofs + i] > 32) && (buf[ofs + i] < 127)) {
+                        line[57 + i] = buf[ofs + i];
+                    }
+                    else if ((buf[ofs + i] > 160) && (buf[ofs + i] < 255)) {
+                        line[57 + i] = buf[ofs + i] & 0x7F;
+                    }
+                }
+                line[57 + nbRemaining] = 0;
+            }
+        }
     }
 }

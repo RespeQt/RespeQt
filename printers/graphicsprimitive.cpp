@@ -24,11 +24,6 @@ namespace Printers
 
     void GraphicsDrawLine::execute(QGraphicsScene &graphicsScene)
     {
-        qDebug() << "!n" << tr("*** Drawing a line from (%1,%2) to (%3,%4)")
-                    .arg(mSrcX)
-                    .arg(mSrcY)
-                    .arg(mDestX)
-                    .arg(mDestY);
         QColor color(0, 0, 0);
         switch(mColor & 0x03) {
         case 0:
@@ -73,5 +68,17 @@ namespace Printers
                     .arg(mSrcY)
                     .arg(mText);
         graphicsScene.addSimpleText(mText);
+    }
+
+    GraphicsClearPane::GraphicsClearPane()
+        :GraphicsPrimitive(0, 0, 0)
+    {
+    }
+
+    GraphicsClearPane::~GraphicsClearPane() = default;
+
+    void GraphicsClearPane::execute(QGraphicsScene &graphicsScene)
+    {
+        graphicsScene.clear();
     }
 }

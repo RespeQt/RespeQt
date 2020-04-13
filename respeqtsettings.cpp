@@ -132,6 +132,8 @@ RespeqtSettings::RespeqtSettings()
     }
     mSettings->endArray();
     mPrinterSpyMode = mSettings->value("PrinterSpyMode", false).toBool();
+    mDisplayGraphicsInstructions = mSettings->value("DisplayGraphicsInstructions", true).toBool();
+    mClearOnStatus = mSettings->value("ClearOnStatus", false).toBool();
 
     m810Firmware = mSettings->value("Atari810Firmware", "").toString();
     m810ChipFirmware = mSettings->value("Atari810ChipFirmware", "").toString();
@@ -247,6 +249,8 @@ void RespeqtSettings::saveSessionToFile(const QString &fileName)
         s.setValue("ExplorerOnTop", mExplorerOnTop);
         s.setValue("EnableShadeByDefault", mEnableShade);
         s.setValue("PrinterSpyMode", mPrinterSpyMode);
+        s.setValue("DisplayGraphicsInstructions", mDisplayGraphicsInstructions);
+        s.setValue("ClearOnStatus", mClearOnStatus);
         s.setValue("Atari810Firmware", m810Firmware);
         s.setValue("Atari810ChipFirmware", m810ChipFirmware);
         s.setValue("Atari810HappyFirmware", m810HappyFirmware);
@@ -396,6 +400,8 @@ void RespeqtSettings::saveSessionToFile(const QString &fileName)
         mD4PowerOnWithDiskInserted = s.value("D4PowerOnWithDiskInserted", false).toBool();
         mRawPrinterName = s.value("RawPrinterName", "").toString();
         mPrinterSpyMode = s.value("PrinterSpyMode", false).toBool();
+        mDisplayGraphicsInstructions = s.value("DisplayGraphicsInstructions", true).toBool();
+        mClearOnStatus = s.value("ClearOnStatus", false).toBool();
 
 #ifdef Q_OS_MAC
         mNativeMenu = s.value("NativeMenu", false).toBool();
@@ -1104,6 +1110,28 @@ void RespeqtSettings::setPrinterSpyMode(bool enabled)
 {
     mPrinterSpyMode = enabled;
     mSettings->setValue("PrinterSpyMode", mPrinterSpyMode);
+}
+
+bool RespeqtSettings::displayGraphicsInstructions()
+{
+    return mDisplayGraphicsInstructions;
+}
+
+void RespeqtSettings::setDisplayGraphicsInstructions(bool enabled)
+{
+    mDisplayGraphicsInstructions = enabled;
+    mSettings->setValue("DisplayGraphicsInstructions", mDisplayGraphicsInstructions);
+}
+
+bool RespeqtSettings::clearOnStatus()
+{
+    return mClearOnStatus;
+}
+
+void RespeqtSettings::setClearOnStatus(bool enabled)
+{
+    mClearOnStatus = enabled;
+    mSettings->setValue("ClearOnStatus", mClearOnStatus);
 }
 
 QString RespeqtSettings::atari810Firmware()

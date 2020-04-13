@@ -62,6 +62,7 @@ namespace Printers
         QByteArray mFirstNumber;
         QByteArray mSecondNumber;
         QByteArray mThirdNumber;
+        bool mClearPane;
 
         void executeGraphicsCommand();
         void resetGraphics();
@@ -71,14 +72,11 @@ namespace Printers
         void handleGraphicsCodes(const unsigned char b);
         bool handlePrintableCodes(const unsigned char b);
         bool handleGraphicsMode(const QByteArray &buffer, const unsigned int len, unsigned int &i);
-        int getFirstNumber(const int defaultValue = 0);
-        int getSecondNumber(const int defaultValue = 0);
-        int getThirdNumber(const int defaultValue = 0);
+        inline int getFirstNumber(const int defaultValue = 0) { return getNumber(mFirstNumber, mFirstNegative, defaultValue); }
+        inline int getSecondNumber(const int defaultValue = 0) { return getNumber(mSecondNumber, mSecondNegative, defaultValue); }
+        inline int getThirdNumber(const int defaultValue = 0) { return getNumber(mThirdNumber, mThirdNegative, defaultValue); }
+        int getNumber(const QString number, const bool negative, const int defaultValue = 0);
         bool drawAxis(bool xAxis, int size, int count);
-        QByteArray readDataFrame(uint size);
-        bool writeDataFrame(QByteArray data);
-        void dumpBuffer(unsigned char *buf, int len);
-        void fillBuffer(char *line, unsigned char *buf, int len, int ofs, bool dumpAscii);
     };
 }
 #endif // ATARI1020_H

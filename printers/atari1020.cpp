@@ -43,7 +43,7 @@ namespace Printers
     {
         AtariPrinter::setupOutput();
         if (mOutput && mOutput->painter()) {
-            mOutput->painter()->setWindow(QRect(0, -999, 720, 1000));
+            mOutput->painter()->setWindow(QRect(0, -999, 800, 1000));
         }
     }
 
@@ -87,7 +87,9 @@ namespace Printers
                     status[1] = 0;
                     status[2] = 0xFF;
                     status[3] = 0x40;
-                    sio->port()->writeComplete();
+                    if (!sio->port()->writeComplete()) {
+                        return;
+                    }
                     qDebug() << "!n" << tr("[%1] Get status: $%2")
                                 .arg(deviceName())
                                 .arg((unsigned char)status[1], 2, 16, QChar('0'));
@@ -101,6 +103,9 @@ namespace Printers
                     mEsc = false;
                     mStartOfLogicalLine = true;
                     mInternational = false;
+                    if (respeqtSettings->clearOnStatus()) {
+                        mClearPane = true;
+                    }
                     break;
                 }
 
@@ -126,6 +131,9 @@ namespace Printers
 
                     if (!sio->port()->writeDataAck()) {
                         return;
+                    }
+                    if (! respeqtSettings->displayGraphicsInstructions()) {
+                        qDebug() << "!n" << tr("[%1] Print (%2 chars)").arg(deviceName()).arg(len);
                     }
                     handleBuffer(data, len);
                     sio->port()->writeComplete();
@@ -228,20 +236,26 @@ namespace Printers
                     switch (b) {
 
                     case 0x1B: // Cancel Esc
-                        qDebug() << "!n" << tr("[%1] Escape character repeated")
-                                    .arg(deviceName());
+                        if (respeqtSettings->displayGraphicsInstructions()) {
+                            qDebug() << "!n" << tr("[%1] Escape character repeated")
+                                        .arg(deviceName());
+                        }
                         mEsc = true;
                         break;
 
                     case 0x17: // CTRL+W: Enter international mode
-                        qDebug() << "!n" << tr("[%1] Entering international mode")
-                                    .arg(deviceName());
+                        if (respeqtSettings->displayGraphicsInstructions()) {
+                            qDebug() << "!n" << tr("[%1] Entering international mode")
+                                        .arg(deviceName());
+                        }
                         mInternational = true;
                         break;
 
                     case 0x18: // CTRL+X: Exit international mode
-                        qDebug() << "!n" << tr("[%1] Exiting international mode")
-                                    .arg(deviceName());
+                        if (respeqtSettings->displayGraphicsInstructions()) {
+                            qDebug() << "!n" << tr("[%1] Exiting international mode")
+                                        .arg(deviceName());
+                        }
                         mInternational = false;
                         break;
 
@@ -255,53 +269,69 @@ namespace Printers
                          * even if an Esc Ctrl-S (80-column mode) is found between AB and CD.
                          */
                         if (! mStartOfLogicalLine) {
-                            qDebug() << "!n" << tr("[%1] Escape character not on start of line")
-                                        .arg(deviceName());
+                            if (respeqtSettings->displayGraphicsInstructions()) {
+                                qDebug() << "!n" << tr("[%1] Escape character not on start of line")
+                                            .arg(deviceName());
+                            }
                         } else {
                             switch (b) {
 
                             case 0x07: // CTRL+G: Enter Graphics Mode
-                                qDebug() << "!n" << tr("[%1] Entering Graphics mode")
-                                            .arg(deviceName());
+                                if (respeqtSettings->displayGraphicsInstructions()) {
+                                    qDebug() << "!n" << tr("[%1] Entering Graphics mode")
+                                                .arg(deviceName());
+                                }
                                 mStartOfLogicalLine = false;
                                 mGraphicsMode = true;
                                 resetGraphics();
                                 break;
 
                             case 0x0E: // CTRL+N: 40 characters
-                                qDebug() << "!n" << tr("[%1] Switching to 40 columns")
-                                            .arg(deviceName());
+                                if (respeqtSettings->displayGraphicsInstructions()) {
+                                    qDebug() << "!n" << tr("[%1] Switching to 40 columns")
+                                                .arg(deviceName());
+                                }
                                 mOutput->calculateFixedFontSize(40);
                                 break;
 
                             case 0x10: // CTRL+P: 20 characters
-                                qDebug() << "!n" << tr("[%1] Switching to 20 columns")
-                                            .arg(deviceName());
+                                if (respeqtSettings->displayGraphicsInstructions()) {
+                                    qDebug() << "!n" << tr("[%1] Switching to 20 columns")
+                                                .arg(deviceName());
+                                }
                                 mOutput->calculateFixedFontSize(20);
                                 break;
 
                             case 0x13: // CTRL+S: 80 characters
-                                qDebug() << "!n" << tr("[%1] Switching to 80 columns")
-                                            .arg(deviceName());
+                                if (respeqtSettings->displayGraphicsInstructions()) {
+                                    qDebug() << "!n" << tr("[%1] Switching to 80 columns")
+                                                .arg(deviceName());
+                                }
                                 mOutput->calculateFixedFontSize(80);
                                 break;
 
                             case 0x17: // CTRL+W: Enter international mode
-                                qDebug() << "!n" << tr("[%1] Entering international mode")
-                                            .arg(deviceName());
+                                if (respeqtSettings->displayGraphicsInstructions()) {
+                                    qDebug() << "!n" << tr("[%1] Entering international mode")
+                                                .arg(deviceName());
+                                }
                                 mInternational = true;
                                 break;
 
                             case 0x18: // CTRL+X: Exit international mode
-                                qDebug() << "!n" << tr("[%1] Exiting international mode")
-                                            .arg(deviceName());
+                                if (respeqtSettings->displayGraphicsInstructions()) {
+                                    qDebug() << "!n" << tr("[%1] Exiting international mode")
+                                                .arg(deviceName());
+                                }
                                 mInternational = false;
                                 break;
 
                             default: // Unknown control codes are consumed.
-                                qDebug() << "!n" << tr("[%1] Unknown control code $%2")
-                                            .arg(deviceName())
-                                            .arg(b, 2, 16, QChar('0'));
+                                if (respeqtSettings->displayGraphicsInstructions()) {
+                                    qDebug() << "!n" << tr("[%1] Unknown control code $%2")
+                                                .arg(deviceName())
+                                                .arg(b, 2, 16, QChar('0'));
+                                }
                                 return true;
                             }
                         }
@@ -336,7 +366,7 @@ namespace Printers
         /*
          * The ';' character is used to repeat the same command but with another set of parameters
          */
-        unsigned char currentCommand = mCurrentCommand;
+        auto currentCommand = mCurrentCommand;
         executeGraphicsCommand();
         resetGraphics();
         mCurrentCommand = currentCommand;
@@ -375,9 +405,11 @@ namespace Printers
         switch (mAutomataState) {
         case AUTOMATA_START:
             if (! checkGraphicsCommand(b)) {
-                qDebug() << "!n" << tr("[%1] Unknown Graphics command $%2")
-                            .arg(deviceName())
-                            .arg(b, 2, 16, QChar('0'));
+                if (respeqtSettings->displayGraphicsInstructions()) {
+                    qDebug() << "!n" << tr("[%1] Unknown Graphics command $%2")
+                                .arg(deviceName())
+                                .arg(b, 2, 16, QChar('0'));
+                }
                 mAutomataState = AUTOMATA_END; // wait for the next '*' or EOL
             }
             break;
@@ -505,20 +537,15 @@ namespace Printers
         }
     }
 
-    void Atari1020::executeGraphicsPrimitive(GraphicsPrimitive *primitive)
-    {
-        if (mOutput) {
-            mOutput->executeGraphicsPrimitive(primitive);
-        }
-    }
-
     void Atari1020::executeGraphicsCommand()
     {
         if (mCurrentCommand) {
             switch (mCurrentCommand) {
             case 'A': // Abandon Graphics mode
                 mGraphicsMode = false;
-                qDebug() << "!n" << tr("[%1] Leaving Graphics mode").arg(deviceName());
+                if (respeqtSettings->displayGraphicsInstructions()) {
+                    qDebug() << "!n" << tr("[%1] Leaving Graphics mode").arg(deviceName());
+                }
                 break;
 
             case 'H': // set to HOME
@@ -533,15 +560,19 @@ namespace Printers
                     auto scale = getFirstNumber();
                     if (scale >= 0 && scale <= 63) {
                         mScale = scale;
-                        qDebug() << "!n" << tr("[%1] Scale characters to %2")
-                                    .arg(deviceName())
-                                    .arg(scale);
+                        if (respeqtSettings->displayGraphicsInstructions()) {
+                            qDebug() << "!n" << tr("[%1] Scale characters to %2")
+                                        .arg(deviceName())
+                                        .arg(scale);
+                        }
                         QFontPtr font = mOutput->font();
                         font->setPixelSize(font->pixelSize() * scale);
                     } else {
-                        qDebug() << "!n" << tr("[%1] Scale command ignored (%2 should be in range 0-63)")
-                                    .arg(deviceName())
-                                    .arg(QString(mFirstNumber));
+                        if (respeqtSettings->displayGraphicsInstructions()) {
+                            qDebug() << "!n" << tr("[%1] Scale command ignored (%2 should be in range 0-63)")
+                                        .arg(deviceName())
+                                        .arg(QString(mFirstNumber));
+                        }
                     }
                 }
                 break;
@@ -571,16 +602,20 @@ namespace Printers
                                 break;
                         }
 
-                        qDebug() << "!n" << tr("[%1] Set color to %2")
-                                    .arg(deviceName())
-                                    .arg(colorName);
+                        if (respeqtSettings->displayGraphicsInstructions()) {
+                            qDebug() << "!n" << tr("[%1] Set color to %2")
+                                        .arg(deviceName())
+                                        .arg(colorName);
+                        }
                         if (mOutput && mOutput->painter()) {
                             mOutput->painter()->setPen(temp);
                         }
                     } else {
-                        qDebug() << "!n" << tr("[%1] Set color command ignored (%2 should be in range 0-3)")
-                                    .arg(deviceName())
-                                    .arg(QString(mFirstNumber));
+                        if (respeqtSettings->displayGraphicsInstructions()) {
+                            qDebug() << "!n" << tr("[%1] Set color command ignored (%2 should be in range 0-3)")
+                                        .arg(deviceName())
+                                        .arg(QString(mFirstNumber));
+                        }
                     }
                 }
                 break;
@@ -590,9 +625,11 @@ namespace Printers
                     auto line = getFirstNumber();
                     if (line >= 0 && line <= 15) {
                         mLineType = line;
-                        qDebug() << "!n" << tr("[%1] Set line mode to %2")
-                                    .arg(deviceName())
-                                    .arg(line == 0 ? tr("solid") : tr("dashed %1").arg(line));
+                        if (respeqtSettings->displayGraphicsInstructions()) {
+                            qDebug() << "!n" << tr("[%1] Set line mode to %2")
+                                        .arg(deviceName())
+                                        .arg(line == 0 ? tr("solid") : tr("dashed %1").arg(line));
+                        }
                         if (mOutput && mOutput->painter()) {
                             auto pen = mOutput->painter()->pen();
                             if (line == 0) {
@@ -606,16 +643,20 @@ namespace Printers
                             mOutput->painter()->setPen(pen);
                         }
                     } else {
-                        qDebug() << "!n" << tr("[%1] Set line mode command ignored (%2 should be in range 0-15)")
-                                    .arg(deviceName())
-                                    .arg(QString(mFirstNumber));
+                        if (respeqtSettings->displayGraphicsInstructions()) {
+                            qDebug() << "!n" << tr("[%1] Set line mode command ignored (%2 should be in range 0-15)")
+                                        .arg(deviceName())
+                                        .arg(QString(mFirstNumber));
+                        }
                     }
                 }
                 break;
 
             case 'I': // Init plotter
-                qDebug() << "!n" << tr("[%1] Initialize plotter")
-                            .arg(deviceName());
+                if (respeqtSettings->displayGraphicsInstructions()) {
+                    qDebug() << "!n" << tr("[%1] Initialize plotter")
+                                .arg(deviceName());
+                }
                 mGraphicsMode = false;
                 mEsc = false;
                 mStartOfLogicalLine = true;
@@ -640,10 +681,12 @@ namespace Printers
                                 if (mOutput && mOutput->painter()) {
                                     mOutput->painter()->drawLine(mPenPoint, point);
                                 }
-                                qDebug() << "!n" << tr("[%1] Draw to point (%2,%3)")
-                                            .arg(deviceName())
-                                            .arg(x)
-                                            .arg(y);
+                                if (respeqtSettings->displayGraphicsInstructions()) {
+                                    qDebug() << "!n" << tr("[%1] Draw to point (%2,%3)")
+                                                .arg(deviceName())
+                                                .arg(x)
+                                                .arg(y);
+                                }
                                 executeGraphicsPrimitive(new GraphicsDrawLine(mPenPoint.x(), mPenPoint.y(), mColor, point.x(), point.y(), mLineType));
                                 mPenPoint = point;
                             break;
@@ -653,27 +696,33 @@ namespace Printers
                                 if (mOutput && mOutput->painter()) {
                                     mOutput->painter()->drawLine(mPenPoint, point);
                                 }
-                                qDebug() << "!n" << tr("[%1] Draw relative to point (%2,%3)")
-                                            .arg(deviceName())
-                                            .arg(x)
-                                            .arg(y);
+                                if (respeqtSettings->displayGraphicsInstructions()) {
+                                    qDebug() << "!n" << tr("[%1] Draw relative to point (%2,%3)")
+                                                .arg(deviceName())
+                                                .arg(x)
+                                                .arg(y);
+                                }
                                 executeGraphicsPrimitive(new GraphicsDrawLine(mPenPoint.x(), mPenPoint.y(), mColor, point.x(), point.y(), mLineType));
                                 mPenPoint = point;
                             break;
 
                             case 'M':
-                                qDebug() << "!n" << tr("[%1] Move to point (%2,%3)")
-                                            .arg(deviceName())
-                                            .arg(x)
-                                            .arg(y);
+                                if (respeqtSettings->displayGraphicsInstructions()) {
+                                    qDebug() << "!n" << tr("[%1] Move to point (%2,%3)")
+                                                .arg(deviceName())
+                                                .arg(x)
+                                                .arg(y);
+                                }
                                 mPenPoint = point;
                             break;
 
                             case 'R':
-                                qDebug() << "!n" << tr("[%1] Move relative to point (%2,%3)")
-                                            .arg(deviceName())
-                                            .arg(x)
-                                            .arg(y);
+                                if (respeqtSettings->displayGraphicsInstructions()) {
+                                    qDebug() << "!n" << tr("[%1] Move relative to point (%2,%3)")
+                                                .arg(deviceName())
+                                                .arg(x)
+                                                .arg(y);
+                                }
                                 mPenPoint += point;
                             break;
                         }
@@ -688,15 +737,19 @@ namespace Printers
                     auto count = getThirdNumber();
                     auto xAxe = (mode != 0);
                     if (xAxe) {
-                        qDebug() << "!n" << tr("[%1] Draw both axes with size %2 and %3 marks")
-                                    .arg(deviceName())
-                                    .arg(size)
-                                    .arg(count);
+                        if (respeqtSettings->displayGraphicsInstructions()) {
+                            qDebug() << "!n" << tr("[%1] Draw both axes with size %2 and %3 marks")
+                                        .arg(deviceName())
+                                        .arg(size)
+                                        .arg(count);
+                        }
                     } else {
-                        qDebug() << "!n" << tr("[%1] Draw Y axe only with size %2 and %3 marks")
-                                    .arg(deviceName())
-                                    .arg(size)
-                                    .arg(count);
+                        if (respeqtSettings->displayGraphicsInstructions()) {
+                            qDebug() << "!n" << tr("[%1] Draw Y axe only with size %2 and %3 marks")
+                                        .arg(deviceName())
+                                        .arg(size)
+                                        .arg(count);
+                        }
                     }
 
                     drawAxis(xAxe, size, count);
@@ -708,22 +761,28 @@ namespace Printers
                     auto orientation = getFirstNumber();
                     if (orientation >= 0 && orientation <= 3) {
                         mTextOrientation = orientation;
-                        qDebug() << "!n" << tr("[%1] Set text orientation to %2")
-                                    .arg(deviceName())
-                                    .arg(mTextOrientation);
+                        if (respeqtSettings->displayGraphicsInstructions()) {
+                            qDebug() << "!n" << tr("[%1] Set text orientation to %2")
+                                        .arg(deviceName())
+                                        .arg(mTextOrientation);
+                        }
                     } else {
-                        qDebug() << "!n" << tr("[%1] Set text orientation command ignored (%2 should be in range 0-3)")
-                                    .arg(deviceName())
-                                    .arg(QString(mFirstNumber));
+                        if (respeqtSettings->displayGraphicsInstructions()) {
+                            qDebug() << "!n" << tr("[%1] Set text orientation command ignored (%2 should be in range 0-3)")
+                                        .arg(deviceName())
+                                        .arg(QString(mFirstNumber));
+                        }
                     }
                 }
                 break;
 
             case 'P': // print text
-                qDebug() << "!n" << tr("[%1] Print \"%2\" in Graphics mode")
-                            .arg(deviceName())
-                            .arg(QString(mPrintText));
-                executeGraphicsPrimitive(new GraphicsDrawText(0, 0, mColor, mTextOrientation, mScale, QString(mPrintText)));
+                if (respeqtSettings->displayGraphicsInstructions()) {
+                    qDebug() << "!n" << tr("[%1] Print \"%2\" in Graphics mode")
+                                .arg(deviceName())
+                                .arg(QString(mPrintText));
+                }
+                executeGraphicsPrimitive(new GraphicsDrawText(mPenPoint.x(), mPenPoint.y(), mColor, mTextOrientation, mScale, QString(mPrintText)));
                 break;
 
             }
@@ -731,49 +790,28 @@ namespace Printers
         mCurrentCommand = 0; // to prevent execution of this command a second time !
     }
 
-    int Atari1020::getFirstNumber(const int defaultValue)
+    void Atari1020::executeGraphicsPrimitive(GraphicsPrimitive *primitive)
     {
-        if (mFirstNumber.length() == 0) {
-            return defaultValue;
+        if (mOutput) {
+            if (mClearPane) {
+                mClearPane = false;
+                mOutput->executeGraphicsPrimitive(new GraphicsClearPane());
+            }
+            mOutput->executeGraphicsPrimitive(primitive);
         }
-        bool ok;
-        int num = mFirstNumber.toInt(&ok, 10);
-        if (!ok) {
-            return defaultValue;
-        }
-        if (mFirstNegative) {
-            return -num;
-        }
-        return num;
     }
 
-    int Atari1020::getSecondNumber(const int defaultValue)
+    int Atari1020::getNumber(const QString number, const bool negative, const int defaultValue)
     {
-        if (mSecondNumber.length() == 0) {
+        if (number.length() == 0) {
             return defaultValue;
         }
         bool ok;
-        int num = mSecondNumber.toInt(&ok, 10);
+        int num = number.toInt(&ok, 10);
         if (!ok) {
             return defaultValue;
         }
-        if (mSecondNegative) {
-            return -num;
-        }
-        return num;
-    }
-
-    int Atari1020::getThirdNumber(const int defaultValue)
-    {
-        if (mThirdNumber.length() == 0) {
-            return defaultValue;
-        }
-        bool ok;
-        int num = mThirdNumber.toInt(&ok, 10);
-        if (!ok) {
-            return defaultValue;
-        }
-        if (mThirdNegative) {
+        if (negative) {
             return -num;
         }
         return num;
@@ -816,96 +854,5 @@ namespace Printers
         mOutput->printChar(qb);
 
         return true;
-    }
-
-    QByteArray Atari1020::readDataFrame(uint size)
-    {
-        QByteArray data = sio->port()->readDataFrame(size);
-        if (respeqtSettings->isPrinterSpyMode()) {
-            qDebug() << "!u" << tr("[%1] Receiving %2 bytes from Atari").arg(deviceName()).arg(data.length());
-            dumpBuffer((unsigned char *) data.data(), data.length());
-        }
-        return data;
-    }
-
-    bool Atari1020::writeDataFrame(QByteArray data)
-    {
-        if (respeqtSettings->isPrinterSpyMode()) {
-            qDebug() << "!u" << tr("[%1] Sending %2 bytes to Atari").arg(deviceName()).arg(data.length());
-            dumpBuffer((unsigned char *) data.data(), data.length());
-        }
-        return sio->port()->writeDataFrame(data);
-    }
-
-    void Atari1020::dumpBuffer(unsigned char *buf, int len)
-    {
-        for (int i = 0; i < ((len + 15) >> 4); i++) {
-            char line[80];
-            int ofs = i << 4;
-            fillBuffer(line, buf, len, ofs, true);
-            qDebug() << "!u" << tr("[%1] §%2").arg(deviceName()).arg(line);
-        }
-    }
-
-    void Atari1020::fillBuffer(char *line, unsigned char *buf, int len, int ofs, bool dumpAscii)
-    {
-        *line = 0;
-        if ((len - ofs) >= 16) {
-            if (dumpAscii) {
-                unsigned char car[16];
-                for (int j = 0; j < 16; j++) {
-                    if ((buf[ofs + j] > 32) && (buf[ofs + j] < 127)) {
-                        car[j] = buf[ofs + j];
-                    }
-                    else if ((buf[ofs + j] > 160) && (buf[ofs + j] < 255)) {
-                        car[j] = buf[ofs + j] & 0x7F;
-                    }
-                    else {
-                        car[j] = ' ';
-                    }
-                }
-                sprintf(line, "$%04X: %02X %02X %02X %02X %02X %02X %02X %02X %02X %02X %02X %02X %02X %02X %02X %02X | %c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c",
-                    ofs & 0xFFFF, ((unsigned int)buf[ofs + 0]) & 0xFF, ((unsigned int)buf[ofs + 1]) & 0xFF,
-                    ((unsigned int)buf[ofs + 2]) & 0xFF, ((unsigned int)buf[ofs + 3]) & 0xFF, ((unsigned int)buf[ofs + 4]) & 0xFF,
-                    ((unsigned int)buf[ofs + 5]) & 0xFF, ((unsigned int)buf[ofs + 6]) & 0xFF, ((unsigned int)buf[ofs + 7]) & 0xFF,
-                    ((unsigned int)buf[ofs + 8]) & 0xFF, ((unsigned int)buf[ofs + 9]) & 0xFF, ((unsigned int)buf[ofs + 10]) & 0xFF,
-                    ((unsigned int)buf[ofs + 11]) & 0xFF, ((unsigned int)buf[ofs + 12]) & 0xFF, ((unsigned int)buf[ofs + 13]) & 0xFF,
-                    ((unsigned int)buf[ofs + 14]) & 0xFF, ((unsigned int)buf[ofs + 15]) & 0xFF, car[0], car[1], car[2], car[3],
-                    car[4], car[5], car[6], car[7], car[8], car[9], car[10], car[11], car[12], car[13], car[14], car[15]);
-            }
-            else {
-                sprintf(line, "$%04X: %02X %02X %02X %02X %02X %02X %02X %02X %02X %02X %02X %02X %02X %02X %02X %02X",
-                    ofs & 0xFFFF, ((unsigned int)buf[ofs + 0]) & 0xFF, ((unsigned int)buf[ofs + 1]) & 0xFF,
-                    ((unsigned int)buf[ofs + 2]) & 0xFF, ((unsigned int)buf[ofs + 3]) & 0xFF, ((unsigned int)buf[ofs + 4]) & 0xFF,
-                    ((unsigned int)buf[ofs + 5]) & 0xFF, ((unsigned int)buf[ofs + 6]) & 0xFF, ((unsigned int)buf[ofs + 7]) & 0xFF,
-                    ((unsigned int)buf[ofs + 8]) & 0xFF, ((unsigned int)buf[ofs + 9]) & 0xFF, ((unsigned int)buf[ofs + 10]) & 0xFF,
-                    ((unsigned int)buf[ofs + 11]) & 0xFF, ((unsigned int)buf[ofs + 12]) & 0xFF, ((unsigned int)buf[ofs + 13]) & 0xFF,
-                    ((unsigned int)buf[ofs + 14]) & 0xFF, ((unsigned int)buf[ofs + 15]) & 0xFF);
-            }
-        }
-        else if (ofs < len) {
-            int nbRemaining = len - ofs;
-            memset(line, ' ', 73);
-            line[73] = 0;
-            sprintf(line, "$%04X:", ofs);
-            for (int i = 0; i < nbRemaining; i++) {
-                sprintf(&line[strlen(line)], " %02X", ((unsigned int)buf[ofs + i]) & 0xFF);
-            }
-            if (dumpAscii) {
-                for (int i = strlen(line); i < 54; i++) {
-                    line[i] = ' ';
-                }
-                strcpy(&line[54], " | ");
-                for (int i = 0; i < nbRemaining; i++) {
-                    if ((buf[ofs + i] > 32) && (buf[ofs + i] < 127)) {
-                        line[57 + i] = buf[ofs + i];
-                    }
-                    else if ((buf[ofs + i] > 160) && (buf[ofs + i] < 255)) {
-                        line[57 + i] = buf[ofs + i] & 0x7F;
-                    }
-                }
-                line[57 + nbRemaining] = 0;
-            }
-        }
     }
 }

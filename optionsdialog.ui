@@ -123,7 +123,7 @@
    </item>
    <item>
     <property name="text">
-     <string>Printer Emulation</string>
+     <string>Printer emulation</string>
     </property>
     <property name="flags">
      <set>ItemIsDragEnabled|ItemIsUserCheckable|ItemIsEnabled</set>
@@ -141,6 +141,11 @@
     <item>
      <property name="text">
       <string>Printer protocol</string>
+     </property>
+    </item>
+    <item>
+     <property name="text">
+      <string>1020 emulation options</string>
      </property>
     </item>
    </item>
@@ -161,7 +166,7 @@
     </sizepolicy>
    </property>
    <property name="currentIndex">
-    <number>15</number>
+    <number>16</number>
    </property>
    <widget class="QWidget" name="page_serialPort">
     <layout class="QVBoxLayout" name="verticalLayout_2">
@@ -2492,6 +2497,56 @@
        <widget class="QCheckBox" name="printerSpyMode">
         <property name="text">
          <string>Display data frames (spy mode)</string>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </widget>
+   <widget class="QWidget" name="page_6">
+    <widget class="QGroupBox" name="diskGroup_4">
+     <property name="geometry">
+      <rect>
+       <x>0</x>
+       <y>0</y>
+       <width>320</width>
+       <height>400</height>
+      </rect>
+     </property>
+     <property name="minimumSize">
+      <size>
+       <width>258</width>
+       <height>208</height>
+      </size>
+     </property>
+     <property name="title">
+      <string>1020 Options</string>
+     </property>
+     <layout class="QGridLayout" name="gridLayout_14">
+      <item row="1" column="0">
+       <widget class="QCheckBox" name="clearOnStatus">
+        <property name="text">
+         <string>Clear Graphics when a STATUS command is received</string>
+        </property>
+       </widget>
+      </item>
+      <item row="2" column="0">
+       <spacer name="emulationSpacer2_5">
+        <property name="orientation">
+         <enum>Qt::Vertical</enum>
+        </property>
+        <property name="sizeHint" stdset="0">
+         <size>
+          <width>20</width>
+          <height>40</height>
+         </size>
+        </property>
+       </spacer>
+      </item>
+      <item row="0" column="0">
+       <widget class="QCheckBox" name="displayGraphicsInstructions">
+        <property name="text">
+         <string>Display the Graphics instructions in the log window</string>
         </property>
        </widget>
       </item>

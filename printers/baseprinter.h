@@ -52,6 +52,11 @@ namespace Printers
         Atascii mAtascii;
         NativeOutputPtr mOutput;
 
+        QByteArray readDataFrame(uint size);
+        bool writeDataFrame(QByteArray data);
+        void dumpBuffer(unsigned char *buf, int len);
+        void fillBuffer(char *line, unsigned char *buf, int len, int ofs, bool dumpAscii);
+
     private:
         char m_lastOperation;
 
