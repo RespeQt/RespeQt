@@ -228,6 +228,10 @@ public:
     bool explorerOnTop();
     void setExplorerOnTop(bool expOnTop);
 
+// Printer Spy Mode
+    bool isPrinterSpyMode();
+    void setPrinterSpyMode(bool enabled);
+
 // Methods for setting and getting the Printer emulation settings.
     void setOutputName(int no, const QString &outputName);
     const QString &outputName(int no) const;
@@ -406,6 +410,7 @@ private:
     bool mUseLargeFont;
     bool mExplorerOnTop;
     bool mEnableShade;
+    bool mPrinterSpyMode;
 
     QString m810Firmware;
     QString m810ChipFirmware;

@@ -131,6 +131,7 @@ RespeqtSettings::RespeqtSettings()
         mPrinterSettings[i].outputName = mSettings->value("OutputName", "").toString();
     }
     mSettings->endArray();
+    mPrinterSpyMode = mSettings->value("PrinterSpyMode", false).toBool();
 
     m810Firmware = mSettings->value("Atari810Firmware", "").toString();
     m810ChipFirmware = mSettings->value("Atari810ChipFirmware", "").toString();
@@ -245,6 +246,7 @@ void RespeqtSettings::saveSessionToFile(const QString &fileName)
         s.setValue("UseLargeFont", mUseLargeFont);
         s.setValue("ExplorerOnTop", mExplorerOnTop);
         s.setValue("EnableShadeByDefault", mEnableShade);
+        s.setValue("PrinterSpyMode", mPrinterSpyMode);
         s.setValue("Atari810Firmware", m810Firmware);
         s.setValue("Atari810ChipFirmware", m810ChipFirmware);
         s.setValue("Atari810HappyFirmware", m810HappyFirmware);
@@ -393,6 +395,7 @@ void RespeqtSettings::saveSessionToFile(const QString &fileName)
         mD3PowerOnWithDiskInserted = s.value("D3PowerOnWithDiskInserted", false).toBool();
         mD4PowerOnWithDiskInserted = s.value("D4PowerOnWithDiskInserted", false).toBool();
         mRawPrinterName = s.value("RawPrinterName", "").toString();
+        mPrinterSpyMode = s.value("PrinterSpyMode", false).toBool();
 
 #ifdef Q_OS_MAC
         mNativeMenu = s.value("NativeMenu", false).toBool();
@@ -1090,6 +1093,17 @@ QString RespeqtSettings::atariFixedFontFamily() {
 void RespeqtSettings::setAtariFixedFontFamily(QString fontFamily) {
     mAtariFixedFontName = fontFamily;
     mSettings->setValue("AtariFixedFontFamily", fontFamily);
+}
+
+bool RespeqtSettings::isPrinterSpyMode()
+{
+    return mPrinterSpyMode;
+}
+
+void RespeqtSettings::setPrinterSpyMode(bool enabled)
+{
+    mPrinterSpyMode = enabled;
+    mSettings->setValue("PrinterSpyMode", mPrinterSpyMode);
 }
 
 QString RespeqtSettings::atari810Firmware()

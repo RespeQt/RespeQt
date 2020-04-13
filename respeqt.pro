@@ -96,7 +96,8 @@ SOURCES += main.cpp \
     printers/printerfactory.cpp \
     printers/outputfactory.cpp \
     printers/atari1025.cpp \
-    printers/passthrough.cpp
+    printers/passthrough.cpp \
+    printers/graphicsprimitive.cpp
 
 HEADERS += mainwindow.h \
     printers/outputs.h \
@@ -172,7 +173,8 @@ HEADERS += mainwindow.h \
     printers/atari1025.h \
     printers/passthrough.h \
     printers/rawoutput.h \
-    smartdevice.h
+    smartdevice.h \
+    printers/graphicsprimitive.h
 
 FORMS += mainwindow.ui \
     optionsdialog.ui \

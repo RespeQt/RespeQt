@@ -42,6 +42,7 @@ OptionsDialog::OptionsDialog(QWidget *parent) :
     itemTestSerialPort = m_ui->treeWidget->topLevelItem(0)->child(2);
     itemAtari1027 = m_ui->treeWidget->topLevelItem(4)->child(0);
     itemPassthrough = m_ui->treeWidget->topLevelItem(4)->child(1);
+    itemPrinterProtocol = m_ui->treeWidget->topLevelItem(4)->child(2);
 
     m_ui->translatorSelectButton->setDefaultAction(m_ui->actionSelectTranslatorDisk);
     m_ui->toolDiskSelectButton->setDefaultAction(m_ui->actionSelectToolDisk);
@@ -112,6 +113,7 @@ OptionsDialog::OptionsDialog(QWidget *parent) :
     m_ui->useLargerFont->setChecked(respeqtSettings->useLargeFont());
     m_ui->enableShade->setChecked(respeqtSettings->enableShade());
     m_ui->RclNameEdit->setText(respeqtSettings->lastRclDir());
+    m_ui->printerSpyMode->setChecked(respeqtSettings->isPrinterSpyMode());
 #ifdef Q_OS_MAC
     m_ui->useNativeMenu->setChecked(respeqtSettings->nativeMenu());
 #endif
@@ -324,6 +326,8 @@ void OptionsDialog::on_treeWidget_currentItemChanged(QTreeWidgetItem* current, Q
         m_ui->stackedWidget->setCurrentIndex(6);
     } else if (current == itemPassthrough) {
         m_ui->stackedWidget->setCurrentIndex(7);
+    } else if (current == itemPrinterProtocol) {
+        m_ui->stackedWidget->setCurrentIndex(15);
     }
 }
 
@@ -368,6 +372,7 @@ void OptionsDialog::OptionsDialog_accepted()
     respeqtSettings->setUseLargeFont(m_ui->useLargerFont->isChecked());
     respeqtSettings->setEnableShade(m_ui->enableShade->isChecked());
     respeqtSettings->setRclDir(m_ui->RclNameEdit->text());
+    respeqtSettings->setPrinterSpyMode(m_ui->printerSpyMode->isChecked());
 
     int backend = SERIAL_BACKEND_STANDARD;
     if (itemAtariSio->checkState(0) == Qt::Checked)

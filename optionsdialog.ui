@@ -138,6 +138,11 @@
       <string>Passthrough settings</string>
      </property>
     </item>
+    <item>
+     <property name="text">
+      <string>Printer protocol</string>
+     </property>
+    </item>
    </item>
   </widget>
   <widget class="QStackedWidget" name="stackedWidget">
@@ -156,7 +161,7 @@
     </sizepolicy>
    </property>
    <property name="currentIndex">
-    <number>3</number>
+    <number>15</number>
    </property>
    <widget class="QWidget" name="page_serialPort">
     <layout class="QVBoxLayout" name="verticalLayout_2">
@@ -2444,6 +2449,49 @@
        <widget class="QCheckBox" name="activateChipModeWithTool">
         <property name="text">
          <string>Activate Chip mode when booting this disk</string>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </widget>
+   <widget class="QWidget" name="page_5">
+    <widget class="QGroupBox" name="diskGroup_3">
+     <property name="geometry">
+      <rect>
+       <x>0</x>
+       <y>0</y>
+       <width>320</width>
+       <height>400</height>
+      </rect>
+     </property>
+     <property name="minimumSize">
+      <size>
+       <width>258</width>
+       <height>208</height>
+      </size>
+     </property>
+     <property name="title">
+      <string>Printer protocol</string>
+     </property>
+     <layout class="QGridLayout" name="gridLayout_13">
+      <item row="5" column="0">
+       <spacer name="emulationSpacer2_4">
+        <property name="orientation">
+         <enum>Qt::Vertical</enum>
+        </property>
+        <property name="sizeHint" stdset="0">
+         <size>
+          <width>20</width>
+          <height>40</height>
+         </size>
+        </property>
+       </spacer>
+      </item>
+      <item row="2" column="0">
+       <widget class="QCheckBox" name="printerSpyMode">
+        <property name="text">
+         <string>Display data frames (spy mode)</string>
         </property>
        </widget>
       </item>

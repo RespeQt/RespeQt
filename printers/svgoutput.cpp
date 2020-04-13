@@ -16,9 +16,12 @@ namespace Printers {
 
     void SVGOutput::updateBoundingBox()
     {
-        QFontMetrics metrics(*mFont);
-        mX = static_cast<int>(trunc(mBoundingBox.left()));
-        mY = static_cast<int>(trunc(mBoundingBox.top() + metrics.lineSpacing()));
+        if (mFont)
+        {
+            QFontMetrics metrics(*mFont);
+            mX = static_cast<int>(trunc(mBoundingBox.left()));
+            mY = static_cast<int>(trunc(mBoundingBox.top() + metrics.lineSpacing()));
+        }
     }
 
     void SVGOutput::newPage(bool /*linefeed*/)
