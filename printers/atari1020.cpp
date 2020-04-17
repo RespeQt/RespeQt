@@ -31,12 +31,12 @@ namespace Printers
           mStartOfLogicalLine(true),
           mGraphicsMode(false),
           mTextOrientation(0),
-          mFontSize(10),
-          mColor(0),
-          mLineType(0),
-          mScale(0),
           mPrintText("")
     {
+        QFontDatabase::addApplicationFont(":/fonts/1020");
+        mFont = QFont("ATARI 1020 VECTOR FONT APPROXIM");
+        mFont.setUnderline(false);
+        mFont.setPixelSize(18);
     }
 
     void Atari1020::setupOutput()
@@ -55,8 +55,7 @@ namespace Printers
                 QFontDatabase::addApplicationFont(":/fonts/1020");
             }
             // TODO calculate the correct font size.
-            mFontSize = 10;
-            QFontPtr font = QFontPtr::create("Atari  Console", mFontSize);
+            QFontPtr font = QFontPtr::create("ATARI 1020 VECTOR FONT APPROXIM", 10);
             font->setUnderline(false);
             mOutput->setFont(font);
             mOutput->calculateFixedFontSize(80);
@@ -103,6 +102,8 @@ namespace Printers
                     mEsc = false;
                     mStartOfLogicalLine = true;
                     mInternational = false;
+                    mPenPoint.setX(0);
+                    mPenPoint.setY(0);
                     if (respeqtSettings->clearOnStatus()) {
                         mClearPane = true;
                     }
@@ -278,7 +279,7 @@ namespace Printers
 
                             case 0x07: // CTRL+G: Enter Graphics Mode
                                 if (respeqtSettings->displayGraphicsInstructions()) {
-                                    qDebug() << "!n" << tr("[%1] Entering Graphics mode")
+                                    qDebug() << "!n" << tr("[%1] Enter Graphics mode")
                                                 .arg(deviceName());
                                 }
                                 mStartOfLogicalLine = false;
@@ -288,7 +289,7 @@ namespace Printers
 
                             case 0x0E: // CTRL+N: 40 characters
                                 if (respeqtSettings->displayGraphicsInstructions()) {
-                                    qDebug() << "!n" << tr("[%1] Switching to 40 columns")
+                                    qDebug() << "!n" << tr("[%1] Switch to 40 columns")
                                                 .arg(deviceName());
                                 }
                                 mOutput->calculateFixedFontSize(40);
@@ -296,7 +297,7 @@ namespace Printers
 
                             case 0x10: // CTRL+P: 20 characters
                                 if (respeqtSettings->displayGraphicsInstructions()) {
-                                    qDebug() << "!n" << tr("[%1] Switching to 20 columns")
+                                    qDebug() << "!n" << tr("[%1] Switch to 20 columns")
                                                 .arg(deviceName());
                                 }
                                 mOutput->calculateFixedFontSize(20);
@@ -304,7 +305,7 @@ namespace Printers
 
                             case 0x13: // CTRL+S: 80 characters
                                 if (respeqtSettings->displayGraphicsInstructions()) {
-                                    qDebug() << "!n" << tr("[%1] Switching to 80 columns")
+                                    qDebug() << "!n" << tr("[%1] Switch to 80 columns")
                                                 .arg(deviceName());
                                 }
                                 mOutput->calculateFixedFontSize(80);
@@ -312,7 +313,7 @@ namespace Printers
 
                             case 0x17: // CTRL+W: Enter international mode
                                 if (respeqtSettings->displayGraphicsInstructions()) {
-                                    qDebug() << "!n" << tr("[%1] Entering international mode")
+                                    qDebug() << "!n" << tr("[%1] Enter international mode")
                                                 .arg(deviceName());
                                 }
                                 mInternational = true;
@@ -320,7 +321,7 @@ namespace Printers
 
                             case 0x18: // CTRL+X: Exit international mode
                                 if (respeqtSettings->displayGraphicsInstructions()) {
-                                    qDebug() << "!n" << tr("[%1] Exiting international mode")
+                                    qDebug() << "!n" << tr("[%1] Exit international mode")
                                                 .arg(deviceName());
                                 }
                                 mInternational = false;
@@ -544,7 +545,7 @@ namespace Printers
             case 'A': // Abandon Graphics mode
                 mGraphicsMode = false;
                 if (respeqtSettings->displayGraphicsInstructions()) {
-                    qDebug() << "!n" << tr("[%1] Leaving Graphics mode").arg(deviceName());
+                    qDebug() << "!n" << tr("[%1] Exit Graphics mode").arg(deviceName());
                 }
                 break;
 
@@ -559,14 +560,16 @@ namespace Printers
                 {
                     auto scale = getFirstNumber();
                     if (scale >= 0 && scale <= 63) {
-                        mScale = scale;
+                        int size = 6 * (scale + 2);
+                        if (scale == 0) {
+                            size -= 3;
+                        }
+                        mFont.setPixelSize(size);
                         if (respeqtSettings->displayGraphicsInstructions()) {
                             qDebug() << "!n" << tr("[%1] Scale characters to %2")
                                         .arg(deviceName())
                                         .arg(scale);
                         }
-                        QFontPtr font = mOutput->font();
-                        font->setPixelSize(font->pixelSize() * scale);
                     } else {
                         if (respeqtSettings->displayGraphicsInstructions()) {
                             qDebug() << "!n" << tr("[%1] Scale command ignored (%2 should be in range 0-63)")
@@ -581,7 +584,6 @@ namespace Printers
                 {
                     auto next = getFirstNumber();
                     if (next >= 0 && next <= 3) {
-                        mColor = next;
                         const char *colorName = "black";
                         QColor temp(colorName);
                         switch(next) {
@@ -607,9 +609,7 @@ namespace Printers
                                         .arg(deviceName())
                                         .arg(colorName);
                         }
-                        if (mOutput && mOutput->painter()) {
-                            mOutput->painter()->setPen(temp);
-                        }
+                        mPen.setColor(temp);
                     } else {
                         if (respeqtSettings->displayGraphicsInstructions()) {
                             qDebug() << "!n" << tr("[%1] Set color command ignored (%2 should be in range 0-3)")
@@ -624,23 +624,18 @@ namespace Printers
                 {
                     auto line = getFirstNumber();
                     if (line >= 0 && line <= 15) {
-                        mLineType = line;
                         if (respeqtSettings->displayGraphicsInstructions()) {
                             qDebug() << "!n" << tr("[%1] Set line mode to %2")
                                         .arg(deviceName())
                                         .arg(line == 0 ? tr("solid") : tr("dashed %1").arg(line));
                         }
-                        if (mOutput && mOutput->painter()) {
-                            auto pen = mOutput->painter()->pen();
-                            if (line == 0) {
-                                pen.setStyle(Qt::SolidLine);
-                            } else {
-                                pen.setStyle(Qt::CustomDashLine);
-                                QVector<qreal> pattern;
-                                pattern << 1 << line;
-                                pen.setDashPattern(pattern);
-                            }
-                            mOutput->painter()->setPen(pen);
+                        if (line == 0) {
+                            mPen.setStyle(Qt::SolidLine);
+                        } else {
+                            mPen.setStyle(Qt::CustomDashLine);
+                            QVector<qreal> pattern;
+                            pattern << 1 << line;
+                            mPen.setDashPattern(pattern);
                         }
                     } else {
                         if (respeqtSettings->displayGraphicsInstructions()) {
@@ -661,9 +656,10 @@ namespace Printers
                 mEsc = false;
                 mStartOfLogicalLine = true;
                 mInternational = false;
-                if (mOutput && mOutput->painter()) {
-                    mOutput->painter()->translate(mPenPoint);
-                }
+// TODO !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+//                if (mOutput && mOutput->painter()) {
+//                    mOutput->painter()->translate(mPenPoint);
+//                }
                 break;
 
             case 'D': // draw to point
@@ -674,35 +670,29 @@ namespace Printers
                     auto x = getFirstNumber();
                     auto y = getSecondNumber();
                     if ((x >= 0) && (x <= 480)) {
-                        QPointF point(x, y);
+                        QPoint point(x, y);
 
                         switch (mCurrentCommand) {
                             case 'D':
-                                if (mOutput && mOutput->painter()) {
-                                    mOutput->painter()->drawLine(mPenPoint, point);
-                                }
+                                executeGraphicsPrimitive(new GraphicsDrawLine(mPenPoint, mPen, point));
                                 if (respeqtSettings->displayGraphicsInstructions()) {
                                     qDebug() << "!n" << tr("[%1] Draw to point (%2,%3)")
                                                 .arg(deviceName())
                                                 .arg(x)
                                                 .arg(y);
                                 }
-                                executeGraphicsPrimitive(new GraphicsDrawLine(mPenPoint.x(), mPenPoint.y(), mColor, point.x(), point.y(), mLineType));
                                 mPenPoint = point;
                             break;
 
                             case 'J':
                                 point += mPenPoint;
-                                if (mOutput && mOutput->painter()) {
-                                    mOutput->painter()->drawLine(mPenPoint, point);
-                                }
+                                executeGraphicsPrimitive(new GraphicsDrawLine(mPenPoint, mPen, point));
                                 if (respeqtSettings->displayGraphicsInstructions()) {
                                     qDebug() << "!n" << tr("[%1] Draw relative to point (%2,%3)")
                                                 .arg(deviceName())
                                                 .arg(x)
                                                 .arg(y);
                                 }
-                                executeGraphicsPrimitive(new GraphicsDrawLine(mPenPoint.x(), mPenPoint.y(), mColor, point.x(), point.y(), mLineType));
                                 mPenPoint = point;
                             break;
 
@@ -738,14 +728,14 @@ namespace Printers
                     auto xAxe = (mode != 0);
                     if (xAxe) {
                         if (respeqtSettings->displayGraphicsInstructions()) {
-                            qDebug() << "!n" << tr("[%1] Draw both axes with size %2 and %3 marks")
+                            qDebug() << "!n" << tr("[%1] Draw X-axis with size %2 and %3 marks")
                                         .arg(deviceName())
                                         .arg(size)
                                         .arg(count);
                         }
                     } else {
                         if (respeqtSettings->displayGraphicsInstructions()) {
-                            qDebug() << "!n" << tr("[%1] Draw Y axe only with size %2 and %3 marks")
+                            qDebug() << "!n" << tr("[%1] Draw Y-axis with size %2 and %3 marks")
                                         .arg(deviceName())
                                         .arg(size)
                                         .arg(count);
@@ -760,9 +750,9 @@ namespace Printers
                 {
                     auto orientation = getFirstNumber();
                     if (orientation >= 0 && orientation <= 3) {
-                        mTextOrientation = orientation;
+                        mTextOrientation = orientation * 90;
                         if (respeqtSettings->displayGraphicsInstructions()) {
-                            qDebug() << "!n" << tr("[%1] Set text orientation to %2")
+                            qDebug() << "!n" << tr("[%1] Set text orientation to %2°")
                                         .arg(deviceName())
                                         .arg(mTextOrientation);
                         }
@@ -777,12 +767,14 @@ namespace Printers
                 break;
 
             case 'P': // print text
-                if (respeqtSettings->displayGraphicsInstructions()) {
-                    qDebug() << "!n" << tr("[%1] Print \"%2\" in Graphics mode")
-                                .arg(deviceName())
-                                .arg(QString(mPrintText));
+                {
+                    if (respeqtSettings->displayGraphicsInstructions()) {
+                        qDebug() << "!n" << tr("[%1] Print '%2' in Graphics mode")
+                                    .arg(deviceName())
+                                    .arg(QString(mPrintText));
+                    }
+                    drawText();
                 }
-                executeGraphicsPrimitive(new GraphicsDrawText(mPenPoint.x(), mPenPoint.y(), mColor, mTextOrientation, mScale, QString(mPrintText)));
                 break;
 
             }
@@ -819,30 +811,61 @@ namespace Printers
 
     bool Atari1020::drawAxis(bool xAxis, int size, int count)
     {
-        QPointF start = QPointF(mPenPoint);
-        QPointF end = QPointF(start);
+        QPoint end = QPoint(mPenPoint);
 
         if (xAxis) {
-            end.setX(end.x() + size * count);
+            end.setX(end.x() + (size * count));
         } else {
-            end.setY(end.y() + size * count);
+            end.setY(end.y() + (size * count));
         }
-        if (mOutput && mOutput->painter()) {
-            mOutput->painter()->drawLine(start, end);
-        }
+        QPen pen(mPen);
+        pen.setStyle(Qt::SolidLine);
+        executeGraphicsPrimitive(new GraphicsDrawLine(mPenPoint, pen, end));
 
         for (int c = 1; c <= count; c++) {
             if (xAxis) {
-                qreal xc = mPenPoint.x() + c * size;
-                if (mOutput && mOutput->painter()) {
-                    mOutput->painter()->drawLine(QPointF(xc, mPenPoint.y() - 2), QPointF(xc, mPenPoint.y() + 2));
-                }
+                auto xc = mPenPoint.x() + c * size;
+                executeGraphicsPrimitive(new GraphicsDrawLine(QPoint(xc, mPenPoint.y() - 2), pen, QPoint(xc, mPenPoint.y() + 2)));
             } else {
-                qreal yc = mPenPoint.y() + c * size;
-                if (mOutput && mOutput->painter()) {
-                    mOutput->painter()->drawLine(QPointF(mPenPoint.x() - 2, yc), QPointF(mPenPoint.x() + 2, yc));
-                }
+                auto yc = mPenPoint.y() + c * size;
+                executeGraphicsPrimitive(new GraphicsDrawLine(QPoint(mPenPoint.x() - 2, yc), pen, QPoint(mPenPoint.x() + 2, yc)));
             }
+        }
+
+        return true;
+    }
+
+    bool Atari1020::drawText()
+    {
+        executeGraphicsPrimitive(new GraphicsDrawText(mPenPoint, mPen, mTextOrientation, mFont, QString(mPrintText)));
+
+        // update head position
+        QFontMetrics metrics(mFont);
+        QSize size = metrics.size(Qt::TextSingleLine, mPrintText);
+        int nbPixel = size.width();
+        switch (mTextOrientation) {
+
+        case 0: // text towards right
+            mPenPoint.setX(mPenPoint.x() + nbPixel);
+            if (mPenPoint.x() > 480) {
+                mPenPoint.setX(480);
+            }
+            break;
+
+        case 90: // text towards bottom
+            mPenPoint.setY(mPenPoint.y() - nbPixel);
+            break;
+
+        case 180: // text towards left
+            mPenPoint.setX(mPenPoint.x() - nbPixel);
+            if (mPenPoint.x() < 0) {
+                mPenPoint.setX(0);
+            }
+            break;
+
+        case 270: // text towards top
+            mPenPoint.setY(mPenPoint.y() + nbPixel);
+            break;
         }
 
         return true;

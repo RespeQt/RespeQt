@@ -59,7 +59,11 @@ namespace Printers
         int y() const { return mY; }
         void setX(int x) { mX = x; }
         void setY(int y) { mY = y; }
-        virtual void executeGraphicsPrimitive(GraphicsPrimitive */*primitive*/) { };
+        virtual void executeGraphicsPrimitive(GraphicsPrimitive *primitive) {
+            if (painter()) {
+                primitive->execute(painter());
+            }
+        }
 
         void setPrinter(const BasePrinterWPtr& printer);
         BasePrinterWPtr printer() const { return mPrinter; }

@@ -45,12 +45,10 @@ namespace Printers
         bool mEsc;
         bool mStartOfLogicalLine;
         bool mGraphicsMode;
-        QPointF mPenPoint;
+        QPoint mPenPoint;
+        QPen mPen;
+        QFont mFont;
         int mTextOrientation;
-        int mFontSize;
-        int mColor;
-        int mLineType;
-        int mScale;
         QByteArray mPrintText;
         enum AUTOMATA_STATES mAutomataState;
         unsigned char mCurrentCommand;
@@ -77,6 +75,7 @@ namespace Printers
         inline int getThirdNumber(const int defaultValue = 0) { return getNumber(mThirdNumber, mThirdNegative, defaultValue); }
         int getNumber(const QString number, const bool negative, const int defaultValue = 0);
         bool drawAxis(bool xAxis, int size, int count);
+        bool drawText();
     };
 }
 #endif // ATARI1020_H

@@ -1,8 +1,11 @@
 #ifndef GRAPHICSPRIMITIVE_H
 #define GRAPHICSPRIMITIVE_H
 
-#include <QString>
+#include <QFont>
+#include <QGraphicsTextItem>
 #include <QGraphicsScene>
+
+using QPainterPtr = QSharedPointer<QPainter>;
 
 namespace Printers
 {
@@ -11,10 +14,11 @@ namespace Printers
         Q_OBJECT
 
     public:
-        GraphicsPrimitive(const int srcX, const int srcY, const int color);
+        GraphicsPrimitive();
         virtual ~GraphicsPrimitive();
 
         virtual void execute(QGraphicsScene &graphicsScene) = 0;
+        virtual void execute(QPainterPtr painter) = 0;
 
         static QString typeName()
         {
@@ -22,49 +26,8 @@ namespace Printers
         }
 
     protected:
-        int mSrcX, mSrcY;
+        QPoint mPoint;
         int mColor;
-    };
-
-    class GraphicsDrawLine : public GraphicsPrimitive
-    {
-        Q_OBJECT
-
-    public:
-        GraphicsDrawLine(const int srcX, const int srcY, const int color, const int destX, const int destY, const int lineType);
-        virtual ~GraphicsDrawLine();
-
-        virtual void execute(QGraphicsScene &graphicsScene) override;
-
-        static QString typeName()
-        {
-            return "GraphicsDrawLine";
-        }
-
-    protected:
-        int mDestX, mDestY;
-        int mLineType;
-    };
-
-    class GraphicsDrawText : public GraphicsPrimitive
-    {
-        Q_OBJECT
-
-    public:
-        GraphicsDrawText(const int srcX, const int srcY, const int color, const int orientation, const int scale, QString text);
-        virtual ~GraphicsDrawText();
-
-        virtual void execute(QGraphicsScene &graphicsScene) override;
-
-        static QString typeName()
-        {
-            return "GraphicsDrawText";
-        }
-
-    protected:
-        int mOrientation;
-        int mScale;
-        QString mText;
     };
 
     class GraphicsClearPane : public GraphicsPrimitive
@@ -76,11 +39,77 @@ namespace Printers
         virtual ~GraphicsClearPane();
 
         virtual void execute(QGraphicsScene &graphicsScene) override;
+        virtual void execute(QPainterPtr painter) override;
 
         static QString typeName()
         {
             return "GraphicsClearPane";
         }
+    };
+
+    class GraphicsSetPoint : public GraphicsPrimitive
+    {
+        Q_OBJECT
+
+    public:
+        GraphicsSetPoint(const QPoint point, const QPen);
+        virtual ~GraphicsSetPoint();
+
+        virtual void execute(QGraphicsScene &graphicsScene) = 0;
+        virtual void execute(QPainterPtr painter) = 0;
+
+        static QString typeName()
+        {
+            return "GraphicsSetPoint";
+        }
+
+    protected:
+        QPoint mPoint;
+        QPen mPen;
+    };
+
+    class GraphicsDrawLine : public GraphicsSetPoint
+    {
+        Q_OBJECT
+
+    public:
+        GraphicsDrawLine(const QPoint srcPoint, const QPen pen, const QPoint destPoint);
+        virtual ~GraphicsDrawLine();
+
+        virtual void execute(QGraphicsScene &graphicsScene) override;
+        virtual void execute(QPainterPtr painter) override;
+
+        static QString typeName()
+        {
+            return "GraphicsDrawLine";
+        }
+
+    protected:
+        QPoint mDestPoint;
+    };
+
+    class GraphicsDrawText : public GraphicsSetPoint
+    {
+        Q_OBJECT
+
+    public:
+        GraphicsDrawText(const QPoint point, const QPen pen, const int orientation, const QFont font, QString text);
+        virtual ~GraphicsDrawText();
+
+        virtual void execute(QGraphicsScene &graphicsScene) override;
+        virtual void execute(QPainterPtr painter) override;
+
+        static QString typeName()
+        {
+            return "GraphicsDrawText";
+        }
+
+    protected:
+        int mOrientation;
+        QFont mFont;
+        QString mText;
+
+        QPoint computeTextCoordinates();
     };
 }
 #endif // GRAPHICSPRIMITIVE_H
