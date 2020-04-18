@@ -34,7 +34,6 @@
 #include "drivewidget.h"
 #include "infowidget.h"
 #include "printerwidget.h"
-#include "Emulator.h"
 
 namespace Ui
 {
@@ -90,8 +89,6 @@ private:
 
     QDialog *logWindow_;
 
-    RomProvider *m_romProvider;
-
     QList<QAction*> recentFilesActions_;
 
     void setSession();  //
@@ -119,10 +116,8 @@ private:
     void autoSaveDisk(int no);                                              //
     void setUpPrinterEmulationWidgets(bool enabled);
 
-    bool firmwareAvailable(int no, QString &name, QString path);
-
     void createDeviceWidgets();
-    SimpleDiskImage *installDiskImage(int no);
+    SimpleDiskImage *installDiskImage();
 
 protected:
     void mousePressEvent(QMouseEvent *event);

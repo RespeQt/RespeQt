@@ -15,12 +15,21 @@
 #include <QElapsedTimer>
 #include <QtDebug>
 
-#include <Crc16.hpp>
+#include <crc16.h>
 #include "disassembly810.h"
 #include "disassembly1050.h"
 
 #include "sioworker.h"
 #include "miscutils.h"
+
+#define DISK_CRC_MARK         0xF7
+#define DISK_DATA_ADDR_MARK1  0xF8
+#define DISK_DATA_ADDR_MARK2  0xF9
+#define DISK_DATA_ADDR_MARK3  0xFA
+#define DISK_DATA_ADDR_MARK4  0xFB
+#define DISK_INDEX_ADDR_MARK  0xFC
+#define DISK_SPARE_MARK       0xFD
+#define DISK_ID_ADDR_MARK     0xFE
 
 class AtariFileSystem;
 class DiskEditDialog;

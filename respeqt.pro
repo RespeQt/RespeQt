@@ -63,30 +63,6 @@ SOURCES += main.cpp \
     printers/nativeprinter.cpp \
     printers/svgoutput.cpp \
     printers/atari1029.cpp \
-    Cpu6502.cpp \
-    Crc16.cpp \
-    Fdc.cpp \
-    Motor.cpp \
-    Ram.cpp \
-    Riot810.cpp \
-    Riot1050.cpp \
-    Riot6532.cpp \
-    RiotDevices.cpp \
-    Rom.cpp \
-    RomProvider.cpp \
-    Sio.cpp \
-    Track.cpp \
-    Atari810.cpp \
-    Atari1050.cpp \
-    AtariDrive.cpp \
-    FirmwareDiskImage.cpp \
-    Atari810Happy.cpp \
-    RamUnderRomArchiver.cpp \
-    Atari1050Happy.cpp \
-    Atari1050Speedy.cpp \
-    Atari1050Turbo.cpp \
-    Atari1050Duplicator.cpp \
-    RomBankSwitchTurbo.cpp \
     diskimagepro.cpp \
     diskimageatx.cpp \
     diskimageatr.cpp \
@@ -96,7 +72,9 @@ SOURCES += main.cpp \
     printers/outputfactory.cpp \
     printers/atari1025.cpp \
     printers/passthrough.cpp \
-    printers/graphicsprimitive.cpp
+    printers/graphicsprimitive.cpp \
+    crc16.cpp \
+    cpu6502.cpp
 
 HEADERS += mainwindow.h \
     printers/outputs.h \
@@ -139,32 +117,6 @@ HEADERS += mainwindow.h \
     printers/nativeprinter.h \
     printers/svgoutput.h \
     printers/atari1029.h \
-    Chip.hpp \
-    Cpu6502.hpp \
-    Crc16.hpp \
-    Fdc.hpp \
-    Motor.hpp \
-    Ram.hpp \
-    Riot810.hpp \
-    Riot1050.hpp \
-    Riot6532.hpp \
-    RiotDevices.hpp \
-    Rom.hpp \
-    RomProvider.hpp \
-    Sio.hpp \
-    Track.hpp \
-    Emulator.h \
-    Atari810.hpp \
-    Atari1050.hpp \
-    AtariDrive.hpp \
-    FirmwareDiskImage.hpp \
-    Atari810Happy.hpp \
-    RamUnderRomArchiver.hpp \
-    Atari1050Happy.hpp \
-    Atari1050Speedy.hpp \
-    Atari1050Turbo.hpp \
-    Atari1050Duplicator.hpp \
-    RomBankSwitchTurbo.hpp \
     disassembly810.h \
     disassembly1050.h \
     printers/printerfactory.h \
@@ -173,7 +125,9 @@ HEADERS += mainwindow.h \
     printers/passthrough.h \
     printers/rawoutput.h \
     smartdevice.h \
-    printers/graphicsprimitive.h
+    printers/graphicsprimitive.h \
+    crc16.h \
+    cpu6502.h
 
 FORMS += mainwindow.ui \
     optionsdialog.ui \

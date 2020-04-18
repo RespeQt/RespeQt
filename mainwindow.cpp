@@ -14,7 +14,6 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 
-#include "FirmwareDiskImage.hpp"
 #include "drivewidget.h"
 #include "folderimage.h"
 #include "pclink.h"
@@ -293,8 +292,6 @@ MainWindow::MainWindow(QWidget *parent)
     snapshot->setStatusTip(snapshot->toolTip());
     ui->statusBar->addPermanentWidget(snapshot);
 #endif
-
-    m_romProvider = new RomProvider();
 
     /* Connect to the network */
     QString netInterface;
@@ -1028,17 +1025,6 @@ void MainWindow::deviceStatusChanged(int deviceNo)
             img->setToolDiskImagePath(respeqtSettings->toolDiskImagePath());
             img->setActivateChipModeWithTool(respeqtSettings->activateChipModeWithTool());
             img->setActivateHappyModeWithTool(respeqtSettings->activateHappyModeWithTool());
-            auto fimg = qobject_cast <FirmwareDiskImage*> (sio->getDevice(deviceNo));
-            if (fimg) {
-                fimg->SetDisplayDriveHead(respeqtSettings->displayDriveHead());
-                fimg->SetDisplayFdcCommands(respeqtSettings->displayFdcCommands());
-                fimg->SetDisplayIndexPulse(respeqtSettings->displayIndexPulse());
-                fimg->SetDisplayMotorOnOff(respeqtSettings->displayMotorOnOff());
-                fimg->SetDisplayIDAddressMarks(respeqtSettings->displayIDAddressMarks());
-                fimg->SetDisplayTrackInformation(respeqtSettings->displayTrackInformation());
-                fimg->SetDisplayCpuInstructions(respeqtSettings->displayCpuInstructions());
-                fimg->SetTraceFilename(respeqtSettings->traceFilename());
-            }
         } else {
             diskWidget->showAsEmpty(respeqtSettings->hideHappyMode(), respeqtSettings->hideChipMode(), respeqtSettings->hideNextImage(), respeqtSettings->hideOSBMode(), respeqtSettings->hideToolDisk());
         }
@@ -1406,7 +1392,7 @@ void MainWindow::mountFile(int no, const QString &fileName, bool /*prot*/)
         disk = new FolderImage(sio);
         isDir = true;
     } else {
-        disk = installDiskImage(no);
+        disk = installDiskImage();
     }
 
     if (disk) {
@@ -1473,71 +1459,19 @@ void MainWindow::mountFile(int no, const QString &fileName, bool /*prot*/)
     }
 }
 
-SimpleDiskImage *MainWindow::installDiskImage(int no)
+SimpleDiskImage *MainWindow::installDiskImage()
 {
-    eHARDWARE emulationLevel = respeqtSettings->firmwareType(no);
-    QString name = respeqtSettings->firmwareName(emulationLevel);
-    QString path = respeqtSettings->firmwarePath(emulationLevel);
-    if ((emulationLevel != SIO_EMULATION) && (!firmwareAvailable(no, name, path))) {
-        emulationLevel = SIO_EMULATION;
-    }
-    if (emulationLevel != SIO_EMULATION) {
-        Rom *rom = m_romProvider->RegisterRom(name, path);
-        FirmwareDiskImage *disk = new FirmwareDiskImage(sio, emulationLevel, name, rom, 288, respeqtSettings->firmwarePowerOnWithDisk(no));
-        disk->setDisplayTransmission(respeqtSettings->displayTransmission());
-        disk->setSpyMode(respeqtSettings->isSpyMode());
-        disk->setTrackLayout(respeqtSettings->isTrackLayout());
-        disk->setDisassembleUploadedCode(respeqtSettings->disassembleUploadedCode());
-        disk->setTranslatorAutomaticDetection(respeqtSettings->translatorAutomaticDetection());
-        disk->setTranslatorDiskImagePath(respeqtSettings->translatorDiskImagePath());
-        disk->setToolDiskImagePath(respeqtSettings->toolDiskImagePath());
-        disk->setActivateChipModeWithTool(respeqtSettings->activateChipModeWithTool());
-        disk->setActivateHappyModeWithTool(respeqtSettings->activateHappyModeWithTool());
-        disk->SetDisplayDriveHead(respeqtSettings->displayDriveHead());
-        disk->SetDisplayFdcCommands(respeqtSettings->displayFdcCommands());
-        disk->SetDisplayIndexPulse(respeqtSettings->displayIndexPulse());
-        disk->SetDisplayMotorOnOff(respeqtSettings->displayMotorOnOff());
-        disk->SetDisplayIDAddressMarks(respeqtSettings->displayIDAddressMarks());
-        disk->SetDisplayTrackInformation(respeqtSettings->displayTrackInformation());
-        disk->SetDisplayCpuInstructions(respeqtSettings->displayCpuInstructions());
-        disk->SetTraceFilename(respeqtSettings->traceFilename());
-        return disk;
-    } else {
-        SimpleDiskImage *disk = new SimpleDiskImage(sio);
-        disk->setDisplayTransmission(respeqtSettings->displayTransmission());
-        disk->setSpyMode(respeqtSettings->isSpyMode());
-        disk->setTrackLayout(respeqtSettings->isTrackLayout());
-        disk->setDisassembleUploadedCode(respeqtSettings->disassembleUploadedCode());
-        disk->setTranslatorAutomaticDetection(respeqtSettings->translatorAutomaticDetection());
-        disk->setTranslatorDiskImagePath(respeqtSettings->translatorDiskImagePath());
-        disk->setToolDiskImagePath(respeqtSettings->toolDiskImagePath());
-        disk->setActivateChipModeWithTool(respeqtSettings->activateChipModeWithTool());
-        disk->setActivateHappyModeWithTool(respeqtSettings->activateHappyModeWithTool());
-        return disk;
-    }
-}
-
-bool MainWindow::firmwareAvailable(int no, QString &name, QString path)
-{
-    QString diskName = tr("Disk %1").arg(++no & 0x0F);
-    if (path.isEmpty()) {
-        qWarning() << "!w" << tr("[%1] No firmware ROM file selected for '%2' emulation. Please, check settings in menu Tools>Options>Firmware emulation. Using SIO emulation.")
-                      .arg(diskName)
-                      .arg(name);
-        return false;
-    }
-    auto firmwareFile = new QFile(path);
-    if (!firmwareFile->open(QFile::ReadOnly)) {
-        delete firmwareFile;
-        qWarning() << "!w" << tr("[%1] Firmware '%2' not found for '%3' emulation. Please, check settings in menu Tools>Options>Firmware emulation. Using SIO emulation.")
-                      .arg(diskName)
-                      .arg(path)
-                      .arg(name);
-        return false;
-    }
-    firmwareFile->close();
-    delete firmwareFile;
-    return true;
+    SimpleDiskImage *disk = new SimpleDiskImage(sio);
+    disk->setDisplayTransmission(respeqtSettings->displayTransmission());
+    disk->setSpyMode(respeqtSettings->isSpyMode());
+    disk->setTrackLayout(respeqtSettings->isTrackLayout());
+    disk->setDisassembleUploadedCode(respeqtSettings->disassembleUploadedCode());
+    disk->setTranslatorAutomaticDetection(respeqtSettings->translatorAutomaticDetection());
+    disk->setTranslatorDiskImagePath(respeqtSettings->translatorDiskImagePath());
+    disk->setToolDiskImagePath(respeqtSettings->toolDiskImagePath());
+    disk->setActivateChipModeWithTool(respeqtSettings->activateChipModeWithTool());
+    disk->setActivateHappyModeWithTool(respeqtSettings->activateHappyModeWithTool());
+    return disk;
 }
 
 void MainWindow::mountDiskImage(int no)
@@ -1899,7 +1833,7 @@ void MainWindow::on_actionNewImage_triggered()
 
     int no = firstEmptyDiskSlot(0, true);
 
-    SimpleDiskImage *disk = installDiskImage(no);
+    SimpleDiskImage *disk = installDiskImage();
     connect(disk, SIGNAL(statusChanged(int)), this, SLOT(deviceStatusChanged(int)), Qt::QueuedConnection);
 
     if (!disk->create(++untitledName)) {

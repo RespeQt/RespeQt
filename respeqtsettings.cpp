@@ -13,7 +13,6 @@
 #include "respeqtsettings.h"
 #include "serialport.h"
 //#include "mainwindow.h"
-#include "Emulator.h"
 
 RespeqtSettings::RespeqtSettings()
 {
@@ -135,20 +134,6 @@ RespeqtSettings::RespeqtSettings()
     mDisplayGraphicsInstructions = mSettings->value("DisplayGraphicsInstructions", true).toBool();
     mClearOnStatus = mSettings->value("ClearOnStatus", false).toBool();
 
-    m810Firmware = mSettings->value("Atari810Firmware", "").toString();
-    m810ChipFirmware = mSettings->value("Atari810ChipFirmware", "").toString();
-    m810HappyFirmware = mSettings->value("Atari810HappyFirmware", "").toString();
-    m1050Firmware = mSettings->value("Atari1050Firmware", "").toString();
-    m1050ArchiverFirmware = mSettings->value("Atari1050ArchiverFirmware", "").toString();
-    m1050HappyFirmware = mSettings->value("Atari1050HappyFirmware", "").toString();
-    m1050SpeedyFirmware = mSettings->value("Atari1050SpeedyFirmware", "").toString();
-    m1050TurboFirmware = mSettings->value("Atari1050TurboFirmware", "").toString();
-    m1050DuplicatorFirmware = mSettings->value("Atari1050DuplicatorFirmware", "").toString();
-
-    mD1EmulationType = (eHARDWARE)mSettings->value("D1EmulationType", 0).toInt();
-    mD2EmulationType = (eHARDWARE)mSettings->value("D2EmulationType", 0).toInt();
-    mD3EmulationType = (eHARDWARE)mSettings->value("D3EmulationType", 0).toInt();
-    mD4EmulationType = (eHARDWARE)mSettings->value("D4EmulationType", 0).toInt();
     mDisplayTransmission = mSettings->value("DisplayTransmission", false).toBool();
     mDisplayDriveHead = mSettings->value("DisplayDriveHead", false).toBool();
     mDisplayFdcCommands = mSettings->value("DisplayFdcCommands", false).toBool();
@@ -170,11 +155,6 @@ RespeqtSettings::RespeqtSettings()
     mActivateHappyModeWithTool = mSettings->value("ActivateHappyModeWithTool", false).toBool();
     mDisplayCpuInstructions = mSettings->value("DisplayCpuInstructions", false).toBool();
     mTraceFilename = mSettings->value("TraceFilename", "").toString();
-    mD1PowerOnWithDiskInserted = mSettings->value("D1PowerOnWithDiskInserted", false).toBool();
-    mD2PowerOnWithDiskInserted = mSettings->value("D2PowerOnWithDiskInserted", false).toBool();
-    mD3PowerOnWithDiskInserted = mSettings->value("D3PowerOnWithDiskInserted", false).toBool();
-    mD4PowerOnWithDiskInserted = mSettings->value("D4PowerOnWithDiskInserted", false).toBool();
-
 
 #ifdef Q_OS_MAC
     mNativeMenu = mSettings->value("NativeMenu", false).toBool();
@@ -251,19 +231,6 @@ void RespeqtSettings::saveSessionToFile(const QString &fileName)
         s.setValue("PrinterSpyMode", mPrinterSpyMode);
         s.setValue("DisplayGraphicsInstructions", mDisplayGraphicsInstructions);
         s.setValue("ClearOnStatus", mClearOnStatus);
-        s.setValue("Atari810Firmware", m810Firmware);
-        s.setValue("Atari810ChipFirmware", m810ChipFirmware);
-        s.setValue("Atari810HappyFirmware", m810HappyFirmware);
-        s.setValue("Atari1050Firmware", m1050Firmware);
-        s.setValue("Atari1050ArchiverFirmware", m1050ArchiverFirmware);
-        s.setValue("Atari1050HappyFirmware", m1050HappyFirmware);
-        s.setValue("Atari1050SpeedyFirmware", m1050SpeedyFirmware);
-        s.setValue("Atari1050TurboFirmware", m1050TurboFirmware);
-        s.setValue("Atari1050DuplicatorFirmware", m1050DuplicatorFirmware);
-        s.setValue("D1EmulationType", mD1EmulationType);
-        s.setValue("D2EmulationType", mD2EmulationType);
-        s.setValue("D3EmulationType", mD3EmulationType);
-        s.setValue("D4EmulationType", mD4EmulationType);
         s.setValue("DisplayTransmission", mDisplayTransmission);
         s.setValue("DisplayFdcCommands", mDisplayFdcCommands);
         s.setValue("DisplayIndexPulse", mDisplayIndexPulse);
@@ -284,10 +251,6 @@ void RespeqtSettings::saveSessionToFile(const QString &fileName)
         s.setValue("ActivateHappyModeWithTool", mActivateHappyModeWithTool);
         s.setValue("DisplayCpuInstructions", mDisplayCpuInstructions);
         s.setValue("TraceFilename", mTraceFilename);
-        s.setValue("D1PowerOnWithDiskInserted", mD1PowerOnWithDiskInserted);
-        s.setValue("D2PowerOnWithDiskInserted", mD2PowerOnWithDiskInserted);
-        s.setValue("D3PowerOnWithDiskInserted", mD3PowerOnWithDiskInserted);
-        s.setValue("D4PowerOnWithDiskInserted", mD4PowerOnWithDiskInserted);
         s.setValue("RawPrinterName", mRawPrinterName);
         s.setValue("LastRclDir",mRclDir);
 #ifdef Q_OS_MAC
@@ -360,19 +323,6 @@ void RespeqtSettings::saveSessionToFile(const QString &fileName)
         mUseLargeFont = s.value("UseLargeFont", false).toBool();
         mExplorerOnTop = s.value("ExplorerOnTop", false).toBool();
         mEnableShade = s.value("EnableShadeByDefault", true).toBool();
-        m810Firmware = s.value("Atari810Firmware", "").toString();
-        m810ChipFirmware = s.value("Atari810ChipFirmware", "").toString();
-        m810HappyFirmware = s.value("Atari810HappyFirmware", "").toString();
-        m1050Firmware = s.value("Atari1050Firmware", "").toString();
-        m1050ArchiverFirmware = s.value("Atari1050ArchiverFirmware", "").toString();
-        m1050HappyFirmware = s.value("Atari1050HappyFirmware", "").toString();
-        m1050SpeedyFirmware = s.value("Atari1050SpeedyFirmware", "").toString();
-        m1050TurboFirmware = s.value("Atari1050TurboFirmware", "").toString();
-        m1050DuplicatorFirmware = s.value("Atari1050DuplicatorFirmware", "").toString();
-        mD1EmulationType = (eHARDWARE) s.value("D1EmulationType", false).toInt();
-        mD2EmulationType = (eHARDWARE) s.value("D2EmulationType", false).toInt();
-        mD3EmulationType = (eHARDWARE) s.value("D3EmulationType", false).toInt();
-        mD4EmulationType = (eHARDWARE) s.value("D4EmulationType", false).toInt();
         mDisplayTransmission = s.value("DisplayTransmission", false).toBool();
         mDisplayDriveHead = s.value("DisplayDriveHead", false).toBool();
         mDisplayFdcCommands = s.value("DisplayFdcCommands", false).toBool();
@@ -394,10 +344,6 @@ void RespeqtSettings::saveSessionToFile(const QString &fileName)
         mActivateHappyModeWithTool = s.value("ActivateHappyModeWithTool", false).toBool();
         mDisplayCpuInstructions = s.value("DisplayCpuInstructions", false).toBool();
         mTraceFilename = s.value("TraceFilename", false).toBool();
-        mD1PowerOnWithDiskInserted = s.value("D1PowerOnWithDiskInserted", false).toBool();
-        mD2PowerOnWithDiskInserted = s.value("D2PowerOnWithDiskInserted", false).toBool();
-        mD3PowerOnWithDiskInserted = s.value("D3PowerOnWithDiskInserted", false).toBool();
-        mD4PowerOnWithDiskInserted = s.value("D4PowerOnWithDiskInserted", false).toBool();
         mRawPrinterName = s.value("RawPrinterName", "").toString();
         mPrinterSpyMode = s.value("PrinterSpyMode", false).toBool();
         mDisplayGraphicsInstructions = s.value("DisplayGraphicsInstructions", true).toBool();
@@ -1134,198 +1080,6 @@ void RespeqtSettings::setClearOnStatus(bool enabled)
     mSettings->setValue("ClearOnStatus", mClearOnStatus);
 }
 
-QString RespeqtSettings::atari810Firmware()
-{
-    return m810Firmware;
-}
-
-void RespeqtSettings::setAtari810Firmware(const QString &firmware)
-{
-    m810Firmware = firmware;
-    if(mSessionFileName == "") mSettings->setValue("Atari810Firmware", m810Firmware);
-}
-
-QString RespeqtSettings::atari810ChipFirmware()
-{
-    return m810ChipFirmware;
-}
-
-void RespeqtSettings::setAtari810ChipFirmware(const QString &firmware)
-{
-    m810ChipFirmware = firmware;
-    if(mSessionFileName == "") mSettings->setValue("Atari810ChipFirmware", m810ChipFirmware);
-}
-
-QString RespeqtSettings::atari810HappyFirmware()
-{
-    return m810HappyFirmware;
-}
-
-void RespeqtSettings::setAtari810HappyFirmware(const QString &firmware)
-{
-    m810HappyFirmware = firmware;
-    if(mSessionFileName == "") mSettings->setValue("Atari810HappyFirmware", m810HappyFirmware);
-}
-
-QString RespeqtSettings::atari1050Firmware()
-{
-    return m1050Firmware;
-}
-
-void RespeqtSettings::setAtari1050Firmware(const QString &firmware)
-{
-    m1050Firmware = firmware;
-    if(mSessionFileName == "") mSettings->setValue("Atari1050Firmware", m1050Firmware);
-}
-
-QString RespeqtSettings::atari1050ArchiverFirmware()
-{
-    return m1050ArchiverFirmware;
-}
-
-void RespeqtSettings::setAtari1050ArchiverFirmware(const QString &firmware)
-{
-    m1050ArchiverFirmware = firmware;
-    if(mSessionFileName == "") mSettings->setValue("Atari1050ArchiverFirmware", m1050ArchiverFirmware);
-}
-
-QString RespeqtSettings::atari1050HappyFirmware()
-{
-    return m1050HappyFirmware;
-}
-
-void RespeqtSettings::setAtari1050HappyFirmware(const QString &firmware)
-{
-    m1050HappyFirmware = firmware;
-    if(mSessionFileName == "") mSettings->setValue("Atari1050HappyFirmware", m1050HappyFirmware);
-}
-
-QString RespeqtSettings::atari1050SpeedyFirmware()
-{
-    return m1050SpeedyFirmware;
-}
-
-void RespeqtSettings::setAtari1050SpeedyFirmware(const QString &firmware)
-{
-    m1050SpeedyFirmware = firmware;
-    if(mSessionFileName == "") mSettings->setValue("Atari1050SpeedyFirmware", m1050SpeedyFirmware);
-}
-
-QString RespeqtSettings::atari1050TurboFirmware()
-{
-    return m1050TurboFirmware;
-}
-
-void RespeqtSettings::setAtari1050TurboFirmware(const QString &firmware)
-{
-    m1050TurboFirmware = firmware;
-    if(mSessionFileName == "") mSettings->setValue("Atari1050TurboFirmware", m1050TurboFirmware);
-}
-
-QString RespeqtSettings::atari1050DuplicatorFirmware()
-{
-    return m1050DuplicatorFirmware;
-}
-
-void RespeqtSettings::setAtari1050DuplicatorFirmware(const QString &firmware)
-{
-    m1050DuplicatorFirmware = firmware;
-    if(mSessionFileName == "") mSettings->setValue("Atari1050DuplicatorFirmware", m1050DuplicatorFirmware);
-}
-
-QString RespeqtSettings::firmwarePath(eHARDWARE eHardware)
-{
-    QString firmwarePath;
-    switch (eHardware) {
-    case HARDWARE_810:                    firmwarePath += m810Firmware; break;
-    case HARDWARE_810_WITH_THE_CHIP:      firmwarePath += m810ChipFirmware; break;
-    case HARDWARE_810_WITH_HAPPY:         firmwarePath += m810HappyFirmware; break;
-    case HARDWARE_1050:                   firmwarePath += m1050Firmware; break;
-    case HARDWARE_1050_WITH_THE_ARCHIVER: firmwarePath += m1050ArchiverFirmware; break;
-    case HARDWARE_1050_WITH_HAPPY:        firmwarePath += m1050HappyFirmware; break;
-    case HARDWARE_1050_WITH_SPEEDY:       firmwarePath += m1050SpeedyFirmware; break;
-    case HARDWARE_1050_WITH_TURBO:        firmwarePath += m1050TurboFirmware; break;
-    case HARDWARE_1050_WITH_DUPLICATOR:   firmwarePath += m1050DuplicatorFirmware; break;
-    default: break;
-    }
-    return firmwarePath;
-}
-
-QString RespeqtSettings::firmwareName(eHARDWARE eHardware)
-{
-    QString firmwareName;
-    switch (eHardware) {
-    case HARDWARE_810:                    firmwareName += "810"; break;
-    case HARDWARE_810_WITH_THE_CHIP:      firmwareName += "Chip 810"; break;
-    case HARDWARE_810_WITH_HAPPY:         firmwareName += "Happy 810"; break;
-    case HARDWARE_1050:                   firmwareName += "1050"; break;
-    case HARDWARE_1050_WITH_THE_ARCHIVER: firmwareName += "The Super Archiver 1050"; break;
-    case HARDWARE_1050_WITH_HAPPY:        firmwareName += "Happy 1050"; break;
-    case HARDWARE_1050_WITH_SPEEDY:       firmwareName += "Speedy 1050"; break;
-    case HARDWARE_1050_WITH_TURBO:        firmwareName += "Turbo 1050"; break;
-    case HARDWARE_1050_WITH_DUPLICATOR:   firmwareName += "Duplicator 1050"; break;
-    default: break;
-    }
-    return firmwareName;
-}
-
-eHARDWARE RespeqtSettings::d1EmulationType()
-{
-    return mD1EmulationType;
-}
-
-void RespeqtSettings::setD1EmulationType(const eHARDWARE type)
-{
-    mD1EmulationType = type;
-    if(mSessionFileName == "") mSettings->setValue("D1EmulationType", mD1EmulationType);
-}
-
-eHARDWARE RespeqtSettings::d2EmulationType()
-{
-    return mD2EmulationType;
-}
-
-void RespeqtSettings::setD2EmulationType(const eHARDWARE type)
-{
-    mD2EmulationType = type;
-    if(mSessionFileName == "") mSettings->setValue("D2EmulationType", mD2EmulationType);
-}
-
-eHARDWARE RespeqtSettings::d3EmulationType()
-{
-    return mD3EmulationType;
-}
-
-void RespeqtSettings::setD3EmulationType(const eHARDWARE type)
-{
-    mD3EmulationType = type;
-    if(mSessionFileName == "") mSettings->setValue("D3EmulationType", mD3EmulationType);
-}
-
-eHARDWARE RespeqtSettings::d4EmulationType()
-{
-    return mD4EmulationType;
-}
-
-void RespeqtSettings::setD4EmulationType(const eHARDWARE type)
-{
-    mD4EmulationType = type;
-    if(mSessionFileName == "") mSettings->setValue("D4EmulationType", mD4EmulationType);
-}
-
-eHARDWARE RespeqtSettings::firmwareType(int drive)
-{
-    eHARDWARE level = SIO_EMULATION;
-    switch (drive) {
-    case 0: level = mD1EmulationType; break;
-    case 1: level = mD2EmulationType; break;
-    case 2: level = mD3EmulationType; break;
-    case 3: level = mD4EmulationType; break;
-    default: break;
-    }
-    return level;
-}
-
 bool RespeqtSettings::displayTransmission()
 {
     return mDisplayTransmission;
@@ -1555,63 +1309,6 @@ void RespeqtSettings::setTraceFilename(const QString &filename)
 {
     mTraceFilename = filename;
     if(mSessionFileName == "") mSettings->setValue("TraceFilename", mTraceFilename);
-}
-
-bool RespeqtSettings::d1PowerOnWithDiskInserted()
-{
-    return mD1PowerOnWithDiskInserted;
-}
-
-void RespeqtSettings::setD1PowerOnWithDiskInserted(bool d1PowerOnWithDiskInserted)
-{
-    mD1PowerOnWithDiskInserted = d1PowerOnWithDiskInserted;
-    if(mSessionFileName == "") mSettings->setValue("D1PowerOnWithDiskInserted", mD1PowerOnWithDiskInserted);
-}
-
-bool RespeqtSettings::d2PowerOnWithDiskInserted()
-{
-    return mD2PowerOnWithDiskInserted;
-}
-
-void RespeqtSettings::setD2PowerOnWithDiskInserted(bool d2PowerOnWithDiskInserted)
-{
-    mD2PowerOnWithDiskInserted = d2PowerOnWithDiskInserted;
-    if(mSessionFileName == "") mSettings->setValue("D2PowerOnWithDiskInserted", mD2PowerOnWithDiskInserted);
-}
-
-bool RespeqtSettings::d3PowerOnWithDiskInserted()
-{
-    return mD3PowerOnWithDiskInserted;
-}
-
-void RespeqtSettings::setD3PowerOnWithDiskInserted(bool d3PowerOnWithDiskInserted)
-{
-    mD3PowerOnWithDiskInserted = d3PowerOnWithDiskInserted;
-    if(mSessionFileName == "") mSettings->setValue("D3PowerOnWithDiskInserted", mD3PowerOnWithDiskInserted);
-}
-
-bool RespeqtSettings::d4PowerOnWithDiskInserted()
-{
-    return mD4PowerOnWithDiskInserted;
-}
-
-void RespeqtSettings::setD4PowerOnWithDiskInserted(bool d4PowerOnWithDiskInserted)
-{
-    mD4PowerOnWithDiskInserted = d4PowerOnWithDiskInserted;
-    if(mSessionFileName == "") mSettings->setValue("D4PowerOnWithDiskInserted", mD4PowerOnWithDiskInserted);
-}
-
-bool RespeqtSettings::firmwarePowerOnWithDisk(int drive)
-{
-    bool powerOn = false;
-    switch (drive) {
-    case 0: powerOn = mD1PowerOnWithDiskInserted; break;
-    case 1: powerOn = mD2PowerOnWithDiskInserted; break;
-    case 2: powerOn = mD3PowerOnWithDiskInserted; break;
-    case 3: powerOn = mD4PowerOnWithDiskInserted; break;
-    default: break;
-    }
-    return powerOn;
 }
 
 #ifdef Q_OS_MAC

@@ -8,7 +8,7 @@
 
 #include <cstdio>
 #include <cstring>
-#include "Cpu6502.hpp"
+#include "cpu6502.h"
 
 // test if there is a page change
 #define CROSS_PAGE(a, r)      (((a - r) ^ a) & 0xFF00)
