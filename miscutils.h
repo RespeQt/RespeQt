@@ -47,7 +47,6 @@ public:
         Atr, AtrGz,
         Xfd, XfdGz,
         Dcm, DcmGz,
-        Scp, ScpGz,
         Di, DiGz,
         Pro, ProGz,
         Atx, AtxGz,

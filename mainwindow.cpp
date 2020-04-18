@@ -1553,12 +1553,11 @@ void MainWindow::mountDiskImage(int no)
                                                     tr("Open a disk image"),
                                                     dir,
                                                     tr(
-                                                    "All Atari disk images (*.atr *.xfd *.atx *.pro *.scp);;"
+                                                    "All Atari disk images (*.atr *.xfd *.atx *.pro);;"
                                                     "SIO2PC ATR images (*.atr);;"
                                                     "XFormer XFD images (*.xfd);;"
                                                     "ATX images (*.atx);;"
                                                     "Pro images (*.pro);;"
-                                                    "SuperCard Pro images (*.scp);;"
                                                     "All files (*)"));
     if (fileName.isEmpty()) {
         return;
@@ -1771,12 +1770,11 @@ void MainWindow::saveDiskAs(int no)
         fileName = QFileDialog::getSaveFileName(this, tr("Save image as"),
                                  dir,
                                  tr(
-                                                    "All Atari disk images (*.atr *.xfd *.atx *.pro *.scp);;"
+                                                    "All Atari disk images (*.atr *.xfd *.atx *.pro);;"
                                                     "SIO2PC ATR images (*.atr);;"
                                                     "XFormer XFD images (*.xfd);;"
                                                     "ATX images (*.atx);;"
                                                     "Pro images (*.pro);;"
-                                                    "SuperCard Pro images (*.scp);;"
                                                     "All files (*)"));
         if (fileName.isEmpty()) {
             return;

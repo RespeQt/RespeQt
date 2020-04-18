@@ -89,14 +89,10 @@ FileTypes::FileType FileTypes::getFileType(const QString &fileName)
         result = Dcm;
     } else if (b0 == 0xFF && b1 == 0xFF) {
         result = Xex;
-    } else if (b0 == 0xFD && b1 == 0xFD) {
-        result = Scp;
     } else if (b0 == 'D' && b1 == 'I') {
         result = Di;
     } else if (b2 == 'P' && (b3 == '2' || b3 == '3')) {
         result = Pro;
-    } else if (b0 == 'S' && b1 == 'C' && b2 == 'P') {
-        result = Scp;
     } else if (fileName.endsWith(".XFD", Qt::CaseInsensitive) || fileName.endsWith(".XFZ", Qt::CaseInsensitive) || fileName.endsWith(".XFD.GZ", Qt::CaseInsensitive)) {
         result = Xfd;
     }
@@ -123,10 +119,6 @@ QString FileTypes::getFileTypeName(FileType type)
         return tr("DCM disk image");
     case DcmGz:
         return tr("gzipped DCM disk image");
-    case Scp:
-        return tr("SCP disk image");
-    case ScpGz:
-        return tr("gzipped SCP disk image");
     case Di:
         return tr("DI disk image");
     case DiGz:

@@ -90,7 +90,6 @@ SOURCES += main.cpp \
     diskimagepro.cpp \
     diskimageatx.cpp \
     diskimageatr.cpp \
-    diskimagescp.cpp \
     disassembly810.cpp \
     disassembly1050.cpp \
     printers/printerfactory.cpp \

@@ -69,7 +69,6 @@ public:
     virtual void			FillTrackFromAtrImage(int trackNumber, Track *track);
     virtual void			FillTrackFromProImage(int trackNumber, Track *track);
     virtual void			FillTrackFromAtxImage(int trackNumber, Track *track);
-    virtual void			FillTrackFromScpImage(int trackNumber, Track *track);
     virtual void			WriteTrack(int trackNumber, Track *track);
     virtual void			NotifyDirty();
 

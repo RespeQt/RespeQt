@@ -1552,9 +1552,6 @@ bool FirmwareDiskImage::ReadTrack(int trackNumber, Track *track)
     else if (m_originalImageType == FileTypes::Atx || m_originalImageType == FileTypes::AtxGz) {
         FillTrackFromAtxImage(trackNumber, track);
     }
-    else if (m_originalImageType == FileTypes::Scp || m_originalImageType == FileTypes::ScpGz) {
-        FillTrackFromScpImage(trackNumber, track);
-    }
     else {
         if (! isOpen()) {
             track->ResetDirty();
@@ -2253,10 +2250,6 @@ void FirmwareDiskImage::FillTrackFromAtxImage(int trackNumber, Track *track)
                     .arg(track->GetWrittenDataBitCounter())
                     .arg(rpm, 0, 'f', 2);
     }
-}
-
-void FirmwareDiskImage::FillTrackFromScpImage(int /*trackNumber*/, Track */*track*/)
-{
 }
 
 void FirmwareDiskImage::WriteTrack(int trackNumber, Track *track)
