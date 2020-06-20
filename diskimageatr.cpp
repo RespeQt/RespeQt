@@ -812,7 +812,7 @@ bool SimpleDiskImage::seekToSector(quint16 sector)
     qint64 pos = (sector - 1) * m_geometry.bytesPerSector();
     // all sectors in a XFD file have the same size (this is the difference with the ATR format).
     // For example, XFD files are used to store CP/M disk images with 256 bytes boot sectors for Indus GT with RamCharger (not possible with ATR files).
-    if ((m_geometry.bytesPerSector() != 128) && (m_originalImageType != FileTypes::Xfd) && (m_originalImageType != FileTypes::XfdGz)) {
+    if ((m_geometry.bytesPerSector() == 256) && (m_originalImageType != FileTypes::Xfd) && (m_originalImageType != FileTypes::XfdGz)) {
         if (sector <= 3) {
             pos = (sector - 1) * 128;
         } else {
