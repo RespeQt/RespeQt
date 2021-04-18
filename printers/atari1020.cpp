@@ -419,8 +419,8 @@ namespace Printers
             if (b == '-') {
                 mFirstNegative = true;
                 mAutomataState = AUTOMATA_FIRST_INT;
+                break;
             }
-            break;
             // FALL THRU if '-' is not found
 
         case AUTOMATA_FIRST_INT:
@@ -467,8 +467,8 @@ namespace Printers
             if (b == '-') {
                 mSecondNegative = true;
                 mAutomataState = AUTOMATA_SECOND_INT;
+                break;
             }
-            break;
             // FALL THRU if '-' is not found
 
         case AUTOMATA_SECOND_INT:
@@ -511,8 +511,8 @@ namespace Printers
             if (b == '-') {
                 mThirdNegative = true;
                 mAutomataState = AUTOMATA_THIRD_INT;
+                break;
             }
-            break;
             // FALL THRU if '-' is not found
 
         case AUTOMATA_THIRD_INT:
