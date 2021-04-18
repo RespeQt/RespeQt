@@ -163,8 +163,6 @@ OTHER_FILES += \
 TRANSLATIONS = \
     i18n/respeqt_de.ts \
     i18n/respeqt_es.ts \
-    i18n/respeqt_de.ts \
-    i18n/respeqt_es.ts \
     i18n/respeqt_pl.ts \
     i18n/respeqt_ru.ts \
     i18n/respeqt_sk.ts \
