@@ -39,7 +39,7 @@ jobs:
           cmake --build $top/build --target deploy -j4
           
       - name: Upload artifacts
-        uses: actions/upload-artifact@v7.0.0
+        uses: actions/upload-artifact@v7.0.1
         with:
           name: Relase packages
           path: ${{ github.workspace }}/build/packages
